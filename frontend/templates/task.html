@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <div id="coordinates"></div>
+            <button id="zoom-in" class="btn btn-primary">Zoom In</button>
+            <button id="zoom-out" class="btn btn-primary">Zoom Out</button>
+            <button id="rotate-left" class="btn btn-primary">Rotate Left</button>
+            <button id="rotate-right" class="btn btn-primary">Rotate Right</button>
+        </div>
+        <div class="col-md-6">
+            <div class="iss-photo-container">
+            <img id="iss-photo" src="https://eol.jsc.nasa.gov/DatabaseImages/ESC/large/ISS030/ISS030-E-274867.JPG" alt="Preview" class="img-fluid" style="transition: transform 0.3s ease; width: 100%; height: auto;">
+            </div>
+            
+        </div>
+    </div>
+</div>
+{% endblock %}

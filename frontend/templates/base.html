@@ -1,0 +1,111 @@
+{% load static %}
+{% load bootstrap5 %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}{% endblock %}</title>
+    {% bootstrap_css %}
+    <!-- Include jQuery from a CDN -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+</head>
+<body>
+    <header>
+        <h1>My Website</h1>
+        <nav>
+            <ul>
+                <li><a href="">Home</a></li>
+                <li><a href="">About</a></li>
+                <li><a href="">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2022 My Website. All rights reserved.</p>
+    </footer>
+    {% bootstrap_javascript %}
+    <script>
+  
+    $(document).ready(function () {
+        let scale = 1; // Initial scale factor
+        let rotation = 0; // Initial rotation angle
+
+        $('#zoom-in').click(function () {
+            scale += 0.1; // Increase scale by 0.1
+            console.log(scale);
+            $('#iss-photo').css('transform', 'scale(' + scale + ')');
+        });
+
+        $('#zoom-out').click(function () {
+            scale = Math.max(0.1, scale - 0.1); // Decrease scale by 0.1, minimum scale is 0.1
+            $('#iss-photo').css('transform', 'scale(' + scale + ')');
+        });
+        $('#rotate-left').click(function () {
+            rotation -= 5; // Decrease rotation angle by 5 degrees
+            $('#iss-photo').css('transform', 'rotate(' + rotation + 'deg)');
+        });
+        $('#rotate-right').click(function () {
+            rotation += 5; // Increase rotation angle by 5 degrees
+            $('#iss-photo').css('transform', 'rotate(' + rotation + 'deg)');
+        });
+
+        $('#iss-photo').on('click', function () {
+                // Get the offset of the image
+            let text = "";
+            const offset = $(this).offset();
+            text = text + "Rotation: "+ rotation + " Scale: " + scale + "<br>Offset Left: " + offset.left + " Offset Top: " + offset.top;
+            
+            // Calculate the click position relative to the image
+            const clickX = event.pageX - offset.left;
+            const clickY = event.pageY - offset.top;
+            text = text + "ClickX: " + clickX + " ClickY: " + clickY;
+
+            
+            // Get the natural size of the image (its original resolution)
+            const naturalWidth = this.naturalWidth;
+            const naturalHeight = this.naturalHeight;
+            text  = text + "Natural Width: " + naturalWidth + " Natural Height: " + naturalHeight ;
+
+            // Get the displayed size of the image
+            const displayedWidth = naturalWidth * scale;
+            const displayedHeight = naturalHeight * scale;
+            text = text + "<br>Displayed Width: " + displayedWidth + " Displayed Height: " + displayedHeight;
+
+
+            // Calculate the size ratio between the displayed size and the natural size
+            const ratioX = naturalWidth / displayedWidth;
+            const ratioY = naturalHeight / displayedHeight;
+            text = text + "<br>RatioX: " + ratioX + " RatioY: " + ratioY;
+
+            // Get the center of the displayed image
+            const centerX = displayedWidth / 2;
+            const centerY = displayedHeight / 2;
+
+            // Adjust click coordinates to the center-based coordinate system
+            const adjX = clickX - centerX;
+            const adjY = clickY - centerY;
+
+            // Convert rotation to radians
+            const rad = (Math.PI / 180) * rotation;
+
+            // Calculate the inverse transformation matrix
+            const cosTheta = Math.cos(rad);
+            const sinTheta = Math.sin(rad);
+
+            // Apply the inverse transformation matrix to get original coordinates
+            const origX = ((adjX * cosTheta - adjY * sinTheta) / scale + centerX) * ratioX;
+            const origY = ((adjX * sinTheta + adjY * cosTheta) / scale + centerY) * ratioY;
+
+            // Display the adjusted coordinates
+            $('#coordinates').text(text);
+        });
+    });
+</script>
+    </script>
+</body>
+</html>

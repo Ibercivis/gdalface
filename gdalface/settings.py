@@ -40,7 +40,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'gdalface',
     'georeferencing',
+    'frontend',
     'drf_yasg',
+    'bootstrap5',
 ]
 
 MIDDLEWARE = [
