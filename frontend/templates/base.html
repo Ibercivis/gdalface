@@ -34,78 +34,106 @@
     $(document).ready(function () {
         let scale = 1; // Initial scale factor
         let rotation = 0; // Initial rotation angle
+        let offset = $('#iss-photo').offset();
+   
 
         $('#zoom-in').click(function () {
             scale += 0.1; // Increase scale by 0.1
-            console.log(scale);
-            $('#iss-photo').css('transform', 'scale(' + scale + ')');
+         
+            updateTransform();
         });
 
         $('#zoom-out').click(function () {
             scale = Math.max(0.1, scale - 0.1); // Decrease scale by 0.1, minimum scale is 0.1
-            $('#iss-photo').css('transform', 'scale(' + scale + ')');
+    
+            updateTransform();
         });
         $('#rotate-left').click(function () {
             rotation -= 5; // Decrease rotation angle by 5 degrees
-            $('#iss-photo').css('transform', 'rotate(' + rotation + 'deg)');
+            updateTransform();
         });
         $('#rotate-right').click(function () {
             rotation += 5; // Increase rotation angle by 5 degrees
-            $('#iss-photo').css('transform', 'rotate(' + rotation + 'deg)');
+            updateTransform();
         });
 
+        function updateTransform() {
+            $('#iss-photo').css('transform', `scale(${scale}) rotate(${rotation}deg)`);
+        }
+
         $('#iss-photo').on('click', function () {
-                // Get the offset of the image
+            // Get the offset of the image
             let text = "";
-            const offset = $(this).offset();
-            text = text + "Rotation: "+ rotation + " Scale: " + scale + "<br>Offset Left: " + offset.left + " Offset Top: " + offset.top;
+            offset = $('#iss-photo').offset();
+            text = text + "Offset Left: " + offset.left + " Offset Top: " + offset.top + "<br>";
+            parentOffset = $('#iss-photo').parent().offset();
+            text = text + "Parent Offset Left: " + parentOffset.left + " Parent Offset Top: " + parentOffset.top + "<br>";
+            //text = text + "Rotation: "+ rotation + " Scale: " + scale + "<br>Offset Left: " + offset.left + " Offset Top: " + offset.top + "<br>";
+            
             
             // Calculate the click position relative to the image
-            const clickX = event.pageX - offset.left;
-            const clickY = event.pageY - offset.top;
-            text = text + "ClickX: " + clickX + " ClickY: " + clickY;
+            const clickX = event.clientX - parentOffset.left;
+            const clickY = event.clientY - parentOffset.top;
+            text = text + "ClickX: " + clickX + " ClickY: " + clickY + "<br>"; 
 
             
             // Get the natural size of the image (its original resolution)
             const naturalWidth = this.naturalWidth;
             const naturalHeight = this.naturalHeight;
-            text  = text + "Natural Width: " + naturalWidth + " Natural Height: " + naturalHeight ;
+            //text  = text + "Natural Width: " + naturalWidth + " Natural Height: " + naturalHeight + "<br>";
 
             // Get the displayed size of the image
-            const displayedWidth = naturalWidth * scale;
-            const displayedHeight = naturalHeight * scale;
-            text = text + "<br>Displayed Width: " + displayedWidth + " Displayed Height: " + displayedHeight;
-
+            const displayedWidth = this.width;
+            const displayedHeight = this.height;
+            // text = text + "Displayed Width: " + displayedWidth + " Displayed Height: " + displayedHeight + "<br>";
 
             // Calculate the size ratio between the displayed size and the natural size
             const ratioX = naturalWidth / displayedWidth;
             const ratioY = naturalHeight / displayedHeight;
-            text = text + "<br>RatioX: " + ratioX + " RatioY: " + ratioY;
+            // text = text + "RatioX: " + ratioX + " RatioY: " + ratioY + "<br>";
+
+            // So, if no rotation, this is the actual pixel clicked
+            const actualX = clickX /  scale;
+            const actualY = clickY /  scale;
+            text = text + "ActualX: " + actualX + " ActualY: " + actualY+ "<br>";
+
+            // But there is rotation, so we need to adjust the coordinates
 
             // Get the center of the displayed image
             const centerX = displayedWidth / 2;
-            const centerY = displayedHeight / 2;
+            const centerY = displayedHeight  / 2;
+            // text = text + "CenterX: " + centerX + " CenterY: " + centerY + "<br>";
 
-            // Adjust click coordinates to the center-based coordinate system
+            // Adjust click coordinates to the center-based coordinate system, this is the place we clicked in the image
             const adjX = clickX - centerX;
             const adjY = clickY - centerY;
+            //text = text + "AdjX: " + adjX + " AdjY: " + adjY + "<br>";
 
             // Convert rotation to radians
             const rad = (Math.PI / 180) * rotation;
+            //text = text + "Rotation: " + -rotation + "<br>";
+            //text = text + "Rad: " + rad + "<br>";
 
             // Calculate the inverse transformation matrix
-            const cosTheta = Math.cos(rad);
-            const sinTheta = Math.sin(rad);
+            const cosTheta = Math.cos(-rad);
+            const sinTheta = Math.sin(-rad);
 
             // Apply the inverse transformation matrix to get original coordinates
-            const origX = ((adjX * cosTheta - adjY * sinTheta) / scale + centerX) * ratioX;
-            const origY = ((adjX * sinTheta + adjY * cosTheta) / scale + centerY) * ratioY;
+            const origX = (((adjX * cosTheta - adjY * sinTheta)) + centerX) 
+            const origY = (((adjX * sinTheta + adjY * cosTheta)) + centerY) 
+            //text = text + "ClickX: " + clickX + " ClickY: " + clickY + "<br>";
+            //text = text + "OrigX: " + origX + " OrigY: " + origY + "<br>";
 
-            // Display the adjusted coordinates
-            $('#coordinates').text(text);
+            // So, if we apply the scale, we get the original coordinates
+            const origX2 = origX * ratioX / scale;
+            const origY2 = origY * ratioY / scale;
+            // text = text + "OrigX2: " + origX2 + " OrigY2: " + origY2 + "<br>";
+
+            // Display the adjusted coordinates, adding to the html
+            $('#coordinates').append(text);
         });
     });
 </script>
-    </script>
+    
 </body>
 </html>
