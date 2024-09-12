@@ -7,6 +7,21 @@
     {% bootstrap_css %}
     <!-- Include jQuery from a CDN -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <style>
+        #iss-photo-container {
+            width: 500px;
+            height: 300px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #iss-photo {
+            margin-top: 200px;
+            width: 100%;
+            height: auto;
+            transition: transform 0.3s ease;
+        }
+    </style>
 
 </head>
 <body>
@@ -62,75 +77,67 @@
         }
 
         $('#iss-photo').on('click', function () {
-            // Get the offset of the image
             let text = "";
-            offset = $('#iss-photo').offset();
-            text = text + "Offset Left: " + offset.left + " Offset Top: " + offset.top + "<br>";
-            parentOffset = $('#iss-photo').parent().offset();
-            text = text + "Parent Offset Left: " + parentOffset.left + " Parent Offset Top: " + parentOffset.top + "<br>";
-            //text = text + "Rotation: "+ rotation + " Scale: " + scale + "<br>Offset Left: " + offset.left + " Offset Top: " + offset.top + "<br>";
-            
-            
-            // Calculate the click position relative to the image
-            const clickX = event.clientX - parentOffset.left;
-            const clickY = event.clientY - parentOffset.top;
-            text = text + "ClickX: " + clickX + " ClickY: " + clickY + "<br>"; 
 
-            
-            // Get the natural size of the image (its original resolution)
-            const naturalWidth = this.naturalWidth;
-            const naturalHeight = this.naturalHeight;
-            //text  = text + "Natural Width: " + naturalWidth + " Natural Height: " + naturalHeight + "<br>";
+            // The distace from the (0,0) to the center, but the offset of the parent
+            distX = this.parentElement.offsetLeft + this.parentElement.width / 2;
+            distY = this.parentElement.offsetTop + this.parentElement.height / 2;
+            text += `Distance X: ${distX.toFixed(2)}, Distance Y: ${distY.toFixed(2)}<br>`;
 
-            // Get the displayed size of the image
-            const displayedWidth = this.width;
-            const displayedHeight = this.height;
-            // text = text + "Displayed Width: " + displayedWidth + " Displayed Height: " + displayedHeight + "<br>";
+            // Get the bounding rectangle of the rotated and scaled image
+            const rect = this.getBoundingClientRect();
+            text += `Bounding Rect: ${JSON.stringify(rect)}<br>`;
 
-            // Calculate the size ratio between the displayed size and the natural size
-            const ratioX = naturalWidth / displayedWidth;
-            const ratioY = naturalHeight / displayedHeight;
-            // text = text + "RatioX: " + ratioX + " RatioY: " + ratioY + "<br>";
+            // Calculate the center of the image in the current transformed frame
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            text += `Center X: ${centerX.toFixed(2)}, Center Y: ${centerY.toFixed(2)}<br>`;
 
-            // So, if no rotation, this is the actual pixel clicked
-            const actualX = clickX /  scale;
-            const actualY = clickY /  scale;
-            text = text + "ActualX: " + actualX + " ActualY: " + actualY+ "<br>";
+            // Get the click position relative to the viewport
+            const clickX = event.clientX;
+            const clickY = event.clientY;
 
-            // But there is rotation, so we need to adjust the coordinates
+            // Translate the click position to the image's center-based coordinate system
+            const translatedX = (clickX - centerX) / scale;
+            const translatedY = (clickY - centerY) / scale;
 
-            // Get the center of the displayed image
-            const centerX = displayedWidth / 2;
-            const centerY = displayedHeight  / 2;
-            // text = text + "CenterX: " + centerX + " CenterY: " + centerY + "<br>";
-
-            // Adjust click coordinates to the center-based coordinate system, this is the place we clicked in the image
-            const adjX = clickX - centerX;
-            const adjY = clickY - centerY;
-            //text = text + "AdjX: " + adjX + " AdjY: " + adjY + "<br>";
+            // So, if no rotation is applied, the image center is the origin
+            // and the click position is the translated position
+            text += `Translated X: ${translatedX.toFixed(2)}, Translated Y: ${translatedY.toFixed(2)}<br>`;
 
             // Convert rotation to radians
             const rad = (Math.PI / 180) * rotation;
-            //text = text + "Rotation: " + -rotation + "<br>";
-            //text = text + "Rad: " + rad + "<br>";
 
-            // Calculate the inverse transformation matrix
+            // Calculate the inverse rotation matrix to map the click back to the original image coordinates
             const cosTheta = Math.cos(-rad);
             const sinTheta = Math.sin(-rad);
 
-            // Apply the inverse transformation matrix to get original coordinates
-            const origX = (((adjX * cosTheta - adjY * sinTheta)) + centerX) 
-            const origY = (((adjX * sinTheta + adjY * cosTheta)) + centerY) 
-            //text = text + "ClickX: " + clickX + " ClickY: " + clickY + "<br>";
-            //text = text + "OrigX: " + origX + " OrigY: " + origY + "<br>";
+            // Apply the inverse transformation matrix to get the original image coordinates
+            const originalX = (translatedX * cosTheta - translatedY * sinTheta) 
+            const originalY = (translatedX * sinTheta + translatedY * cosTheta) 
+            text += `Original X: ${originalX.toFixed(2)}, Original Y: ${originalY.toFixed(2)}<br>`;
 
-            // So, if we apply the scale, we get the original coordinates
-            const origX2 = origX * ratioX / scale;
-            const origY2 = origY * ratioY / scale;
-            // text = text + "OrigX2: " + origX2 + " OrigY2: " + origY2 + "<br>";
+            // Now, we add the center of the image to get the final coordinates
+            const finalX = originalX + centerX;
+            const finalY = originalY + centerY;
+            text += `Final X: ${finalX.toFixed(2)}, Final Y: ${finalY.toFixed(2)}<br>`;
 
-            // Display the adjusted coordinates, adding to the html
-            $('#coordinates').append(text);
+            // Get the natural size of the image (its original resolution)
+            const naturalWidth = this.naturalWidth;
+            const naturalHeight = this.naturalHeight;
+
+            // Calculate the size ratio between the displayed size and the natural size
+            const ratioX = naturalWidth / (rect.width / scale);
+            const ratioY = naturalHeight / (rect.height / scale);
+
+            // Adjust coordinates to the original resolution
+            const px = originalX * ratioX;
+            const py = originalY * ratioY;
+
+            // Display the adjusted coordinates
+            $('#coordinates').html = text;
+            $('#coordinates').html(text);
+            console.log(text);
         });
     });
 </script>
