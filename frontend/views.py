@@ -8,6 +8,9 @@ def index(request):
 def task(request):
     return render(request, 'task.html')
 
+def task2(request):
+    return render(request, 'task2.html')
+
 def about(request):
     return render(request, 'frontend/about.html')
 

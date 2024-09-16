@@ -163,3 +163,7 @@ cython_debug/
 
 #Own
 db.sqlite3
+
+# Ignore static and media files
+static/images/
+media/

@@ -1,0 +1,85 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Rotation with Fabric.js</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+    <style>
+        #canvas-container {
+            border: 1px solid #ddd;
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container">
+        <canvas id="canvas" width="1000" height="1000"></canvas>
+    </div>
+
+    <script>
+        // Initialize Fabric.js canvas
+        const canvas = new fabric.Canvas('canvas');
+        const imageUrl = "{% static 'images/ISS030-E-274867.JPG' %}";
+
+        // Load an image into the Fabric canvas
+        fabric.Image.fromURL(imageUrl, function(img) {
+            img.set({
+                left: canvas.width / 2, // Center horizontally
+                top: canvas.height / 2,  // Center vertically
+                originX: 'center',
+                originY: 'center',
+                selectable: false // Make the image non-selectable to avoid default transformations
+            });
+            canvas.add(img);
+
+            let isRightClickDragging = false; // Flag to track right-click drag state
+            let startX; // Initial X position for rotation calculation
+
+            // Event for mouse down
+            canvas.on('mouse:down', function(event) {
+                if (event.e.button === 0) { // Right-click (button === 2)
+                    isRightClickDragging = true;
+                    startX = event.e.clientX; // Store initial X position
+                    event.e.preventDefault(); // Prevent default context menu
+                }
+            });
+
+            // Event for mouse move
+            canvas.on('mouse:move', function(event) {
+                if (isRightClickDragging) {
+                    const currentX = event.e.clientX; // Get current X position
+                    const deltaX = currentX - startX; // Calculate the difference in X
+
+                    // Adjust the rotation angle based on the mouse movement
+                    img.rotate(img.angle + deltaX * 0.2); // Adjust the multiplier for sensitivity
+                    canvas.requestRenderAll(); // Re-render the canvas with the new rotation
+
+                    // Update the start position for continuous rotation
+                    startX = currentX;
+                }
+            });
+
+            // Event for mouse up
+            canvas.on('mouse:up', function(event) {
+                if (event.e.button === 0) { // Right-click (button === 2)
+                    isRightClickDragging = false; // Stop the right-click drag rotation
+                }
+            });
+
+            // Prevent the default context menu from appearing on right-click
+            canvas.on('mouse:down', function(event) {
+                if (event.e.button === 2) {
+                    event.e.preventDefault(); // Prevent the context menu
+                }
+            });
+        });
+
+        // Prevent the default right-click context menu on the entire canvas
+        document.getElementById('canvas-container').addEventListener('contextmenu', function(event) {
+            event.preventDefault();
+        });
+    </script>
+</body>
+</html>
