@@ -1,18 +1,23 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container">
-    <div class="row">
-        <div class="col-md-6">
+<div class="container-fluid p-0 m-0 h-100">
+    <div class="row w-100 h-100  p-0 m-0">
+        <div class="col-md-2 h-100 tools">
             <div id="coordinates"></div>
-            <button id="zoom-in" class="btn btn-primary">Zoom In</button>
-            <button id="zoom-out" class="btn btn-primary">Zoom Out</button>
-            <button id="rotate-left" class="btn btn-primary">Rotate Left</button>
-            <button id="rotate-right" class="btn btn-primary">Rotate Right</button>
         </div>
-        <div class="col-md-6">
-            <div class="iss-photo-container">
-            <img id="iss-photo" src="https://eol.jsc.nasa.gov/DatabaseImages/ESC/large/ISS030/ISS030-E-274867.JPG" alt="Preview" class="img-fluid" style="transform-origin: center; transition: transform 0.3s ease; width: 100%; height: auto;">
+        <div class="col-md-5 column-left p-0 m-0 h-100"> 
+            <div id="map" class="w-100 h-100">
             </div>
+        </div>
+        <div class="col-md-5 column-righ h-100 p-0 m-0">
+            <div class="iss-photo-container h-100 p-0 m-0">
+            <img id="iss-photo" src="https://eol.jsc.nasa.gov/DatabaseImages/ESC/large/ISS030/ISS030-E-274867.JPG" alt="Preview" class="img-fluid" style="transform-origin: center; transition: transform 0.3s ease; width: 100%; height: auto;"/>
+           
+        </div>
+        <button id="zoom-in" class="btn btn-primary zindex2">Zoom In</button>
+        <button id="zoom-out" class="btn btn-primary">Zoom Out</button>
+        <button id="rotate-left" class="btn btn-primary">Rotate Left</button>
+        <button id="rotate-right" class="btn btn-primary">Rotate Right</button>
             
         </div>
     </div>
