@@ -1,4 +1,5 @@
 {% load static %}
+{% load bootstrap5 %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +7,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interactive Rotation with Fabric.js</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+    {% bootstrap_css %}
+    <!-- Include jQuery from a CDN -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""></script>
     <style>
         #canvas-container {
             border: 1px solid #ddd;
@@ -14,32 +24,77 @@
     </style>
 </head>
 <body>
-    <div id="canvas-container">
-        <canvas id="canvas" width="1000" height="1000"></canvas>
-    </div>
+    <div class="container-fluid">
+        <div class="row h-100">
+            <div class="col-md-2 h-100 tools">
+                <div id="coordinates"></div>
+            </div>
+            <div class="col-md-5 column-left p-0 m-0 h-100">
+                <div id="map" class="w-100 h-100"></div>
+            </div>
+            <div class="col-md-5 column-right p-0 m-0 h-100">            
+                <div id="canvas-container">
+                    <canvas id="canvas" width="1000" height="1000"></canvas>
+                </div>
+            </div>
+        </div>
+    <div>
 
     <script>
+
+       
         // Initialize Fabric.js canvas
-        const canvas = new fabric.Canvas('canvas');
+        const canvas = new fabric.Canvas('canvas',{
+            fireRightClick: true, // Enable right-click events
+            stopContextMenu: true, // Disable the default context menu
+            selection: false // Disable object selection
+        });
+        const canvasWidth = canvas.width;
+        const canvasHeight = canvas.height;
         const imageUrl = "{% static 'images/ISS030-E-274867.JPG' %}";
 
         // Load an image into the Fabric canvas
         fabric.Image.fromURL(imageUrl, function(img) {
+            const scaleX = canvasWidth / img.width;
+            const scaleY = canvasHeight / img.height;
+            const scale = Math.min(scaleX, scaleY);
             img.set({
                 left: canvas.width / 2, // Center horizontally
                 top: canvas.height / 2,  // Center vertically
                 originX: 'center',
                 originY: 'center',
+                scaleX: scale,
+                scaleY: scale,
                 selectable: false // Make the image non-selectable to avoid default transformations
             });
             canvas.add(img);
 
             let isRightClickDragging = false; // Flag to track right-click drag state
+            let isDragging = false; // Flag to track left-click drag state
             let startX; // Initial X position for rotation calculation
+
+            // Mouse wheel
+            canvas.on('mouse:wheel', function(event) {
+                const delta = event.e.deltaY; // Get the scroll direction
+                let zoom = img.scaleX + delta / 300; // Adjust the zoom factor
+                zoom = Math.max(0.1, zoom); // Set a minimum zoom level
+                img.scaleX = zoom; // Apply the zoom to the X-axis
+                img.scaleY = zoom; // Apply the zoom to the Y-axis
+                canvas.requestRenderAll(); // Re-render the canvas with the new zoom level
+            });
 
             // Event for mouse down
             canvas.on('mouse:down', function(event) {
-                if (event.e.button === 0) { // Right-click (button === 2)
+                if (event.e.button === 0) { // Left mouse button (button === 0)
+                    isDragging = true;
+                    lastPosX = event.e.clientX;
+                    lastPosY = event.e.clientY;
+                    event.e.preventDefault();
+                }
+
+                    
+                // alert(event.e.button);
+                else if (event.e.button === 2) { // Right-click (button === 2)
                     isRightClickDragging = true;
                     startX = event.e.clientX; // Store initial X position
                     event.e.preventDefault(); // Prevent default context menu
@@ -48,12 +103,31 @@
 
             // Event for mouse move
             canvas.on('mouse:move', function(event) {
-                if (isRightClickDragging) {
+                if (isDragging)
+                {
+                    const currentPosX = event.e.clientX;
+                    const currentPosY = event.e.clientY;
+
+                    // Calculate the difference in X and Y positions
+                    const deltaX = currentPosX - lastPosX;
+                    const deltaY = currentPosY - lastPosY;
+
+                    // Update the image position based on the mouse movement
+                    img.left += deltaX;
+                    img.top += deltaY;
+
+                    // Update the last position for continuous movement
+                    lastPosX = currentPosX;
+                    lastPosY = currentPosY;
+
+                    canvas.requestRenderAll(); // Re-render the canvas with the new position
+
+                } else if (isRightClickDragging) {
                     const currentX = event.e.clientX; // Get current X position
                     const deltaX = currentX - startX; // Calculate the difference in X
 
                     // Adjust the rotation angle based on the mouse movement
-                    img.rotate(img.angle + deltaX * 0.2); // Adjust the multiplier for sensitivity
+                    img.rotate(img.angle - deltaX * 0.2); // Adjust the multiplier for sensitivity
                     canvas.requestRenderAll(); // Re-render the canvas with the new rotation
 
                     // Update the start position for continuous rotation
@@ -63,23 +137,23 @@
 
             // Event for mouse up
             canvas.on('mouse:up', function(event) {
-                if (event.e.button === 0) { // Right-click (button === 2)
+                // Check which mouse button was released
+                if (event.e.button === 0) { // Left mouse button
+                
+                    isDragging = false; // Stop the left-click drag movement
+                } else if (event.e.button === 2) { // Right mouse button
+                 
                     isRightClickDragging = false; // Stop the right-click drag rotation
                 }
             });
 
-            // Prevent the default context menu from appearing on right-click
-            canvas.on('mouse:down', function(event) {
-                if (event.e.button === 2) {
-                    event.e.preventDefault(); // Prevent the context menu
-                }
-            });
+       
         });
 
         // Prevent the default right-click context menu on the entire canvas
-        document.getElementById('canvas-container').addEventListener('contextmenu', function(event) {
-            event.preventDefault();
-        });
+        //document.getElementById('canvas-container').addEventListener('contextmenu', function(event) {
+        //    event.preventDefault();
+        //});
     </script>
 </body>
 </html>
