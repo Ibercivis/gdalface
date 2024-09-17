@@ -165,5 +165,5 @@ cython_debug/
 db.sqlite3
 
 # Ignore static and media files
-static/images/
+**/static/images/
 media/
