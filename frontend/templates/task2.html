@@ -21,6 +21,13 @@
             border: 1px solid #ddd;
             position: relative;
         }
+        #map{
+            height: 500px;
+            width: 500px;
+        }
+        body {
+    overflow: hidden; /* Disable scrolling */
+}
     </style>
 </head>
 <body>
@@ -30,7 +37,7 @@
                 <div id="coordinates"></div>
             </div>
             <div class="col-md-5 column-left p-0 m-0 h-100">
-                <div id="map" class="w-100 h-100"></div>
+                <div id="map" class=""></div>
             </div>
             <div class="col-md-5 column-right p-0 m-0 h-100">            
                 <div id="canvas-container">
@@ -41,6 +48,25 @@
     <div>
 
     <script>
+
+        $(document).ready(function() {
+            // Initialize Leaflet map
+            const map = L.map('map').setView([0, 0], 2);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+            }).addTo(map);
+
+            // Add a marker to the map
+            const marker = L.marker([0, 0]).addTo(map);
+
+            // Update the marker position based on the map click event
+            map.on('click', function(event) {
+                const lat = event.latlng.lat;
+                const lon = event.latlng.lng;
+                marker.setLatLng([lat, lon]);
+                $('#coordinates').text(`Latitude: ${lat.toFixed(4)}, Longitude: ${lon.toFixed(4)}`);
+            });
+        });
 
        
         // Initialize Fabric.js canvas
