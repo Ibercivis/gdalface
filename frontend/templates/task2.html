@@ -85,27 +85,70 @@
             const scaleY = canvasHeight / img.height;
             const scale = Math.min(scaleX, scaleY);
             img.set({
-                left: canvas.width / 2, // Center horizontally
-                top: canvas.height / 2,  // Center vertically
-                originX: 'center',
-                originY: 'center',
+                left: 0, // Center horizontally
+                top: 0,  // Center vertically
+                originX: 'left',
+                originY: 'top',
                 scaleX: scale,
                 scaleY: scale,
-                selectable: false // Make the image non-selectable to avoid default transformations
+                selectable: false, // Make the image non-selectable to avoid default transformations
+                hasControls: false, // Disable controls for the image
+                hasBorders: false, // Disable borders for the image
             });
-            canvas.add(img);
+            const group = new fabric.Group([img], {
+                left: canvasWidth / 2,
+                top: canvasHeight / 2,
+                originX: 'center',
+                originY: 'center',
+                selectable: false, // Make the group non-selectable
+                hasControls: false, // Disable controls for the group
+                hasBorders: false, // Disable borders for the group
+            });
+            canvas.add(group);
+
 
             let isRightClickDragging = false; // Flag to track right-click drag state
             let isDragging = false; // Flag to track left-click drag state
             let startX; // Initial X position for rotation calculation
+            const originalIconScale = 0.05; // Original scale for icons
+
+            function addIcon(iconURL, x, y) {
+                fabric.Image.fromURL(iconURL, function(icon) {
+                    icon.set({
+                        left: x ,
+                        top: y ,
+                        originX: 'center',
+                        originY: 'center',
+                        scaleX: 0.05, // Example scale for the icon
+                        scaleY: 0.05,
+                        selectable: false,  // Make the icon non-selectable
+                        hasControls: false, // Disable controls for the icon
+                        hasBorders: false   // Disable borders for the icon
+                    });
+
+                    group.addWithUpdate(icon); // Add the icon to the group
+                    canvas.requestRenderAll(); // Re-render the canvas
+                }, { crossOrigin: 'anonymous' }); // Handle CORS issues
+            }
 
             // Mouse wheel
             canvas.on('mouse:wheel', function(event) {
                 const delta = event.e.deltaY; // Get the scroll direction
-                let zoom = img.scaleX + delta / 300; // Adjust the zoom factor
+                let zoom = group.scaleX + delta / 300; // Adjust the zoom factor
                 zoom = Math.max(0.1, zoom); // Set a minimum zoom level
-                img.scaleX = zoom; // Apply the zoom to the X-axis
-                img.scaleY = zoom; // Apply the zoom to the Y-axis
+                group.scaleX = zoom; // Apply the zoom to the X-axis
+                group.scaleY = zoom; // Apply the zoom to the Y-axis
+                                // Adjust icons' scale to maintain their original size
+                group.getObjects().forEach(function(obj) {
+                    if (obj !== img) { // Exclude the main image
+                        obj.scaleX = originalIconScale / group.scaleX;
+                        obj.scaleY = originalIconScale / group.scaleY;
+                    }
+                });
+
+                canvas.requestRenderAll(); // Re-render the canvas
+                opt.e.preventDefault(); // Prevent default scroll behavior
+                opt.e.stopPropagation(); // Stop event propagation
                 canvas.requestRenderAll(); // Re-render the canvas with the new zoom level
             });
 
@@ -116,6 +159,14 @@
                     lastPosX = event.e.clientX;
                     lastPosY = event.e.clientY;
                     event.e.preventDefault();
+
+                    // Get the pointer position on the canvas
+                    const pointer = canvas.getPointer(event.e);
+                    const px = pointer.x;
+                    const py = pointer.y;
+
+                    // Add an icon at the click position
+                    addIcon('https://cdn-icons-png.flaticon.com/512/1828/1828774.png', px, py); // Example icon URL
                 }
 
                     
@@ -139,8 +190,8 @@
                     const deltaY = currentPosY - lastPosY;
 
                     // Update the image position based on the mouse movement
-                    img.left += deltaX;
-                    img.top += deltaY;
+                    group.left += deltaX;
+                    group.top += deltaY;
 
                     // Update the last position for continuous movement
                     lastPosX = currentPosX;
@@ -153,7 +204,7 @@
                     const deltaX = currentX - startX; // Calculate the difference in X
 
                     // Adjust the rotation angle based on the mouse movement
-                    img.rotate(img.angle - deltaX * 0.2); // Adjust the multiplier for sensitivity
+                    group.rotate(group.angle - deltaX * 0.2); // Adjust the multiplier for sensitivity
                     canvas.requestRenderAll(); // Re-render the canvas with the new rotation
 
                     // Update the start position for continuous rotation
