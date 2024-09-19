@@ -17,27 +17,39 @@
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
     crossorigin=""></script>
     <style>
-        .canvas-container {
-            border: 1px solid #d00;
-            position: relative;
-            width: 500px;
-            height: 500px;
-        }
         #map{
-            height: 500px;
-            width: 500px;
+            height: 100%;
         }
-        body {
+        body, html {
             overflow: hidden; /* Disable scrolling */
+            height: 100%;
+
         }
+        /* Ensure the parent container has 100% width and specific height */
+        .canvas-container {
+            width: 100% !important; 
+            height: 100% !important; /* Set a specific height for the canvas container */
+            position: relative;
+        
+        }
+
+        /* Ensure the canvas fills the entire parent container */
         #canvas {
-            height: 400px;
+            background-color: #3a3a3b;
+            
+        
+          
+        }
+        .column-right {
+         
+
+            height: 100% !important;
         }
     </style>
 </head>
 <body>
-    <div class="container-fluid">
-        <div class="row h-100">
+    <div class="container-fluid h-100">
+        <div class="row h-100 d-flex">
             <div class="col-md-2 h-100 tools">
                 <div id="coordinates">
                     <h3>Icon List</h3>
@@ -45,9 +57,9 @@
                 </div>
             </div>
             <div class="col-md-5 column-left p-0 m-0 h-100">
-                <div id="map" class=""></div>
+                <div id="map" class="h-100"></div>
             </div>
-            <div class="col-md-5 column-right p-0 m-0 h-100">            
+            <div id="column-right" class="col-md-5 p-0 m-0 h-100">            
              
                     <canvas id="canvas" ></canvas>
             
@@ -83,9 +95,14 @@
             stopContextMenu: true, // Disable the default context menu
             selection: false // Disable object selection
         });
-        const canvasWidth = canvas.width;
-        const canvasHeight = canvas.height;
         const imageUrl = "{% static 'images/ISS030-E-274867.JPG' %}";
+        console.log($('#column-right').width());
+        console.log($('#column-right').height());
+        const canvasWidth = $('#column-right').width(); // Canvas width
+        const canvasHeight = $('#column-right').height(); // Canvas height
+        canvas.setWidth(canvasWidth); // Set the canvas width
+        canvas.setHeight(canvasHeight); // Set the canvas height
+
 
         // Load an image into the Fabric canvas
         fabric.Image.fromURL(imageUrl, function(img) {
@@ -93,8 +110,8 @@
             const scaleY = canvasHeight / img.height;
             const scale = Math.min(scaleX, scaleY);
             img.set({
-                left: (canvasWidth - img.width * scale) / 2, // Center horizontally
-                top: (canvasHeight - img.height * scale) / 2, // Center vertically
+                left: 0, // Center horizontally
+                top: 0, // Center vertically
                 originX: 'left',
                 originY: 'top',
                 scaleX: scale,
