@@ -17,17 +17,22 @@
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
     crossorigin=""></script>
     <style>
-        #canvas-container {
-            border: 1px solid #ddd;
+        .canvas-container {
+            border: 1px solid #d00;
             position: relative;
+            width: 500px;
+            height: 500px;
         }
         #map{
             height: 500px;
             width: 500px;
         }
         body {
-    overflow: hidden; /* Disable scrolling */
-}
+            overflow: hidden; /* Disable scrolling */
+        }
+        #canvas {
+            height: 400px;
+        }
     </style>
 </head>
 <body>
@@ -43,9 +48,9 @@
                 <div id="map" class=""></div>
             </div>
             <div class="col-md-5 column-right p-0 m-0 h-100">            
-                <div id="canvas-container">
-                    <canvas id="canvas" width="1000" height="1000"></canvas>
-                </div>
+             
+                    <canvas id="canvas" ></canvas>
+            
             </div>
         </div>
     <div>
@@ -88,8 +93,8 @@
             const scaleY = canvasHeight / img.height;
             const scale = Math.min(scaleX, scaleY);
             img.set({
-                left: 0, // Center horizontally
-                top: 0,  // Center vertically
+                left: (canvasWidth - img.width * scale) / 2, // Center horizontally
+                top: (canvasHeight - img.height * scale) / 2, // Center vertically
                 originX: 'left',
                 originY: 'top',
                 scaleX: scale,
@@ -190,9 +195,6 @@
                     });
 
                     updateIconList(); // Update the icon list displayed in the div
-                    console.log(iconList);
-                    console.log(getActualCoordinates(iconGroup));
-
                     group.addWithUpdate(iconGroup); // Add the icon to the group
                     canvas.requestRenderAll(); // Re-render the canvas
                 }, { crossOrigin: 'anonymous' }); // Handle CORS issues
@@ -238,18 +240,24 @@
                     listContainer.appendChild(listItem);
                 });
             }
-            function getActualCoordinates(iconGroup) {
-                // Get the point of the iconGroup based on its center origin
-                const originPoint = iconGroup.getPointByOrigin('center', 'center');
 
-                // Transform the point to account for the group's transformations
-                const transformedPoint = fabric.util.transformPoint(
-                    originPoint,
-                    group.calcTransformMatrix()
-                );
-                
-                return { px: transformedPoint.x, py: transformedPoint.y };
+            // Function to convert canvas click coordinates to image coordinates
+            function getImageCoordinates(event) {
+                // Get the pointer position on the canvas
+                const pointer = canvas.getPointer(event.e);
+
+                // Create a point from the click position
+                const clickPoint = new fabric.Point(pointer.x, pointer.y);
+
+                // Get the inverse transform matrix of the group
+                const inverseGroupMatrix = fabric.util.invertTransform(img.calcTransformMatrix());
+
+                // Transform the click point to the image's local coordinates
+                const transformedPoint = fabric.util.transformPoint(clickPoint, inverseGroupMatrix);
+
+                return { px: transformedPoint.x + img.width/2, py: transformedPoint.y+img.height/2 };
             }
+            
 
             // Mouse wheel
             canvas.on('mouse:wheel', function(event) {
@@ -274,6 +282,7 @@
 
             // Event for mouse down
             canvas.on('mouse:down', function(event) {
+                console.log(getImageCoordinates(event));
                 if (event.e.button === 0) { // Left mouse button (button === 0)
                     if (isPKeyActive) {
                         // Get the pointer position on the canvas
