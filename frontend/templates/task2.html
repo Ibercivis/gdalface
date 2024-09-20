@@ -16,6 +16,12 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
     crossorigin=""></script>
+    <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+
     <style>
         #map{
             height: 100%;
@@ -36,14 +42,45 @@
         /* Ensure the canvas fills the entire parent container */
         #canvas {
             background-color: #3a3a3b;
-            
-        
-          
+        }
+        #title {
+            margin-top: 10px;
+            text-align: center;
+        }
+        .tools {
+            background-color: #fef7ff;
+            border-right: 1px solid #e9ecef;
+            overflow-y: auto;
         }
         .column-right {
-         
-
             height: 100% !important;
+        }
+        ul {
+            list-style-type: none; /* Remove default bullet points */
+            padding: 0;
+        }
+
+        li{
+            display: inline-block; /* Make it behave like an inline element */
+            padding: 10px 10px; /* Add padding to simulate button shape */
+            background-color: #56295277; /* Button color (Bootstrap's primary color) */
+            width: 95%; /* Full width */
+            color: white; /* Text color */
+            border: none; /* Remove border */
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer; /* Pointer cursor to indicate it's clickable */
+            font-size: 12px;
+            text-align: left;
+            margin: 5px; /* Add margin between buttons */
+            transition: background-color 0.3s ease; /* Smooth transition for hover */
+        }
+
+        li:hover {
+            background-color: #563952; /* Darker color on hover */
+        }
+
+        li:active {
+            background-color: #004085; /* Even darker color when clicked */
         }
     </style>
 </head>
@@ -51,8 +88,11 @@
     <div class="container-fluid h-100">
         <div class="row h-100 d-flex">
             <div class="col-md-2 h-100 tools">
-                <div id="coordinates">
-                    <h3>Icon List</h3>
+                <div id="title" class="h-10">
+                    <h3>Lost at night</h3>
+                </div>
+                <div id="coordinates h-80">
+                    
                     <ul id="icon-list-items"></ul>
                 </div>
             </div>
@@ -72,9 +112,17 @@
         $(document).ready(function() {
             // Initialize Leaflet map
             const map = L.map('map').setView([0, 0], 2);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
-            }).addTo(map);
+                attribution: '© OpenStreetMap contributors'
+            });
+
+            const googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
+                maxZoom: 20,
+                subdomains:['mt0','mt1','mt2','mt3']
+            });
+            googleSat.addTo(map);
+
 
             // Add a marker to the map
             const marker = L.marker([0, 0]).addTo(map);
@@ -86,7 +134,17 @@
                 marker.setLatLng([lat, lon]);
                 $('#coordinates').text(`Latitude: ${lat.toFixed(4)}, Longitude: ${lon.toFixed(4)}`);
             });
+
+             // Add layer control to switch between layers
+    const baseLayers = {
+        "OpenStreetMap": osmLayer,
+        "Satellite": googleSat
+    };
+
+    L.control.layers(baseLayers).addTo(map);
         });
+
+  
 
        
         // Initialize Fabric.js canvas
@@ -163,24 +221,30 @@
                 }
             });
 
-            function addIcon(iconURL, x, y) {
+            function addIcon(iconURL, event) {
                 fabric.Image.fromURL(iconURL, function(icon) {
-                    icon.set({
-                        left: x ,
-                        top: y ,
+                    const pointer = canvas.getPointer(event.e);
+                    const x = pointer.x;
+                    const y = pointer.y;
+                    
+                    const label = new fabric.Text('\uf3c5', {
+                        left: x,
+                        top: y, // Position the label above the icon
+                        fontSize: 16,
+                        fontFamily: 'Font Awesome 6 Free',
+                        fill: '#f08ce7',
                         originX: 'center',
                         originY: 'center',
-                        scaleX: 0.05, // Example scale for the icon
-                        scaleY: 0.05,
-                        selectable: false,  // Make the icon non-selectable
-                        hasControls: false, // Disable controls for the icon
-                        hasBorders: false   // Disable borders for the icon
+                        selectable: false,  // Make the label non-selectable
+                        hasControls: false, // Disable controls for the label
+                        hasBorders: false   // Disable borders for the label
                     });
-                    const label = new fabric.Text(iconCounter.toString(), {
-                        left: icon.left,
-                        top: icon.top - 15, // Position the label above the icon
-                        fontSize: 16,
-                        fill: 'red',
+
+                    const label1 = new fabric.Text(iconCounter.toString(), {
+                        left: x,
+                        top: y - 16, // Position the label above the icon
+                        fontSize: 12,
+                        fill: '#f08ce7',
                         originX: 'center',
                         originY: 'center',
                         selectable: false,  // Make the label non-selectable
@@ -189,16 +253,16 @@
                     });
 
                     // Create a unique ID for the icon
-                    const iconID = `icon-${iconCounter}`;
+                    const iconID = `Point ${iconCounter}`;
 
                     iconCounter++; // Increment the icon counter
                 
 
-                    const iconGroup = new fabric.Group([icon, label], {
+                    const iconGroup = new fabric.Group([label, label1], {
                         left: x,
                         top: y,
                         originX: 'center',
-                        originY: 'center',
+                        originY: 'bottom',
                         selectable: true,  // Make the group selectable
                         hasControls: false, // Disable controls for the group
                         hasBorders: false   // Disable borders for the group
@@ -209,6 +273,7 @@
                         id: iconID,
                         px: iconGroup.left,
                         py: iconGroup.top,
+                        text: getImageCoordinates(event)
                     });
 
                     updateIconList(); // Update the icon list displayed in the div
@@ -251,10 +316,41 @@
                 listContainer.innerHTML = ''; // Clear the current list
 
                 // Create list items for each icon in iconList
-                iconList.forEach(function(icon) {
+                iconList.forEach(function (icon) {
                     const listItem = document.createElement('li');
-                    listItem.textContent = `ID: ${icon.id}, X: ${icon.px.toFixed(2)}, Y: ${icon.py.toFixed(2)}`;
+                    listItem.setAttribute('data-bs-toggle', 'tooltip');
+                    listItem.setAttribute('data-bs-placement', 'right');
+                    listItem.setAttribute('title', `px: ${icon.text.px.toFixed(2)}, py: ${icon.text.py.toFixed(2)}`); // Set the tooltip text
+
+                    // Create Font Awesome icon element
+                    const iconElement = document.createElement('i');
+                    iconElement.className = 'fa-solid fa-location-dot ps-2 pe-2'; // Add the classes for the Font Awesome icon
+
+                    // Set the text content with the ID, X, and Y values
+                    const span = document.createElement('span');
+                    span.textContent = `${icon.id}`;
+                    const spanRight = document.createElement('span');
+                    spanRight.className = 'float-end d-block';
+                    const garbage = document.createElement('i');
+                    garbage.className = 'fa-solid fa-trash-alt pe-2 '
+
+                    // Append the icon and the text to the list item
+                    listItem.appendChild(iconElement);
+                    listItem.appendChild(span);
+                    listItem.appendChild(spanRight);
+                    spanRight.appendChild(garbage);
+                    
+                    
+                    
+
+                    // Append the list item to the container
                     listContainer.appendChild(listItem);
+                });
+                const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl, {
+                        delay: { show: 100, hide: 100 } // Adjust the show/hide delay in milliseconds
+                    });
                 });
             }
 
@@ -306,9 +402,10 @@
                         const pointer = canvas.getPointer(event.e);
                         const px = pointer.x;
                         const py = pointer.y;
+                        
 
                         // Add an icon at the click position
-                        addIcon('https://cdn-icons-png.flaticon.com/512/1828/1828774.png', px, py); // Example icon URL
+                        addIcon("{% static 'images/maps-and-flags.png' %}", event); // Example icon URL
 
                     } else if (isDKeyActive){
                         const pointer = canvas.getPointer(event.e);

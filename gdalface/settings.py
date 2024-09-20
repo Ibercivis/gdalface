@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'frontend',
     'drf_yasg',
     'bootstrap5',
+    'fontawesomefree',
 ]
 
 MIDDLEWARE = [
