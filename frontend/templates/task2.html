@@ -187,6 +187,7 @@
             iconList[iconList.length - 1].lon = lon;
             iconList[iconList.length - 1].text.lat = lat;
             iconList[iconList.length - 1].text.lon = lon;
+            iconList[iconList.length - 1].complete = true;
             console.log(iconList);
             updateIconList(); // Update the icon list displayed in the div
             iconCounter++; // Increment the icon counter
@@ -217,6 +218,14 @@
         }
 
         function removeMarkerPointById(id) {
+            icon = iconList.find(icon => icon.id === id);
+            console.log(icon);
+            if (icon.complete &&  isTurn === 'map') {
+                isTurn = 'map';
+            }
+            else if (!icon.complete && isTurn === 'map') {
+                isTurn = 'image';
+            }
             removeMarkerById(id);
             removeIconById(id);
             removeIconFromList(id);
@@ -247,14 +256,13 @@
             const listContainer = document.getElementById('icon-list-items');
             listContainer.innerHTML = ''; // Clear the current list
 
+
+
             // Create list items for each icon in iconList
             iconList.forEach(function (icon) {
                 const listItem = document.createElement('li');
                 listItem.id = "li-"+icon.id; // Set the ID attribute
-                listItem.setAttribute('data-bs-toggle', 'tooltip');
-                listItem.setAttribute('data-bs-placement', 'right');
-                listItem.setAttribute('title', `px: ${icon.text.px.toFixed(2)} <br /> py: ${icon.text.py.toFixed(2)} <br> lat: ${icon.text.lat} <br> lon: ${icon.text.lon}`); // Set the tooltip text
-
+                
                 // Create Font Awesome icon element
                 const iconElement = document.createElement('i');
                 iconElement.className = 'fa-solid fa-location-dot ps-2 pe-2'; // Add the classes for the Font Awesome icon
@@ -264,6 +272,12 @@
                 span.textContent = `${icon.id}`;
                 const spanRight = document.createElement('span');
                 spanRight.className = 'float-end d-block';
+                const info = document.createElement('span');
+                info.className = 'fa-solid fa-info-circle pe-3';
+                info.setAttribute('data-bs-toggle', 'tooltip');
+                info.setAttribute('data-bs-placement', 'right');
+                info.setAttribute('title', `px: ${icon.text.px.toFixed(2)} <br /> py: ${icon.text.py.toFixed(2)} <br> lat: ${icon.text.lat} <br> lon: ${icon.text.lon}`); // Set the tooltip text
+
                 const garbage = document.createElement('i');
                 garbage.className = 'fa-solid fa-trash-alt pe-2 '
                 
@@ -276,6 +290,7 @@
                 listItem.appendChild(iconElement);
                 listItem.appendChild(span);
                 listItem.appendChild(spanRight);
+                spanRight.appendChild(info);
                 spanRight.appendChild(garbage);
 
                 // Append the list item to the container
@@ -285,7 +300,8 @@
             const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl, {
                     html: true, // Enable HTML content in the tooltip
-                    delay: { show: 100, hide: 100 } // Adjust the show/hide delay in milliseconds
+                    delay: { show: 100, hide: 100 }, // Adjust the show/hide delay in milliseconds
+
                 });
             });
         }
