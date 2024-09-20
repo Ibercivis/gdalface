@@ -38,6 +38,9 @@
             position: relative;
         
         }
+        .tooltip-inner {
+            text-align: left !important;
+        }
 
         /* Ensure the canvas fills the entire parent container */
         #canvas {
@@ -82,73 +85,161 @@
         li:active {
             background-color: #004085; /* Even darker color when clicked */
         }
+        .fa-icon-marker {
+            color: #f08ce7; /* Customize the color of the icon */
+            font-size: 16px; /* Adjust the font size to fit the icon */
+        }
     </style>
 </head>
 <body>
-    <div class="container-fluid h-100">
-        <div class="row h-100 d-flex">
-            <div class="col-md-2 h-100 tools">
-                <div id="title" class="h-10">
-                    <h3>Lost at night</h3>
-                </div>
-                <div id="coordinates h-80">
-                    
-                    <ul id="icon-list-items"></ul>
-                </div>
+    <!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="col-md-5 column-left p-0 m-0 h-100">
-                <div id="map" class="h-100"></div>
+            <div class="modal-body">
+                ...
             </div>
-            <div id="column-right" class="col-md-5 p-0 m-0 h-100">            
-             
-                    <canvas id="canvas" ></canvas>
-            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
             </div>
         </div>
-    <div>
+    </div>
+</div>
+
+<div class="container-fluid h-100">
+    <div class="row h-100 d-flex">
+        <div class="col-md-2 h-100 tools">
+            <div id="title" class="h-10">
+                <h3>Lost at night</h3>
+            </div>
+            <div id="coordinates h-80">
+
+                <ul id="icon-list-items"></ul>
+            </div>
+        </div>
+        <div class="col-md-5 column-left p-0 m-0 h-100">
+            <div id="map" class="h-100"></div>
+        </div>
+        <div id="column-right" class="col-md-5 p-0 m-0 h-100">
+
+            <canvas id="canvas"></canvas>
+
+        </div>
+    </div>
+<div>
 
     <script>
 
-        $(document).ready(function() {
-            // Initialize Leaflet map
-            const map = L.map('map').setView([0, 0], 2);
-            const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '© OpenStreetMap contributors'
-            });
-
-            const googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
-                maxZoom: 20,
-                subdomains:['mt0','mt1','mt2','mt3']
-            });
-            googleSat.addTo(map);
-
-
-            // Add a marker to the map
-            const marker = L.marker([0, 0]).addTo(map);
-
-            // Update the marker position based on the map click event
-            map.on('click', function(event) {
-                const lat = event.latlng.lat;
-                const lon = event.latlng.lng;
-                marker.setLatLng([lat, lon]);
-                $('#coordinates').text(`Latitude: ${lat.toFixed(4)}, Longitude: ${lon.toFixed(4)}`);
-            });
-
-             // Add layer control to switch between layers
-    const baseLayers = {
-        "OpenStreetMap": osmLayer,
-        "Satellite": googleSat
-    };
-
-    L.control.layers(baseLayers).addTo(map);
+    $(document).ready(function () {
+        let iconCounter = 1; // Counter for numbering icons
+        let iconList = []; // List to store icon objects
+        let isTurn = 'image'; // Variable to track the current turn
+        // Initialize Leaflet map
+        const map = L.map('map').setView([0, 0], 2);
+        const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
         });
 
-  
+        const googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+            maxZoom: 20,
+            subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+        });
+        googleSat.addTo(map);
 
-       
+        // Add layer control to switch between layers
+        const baseLayers = {
+            "OpenStreetMap": osmLayer,
+            "Satellite": googleSat
+        };
+
+        L.control.layers(baseLayers).addTo(map);
+
+        function addIconToMap(lat, lon) {
+        // Create a custom icon using Leaflet's divIcon and Font Awesome
+            var icon = L.divIcon({
+                className: 'fa-icon-marker', // Use custom class to style the icon
+                html: `${iconCounter} <i class="fa-solid fa-location-dot"></i>`, // Font Awesome icon
+                iconSize: [16, 32], // Set the icon size to match the font size
+                iconAnchor: [8, 40], // Center the bottom of the icon at the clicked point
+                popupAnchor: [0, -48] // Optional: Position of the popup relative to the icon
+            });
+
+            // Add the icon as a marker to the map
+            L.marker([lat, lon], { icon: icon }).addTo(map);
+            iconList[iconCounter - 1].lat = lat; // Store the icon's coordinates
+            iconList[iconCounter - 1].lon = lon;
+            iconList[iconCounter - 1].text.lat = lat;
+            iconList[iconCounter - 1].text.lon = lon;
+            console.log(iconList);
+            updateIconList(); // Update the icon list displayed in the div
+            iconCounter++; // Increment the icon counter
+        }
+
+        map.on('click', function (e) {
+            if (isTurn === 'image') {
+                var myModal = new bootstrap.Modal(document.getElementById('exampleModal'), {
+            keyboard: true // Allows closing the modal with the Esc key
+        });
+        myModal.show(); // Show the modal
+                return;
+            } else {
+                var lat = e.latlng.lat;
+                var lon = e.latlng.lng;
+                addIconToMap(lat, lon); // Add icon to the clicked location
+                isTurn = 'image'; // Switch back to image turn
+            }
+        });
+
+            // Function to update the icon list in the div
+        function updateIconList() {
+            const listContainer = document.getElementById('icon-list-items');
+            listContainer.innerHTML = ''; // Clear the current list
+
+            // Create list items for each icon in iconList
+            iconList.forEach(function (icon) {
+                const listItem = document.createElement('li');
+                listItem.setAttribute('data-bs-toggle', 'tooltip');
+                listItem.setAttribute('data-bs-placement', 'right');
+                listItem.setAttribute('title', `px: ${icon.text.px.toFixed(2)} <br /> py: ${icon.text.py.toFixed(2)} <br> lat: ${icon.text.lat} <br> lon: ${icon.text.lon}`); // Set the tooltip text
+
+                // Create Font Awesome icon element
+                const iconElement = document.createElement('i');
+                iconElement.className = 'fa-solid fa-location-dot ps-2 pe-2'; // Add the classes for the Font Awesome icon
+
+                // Set the text content with the ID, X, and Y values
+                const span = document.createElement('span');
+                span.textContent = `${icon.id}`;
+                const spanRight = document.createElement('span');
+                spanRight.className = 'float-end d-block';
+                const garbage = document.createElement('i');
+                garbage.className = 'fa-solid fa-trash-alt pe-2 '
+
+                // Append the icon and the text to the list item
+                listItem.appendChild(iconElement);
+                listItem.appendChild(span);
+                listItem.appendChild(spanRight);
+                spanRight.appendChild(garbage);
+
+                // Append the list item to the container
+                listContainer.appendChild(listItem);
+            });
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl, {
+                    html: true, // Enable HTML content in the tooltip
+                    delay: { show: 100, hide: 100 } // Adjust the show/hide delay in milliseconds
+                });
+            });
+        }
+
         // Initialize Fabric.js canvas
-        const canvas = new fabric.Canvas('canvas',{
+        const canvas = new fabric.Canvas('canvas', {
             fireRightClick: true, // Enable right-click events
             stopContextMenu: true, // Disable the default context menu
             selection: false // Disable object selection
@@ -163,7 +254,7 @@
 
 
         // Load an image into the Fabric canvas
-        fabric.Image.fromURL(imageUrl, function(img) {
+        fabric.Image.fromURL(imageUrl, function (img) {
             const scaleX = canvasWidth / img.width;
             const scaleY = canvasHeight / img.height;
             const scale = Math.min(scaleX, scaleY);
@@ -193,40 +284,40 @@
             let isRightClickDragging = false; // Flag to track right-click drag state
             let isDragging = false; // Flag to track left-click drag state
             let startX; // Initial X position for rotation calculation
-            let iconCounter = 1; // Counter for numbering icons
-            let iconList = []; // List to store icon objects
+
+
             let isPKeyActive = false;
             let isDKeyActive = false;
             const originalIconScale = 1.05; // Original scale for icons
 
-            document.addEventListener('keydown', function(event) {
+            document.addEventListener('keydown', function (event) {
                 if (event.key === 'p' || event.key === 'P') {
                     isPKeyActive = true;
                 }
             });
-               // Track the "p" key release
-            document.addEventListener('keyup', function(e) {
+            // Track the "p" key release
+            document.addEventListener('keyup', function (e) {
                 if (e.key === 'p' || e.key === 'P') {
                     isPKeyActive = false;
                 }
             });
-            document.addEventListener('keydown', function(event) {
+            document.addEventListener('keydown', function (event) {
                 if (event.key === 'd' || event.key === 'D') {
                     isDKeyActive = true;
                 }
             });
-            document.addEventListener('keyup', function(e) {
+            document.addEventListener('keyup', function (e) {
                 if (e.key === 'd' || e.key === 'D') {
                     isDKeyActive = false;
                 }
             });
 
             function addIcon(iconURL, event) {
-                fabric.Image.fromURL(iconURL, function(icon) {
+                fabric.Image.fromURL(iconURL, function (icon) {
                     const pointer = canvas.getPointer(event.e);
                     const x = pointer.x;
                     const y = pointer.y;
-                    
+
                     const label = new fabric.Text('\uf3c5', {
                         left: x,
                         top: y, // Position the label above the icon
@@ -255,8 +346,8 @@
                     // Create a unique ID for the icon
                     const iconID = `Point ${iconCounter}`;
 
-                    iconCounter++; // Increment the icon counter
-                
+                    // iconCounter++; // Increment the icon counter
+
 
                     const iconGroup = new fabric.Group([label, label1], {
                         left: x,
@@ -273,8 +364,11 @@
                         id: iconID,
                         px: iconGroup.left,
                         py: iconGroup.top,
-                        text: getImageCoordinates(event)
+                        text: getImageCoordinates(event),
+                        actualPx: getImageCoordinates(event).px,
+                        actualPy: getImageCoordinates(event).py
                     });
+                    console.log(iconList);
 
                     updateIconList(); // Update the icon list displayed in the div
                     group.addWithUpdate(iconGroup); // Add the icon to the group
@@ -287,7 +381,7 @@
                 let closestDistance = Infinity;
 
                 // Iterate over all objects in the group to find the closest one
-                group.getObjects().forEach(function(obj) {
+                group.getObjects().forEach(function (obj) {
                     if (obj !== img) { // Exclude the main image
                         const dx = obj.left - px;
                         const dy = obj.top - py;
@@ -310,49 +404,7 @@
                 }
             }
 
-            // Function to update the icon list in the div
-            function updateIconList() {
-                const listContainer = document.getElementById('icon-list-items');
-                listContainer.innerHTML = ''; // Clear the current list
 
-                // Create list items for each icon in iconList
-                iconList.forEach(function (icon) {
-                    const listItem = document.createElement('li');
-                    listItem.setAttribute('data-bs-toggle', 'tooltip');
-                    listItem.setAttribute('data-bs-placement', 'right');
-                    listItem.setAttribute('title', `px: ${icon.text.px.toFixed(2)}, py: ${icon.text.py.toFixed(2)}`); // Set the tooltip text
-
-                    // Create Font Awesome icon element
-                    const iconElement = document.createElement('i');
-                    iconElement.className = 'fa-solid fa-location-dot ps-2 pe-2'; // Add the classes for the Font Awesome icon
-
-                    // Set the text content with the ID, X, and Y values
-                    const span = document.createElement('span');
-                    span.textContent = `${icon.id}`;
-                    const spanRight = document.createElement('span');
-                    spanRight.className = 'float-end d-block';
-                    const garbage = document.createElement('i');
-                    garbage.className = 'fa-solid fa-trash-alt pe-2 '
-
-                    // Append the icon and the text to the list item
-                    listItem.appendChild(iconElement);
-                    listItem.appendChild(span);
-                    listItem.appendChild(spanRight);
-                    spanRight.appendChild(garbage);
-                    
-                    
-                    
-
-                    // Append the list item to the container
-                    listContainer.appendChild(listItem);
-                });
-                const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-                const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                    return new bootstrap.Tooltip(tooltipTriggerEl, {
-                        delay: { show: 100, hide: 100 } // Adjust the show/hide delay in milliseconds
-                    });
-                });
-            }
 
             // Function to convert canvas click coordinates to image coordinates
             function getImageCoordinates(event) {
@@ -368,19 +420,19 @@
                 // Transform the click point to the image's local coordinates
                 const transformedPoint = fabric.util.transformPoint(clickPoint, inverseGroupMatrix);
 
-                return { px: transformedPoint.x + img.width/2, py: transformedPoint.y+img.height/2 };
+                return { px: transformedPoint.x + img.width / 2, py: transformedPoint.y + img.height / 2 };
             }
-            
+
 
             // Mouse wheel
-            canvas.on('mouse:wheel', function(event) {
+            canvas.on('mouse:wheel', function (event) {
                 const delta = event.e.deltaY; // Get the scroll direction
                 let zoom = group.scaleX + delta / 300; // Adjust the zoom factor
                 zoom = Math.max(0.1, zoom); // Set a minimum zoom level
                 group.scaleX = zoom; // Apply the zoom to the X-axis
                 group.scaleY = zoom; // Apply the zoom to the Y-axis
-                                // Adjust icons' scale to maintain their original size
-                group.getObjects().forEach(function(obj) {
+                // Adjust icons' scale to maintain their original size
+                group.getObjects().forEach(function (obj) {
                     if (obj !== img) { // Exclude the main image
                         obj.scaleX = originalIconScale / group.scaleX;
                         obj.scaleY = originalIconScale / group.scaleY;
@@ -394,25 +446,30 @@
             });
 
             // Event for mouse down
-            canvas.on('mouse:down', function(event) {
+            canvas.on('mouse:down', function (event) {
                 console.log(getImageCoordinates(event));
                 if (event.e.button === 0) { // Left mouse button (button === 0)
                     if (isPKeyActive) {
-                        // Get the pointer position on the canvas
-                        const pointer = canvas.getPointer(event.e);
-                        const px = pointer.x;
-                        const py = pointer.y;
-                        
+                        if (isTurn === 'image') {
+                         
+                            // Get the pointer position on the canvas
+                            const pointer = canvas.getPointer(event.e);
+                            const px = pointer.x;
+                            const py = pointer.y;
 
-                        // Add an icon at the click position
-                        addIcon("{% static 'images/maps-and-flags.png' %}", event); // Example icon URL
+                            // Add an icon at the click position
+                            addIcon("{% static 'images/maps-and-flags.png' %}", event); // Example icon URL
+                            isTurn = 'map'; // Switch to map turn
+                        } else {
+                            return;
+                        }
 
-                    } else if (isDKeyActive){
+                    } else if (isDKeyActive) {
                         const pointer = canvas.getPointer(event.e);
                         const px = pointer.x;
                         const py = pointer.y;
                         deleteNearestIconGroup(px, py);
-                         
+
                     } else {
                         isDragging = true;
                         lastPosX = event.e.clientX;
@@ -421,7 +478,7 @@
                     }
                 }
 
-                    
+
                 // alert(event.e.button);
                 else if (event.e.button === 2) { // Right-click (button === 2)
                     isRightClickDragging = true;
@@ -431,9 +488,8 @@
             });
 
             // Event for mouse move
-            canvas.on('mouse:move', function(event) {
-                if (isDragging)
-                {
+            canvas.on('mouse:move', function (event) {
+                if (isDragging) {
                     const currentPosX = event.e.clientX;
                     const currentPosY = event.e.clientY;
 
@@ -462,28 +518,26 @@
                     // Update the start position for continuous rotation
                     startX = currentX;
                 } else {
-                 
+
                 }
             });
 
             // Event for mouse up
-            canvas.on('mouse:up', function(event) {
+            canvas.on('mouse:up', function (event) {
                 // Check which mouse button was released
                 if (event.e.button === 0) { // Left mouse button
                     isDragging = false; // Stop the left-click drag movement
                 } else if (event.e.button === 2) { // Right mouse button
-                 
+
                     isRightClickDragging = false; // Stop the right-click drag rotation
                 }
             });
 
-       
-        });
 
-        // Prevent the default right-click context menu on the entire canvas
-        //document.getElementById('canvas-container').addEventListener('contextmenu', function(event) {
-        //    event.preventDefault();
-        //});
+        });
+    });
+
+      
     </script>
 </body>
 </html>
