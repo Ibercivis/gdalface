@@ -49,6 +49,7 @@
         #title {
             margin-top: 10px;
             text-align: center;
+            color: #562952;
         }
         .tools {
             background-color: #fef7ff;
@@ -97,7 +98,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Wrong place!</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -105,7 +106,6 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
             </div>
         </div>
     </div>
@@ -138,7 +138,10 @@
     $(document).ready(function () {
         let iconCounter = 1; // Counter for numbering icons
         let iconList = []; // List to store icon objects
+        let markerList = {}; // List to store marker objects
+        let iconMap = {}; // List to store the iconGroup objects
         let isTurn = 'image'; // Variable to track the current turn
+        let group; // Variable to store the Fabric group object
         // Initialize Leaflet map
         const map = L.map('map').setView([0, 0], 2);
         const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -163,6 +166,7 @@
         function addIconToMap(lat, lon) {
         // Create a custom icon using Leaflet's divIcon and Font Awesome
             var icon = L.divIcon({
+                id: `Point ${iconCounter}`, // Unique ID for the icon
                 className: 'fa-icon-marker', // Use custom class to style the icon
                 html: `${iconCounter} <i class="fa-solid fa-location-dot"></i>`, // Font Awesome icon
                 iconSize: [16, 32], // Set the icon size to match the font size
@@ -171,22 +175,64 @@
             });
 
             // Add the icon as a marker to the map
-            L.marker([lat, lon], { icon: icon }).addTo(map);
-            iconList[iconCounter - 1].lat = lat; // Store the icon's coordinates
-            iconList[iconCounter - 1].lon = lon;
-            iconList[iconCounter - 1].text.lat = lat;
-            iconList[iconCounter - 1].text.lon = lon;
+            var marker = L.marker([lat, lon], { icon: icon }).addTo(map);
+            markerList[`Point ${iconCounter}`] = {
+                marker,
+                lat,
+                lon
+            }; // Store the marker object
+            // Get the last icon object from the list
+
+            iconList[iconList.length - 1].lat = lat; // Store the icon's coordinates
+            iconList[iconList.length - 1].lon = lon;
+            iconList[iconList.length - 1].text.lat = lat;
+            iconList[iconList.length - 1].text.lon = lon;
             console.log(iconList);
             updateIconList(); // Update the icon list displayed in the div
             iconCounter++; // Increment the icon counter
         }
 
+        function removeMarkerById(id) {
+            if (markerList[id]) {
+                map.removeLayer(markerList[id].marker); // Remove the marker from the map
+                delete markerList[id]; // Remove the marker from the list
+            }
+        }
+
+        function removeIconById(id) {
+            const iconGroup = iconMap[id];
+            console.log(group);
+
+            if (iconGroup) {
+                group.remove(iconGroup); // Remove the icon from the group
+                delete iconMap[id]; // Remove the icon from the map
+                canvas.requestRenderAll(); // Re-render the canvas
+            } else {
+                console.log(`Icon ${id} not found.`);
+            }
+        }
+
+        function removeIconFromList(id) {
+            iconList = iconList.filter(icon => icon.id !== id); // Remove the icon from the list
+        }
+
+        function removeMarkerPointById(id) {
+            removeMarkerById(id);
+            removeIconById(id);
+            removeIconFromList(id);
+            updateIconList();
+            console.log(iconList);
+        }
+
+
         map.on('click', function (e) {
             if (isTurn === 'image') {
                 var myModal = new bootstrap.Modal(document.getElementById('exampleModal'), {
-            keyboard: true // Allows closing the modal with the Esc key
-        });
-        myModal.show(); // Show the modal
+                    keyboard: true // Allows closing the modal with the Esc key
+                });
+                myModal.textContent = 'Wrong place!'; // Set the modal content
+                $('.modal-body').html('Please add the control point on the image first.'); // Set the modal body content
+                myModal.show(); // Show the modal
                 return;
             } else {
                 var lat = e.latlng.lat;
@@ -204,6 +250,7 @@
             // Create list items for each icon in iconList
             iconList.forEach(function (icon) {
                 const listItem = document.createElement('li');
+                listItem.id = "li-"+icon.id; // Set the ID attribute
                 listItem.setAttribute('data-bs-toggle', 'tooltip');
                 listItem.setAttribute('data-bs-placement', 'right');
                 listItem.setAttribute('title', `px: ${icon.text.px.toFixed(2)} <br /> py: ${icon.text.py.toFixed(2)} <br> lat: ${icon.text.lat} <br> lon: ${icon.text.lon}`); // Set the tooltip text
@@ -219,6 +266,11 @@
                 spanRight.className = 'float-end d-block';
                 const garbage = document.createElement('i');
                 garbage.className = 'fa-solid fa-trash-alt pe-2 '
+                
+                // If garbage icon is clicked, remove the icon
+                garbage.addEventListener('click', function () {
+                    removeMarkerPointById(icon.id);
+                });
 
                 // Append the icon and the text to the list item
                 listItem.appendChild(iconElement);
@@ -245,8 +297,6 @@
             selection: false // Disable object selection
         });
         const imageUrl = "{% static 'images/ISS030-E-274867.JPG' %}";
-        console.log($('#column-right').width());
-        console.log($('#column-right').height());
         const canvasWidth = $('#column-right').width(); // Canvas width
         const canvasHeight = $('#column-right').height(); // Canvas height
         canvas.setWidth(canvasWidth); // Set the canvas width
@@ -269,7 +319,7 @@
                 hasControls: false, // Disable controls for the image
                 hasBorders: false, // Disable borders for the image
             });
-            const group = new fabric.Group([img], {
+            group = new fabric.Group([img], {
                 left: canvasWidth / 2,
                 top: canvasHeight / 2,
                 originX: 'center',
@@ -279,6 +329,7 @@
                 hasBorders: false, // Disable borders for the group
             });
             canvas.add(group);
+            console.log(group);
 
 
             let isRightClickDragging = false; // Flag to track right-click drag state
@@ -309,6 +360,7 @@
             document.addEventListener('keyup', function (e) {
                 if (e.key === 'd' || e.key === 'D') {
                     isDKeyActive = false;
+                    document.body.style.cursor = 'default';
                 }
             });
 
@@ -346,10 +398,8 @@
                     // Create a unique ID for the icon
                     const iconID = `Point ${iconCounter}`;
 
-                    // iconCounter++; // Increment the icon counter
-
-
                     const iconGroup = new fabric.Group([label, label1], {
+                        id: iconID,
                         left: x,
                         top: y,
                         originX: 'center',
@@ -368,6 +418,9 @@
                         actualPx: getImageCoordinates(event).px,
                         actualPy: getImageCoordinates(event).py
                     });
+
+                    // Add the iconGroup to the iconMap by ID
+                    iconMap[iconID] = iconGroup;
                     console.log(iconList);
 
                     updateIconList(); // Update the icon list displayed in the div
@@ -396,10 +449,7 @@
 
                 // Remove the closest icon group if found
                 if (closestIconGroup) {
-                    group.remove(closestIconGroup);
-                    iconList = iconList.filter(icon => icon.id !== closestIconGroup.id);
-                    console.log(iconList);
-                    updateIconList(); // Update the icon list displayed in the div
+                    removeMarkerPointById(closestIconGroup.id);
                     canvas.requestRenderAll(); // Re-render the canvas
                 }
             }
@@ -447,7 +497,6 @@
 
             // Event for mouse down
             canvas.on('mouse:down', function (event) {
-                console.log(getImageCoordinates(event));
                 if (event.e.button === 0) { // Left mouse button (button === 0)
                     if (isPKeyActive) {
                         if (isTurn === 'image') {
@@ -461,6 +510,12 @@
                             addIcon("{% static 'images/maps-and-flags.png' %}", event); // Example icon URL
                             isTurn = 'map'; // Switch to map turn
                         } else {
+                            var myModal = new bootstrap.Modal(document.getElementById('exampleModal'), {
+                                keyboard: true // Allows closing the modal with the Esc key
+                            });
+                            myModal.textContent = 'Wrong place!'; // Set the modal content
+                            $('.modal-body').html('Please add a point in the map (related to the last control point).'); // Set the modal body content
+                            myModal.show(); // Show the modal
                             return;
                         }
 
