@@ -9,14 +9,18 @@ class ControlpointSerializer(serializers.ModelSerializer):
 
 class GeoAttemptSerializer(serializers.ModelSerializer):
     image_name = serializers.SerializerMethodField()
+    photo_center_by_machine_learning = serializers.SerializerMethodField()
 
     class Meta:
         model = GeoAttempt
-        fields = ['id', 'created', 'image', 'image_name', 'status', 'hash']
+        fields = ['id', 'created', 'image', 'image_name', 'photo_center_by_machine_learning', 'status', 'hash']
         read_only_fields = ['created', 'hash']
 
     def get_image_name(self, obj):
         return obj.image.name
+    
+    def get_photo_center_by_machine_learning(self, obj):
+        return obj.image.photoCenterByMachineLearning
 
 class MiniGeoAttemptSerializer(serializers.ModelSerializer):
     class Meta:
