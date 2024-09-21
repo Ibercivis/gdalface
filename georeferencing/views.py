@@ -168,10 +168,21 @@ class GeoAttemptIndividualView(APIView):
             operation_summary="Patch an image geo attempt")
     def patch(self, request, pk=None):
         geoattemp = get_object_or_404(GeoAttempt, pk=pk)
-        serializer = GeoAttemptSerializer(gegeoattemp, data=request.data, partial=True)
+        print(request.data)
+        serializer = GeoAttemptSerializer(geoattemp, data=request.data, partial=True)
         if serializer.is_valid():
-            serializer.save()
-            if serializer.data['status'] == 'DOING':
+            #serializer.save()
+            if request.data['status'] == 'TESTING':
+                # let's start the testing process
+                # for the moment, just change the status
+                print('testing')
+                print('doing geoattemp')
+                command = 'gdal_translate -of GTiff'
+                for item in request.data['control_points']:
+                    command += ' -gcp ' + str(item['actualPx']) + ' ' + str(item['actualPy']) + ' ' + str(item['lat']) + ' ' + str(item['lon'])
+                print(command)
+                    
+            elif serializer.data['status'] == 'DOING':
                 # let's start the georeferencing process
                 # for the moment, launch a batch script
                 print('doing georeferencing')

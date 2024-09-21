@@ -23,6 +23,7 @@ class GeoAttempt(models.Model):
 
     STATUS_CHOICES = (
         ('PENDING', 'Pending'),
+        ('TESTING', 'Testing'),
         ('DOING', 'Doing'),
         ('SUCCESS', 'Success'),
         ('FAILURE', 'Failure'),

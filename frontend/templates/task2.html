@@ -165,19 +165,42 @@
 
             throw new Error("Invalid coordinate format");
         }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
         let iconCounter = 1; // Counter for numbering icons
         let iconList = []; // List to store icon objects
         let markerList = {}; // List to store marker objects
         let iconMap = {}; // List to store the iconGroup objects
         let isTurn = 'image'; // Variable to track the current turn
         let group; // Variable to store the Fabric group object
+        let geoatempt_id; // Variable to store the geoattempt id
         let image_name; // Variable to store the image name
+        const csrftoken = getCookie('csrftoken');
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': csrftoken
+            }
+        });
             $.ajax({
                 url: 'http://127.0.0.1:8000/api/v1/geoattempt-pending/',
                 type: 'GET',
                 dataType: 'json',
                 success: function (response) {
                     image_name = response.image_name;
+                    geoatempt_id = response.id;
                     // Initialize Fabric.js canvas
                     const canvas = new fabric.Canvas('canvas', {
                         fireRightClick: true, // Enable right-click events
@@ -197,14 +220,20 @@
                             return;
                         } else {
                             // Doing a post request to the backend
+                            const data = {
+                                "geoattempt_id": geoatempt_id,
+                                "control_points": iconList,
+                                "status": "TESTING"
+                            }
                             $.ajax({
-                                url: 'http://127.0.0.1:8000/api/v1/post-geoattempt/',
-                                type: 'POST',
+                                url: 'http://127.0.0.1:8000/api/v1/geoattempt-individual/'+geoatempt_id+'/',
+                                type: 'PATCH',
                                 dataType: 'json',
-                                data: {
-                                    'image_name': image_name,
-                                    'iconList': JSON.stringify(iconList)
+                                headers: {
+                                    'X-CSRFToken': csrftoken,
+                                    'Content-Type': 'application/json'
                                 },
+                                data: JSON.stringify(data),
                             })
                         }
                     });
