@@ -8,6 +8,7 @@ from rest_framework.parsers import JSONParser
 from .serializers import ControlpointSerializer, GeoAttemptSerializer, ImageSerializer, MiniGeoAttemptSerializer
 from .models import Controlpoint, GeoAttempt, Image
 import os
+import random
 
 
 # Create your views here.
@@ -116,6 +117,33 @@ class GeoAttemptView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
+class PendingGeoAttemptView(APIView):
+    """
+    API view to retrieve a random GeoAttempt with a status of "PENDING".
+    Methods:
+    - get: Get a random "PENDING" GeoAttempt.
+    """
+    
+    @swagger_auto_schema(
+            tags=['02. GeoAttempts'],
+            operation_summary="Get a random 'PENDING' geo attempt")
+    def get(self, request):
+        # Filter GeoAttempts by "PENDING" status
+        pending_geoattempts = GeoAttempt.objects.filter(status="PENDING")
+
+        if not pending_geoattempts.exists():
+            return Response({"error": "No pending geo attempts found."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Select a random GeoAttempt
+        geoattempt = random.choice(pending_geoattempts)
+
+        # Serialize the GeoAttempt
+        serializer = GeoAttemptSerializer(geoattempt)
+
+        # Return the serialized data
+        return Response(serializer.data)
+    
+
     
 class GeoAttemptIndividualView(APIView):
     """
@@ -150,10 +178,8 @@ class GeoAttemptIndividualView(APIView):
                 command = 'gdal_translate -of GTiff'
                 for controlpoint in geoattemp.controlpoint_set.all():
                     command += ' -gcp ' + str(controlpoint.x) + ' ' + str(controlpoint.y) + ' ' + str(controlpoint.lat) + ' ' + str(controlpoint.long)
-                command += ' ' + geoattemp.image.path + ' ' + geoattemp.path
+                command += ' ' + geoattemp.image + ' ' + geoattemp
                 print(command)
-
-                
                 
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

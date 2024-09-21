@@ -29,7 +29,6 @@ class GeoAttempt(models.Model):
     )
     created = models.DateTimeField(auto_now_add=True)
     image = models.ForeignKey('Image', on_delete=models.CASCADE)
-    path = models.FilePathField(path='/tmp/') # Improve this for security reasonsdefault
     hash = models.CharField(
         max_length=100,
         blank=True,
@@ -50,6 +49,15 @@ class GeoAttempt(models.Model):
     
 class Image(models.Model):
     name = models.CharField(max_length=100)
-    path = models.CharField(max_length=100)
+    taken = models.DateTimeField(blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True, blank = True, null = True)
+    camera = models.CharField(max_length=100, blank = True, null = True)
+    focalLength = models.IntegerField(blank = True, null = True)
+    cameraTilt = models.IntegerField(blank = True, null = True)
+    spacecraftNadirPoint = models.CharField(max_length=100, blank = True, null = True)
+    photoCenterPoint = models.CharField(max_length=100, blank = True, null = True)
+    photoCenterByMachineLearning = models.CharField(max_length=100, blank = True, null = True)
+    spaceCraftAltitude = models.IntegerField( blank = True, null = True)
+    link = models.URLField( blank = True, null = True)
     def __str__(self):
         return self.name

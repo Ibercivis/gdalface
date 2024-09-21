@@ -8,10 +8,15 @@ class ControlpointSerializer(serializers.ModelSerializer):
         read_only_fields = ['created']
 
 class GeoAttemptSerializer(serializers.ModelSerializer):
+    image_name = serializers.SerializerMethodField()
+
     class Meta:
         model = GeoAttempt
-        fields = ['id', 'created', 'image', 'path', 'status', 'hash']
+        fields = ['id', 'created', 'image', 'image_name', 'status', 'hash']
         read_only_fields = ['created', 'hash']
+
+    def get_image_name(self, obj):
+        return obj.image.name
 
 class MiniGeoAttemptSerializer(serializers.ModelSerializer):
     class Meta:

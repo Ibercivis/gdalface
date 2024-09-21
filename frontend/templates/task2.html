@@ -136,13 +136,27 @@
     <script>
 
     $(document).ready(function () {
+
         let iconCounter = 1; // Counter for numbering icons
         let iconList = []; // List to store icon objects
         let markerList = {}; // List to store marker objects
         let iconMap = {}; // List to store the iconGroup objects
         let isTurn = 'image'; // Variable to track the current turn
         let group; // Variable to store the Fabric group object
+        let image_name; // Variable to store the image name
         // Initialize Leaflet map
+        $.ajax({
+            url: 'http://127.0.0.1:8000/api/v1/geoattempt-pending/',
+            type: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                image_name = response.image_name;
+                console.log(response);
+                console.log(image_name);
+            }
+        });
+        console.log(image_name);
+        // Now, wait 1 second before log image_name
         const map = L.map('map').setView([0, 0], 2);
         const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
@@ -312,7 +326,9 @@
             stopContextMenu: true, // Disable the default context menu
             selection: false // Disable object selection
         });
-        const imageUrl = "{% static 'images/ISS030-E-274867.JPG' %}";
+        const static_url = "{% static 'images/' %}";
+        const imageUrl = static_url + image_name + '.JPG'; // Image URL
+        console.log(imageUrl);
         const canvasWidth = $('#column-right').width(); // Canvas width
         const canvasHeight = $('#column-right').height(); // Canvas height
         canvas.setWidth(canvasWidth); // Set the canvas width
@@ -603,8 +619,6 @@
                     isRightClickDragging = false; // Stop the right-click drag rotation
                 }
             });
-
-
         });
     });
 
