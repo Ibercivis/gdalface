@@ -147,7 +147,7 @@
 
     $(document).ready(function () {
 
-            // Function to parse the coordinate string and convert to decimal degrees
+        // Function to parse the coordinate string and convert to decimal degrees
         function parseCoordinates(coordString) {
             const regex = /([0-9.]+)°\s*([NS]),\s*([0-9.]+)°\s*([EW])/;
             const matches = coordString.match(regex);
@@ -183,6 +183,34 @@
                         fireRightClick: true, // Enable right-click events
                         stopContextMenu: true, // Disable the default context menu
                         selection: false // Disable object selection
+                    });
+
+                    // Add buttons behavior
+                    $('#Test').on('click', function () {
+                        if (iconList.length < 1) {
+                            var myModal = new bootstrap.Modal(document.getElementById('exampleModal'), {
+                                keyboard: true // Allows closing the modal with the Esc key
+                            });
+                            myModal.textContent = 'Few control points!'; // Set the modal content
+                            $('.modal-body').html('Please add at least three control points.'); // Set the modal body content
+                            myModal.show(); // Show the modal
+                            return;
+                        } else {
+                            // Doing a post request to the backend
+                            $.ajax({
+                                url: 'http://127.0.0.1:8000/api/v1/post-geoattempt/',
+                                type: 'POST',
+                                dataType: 'json',
+                                data: {
+                                    'image_name': image_name,
+                                    'iconList': JSON.stringify(iconList)
+                                },
+                            })
+                        }
+                    });
+                    $('#Skip').on('click', function () {
+                        // Reload page
+                        location.reload();
                     });
                     const static_url = "{% static 'images/' %}";
                     const imageUrl = static_url + image_name + '.JPG'; // Image URL
