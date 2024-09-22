@@ -16,6 +16,11 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
     crossorigin=""></script>
+
+
+
+   
+
     <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
@@ -134,6 +139,9 @@
         </div>
         <div class="col-md-5 column-left p-0 m-0 h-100">
             <div id="map" class="h-100"></div>
+            <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
         </div>
         <div id="column-right" class="col-md-5 p-0 m-0 h-100">
 
@@ -143,8 +151,7 @@
     </div>
 <div>
 
-<script>
-
+<script type="module">
     $(document).ready(function () {
 
         // Function to parse the coordinate string and convert to decimal degrees
@@ -188,6 +195,12 @@
         let group; // Variable to store the Fabric group object
         let geoatempt_id; // Variable to store the geoattempt id
         let image_name; // Variable to store the image name
+        let geoattempt_hash; // Variable to store the geoattempt hash
+        let map; // Variable to store the Leaflet map object
+        let baseLayers; // Variable to store the base layers
+        let icon;
+        var layersControl = null;
+        let lyr;
         const csrftoken = getCookie('csrftoken');
         $.ajaxSetup({
             headers: {
@@ -201,6 +214,7 @@
                 success: function (response) {
                     image_name = response.image_name;
                     geoatempt_id = response.id;
+                    geoattempt_hash = response.hash;
                     // Initialize Fabric.js canvas
                     const canvas = new fabric.Canvas('canvas', {
                         fireRightClick: true, // Enable right-click events
@@ -234,6 +248,31 @@
                                     'Content-Type': 'application/json'
                                 },
                                 data: JSON.stringify(data),
+                                success: function (response) {
+                                    let noCacheUrl = './georeferenced/'+image_name+geoattempt_hash+'/{z}/{x}/{y}.png'+'?nocache=' + new Date().getTime();
+                                    if (lyr)
+                                        map.removeLayer(lyr);
+                                    
+                                    lyr = L.tileLayer(noCacheUrl, {
+                                        tms: 1,
+                                        opacity: 0.9,
+                                        format: 'image/png',
+                                    }).addTo(map);
+                                    
+                                    var overlaymaps = {"Layer": lyr}
+                                    // Delete L.control.layers
+                                    if (layersControl){
+                                        console.log('removing control');
+                                        map.removeControl(layersControl);
+                                    }   
+                                    layersControl = L.control.layers(baseLayers, overlaymaps, {collapsed: false}).addTo(map);
+                                    var currentZoom = map.getZoom();
+                                    map.setZoom(currentZoom + 1);
+                                    setTimeout(function() {
+        map.setZoom(currentZoom);
+    }, 300);  // Adjust the delay if necessary, 300ms works in most ca
+
+                                },
                             })
                         }
                     });
@@ -260,6 +299,8 @@
                         let startX; // Initial X position for rotation calculation
                         let isPKeyActive = false;
                         let isDKeyActive = false;
+                        let lastPosX; // Last X position for drag movement
+                        let lastPosY; // Last Y position for drag movement
                         img.set({
                             left: 0, // Center horizontally
                             top: 0, // Center vertically
@@ -510,7 +551,7 @@
 
                         const latLng = parseCoordinates(response.photo_center_by_machine_learning);
 
-                        const map = L.map('map').setView(latLng, 10);
+                        map = L.map('map').setView(latLng, 10);
                         const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                             maxZoom: 19,
                             attribution: '© OpenStreetMap contributors'
@@ -523,7 +564,7 @@
                         googleSat.addTo(map);
 
                         // Add layer control to switch between layers
-                        const baseLayers = {
+                        baseLayers = {
                             "OpenStreetMap": osmLayer,
                             "Satellite": googleSat
                         };

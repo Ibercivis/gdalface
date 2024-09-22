@@ -177,20 +177,48 @@ class GeoAttemptIndividualView(APIView):
                 # for the moment, just change the status
                 print('testing')
                 print('doing geoattemp')
+                # we make a directory for the georeferenced images
+                if not os.path.exists('georeferenced'):
+                    os.makedirs('georeferenced')
                 command = 'gdal_translate -of GTiff'
                 for item in request.data['control_points']:
-                    command += ' -gcp ' + str(item['actualPx']) + ' ' + str(item['actualPy']) + ' ' + str(item['lat']) + ' ' + str(item['lon'])
+                    command += ' -gcp ' + str(item['actualPx']) + ' ' + str(item['actualPy']) 
+                    command += ' ' + str(item['lon']) + ' ' + str(item['lat'])
+                command += ' georeferencing/static/images/' + geoattemp.image.name + '.JPG ' 
+                command += 'georeferenced/'+ geoattemp.image.name + geoattemp.hash+'.tif'
                 print(command)
-                    
+                # execute the command
+                os.system(command)
+                command = 'gdalwarp -r bilinear -tps -t_srs EPSG:4326'
+                command += ' georeferenced/'+geoattemp.image.name + geoattemp.hash+'.tif'
+                command += ' georeferenced/'+geoattemp.image.name + geoattemp.hash+'.tif'
+                print(command)
+                os.system(command)
+                # Remove previous tiles
+                command = 'rm -r georeferenced/'+geoattemp.image.name + geoattemp.hash
+                print(command)
+                os.system(command)
+                # Now, we create the tiles
+                command = 'gdal2tiles.py -z 7-12 -r bilinear -s EPSG:4326'
+                command += ' georeferenced/'+geoattemp.image.name + geoattemp.hash+'.tif'
+                command += ' georeferenced/'+geoattemp.image.name + geoattemp.hash
+                print(command)
+                os.system(command)
             elif serializer.data['status'] == 'DOING':
                 # let's start the georeferencing process
                 # for the moment, launch a batch script
                 print('doing georeferencing')
+                # we make a directory for the georeferenced images
+                if not os.path.exists('georeferenced'):
+                    os.makedirs('georeferenced')
+                # now we show the route to the dir
+                print(os.path.abspath('georeferenced'))
+
                 command = 'gdal_translate -of GTiff'
                 for controlpoint in geoattemp.controlpoint_set.all():
                     command += ' -gcp ' + str(controlpoint.x) + ' ' + str(controlpoint.y) + ' ' + str(controlpoint.lat) + ' ' + str(controlpoint.long)
                 command += ' ' + geoattemp.image + ' ' + geoattemp
-                print(command)
+                
                 
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

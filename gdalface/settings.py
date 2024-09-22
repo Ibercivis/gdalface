@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -141,3 +142,7 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",  # Add the base static directory at the project level
     # or 'your_app/static' for app-level static files
 ]
+
+# Serving georeferenced images
+GEOREFERENCED_ROOT = os.path.join(BASE_DIR, 'georeferenced')
+GEOREFERENCED_URL = '/georeferenced/'
