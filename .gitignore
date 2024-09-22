@@ -168,3 +168,4 @@ db.sqlite3
 **/static/images/
 media/
 georeferenced/
+.DS_Store
