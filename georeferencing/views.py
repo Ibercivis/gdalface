@@ -199,7 +199,7 @@ class GeoAttemptIndividualView(APIView):
                 print(command)
                 os.system(command)
                 # Now, we create the tiles
-                command = 'gdal2tiles.py -z 7-12 -r bilinear -s EPSG:4326'
+                command = 'gdal2tiles.py -z 7-15 -r bilinear -s EPSG:4326'
                 command += ' georeferenced/'+geoattemp.image.name + geoattemp.hash+'.tif'
                 command += ' georeferenced/'+geoattemp.image.name + geoattemp.hash
                 print(command)
