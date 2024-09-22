@@ -8,6 +8,7 @@ from rest_framework.parsers import JSONParser
 from .serializers import ControlpointSerializer, GeoAttemptSerializer, ImageSerializer, MiniGeoAttemptSerializer
 from .models import Controlpoint, GeoAttempt, Image
 import os
+import subprocess
 import random
 
 
@@ -171,39 +172,59 @@ class GeoAttemptIndividualView(APIView):
         print(request.data)
         serializer = GeoAttemptSerializer(geoattemp, data=request.data, partial=True)
         if serializer.is_valid():
-            #serializer.save()
-            if request.data['status'] == 'TESTING':
-                # let's start the testing process
-                # for the moment, just change the status
-                print('testing')
-                print('doing geoattemp')
-                # we make a directory for the georeferenced images
+        
+            if request.data['status'] == 'PENDING':
+                print('Starting the testing process')
+
+                # Ensure the georeferenced directory exists
                 if not os.path.exists('georeferenced'):
                     os.makedirs('georeferenced')
-                command = 'gdal_translate -of GTiff'
+
+                # First command: gdal_translate
+                command = 'gdpal_translate -of GTiff'
                 for item in request.data['control_points']:
-                    command += ' -gcp ' + str(item['actualPx']) + ' ' + str(item['actualPy']) 
+                    command += ' -gcp ' + str(item['actualPx']) + ' ' + str(item['actualPy'])
                     command += ' ' + str(item['lon']) + ' ' + str(item['lat'])
-                command += ' georeferencing/static/images/' + geoattemp.image.name + '.JPG ' 
-                command += 'georeferenced/'+ geoattemp.image.name + geoattemp.hash+'.tif'
+                command += ' georeferencing/static/images/' + geoattemp.image.name + '.JPG '
+                command += ' georeferenced/' + geoattemp.image.name + geoattemp.hash + '.tif'
                 print(command)
-                # execute the command
-                os.system(command)
+                try:
+                    subprocess.run(command, shell=True, check=True, capture_output=True, text=True)
+                except subprocess.CalledProcessError as e:
+                    return Response({"error": f"gdal_translate failed: {e.stderr}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                
+                # Second command: gdalwarp
                 command = 'gdalwarp -r bilinear -tps -t_srs EPSG:4326'
-                command += ' georeferenced/'+geoattemp.image.name + geoattemp.hash+'.tif'
-                command += ' georeferenced/'+geoattemp.image.name + geoattemp.hash+'.tif'
+                command += ' georeferenced/' + geoattemp.image.name + geoattemp.hash + '.tif'
+                command += ' georeferenced/' + geoattemp.image.name + geoattemp.hash + '.tif'
                 print(command)
-                os.system(command)
-                # Remove previous tiles
-                command = 'rm -r georeferenced/'+geoattemp.image.name + geoattemp.hash
+
+                try:    
+                    subprocess.run(command, shell=True, check=True, capture_output=True, text=True)
+                except subprocess.CalledProcessError as e:
+                    return Response({"error": f"gdalwarp failed: {e.stderr}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                
+                # Third command: Remove previous tiles
+                command = 'rm -r georeferenced/' + geoattemp.image.name + geoattemp.hash
                 print(command)
-                os.system(command)
-                # Now, we create the tiles
-                command = 'gdal2tiles.py -z 7-15 -r bilinear -s EPSG:4326'
-                command += ' georeferenced/'+geoattemp.image.name + geoattemp.hash+'.tif'
-                command += ' georeferenced/'+geoattemp.image.name + geoattemp.hash
+                if os.path.exists('georeferenced/' + geoattemp.image.name + geoattemp.hash):
+                    try:
+                        subprocess.run(command, shell=True, check=True, capture_output=True, text=True)
+                    except subprocess.CalledProcessError as e:
+                        return Response({"error": f"Failed to remove previous tiles: {e.stderr}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+               
+                # Fourth command:
+                command = 'gdal2tiles.py -z 7-12 -r bilinear -s EPSG:4326'
+                command += ' georeferenced/' + geoattemp.image.name + geoattemp.hash + '.tif'
+                command += ' georeferenced/' + geoattemp.image.name + geoattemp.hash
                 print(command)
-                os.system(command)
+
+                try:
+                    subprocess.run(command, shell=True, capture_output=True, text=True)
+                except subprocess.CalledProcessError as e:
+                    return Response({"error": f"gdal2tiles failed: {e.stderr}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+              
+                
             elif serializer.data['status'] == 'DOING':
                 # let's start the georeferencing process
                 # for the moment, launch a batch script
@@ -219,8 +240,8 @@ class GeoAttemptIndividualView(APIView):
                     command += ' -gcp ' + str(controlpoint.x) + ' ' + str(controlpoint.y) + ' ' + str(controlpoint.lat) + ' ' + str(controlpoint.long)
                 command += ' ' + geoattemp.image + ' ' + geoattemp
                 
-                
-            return Response(serializer.data)
+            serializer.save()    
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     @swagger_auto_schema(

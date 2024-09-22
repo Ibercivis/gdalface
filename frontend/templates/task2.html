@@ -98,6 +98,12 @@
         li:active {
             background-color: #004085; /* Even darker color when clicked */
         }
+        .opacity-slider-container {
+            background-color: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
         .fa-icon-marker {
             color: #f08ce7; /* Customize the color of the icon */
             font-size: 16px; /* Adjust the font size to fit the icon */
@@ -106,7 +112,7 @@
 </head>
 <body>
     <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -122,6 +128,17 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="georeferencingModal" tabindex="-1" aria-labelledby="georeferencingModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Georeferencing!</h5>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="container-fluid h-100">
     <div class="row h-100 d-flex">
@@ -132,12 +149,13 @@
             <div id="coordinates h-80" class="flex-grow-1">
                 <ul id="icon-list-items"></ul>
             </div>
-            <div id="buttons flex-shrink-0">
-                <button id="Test" class="btn btn-primary">Test</button>
-                <button id="Skip" class="btn btn-primary">Skip</button>
+            <div id="buttons flex-shrink-0 m-2">
+                <button id="Try" class="btn btn-primary mb-2">Try</button>
+                <button id="Submit" class="btn btn-primary mb-2 disabled">Submit</button>
+                <button id="Skip" class="btn btn-primary mb-2">Skip</button>
             </div>
         </div>
-        <div class="col-md-5 column-left p-0 m-0 h-100">
+        <div class="col-md-5 column-left p-0 mb-0 h-100">
             <div id="map" class="h-100"></div>
             <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
             integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
@@ -197,10 +215,18 @@
         let image_name; // Variable to store the image name
         let geoattempt_hash; // Variable to store the geoattempt hash
         let map; // Variable to store the Leaflet map object
-        let baseLayers; // Variable to store the base layers
+        var baseLayers = null; // Variable to store the base layers
         let icon;
         var layersControl = null;
         let lyr;
+        let opacityControl;
+        let infoModal;
+        let georeferencingModal;
+        infoModal = new bootstrap.Modal(document.getElementById('infoModal'), {
+            keyboard: true // Allows closing the modal with the Esc key
+        });
+        georeferencingModal = new bootstrap.Modal(document.getElementById('georeferencingModal'), {
+        });
         const csrftoken = getCookie('csrftoken');
         $.ajaxSetup({
             headers: {
@@ -223,21 +249,21 @@
                     });
 
                     // Add buttons behavior
-                    $('#Test').on('click', function () {
+                    $('#Try').on('click', function () {
                         if (iconList.length < 1) {
-                            var myModal = new bootstrap.Modal(document.getElementById('exampleModal'), {
-                                keyboard: true // Allows closing the modal with the Esc key
-                            });
-                            myModal.textContent = 'Few control points!'; // Set the modal content
+                            
+                            infoModal.textContent = 'Few control points!'; // Set the modal content
                             $('.modal-body').html('Please add at least three control points.'); // Set the modal body content
-                            myModal.show(); // Show the modal
+                            infoModal.show(); // Show the modal
                             return;
                         } else {
+                            $('.modal-body').html('We are georeferencing the image. Please wait.'); // Set the modal body content
+                            georeferencingModal.show();
                             // Doing a post request to the backend
                             const data = {
                                 "geoattempt_id": geoatempt_id,
                                 "control_points": iconList,
-                                "status": "TESTING"
+                                "status": "PENDING"
                             }
                             $.ajax({
                                 url: 'http://127.0.0.1:8000/api/v1/geoattempt-individual/'+geoatempt_id+'/',
@@ -248,7 +274,9 @@
                                     'Content-Type': 'application/json'
                                 },
                                 data: JSON.stringify(data),
+
                                 success: function (response) {
+                                    georeferencingModal.hide();
                                     let noCacheUrl = './georeferenced/'+image_name+geoattempt_hash+'/{z}/{x}/{y}.png'+'?nocache=' + new Date().getTime();
                                     if (lyr)
                                         map.removeLayer(lyr);
@@ -264,15 +292,55 @@
                                     if (layersControl){
                                         console.log('removing control');
                                         map.removeControl(layersControl);
-                                    }   
-                                    layersControl = L.control.layers(baseLayers, overlaymaps, {collapsed: false}).addTo(map);
+                                    }
+                                    if (opacityControl)
+                                        map.removeControl(opacityControl);
+                                    opacityControl = L.control({ position: 'bottomright' });
+                                    // When the control is added to the map, insert the slider into it
+                                    opacityControl.onAdd = function (map) {
+                                        var div = L.DomUtil.create('div', 'opacity-slider-container');
+
+                                        // Add the label and the slider input
+                                        div.innerHTML = `
+                                            <label for="opacity-slider">Opacity</label><br>
+                                            <input id="opacity-slider" type="range" min="0" max="1" step="0.05" value="0.9">
+                                            `;
+
+                                        // Disable map interactions (dragging, zooming) when interacting with the slider
+                                        L.DomEvent.disableClickPropagation(div);
+                                        return div;
+                                    };
+                                    // Add the custom control (with the slider) to the map
+                                    opacityControl.addTo(map);
+
+                                    // Get the slider element and span for displaying the value
+                                    const slider = document.getElementById('opacity-slider');
+                                    
+
+                                    // Listen for slider input and update the opacity of the layer
+                                    slider.addEventListener('input', function () {
+                                        const opacityValue = parseFloat(this.value);
+                                        lyr.setOpacity(opacityValue);  // Adjust the opacity of the layer
+                                        
+                                    });
+
+
+                                    layersControl = L.control.layers(baseLayers, overlaymaps, { collapsed: false }).addTo(map);
                                     var currentZoom = map.getZoom();
                                     map.setZoom(currentZoom + 1);
-                                    setTimeout(function() {
-        map.setZoom(currentZoom);
-    }, 300);  // Adjust the delay if necessary, 300ms works in most ca
+                                    setTimeout(function () {
+                                        map.setZoom(currentZoom);
+                                    }, 300);  // Adjust the delay if necessary, 300ms works in most cases
+                                    $('#Submit').removeClass('disabled');
 
                                 },
+                                error: function (response) {
+                                    console.log(response);
+                                    georeferencingModal.hide();
+                                    infoModal.textContent = 'Error!'; // Set the modal content
+                                    $('.modal-body').html('An error '+response.status+' occurred:<br />'+response.responseText); // Set the modal body content
+                                    infoModal.show(); // Show the modal
+                                }
                             })
                         }
                     });
@@ -569,7 +637,7 @@
                             "Satellite": googleSat
                         };
 
-                        L.control.layers(baseLayers).addTo(map);
+                        layersControl = L.control.layers(baseLayers).addTo(map);
 
                         function addIconToMap(lat, lon) {
                             // Create a custom icon using Leaflet's divIcon and Font Awesome
@@ -606,12 +674,10 @@
 
                         map.on('click', function (e) {
                             if (isTurn === 'image') {
-                                var myModal = new bootstrap.Modal(document.getElementById('exampleModal'), {
-                                    keyboard: true // Allows closing the modal with the Esc key
-                                });
-                                myModal.textContent = 'Wrong place!'; // Set the modal content
+                            
+                                infoModal.textContent = 'Wrong place!'; // Set the modal content
                                 $('.modal-body').html('Please add the control point on the image first.'); // Set the modal body content
-                                myModal.show(); // Show the modal
+                                infoModal.show(); // Show the modal
                                 return;
                             } else {
                                 var lat = e.latlng.lat;
