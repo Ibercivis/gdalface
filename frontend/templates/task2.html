@@ -222,6 +222,7 @@
         let opacityControl;
         let infoModal;
         let georeferencingModal;
+        let viirs;
         infoModal = new bootstrap.Modal(document.getElementById('infoModal'), {
             keyboard: true // Allows closing the modal with the Esc key
         });
@@ -287,7 +288,9 @@
                                         format: 'image/png',
                                     }).addTo(map);
                                     
-                                    var overlaymaps = {"Layer": lyr}
+                                    var overlaymaps = {
+                                        "VIIRS": viirs,
+                                        "Georeferenced": lyr}
                                     // Delete L.control.layers
                                     if (layersControl){
                                         console.log('removing control');
@@ -621,7 +624,7 @@
 
                         
 
-                        const viirs = L.tileLayer('http://development.ibercivis.es:8001/{z}/{x}/{y}.png', {
+                        viirs = L.tileLayer('http://development.ibercivis.es:8001/{z}/{x}/{y}.png', {
                             maxZoom: 12,
                             transparent: true,
                             tms: 1,
