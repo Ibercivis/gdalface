@@ -619,25 +619,38 @@
 
                         const latLng = parseCoordinates(response.photo_center_by_machine_learning);
 
-                        map = L.map('map').setView(latLng, 10);
+                        
+
+                        const viirs = L.tileLayer('http://development.ibercivis.es:8001/{z}/{x}/{y}.png', {
+                            maxZoom: 12,
+                            transparent: true,
+                            tms: 1,
+                            attribution: 'The Earth Observation Group (EOG)',
+                            opacity: 0.7,
+                        });
                         const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                            maxZoom: 17,
+                            maxZoom: 12,
                             attribution: '© OpenStreetMap contributors'
                         });
 
                         const googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
-                            maxZoom: 20,
-                            subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+                            maxZoom: 12,
+                            subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+                            transparent: true,
                         });
-                        googleSat.addTo(map);
+                        map = L.map('map' , { layers: [viirs] }).setView(latLng, 10);
+                        osmLayer.addTo(map);
+
+                        
 
                         // Add layer control to switch between layers
                         baseLayers = {
                             "OpenStreetMap": osmLayer,
                             "Satellite": googleSat
                         };
+                        var overlaymaps = {"VIIRS": viirs}
 
-                        layersControl = L.control.layers(baseLayers).addTo(map);
+                        layersControl = L.control.layers(baseLayers, overlaymaps, { collapsed: false}).addTo(map);
 
                         function addIconToMap(lat, lon) {
                             // Create a custom icon using Leaflet's divIcon and Font Awesome

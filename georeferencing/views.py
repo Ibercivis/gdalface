@@ -181,7 +181,7 @@ class GeoAttemptIndividualView(APIView):
                     os.makedirs('georeferenced')
 
                 # First command: gdal_translate
-                command = 'gdpal_translate -of GTiff'
+                command = 'gdal_translate -of GTiff'
                 for item in request.data['control_points']:
                     command += ' -gcp ' + str(item['actualPx']) + ' ' + str(item['actualPy'])
                     command += ' ' + str(item['lon']) + ' ' + str(item['lat'])
@@ -194,6 +194,7 @@ class GeoAttemptIndividualView(APIView):
                     return Response({"error": f"gdal_translate failed: {e.stderr}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
                 
                 # Second command: gdalwarp
+                # Check the # of points before enable tps (-order n to pylynomial)
                 command = 'gdalwarp -r bilinear -tps -t_srs EPSG:4326'
                 command += ' georeferenced/' + geoattemp.image.name + geoattemp.hash + '.tif'
                 command += ' georeferenced/' + geoattemp.image.name + geoattemp.hash + '.tif'
