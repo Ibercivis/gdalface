@@ -624,7 +624,10 @@
 
                         
 
-                        viirs = L.tileLayer('http://development.ibercivis.es:8001/{z}/{x}/{y}.png', {
+                        viirs = L.tileLayer('http://lostatnight.org:8001/{z}/{x}/{y}.png', {
+                        //viirs = L.tileLayer('https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_Black_Marble/default/2016-01-01/GoogleMapsCompatible_Level8/{z}/{x}/{y}.png', {   
+                        //viirs = L.tileLayer('https://earthengine.googleapis.com/v1/projects/ee-pmisson/maps/7f05e1c56c7139d418df9f275abae720-880cdb032adeb5dabd4855934e8d1764/tiles/{z}/{x}/{y}', { 
+                        //viirs = L.tileLayer('https://earthengine.googleapis.com/v1/projects/ee-pmisson/maps/7f05e1c56c7139d418df9f275abae720-880cdb032adeb5dabd4855934e8d1764/tiles/{z}/{x}/{y}', {
                             maxZoom: 12,
                             transparent: true,
                             tms: 1,

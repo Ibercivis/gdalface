@@ -195,7 +195,7 @@ class GeoAttemptIndividualView(APIView):
                 
                 # Second command: gdalwarp
                 # Check the # of points before enable tps (-order n to pylynomial)
-                command = 'gdalwarp -r bilinear -tps -t_srs EPSG:4326'
+                command = 'gdalwarp --config NUM_THREADS 4 -multi  -r bilinear -tps -t_srs EPSG:4326'
                 command += ' georeferenced/' + geoattemp.image.name + geoattemp.hash + '.tif'
                 command += ' georeferenced/' + geoattemp.image.name + geoattemp.hash + '.tif'
                 print(command)
