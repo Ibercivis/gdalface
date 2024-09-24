@@ -367,6 +367,7 @@
                         const originalIconScale = 1.05; // Original scale for icons
                         let isRightClickDragging = false; // Flag to track right-click drag state
                         let isDragging = false; // Flag to track left-click drag state
+                        let isDragged = false; // Flag to track if the image was dragged
                         let startX; // Initial X position for rotation calculation
                         let isPKeyActive = false;
                         let isDKeyActive = false;
@@ -732,25 +733,7 @@
                         canvas.on('mouse:down', function (event) {
                             if (event.e.button === 0) { // Left mouse button (button === 0)
                                 if (isPKeyActive) {
-                                    if (isTurn === 'image') {
-
-                                        // Get the pointer position on the canvas
-                                        const pointer = canvas.getPointer(event.e);
-                                        const px = pointer.x;
-                                        const py = pointer.y;
-
-                                        // Add an icon at the click position
-                                        addIcon("{% static 'images/maps-and-flags.png' %}", event); // Example icon URL
-                                        isTurn = 'map'; // Switch to map turn
-                                    } else {
-                                        var myModal = new bootstrap.Modal(document.getElementById('exampleModal'), {
-                                            keyboard: true // Allows closing the modal with the Esc key
-                                        });
-                                        myModal.textContent = 'Wrong place!'; // Set the modal content
-                                        $('.modal-body').html('Please add a point in the map (related to the last control point).'); // Set the modal body content
-                                        myModal.show(); // Show the modal
-                                        return;
-                                    }
+                                   
 
                                 } else if (isDKeyActive) {
                                     const pointer = canvas.getPointer(event.e);
@@ -777,44 +760,85 @@
 
                         // Event for mouse move
                         canvas.on('mouse:move', function (event) {
-                            if (isDragging) {
-                                const currentPosX = event.e.clientX;
-                                const currentPosY = event.e.clientY;
+                            /* Check tha move is greatest than 5 pixels */
+                            if (Math.abs(event.e.movementX) > 5 || Math.abs(event.e.movementY) > 5) {
+                                if (isDragging) {
+                                    isDragged = true;
+                                    const currentPosX = event.e.clientX;
+                                    const currentPosY = event.e.clientY;
 
-                                // Calculate the difference in X and Y positions
-                                const deltaX = currentPosX - lastPosX;
-                                const deltaY = currentPosY - lastPosY;
+                                    // Calculate the difference in X and Y positions
+                                    const deltaX = currentPosX - lastPosX;
+                                    const deltaY = currentPosY - lastPosY;
 
-                                // Update the image position based on the mouse movement
-                                group.left += deltaX;
-                                group.top += deltaY;
+                                    // Update the image position based on the mouse movement
+                                    group.left += deltaX;
+                                    group.top += deltaY;
 
-                                // Update the last position for continuous movement
-                                lastPosX = currentPosX;
-                                lastPosY = currentPosY;
+                                    // Update the last position for continuous movement
+                                    lastPosX = currentPosX;
+                                    lastPosY = currentPosY;
 
-                                canvas.requestRenderAll(); // Re-render the canvas with the new position
+                                    canvas.requestRenderAll(); // Re-render the canvas with the new position
 
-                            } else if (isRightClickDragging) {
-                                const currentX = event.e.clientX; // Get current X position
-                                const deltaX = currentX - startX; // Calculate the difference in X
+                                } else if (isRightClickDragging) {
+                                    const currentX = event.e.clientX; // Get current X position
+                                    const deltaX = currentX - startX; // Calculate the difference in X
 
-                                // Adjust the rotation angle based on the mouse movement
-                                group.rotate(group.angle - deltaX * 0.2); // Adjust the multiplier for sensitivity
-                                canvas.requestRenderAll(); // Re-render the canvas with the new rotation
+                                    // Adjust the rotation angle based on the mouse movement
+                                    group.rotate(group.angle - deltaX * 0.2); // Adjust the multiplier for sensitivity
+                                    canvas.requestRenderAll(); // Re-render the canvas with the new rotation
 
-                                // Update the start position for continuous rotation
-                                startX = currentX;
-                            } else {
+                                    // Update the start position for continuous rotation
+                                    startX = currentX;
+                                } else {
+
+                                }
 
                             }
+
                         });
 
                         // Event for mouse up
                         canvas.on('mouse:up', function (event) {
                             // Check which mouse button was released
                             if (event.e.button === 0) { // Left mouse button
+                                // If we don't drag the image, add an icon
+                                if (!isDragged) {
+                                    console.log(isTurn);
+                                    console.log(isDragging);
+                                    console.log(isDragged);
+
+                                    if (isTurn === 'image') {
+
+                                        // Get the pointer position on the canvas
+                                        const pointer = canvas.getPointer(event.e);
+                                        const px = pointer.x;
+                                        const py = pointer.y;
+
+                                        // Add an icon at the click position
+                                        addIcon("{% static 'images/maps-and-flags.png' %}", event); // Example icon URL
+                                        isTurn = 'map'; // Switch to map turn
+                                        isDragging = false; // Stop the left-click drag movement
+                                        isDragged = false; // Reset the drag state
+                                    } else {
+                                        var myModal = new bootstrap.Modal(document.getElementById('exampleModal'), {
+                                            keyboard: true // Allows closing the modal with the Esc key
+                                        });
+                                        myModal.textContent = 'Wrong place!'; // Set the modal content
+                                        $('.modal-body').html('Please add a point in the map (related to the last control point).'); // Set the modal body content
+                                        myModal.show(); // Show the modal
+                                        
+                                        isDragging = false; // Stop the left-click drag movement
+                                        isDragged = false; // Reset the drag state
+                                        return;
+                                    }
+                                    
+                                }
                                 isDragging = false; // Stop the left-click drag movement
+                                isDragged = false; // Reset the drag state
+
+                                
                             } else if (event.e.button === 2) { // Right mouse button
 
                                 isRightClickDragging = false; // Stop the right-click drag rotation
