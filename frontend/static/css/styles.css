@@ -1,0 +1,80 @@
+#map{
+    height: 100%;
+}
+body, html {
+    overflow: hidden; /* Disable scrolling */
+    height: 100%;
+
+}
+/* Ensure the parent container has 100% width and specific height */
+.canvas-container {
+    width: 100% !important; 
+    height: 100% !important; /* Set a specific height for the canvas container */
+    position: relative;
+
+}
+.tooltip-inner {
+    text-align: left !important;
+}
+
+/* Ensure the canvas fills the entire parent container */
+#canvas {
+    background-color: #3a3a3b;
+}
+#title, #buttons {
+    margin-top: 10px;
+    text-align: center;
+    color: #562952;
+    flex: 0 0 10%;
+}
+#coordinates {
+    flex: 1 1 80% !important;
+    overflow-y: auto;
+}
+.tools {
+    background-color: #fef7ff;
+    border-right: 1px solid #e9ecef;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+.column-right {
+    height: 100% !important;
+}
+ul {
+    list-style-type: none; /* Remove default bullet points */
+    padding: 0 !important; /* Remove default padding */
+}
+
+li{
+    display: inline-block; /* Make it behave like an inline element */
+    padding: 10px 10px; /* Add padding to simulate button shape */
+    background-color: #56295277; /* Button color (Bootstrap's primary color) */
+    width: 95%; /* Full width */
+    color: white; /* Text color */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor to indicate it's clickable */
+    font-size: 12px;
+    text-align: left;
+    margin: 5px; /* Add margin between buttons */
+    transition: background-color 0.3s ease; /* Smooth transition for hover */
+}
+
+li:hover {
+    background-color: #563952; /* Darker color on hover */
+}
+
+li:active {
+    background-color: #004085; /* Even darker color when clicked */
+}
+.opacity-slider-container {
+    background-color: white;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.fa-icon-marker {
+    color: #f08ce7; /* Customize the color of the icon */
+    font-size: 16px; /* Adjust the font size to fit the icon */
+}

@@ -11,6 +11,9 @@ def task(request):
 def task2(request):
     return render(request, 'task2.html')
 
+def gettask(request):
+    return render(request, 'gettask.html')
+
 def about(request):
     return render(request, 'frontend/about.html')
 

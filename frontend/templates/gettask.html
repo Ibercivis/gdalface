@@ -1,0 +1,95 @@
+{% load static %}
+{% load bootstrap5 %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Rotation with Fabric.js</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+    {% bootstrap_css %}
+    <!-- Include jQuery from a CDN -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""></script>
+    <script src="{% static 'js/main.js'%}"></script>
+
+
+
+
+   
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+
+    <style>
+       
+    </style>
+</head>
+<body>
+    <!-- Modal -->
+<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Wrong place!</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="georeferencingModal" tabindex="-1" aria-labelledby="georeferencingModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Georeferencing!</h5>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid h-100">
+    <div class="row h-100 d-flex">
+        <div class="col-md-2 h-100 tools d-flex flex-column">
+            <div id="title" class="flex-shrink-0">
+                <h3>Lost at night</h3>
+            </div>
+            <div id="coordinates h-80" class="flex-grow-1">
+                <ul id="icon-list-items"></ul>
+            </div>
+            <div id="buttons flex-shrink-0 m-2">
+                <button id="Try" class="btn btn-primary mb-2">Try</button>
+                <button id="Submit" class="btn btn-primary mb-2 disabled">Submit</button>
+                <button id="Skip" class="btn btn-primary mb-2">Skip</button>
+            </div>
+        </div>
+        <div class="col-md-5 column-left p-0 mb-0 h-100">
+            <div id="map" class="h-100"></div>
+            <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+        </div>
+        <div id="column-right" class="col-md-5 p-0 m-0 h-100">
+
+            <canvas id="canvas"></canvas>
+
+        </div>
+    </div>
+<div>
+</body>
+</html>

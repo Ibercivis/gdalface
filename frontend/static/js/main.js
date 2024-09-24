@@ -1,0 +1,679 @@
+$(document).ready(function () {
+
+    // Function to parse the coordinate string and convert to decimal degrees
+    function parseCoordinates(coordString) {
+        const regex = /([0-9.]+)°\s*([NS]),\s*([0-9.]+)°\s*([EW])/;
+        const matches = coordString.match(regex);
+
+        if (matches) {
+            let lat = parseFloat(matches[1]);
+            let lng = parseFloat(matches[3]);
+
+            // Adjust for N/S and E/W
+            if (matches[2] === 'S') lat = -lat;
+            if (matches[4] === 'W') lng = -lng;
+
+            return [lat, lng];  // Return the coordinates as an array [lat, lng]
+        }
+
+        throw new Error("Invalid coordinate format");
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    let iconCounter = 1; // Counter for numbering icons
+    let iconList = []; // List to store icon objects
+    let markerList = {}; // List to store marker objects
+    let iconMap = {}; // List to store the iconGroup objects
+    let isTurn = 'image'; // Variable to track the current turn
+    let group; // Variable to store the Fabric group object
+    let geoatempt_id; // Variable to store the geoattempt id
+    let image_name; // Variable to store the image name
+    let geoattempt_hash; // Variable to store the geoattempt hash
+    let map; // Variable to store the Leaflet map object
+    var baseLayers = null; // Variable to store the base layers
+    let icon;
+    var layersControl = null;
+    let lyr;
+    let opacityControl;
+    let infoModal;
+    let georeferencingModal;
+    let viirs;
+    infoModal = new bootstrap.Modal(document.getElementById('infoModal'), {
+        keyboard: true // Allows closing the modal with the Esc key
+    });
+    georeferencingModal = new bootstrap.Modal(document.getElementById('georeferencingModal'), {
+    });
+    const csrftoken = getCookie('csrftoken');
+    $.ajaxSetup({
+        headers: {
+            'X-CSRFToken': csrftoken
+        }
+    });
+    $.ajax({
+        url: 'http://127.0.0.1:8000/api/v1/geoattempt-pending/',
+        type: 'GET',
+        dataType: 'json',
+        success: function (response) {
+            image_name = response.image_name;
+            geoatempt_id = response.id;
+            geoattempt_hash = response.hash;
+            // Initialize Fabric.js canvas
+            const canvas = new fabric.Canvas('canvas', {
+                fireRightClick: true, // Enable right-click events
+                stopContextMenu: true, // Disable the default context menu
+                selection: false // Disable object selection
+            });
+
+            // Add buttons behavior
+            $('#Try').on('click', function () {
+                if (iconList.length < 1) {
+
+                    infoModal.textContent = 'Few control points!'; // Set the modal content
+                    $('.modal-body').html('Please add at least three control points.'); // Set the modal body content
+                    infoModal.show(); // Show the modal
+                    return;
+                } else {
+                    $('.modal-body').html('We are georeferencing the image. Please wait.'); // Set the modal body content
+                    georeferencingModal.show();
+                    // Doing a post request to the backend
+                    const data = {
+                        "geoattempt_id": geoatempt_id,
+                        "control_points": iconList,
+                        "status": "PENDING"
+                    }
+                    $.ajax({
+                        url: 'http://127.0.0.1:8000/api/v1/geoattempt-individual/' + geoatempt_id + '/',
+                        type: 'PATCH',
+                        dataType: 'json',
+                        headers: {
+                            'X-CSRFToken': csrftoken,
+                            'Content-Type': 'application/json'
+                        },
+                        data: JSON.stringify(data),
+
+                        success: function (response) {
+                            georeferencingModal.hide();
+                            let noCacheUrl = './georeferenced/' + image_name + geoattempt_hash + '/{z}/{x}/{y}.png' + '?nocache=' + new Date().getTime();
+                            if (lyr)
+                                map.removeLayer(lyr);
+
+                            lyr = L.tileLayer(noCacheUrl, {
+                                tms: 1,
+                                opacity: 0.9,
+                                format: 'image/png',
+                            }).addTo(map);
+
+                            var overlaymaps = {
+                                "VIIRS": viirs,
+                                "Georeferenced": lyr
+                            }
+                            // Delete L.control.layers
+                            if (layersControl) {
+                                console.log('removing control');
+                                map.removeControl(layersControl);
+                            }
+                            if (opacityControl)
+                                map.removeControl(opacityControl);
+                            opacityControl = L.control({ position: 'bottomright' });
+                            // When the control is added to the map, insert the slider into it
+                            opacityControl.onAdd = function (map) {
+                                var div = L.DomUtil.create('div', 'opacity-slider-container');
+
+                                // Add the label and the slider input
+                                div.innerHTML = `
+                                        <label for="opacity-slider">Opacity</label><br>
+                                        <input id="opacity-slider" type="range" min="0" max="1" step="0.05" value="0.9">
+                                        `;
+
+                                // Disable map interactions (dragging, zooming) when interacting with the slider
+                                L.DomEvent.disableClickPropagation(div);
+                                return div;
+                            };
+                            // Add the custom control (with the slider) to the map
+                            opacityControl.addTo(map);
+
+                            // Get the slider element and span for displaying the value
+                            const slider = document.getElementById('opacity-slider');
+
+
+                            // Listen for slider input and update the opacity of the layer
+                            slider.addEventListener('input', function () {
+                                const opacityValue = parseFloat(this.value);
+                                lyr.setOpacity(opacityValue);  // Adjust the opacity of the layer
+
+                            });
+
+
+                            layersControl = L.control.layers(baseLayers, overlaymaps, { collapsed: false }).addTo(map);
+                            var currentZoom = map.getZoom();
+                            map.setZoom(currentZoom + 1);
+                            setTimeout(function () {
+                                map.setZoom(currentZoom);
+                            }, 300);  // Adjust the delay if necessary, 300ms works in most cases
+                            $('#Submit').removeClass('disabled');
+
+                        },
+                        error: function (response) {
+                            console.log(response);
+                            georeferencingModal.hide();
+                            infoModal.textContent = 'Error!'; // Set the modal content
+                            $('.modal-body').html('An error ' + response.status + ' occurred:<br />' + response.responseText); // Set the modal body content
+                            infoModal.show(); // Show the modal
+                        }
+                    })
+                }
+            });
+            $('#Skip').on('click', function () {
+                // Reload page
+                location.reload();
+            });
+            const static_url = "/static/images/"; // Static URL
+            const imageUrl = static_url + image_name + '.JPG'; // Image URL
+            console.log(response);
+            const canvasWidth = $('#column-right').width(); // Canvas width
+            const canvasHeight = $('#column-right').height(); // Canvas height
+            canvas.setWidth(canvasWidth); // Set the canvas width
+            canvas.setHeight(canvasHeight); // Set the canvas height
+
+            // Load an image into the Fabric canvas
+            fabric.Image.fromURL(imageUrl, function (img) {
+                const scaleX = canvasWidth / img.width;
+                const scaleY = canvasHeight / img.height;
+                const scale = Math.min(scaleX, scaleY);
+                const originalIconScale = 1.05; // Original scale for icons
+                let isRightClickDragging = false; // Flag to track right-click drag state
+                let isDragging = false; // Flag to track left-click drag state
+                let isDragged = false; // Flag to track if the image was dragged
+                let startX; // Initial X position for rotation calculation
+                let isPKeyActive = false;
+                let isDKeyActive = false;
+                let lastPosX; // Last X position for drag movement
+                let lastPosY; // Last Y position for drag movement
+                img.set({
+                    left: 0, // Center horizontally
+                    top: 0, // Center vertically
+                    originX: 'left',
+                    originY: 'top',
+                    scaleX: scale,
+                    scaleY: scale,
+                    selectable: false, // Make the image non-selectable to avoid default transformations
+                    hasControls: false, // Disable controls for the image
+                    hasBorders: false, // Disable borders for the image
+                });
+                group = new fabric.Group([img], {
+                    left: canvasWidth / 2,
+                    top: canvasHeight / 2,
+                    originX: 'center',
+                    originY: 'center',
+                    selectable: false, // Make the group non-selectable
+                    hasControls: false, // Disable controls for the group
+                    hasBorders: false, // Disable borders for the group
+                });
+                canvas.add(group);
+                document.addEventListener('keydown', function (event) {
+                    if (event.key === 'p' || event.key === 'P') {
+                        isPKeyActive = true;
+                    }
+                });
+                // Track the "p" key release
+                document.addEventListener('keyup', function (e) {
+                    if (e.key === 'p' || e.key === 'P') {
+                        isPKeyActive = false;
+                    }
+                });
+                document.addEventListener('keydown', function (event) {
+                    if (event.key === 'd' || event.key === 'D') {
+                        isDKeyActive = true;
+                    }
+                });
+                document.addEventListener('keyup', function (e) {
+                    if (e.key === 'd' || e.key === 'D') {
+                        isDKeyActive = false;
+                        document.body.style.cursor = 'default';
+                    }
+                });
+
+                function addIcon(iconURL, event) {
+                    fabric.Image.fromURL(iconURL, function (icon) {
+                        const pointer = canvas.getPointer(event.e);
+                        const x = pointer.x;
+                        const y = pointer.y;
+
+                        const label = new fabric.Text('\uf3c5', {
+                            left: x,
+                            top: y, // Position the label above the icon
+                            fontSize: 16,
+                            fontFamily: 'Font Awesome 6 Free',
+                            fill: '#f08ce7',
+                            originX: 'center',
+                            originY: 'center',
+                            selectable: false,  // Make the label non-selectable
+                            hasControls: false, // Disable controls for the label
+                            hasBorders: false   // Disable borders for the label
+                        });
+
+                        const label1 = new fabric.Text(iconCounter.toString(), {
+                            left: x,
+                            top: y - 16, // Position the label above the icon
+                            fontSize: 12,
+                            fill: '#f08ce7',
+                            originX: 'center',
+                            originY: 'center',
+                            selectable: false,  // Make the label non-selectable
+                            hasControls: false, // Disable controls for the label
+                            hasBorders: false   // Disable borders for the label
+                        });
+
+                        // Create a unique ID for the icon
+                        const iconID = `Point ${iconCounter}`;
+
+                        const iconGroup = new fabric.Group([label, label1], {
+                            id: iconID,
+                            left: x,
+                            top: y,
+                            originX: 'center',
+                            originY: 'bottom',
+                            selectable: true,  // Make the group selectable
+                            hasControls: false, // Disable controls for the group
+                            hasBorders: false   // Disable borders for the group
+                        });
+
+                        // Store the icon object in the list
+                        iconList.push({
+                            id: iconID,
+                            px: iconGroup.left,
+                            py: iconGroup.top,
+                            text: getImageCoordinates(event),
+                            actualPx: getImageCoordinates(event).px,
+                            actualPy: getImageCoordinates(event).py
+                        });
+
+                        // Add the iconGroup to the iconMap by ID
+                        iconMap[iconID] = iconGroup;
+                        console.log(iconList);
+
+                        updateIconList(); // Update the icon list displayed in the div
+                        group.addWithUpdate(iconGroup); // Add the icon to the group
+                        canvas.requestRenderAll(); // Re-render the canvas
+                    }, { crossOrigin: 'anonymous' }); // Handle CORS issues
+                }
+
+                function deleteNearestIconGroup(px, py) {
+                    let closestIconGroup = null;
+                    let closestDistance = Infinity;
+
+                    // Iterate over all objects in the group to find the closest one
+                    group.getObjects().forEach(function (obj) {
+                        if (obj !== img) { // Exclude the main image
+                            const dx = obj.left - px;
+                            const dy = obj.top - py;
+                            const distance = Math.sqrt(dx * dx + dy * dy);
+
+                            if (distance < closestDistance) {
+                                closestDistance = distance;
+                                closestIconGroup = obj;
+                            }
+                        }
+                    });
+
+                    // Remove the closest icon group if found
+                    if (closestIconGroup) {
+                        removeMarkerPointById(closestIconGroup.id);
+                        canvas.requestRenderAll(); // Re-render the canvas
+                    }
+                }
+
+                function removeIconById(id) {
+                    const iconGroup = iconMap[id];
+                    if (iconGroup) {
+                        group.remove(iconGroup); // Remove the icon from the group
+                        delete iconMap[id]; // Remove the icon from the map
+                        canvas.requestRenderAll(); // Re-render the canvas
+                    } else {
+                        console.log(`Icon ${id} not found.`);
+                    }
+                }
+
+                function removeMarkerById(id) {
+                    if (markerList[id]) {
+                        map.removeLayer(markerList[id].marker); // Remove the marker from the map
+                        delete markerList[id]; // Remove the marker from the list
+                    }
+                }
+
+
+
+                function removeIconFromList(id) {
+                    iconList = iconList.filter(icon => icon.id !== id); // Remove the icon from the list
+                }
+
+                function removeMarkerPointById(id) {
+                    icon = iconList.find(icon => icon.id === id);
+                    console.log(icon);
+                    if (icon.complete && isTurn === 'map') {
+                        isTurn = 'map';
+                    }
+                    else if (!icon.complete && isTurn === 'map') {
+                        isTurn = 'image';
+                    }
+                    removeMarkerById(id);
+                    removeIconById(id);
+                    removeIconFromList(id);
+                    updateIconList();
+                    console.log(iconList);
+                }
+
+                // Function to update the icon list in the div
+                function updateIconList() {
+                    const listContainer = document.getElementById('icon-list-items');
+                    listContainer.innerHTML = ''; // Clear the current list
+
+
+
+                    // Create list items for each icon in iconList
+                    iconList.forEach(function (icon) {
+                        const listItem = document.createElement('li');
+                        listItem.id = "li-" + icon.id; // Set the ID attribute
+
+                        // Create Font Awesome icon element
+                        const iconElement = document.createElement('i');
+                        iconElement.className = 'fa-solid fa-location-dot ps-2 pe-2'; // Add the classes for the Font Awesome icon
+
+                        // Set the text content with the ID, X, and Y values
+                        const span = document.createElement('span');
+                        span.textContent = `${icon.id}`;
+                        const spanRight = document.createElement('span');
+                        spanRight.className = 'float-end d-block';
+                        const info = document.createElement('span');
+                        info.className = 'fa-solid fa-info-circle pe-3';
+                        info.setAttribute('data-bs-toggle', 'tooltip');
+                        info.setAttribute('data-bs-placement', 'right');
+                        info.setAttribute('title', `px: ${icon.text.px.toFixed(2)} <br /> py: ${icon.text.py.toFixed(2)} <br> lat: ${icon.text.lat} <br> lon: ${icon.text.lon}`); // Set the tooltip text
+
+                        const garbage = document.createElement('i');
+                        garbage.className = 'fa-solid fa-trash-alt pe-2 '
+
+                        // If garbage icon is clicked, remove the icon
+                        garbage.addEventListener('click', function () {
+                            removeMarkerPointById(icon.id);
+                        });
+
+                        // Append the icon and the text to the list item
+                        listItem.appendChild(iconElement);
+                        listItem.appendChild(span);
+                        listItem.appendChild(spanRight);
+                        spanRight.appendChild(info);
+                        spanRight.appendChild(garbage);
+
+                        // Append the list item to the container
+                        listContainer.appendChild(listItem);
+                    });
+                    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                    const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                        return new bootstrap.Tooltip(tooltipTriggerEl, {
+                            html: true, // Enable HTML content in the tooltip
+                            delay: { show: 100, hide: 100 }, // Adjust the show/hide delay in milliseconds
+
+                        });
+                    });
+                }
+
+
+
+                // Function to convert canvas click coordinates to image coordinates
+                function getImageCoordinates(event) {
+                    // Get the pointer position on the canvas
+                    const pointer = canvas.getPointer(event.e);
+
+                    // Create a point from the click position
+                    const clickPoint = new fabric.Point(pointer.x, pointer.y);
+
+                    // Get the inverse transform matrix of the group
+                    const inverseGroupMatrix = fabric.util.invertTransform(img.calcTransformMatrix());
+
+                    // Transform the click point to the image's local coordinates
+                    const transformedPoint = fabric.util.transformPoint(clickPoint, inverseGroupMatrix);
+
+                    return { px: transformedPoint.x + img.width / 2, py: transformedPoint.y + img.height / 2 };
+                }
+
+                const latLng = parseCoordinates(response.photo_center_by_machine_learning);
+
+
+
+                viirs = L.tileLayer('http://lostatnight.org:8001/{z}/{x}/{y}.png', {
+                    //viirs = L.tileLayer('https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_Black_Marble/default/2016-01-01/GoogleMapsCompatible_Level8/{z}/{x}/{y}.png', {   
+                    //viirs = L.tileLayer('https://earthengine.googleapis.com/v1/projects/ee-pmisson/maps/7f05e1c56c7139d418df9f275abae720-880cdb032adeb5dabd4855934e8d1764/tiles/{z}/{x}/{y}', { 
+                    //viirs = L.tileLayer('https://earthengine.googleapis.com/v1/projects/ee-pmisson/maps/7f05e1c56c7139d418df9f275abae720-880cdb032adeb5dabd4855934e8d1764/tiles/{z}/{x}/{y}', {
+                    maxZoom: 12,
+                    transparent: true,
+                    tms: 1,
+                    attribution: 'The Earth Observation Group (EOG)',
+                    opacity: 0.7,
+                });
+                const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 12,
+                    attribution: '© OpenStreetMap contributors'
+                });
+
+                const googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+                    maxZoom: 12,
+                    subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+                    transparent: true,
+                });
+                map = L.map('map', { layers: [viirs] }).setView(latLng, 10);
+                osmLayer.addTo(map);
+
+
+
+                // Add layer control to switch between layers
+                baseLayers = {
+                    "OpenStreetMap": osmLayer,
+                    "Satellite": googleSat
+                };
+                var overlaymaps = { "VIIRS": viirs }
+
+                layersControl = L.control.layers(baseLayers, overlaymaps, { collapsed: false }).addTo(map);
+
+                function addIconToMap(lat, lon) {
+                    // Create a custom icon using Leaflet's divIcon and Font Awesome
+                    var icon = L.divIcon({
+                        id: `Point ${iconCounter}`, // Unique ID for the icon
+                        className: 'fa-icon-marker', // Use custom class to style the icon
+                        html: `${iconCounter} <i class="fa-solid fa-location-dot"></i>`, // Font Awesome icon
+                        iconSize: [16, 32], // Set the icon size to match the font size
+                        iconAnchor: [8, 40], // Center the bottom of the icon at the clicked point
+                        popupAnchor: [0, -48] // Optional: Position of the popup relative to the icon
+                    });
+
+                    // Add the icon as a marker to the map
+                    var marker = L.marker([lat, lon], { icon: icon }).addTo(map);
+                    markerList[`Point ${iconCounter}`] = {
+                        marker,
+                        lat,
+                        lon
+                    }; // Store the marker object
+                    // Get the last icon object from the list
+
+                    iconList[iconList.length - 1].lat = lat; // Store the icon's coordinates
+                    iconList[iconList.length - 1].lon = lon;
+                    iconList[iconList.length - 1].text.lat = lat;
+                    iconList[iconList.length - 1].text.lon = lon;
+                    iconList[iconList.length - 1].complete = true;
+                    console.log(iconList);
+                    updateIconList(); // Update the icon list displayed in the div
+                    iconCounter++; // Increment the icon counter
+                }
+
+
+
+
+                map.on('click', function (e) {
+                    if (isTurn === 'image') {
+
+                        infoModal.textContent = 'Wrong place!'; // Set the modal content
+                        $('.modal-body').html('Please add the control point on the image first.'); // Set the modal body content
+                        infoModal.show(); // Show the modal
+                        return;
+                    } else {
+                        var lat = e.latlng.lat;
+                        var lon = e.latlng.lng;
+                        addIconToMap(lat, lon); // Add icon to the clicked location
+                        isTurn = 'image'; // Switch back to image turn
+                    }
+                });
+
+
+                // Mouse wheel
+                canvas.on('mouse:wheel', function (event) {
+                    const delta = event.e.deltaY; // Get the scroll direction
+                    let zoom = group.scaleX + delta / 300; // Adjust the zoom factor
+                    zoom = Math.max(0.1, zoom); // Set a minimum zoom level
+                    group.scaleX = zoom; // Apply the zoom to the X-axis
+                    group.scaleY = zoom; // Apply the zoom to the Y-axis
+                    // Adjust icons' scale to maintain their original size
+                    group.getObjects().forEach(function (obj) {
+                        if (obj !== img) { // Exclude the main image
+                            obj.scaleX = originalIconScale / group.scaleX;
+                            obj.scaleY = originalIconScale / group.scaleY;
+                        }
+                    });
+
+                    canvas.requestRenderAll(); // Re-render the canvas
+                    event.e.preventDefault(); // Prevent default scroll behavior
+                    event.e.stopPropagation(); // Stop event propagation
+                    canvas.requestRenderAll(); // Re-render the canvas with the new zoom level
+                });
+
+                // Event for mouse down
+                canvas.on('mouse:down', function (event) {
+                    if (event.e.button === 0) { // Left mouse button (button === 0)
+                        if (isPKeyActive) {
+
+
+                        } else if (isDKeyActive) {
+                            const pointer = canvas.getPointer(event.e);
+                            const px = pointer.x;
+                            const py = pointer.y;
+                            deleteNearestIconGroup(px, py);
+
+                        } else {
+                            isDragging = true;
+                            lastPosX = event.e.clientX;
+                            lastPosY = event.e.clientY;
+                            event.e.preventDefault();
+                        }
+                    }
+
+
+                    // alert(event.e.button);
+                    else if (event.e.button === 2) { // Right-click (button === 2)
+                        isRightClickDragging = true;
+                        startX = event.e.clientX; // Store initial X position
+                        event.e.preventDefault(); // Prevent default context menu
+                    }
+                });
+
+                // Event for mouse move
+                canvas.on('mouse:move', function (event) {
+                    /* Check tha move is greatest than 5 pixels */
+                    if (Math.abs(event.e.movementX) > 5 || Math.abs(event.e.movementY) > 5) {
+                        if (isDragging) {
+                            isDragged = true;
+                            const currentPosX = event.e.clientX;
+                            const currentPosY = event.e.clientY;
+
+                            // Calculate the difference in X and Y positions
+                            const deltaX = currentPosX - lastPosX;
+                            const deltaY = currentPosY - lastPosY;
+
+                            // Update the image position based on the mouse movement
+                            group.left += deltaX;
+                            group.top += deltaY;
+
+                            // Update the last position for continuous movement
+                            lastPosX = currentPosX;
+                            lastPosY = currentPosY;
+
+                            canvas.requestRenderAll(); // Re-render the canvas with the new position
+
+                        } else if (isRightClickDragging) {
+                            const currentX = event.e.clientX; // Get current X position
+                            const deltaX = currentX - startX; // Calculate the difference in X
+
+                            // Adjust the rotation angle based on the mouse movement
+                            group.rotate(group.angle - deltaX * 0.2); // Adjust the multiplier for sensitivity
+                            canvas.requestRenderAll(); // Re-render the canvas with the new rotation
+
+                            // Update the start position for continuous rotation
+                            startX = currentX;
+                        } else {
+
+                        }
+
+                    }
+
+                });
+
+                // Event for mouse up
+                canvas.on('mouse:up', function (event) {
+                    // Check which mouse button was released
+                    if (event.e.button === 0) { // Left mouse button
+                        // If we don't drag the image, add an icon
+                        if (!isDragged) {
+                            console.log(isTurn);
+                            console.log(isDragging);
+                            console.log(isDragged);
+
+                            if (isTurn === 'image') {
+
+                                // Get the pointer position on the canvas
+                                const pointer = canvas.getPointer(event.e);
+                                const px = pointer.x;
+                                const py = pointer.y;
+
+                                // Add an icon at the click position
+                                addIcon("{% static 'images/maps-and-flags.png' %}", event); // Example icon URL
+                                isTurn = 'map'; // Switch to map turn
+                                isDragging = false; // Stop the left-click drag movement
+                                isDragged = false; // Reset the drag state
+                            } else {
+                                var myModal = new bootstrap.Modal(document.getElementById('exampleModal'), {
+                                    keyboard: true // Allows closing the modal with the Esc key
+                                });
+                                myModal.textContent = 'Wrong place!'; // Set the modal content
+                                $('.modal-body').html('Please add a point in the map (related to the last control point).'); // Set the modal body content
+                                myModal.show(); // Show the modal
+
+                                isDragging = false; // Stop the left-click drag movement
+                                isDragged = false; // Reset the drag state
+                                return;
+                            }
+
+                        }
+                        isDragging = false; // Stop the left-click drag movement
+                        isDragged = false; // Reset the drag state
+
+
+                    } else if (event.e.button === 2) { // Right mouse button
+
+                        isRightClickDragging = false; // Stop the right-click drag rotation
+                    }
+                });
+            });
+        }
+    });
+});
