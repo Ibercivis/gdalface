@@ -63,7 +63,7 @@ $(document).ready(function () {
         }
     });
     $.ajax({
-        url: 'http://127.0.0.1:8000/api/v1/geoattempt-pending/',
+        url: '/api/v1/geoattempt-pending/',
         type: 'GET',
         dataType: 'json',
         success: function (response) {
@@ -95,7 +95,7 @@ $(document).ready(function () {
                         "status": "PENDING"
                     }
                     $.ajax({
-                        url: 'http://127.0.0.1:8000/api/v1/geoattempt-individual/' + geoatempt_id + '/',
+                        url: 'api/v1/geoattempt-individual/' + geoatempt_id + '/',
                         type: 'PATCH',
                         dataType: 'json',
                         headers: {
@@ -185,7 +185,7 @@ $(document).ready(function () {
                     "status": "DONE"
                 }
                 $.ajax({
-                    url: 'http://127.0.0.1:8000/api/v1/geoattempt-individual/' + geoatempt_id + '/',
+                    url: '/api/v1/geoattempt-individual/' + geoatempt_id + '/',
                     type: 'PATCH',
                     dataType: 'json',
                     headers: {
@@ -195,6 +195,7 @@ $(document).ready(function () {
                     data: JSON.stringify(data),
                     success: function (response) {
                         console.log(response);
+			location.reload()
                     },
                     error: function (response) {
                         infoModal.textContent = 'Error!'; // Set the modal content
