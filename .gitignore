@@ -169,3 +169,4 @@ db.sqlite3
 media/
 georeferenced/
 .DS_Store
+.env

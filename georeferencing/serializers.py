@@ -13,7 +13,7 @@ class GeoAttemptSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GeoAttempt
-        fields = ['id', 'created', 'image', 'image_name', 'photo_center_by_machine_learning', 'status', 'hash']
+        fields = ['id', 'created', 'image', 'image_name', 'photo_center_by_machine_learning', 'status', 'hash', 'skipped', 'controlPoints']
         read_only_fields = ['created', 'hash']
 
     def get_image_name(self, obj):

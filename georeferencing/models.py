@@ -23,10 +23,7 @@ class GeoAttempt(models.Model):
 
     STATUS_CHOICES = (
         ('PENDING', 'Pending'),
-        ('TESTING', 'Testing'),
-        ('DOING', 'Doing'),
-        ('SUCCESS', 'Success'),
-        ('FAILURE', 'Failure'),
+        ('DONE', 'Done'),
     )
     created = models.DateTimeField(auto_now_add=True)
     image = models.ForeignKey('Image', on_delete=models.CASCADE)
@@ -38,6 +35,8 @@ class GeoAttempt(models.Model):
         max_length=10,
         choices = STATUS_CHOICES,
         default = 'PENDING')
+    skipped = models.IntegerField(default=0)
+    controlPoints = models.JSONField(default=dict, blank=True, null=True)
     
     def save(self, *args, **kwargs):
         if not self.hash:

@@ -176,6 +176,33 @@ $(document).ready(function () {
                     })
                 }
             });
+
+            $('#Submit').on('click', function () {
+                // Doing a post request to the backend
+                const data = {
+                    "geoattempt_id": geoatempt_id,
+                    "controlPoints": iconList,
+                    "status": "DONE"
+                }
+                $.ajax({
+                    url: 'http://127.0.0.1:8000/api/v1/geoattempt-individual/' + geoatempt_id + '/',
+                    type: 'PATCH',
+                    dataType: 'json',
+                    headers: {
+                        'X-CSRFToken': csrftoken,
+                        'Content-Type': 'application/json'
+                    },
+                    data: JSON.stringify(data),
+                    success: function (response) {
+                        console.log(response);
+                    },
+                    error: function (response) {
+                        infoModal.textContent = 'Error!'; // Set the modal content
+                        $('.modal-body').html('An error ' + response.status + ' occurred:<br />' + response.responseText); // Set the modal body content
+                        infoModal.show(); // Show the modal
+                    }
+                })
+            });
             $('#Skip').on('click', function () {
                 // Reload page
                 location.reload();
@@ -454,7 +481,7 @@ $(document).ready(function () {
 
 
 
-                viirs = L.tileLayer('http://lostatnight.org:8001/{z}/{x}/{y}.png', {
+                viirs = L.tileLayer('https://lostatnight.org/viirs_tiles/{z}/{x}/{y}.png', {
                     //viirs = L.tileLayer('https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_Black_Marble/default/2016-01-01/GoogleMapsCompatible_Level8/{z}/{x}/{y}.png', {   
                     //viirs = L.tileLayer('https://earthengine.googleapis.com/v1/projects/ee-pmisson/maps/7f05e1c56c7139d418df9f275abae720-880cdb032adeb5dabd4855934e8d1764/tiles/{z}/{x}/{y}', { 
                     //viirs = L.tileLayer('https://earthengine.googleapis.com/v1/projects/ee-pmisson/maps/7f05e1c56c7139d418df9f275abae720-880cdb032adeb5dabd4855934e8d1764/tiles/{z}/{x}/{y}', {

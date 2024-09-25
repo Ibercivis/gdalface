@@ -8,6 +8,8 @@ fontawesomefree==6.6.0
 inflection==0.5.1
 packaging==24.0
 pillow==10.2.0
+psycopg2==2.9.9
+python-decouple==3.8
 pytz==2024.1
 PyYAML==6.0.1
 soupsieve==2.6
