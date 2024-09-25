@@ -4,6 +4,7 @@
 body, html {
     overflow: hidden; /* Disable scrolling */
     height: 100%;
+    font-family: 'Open Sans'; /* Use Open Sans as the default font */
 
 }
 /* Ensure the parent container has 100% width and specific height */
@@ -21,14 +22,56 @@ body, html {
 #canvas {
     background-color: #3a3a3b;
 }
-#title, #buttons {
+#buttons {
     margin-top: 10px;
     text-align: center;
-    color: #562952;
+    background-color: #562952;
     flex: 0 0 10%;
 }
+#title {
+    margin-top: 10px;
+    text-align: center;
+    background-color: #562952;
+    border-bottom-left-radius: 50px;
+    flex: 0 0 10%;
+    padding: 0;
+    margin: 0;
+    position: relative;
+
+}
+#usage-info {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    color: white;
+    padding: 10px; /* Adjust as needed */
+}
+#photo-info-content{
+    margin: 1em;
+    padding: 0.5em;
+    border: 1px solid #562952;
+    border-radius: 5px;
+    color: #562952;
+    margin-bottom: 1.5em !important;
+}
+.logo {
+    display: block;
+    width: 60%; /* 60% of the parent div's width */
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+#photo-info-text{
+    text-align: center;
+}
+.col-md-2 {
+    height: 100%; /* Ensure parent container has a defined height */
+}
+
 #coordinates {
-    flex: 1 1 80% !important;
+    flex: 1 1 auto !important;
+    max-height: 80%;
     overflow-y: auto;
 }
 .tools {
@@ -38,9 +81,10 @@ body, html {
     display: flex;
     flex-direction: column;
 }
-.column-right {
+.column-photo {
     height: 100% !important;
 }
+
 ul {
     list-style-type: none; /* Remove default bullet points */
     padding: 0 !important; /* Remove default padding */
@@ -49,25 +93,24 @@ ul {
 li{
     display: inline-block; /* Make it behave like an inline element */
     padding: 10px 10px; /* Add padding to simulate button shape */
-    background-color: #56295277; /* Button color (Bootstrap's primary color) */
-    width: 95%; /* Full width */
-    color: white; /* Text color */
+    width: calc(100% - 2em); /* Subtracting the margins from the width */
+    margin-left: 1em;
+    margin-right: 1em;
+    margin-bottom: 0.5em;
+    background-color: #aa90a9; /* Button color (Bootstrap's primary color) */
+    color: #e9f990;; /* Text color */
     border: none; /* Remove border */
     border-radius: 5px; /* Rounded corners */
     cursor: pointer; /* Pointer cursor to indicate it's clickable */
-    font-size: 12px;
+    font-size: 16px;
     text-align: left;
-    margin: 5px; /* Add margin between buttons */
     transition: background-color 0.3s ease; /* Smooth transition for hover */
 }
 
-li:hover {
+li.completed {
     background-color: #563952; /* Darker color on hover */
 }
 
-li:active {
-    background-color: #004085; /* Even darker color when clicked */
-}
 .opacity-slider-container {
     background-color: white;
     padding: 10px;
@@ -78,3 +121,91 @@ li:active {
     color: #f08ce7; /* Customize the color of the icon */
     font-size: 16px; /* Adjust the font size to fit the icon */
 }
+.white {
+    color: white !important;
+}
+#button-container{
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+#Try{
+    border-radius: 1em;
+    font-size: 14px;
+    color: #fff;
+    background-color: #562952;
+    border: 1px solid #562952;
+    font-weight: medium;
+}
+#Try:hover{
+    background-color: #fef7ff;
+    border: 1px solid #562952;
+    color: #562952;
+    /* Change the pointer to a hand */
+    cursor: pointer !important;
+}   
+
+#Submit.disabled{
+    border-radius: 1em;
+    font-size: 14px;
+    background-color: #fef7ff;
+    border: 1px solid #aa90a9;
+    color: #aa90a9;
+    font-weight: medium;
+}
+#Submit{
+    border-radius: 1em;
+    font-size: 14px;
+    background-color: #fef7ff;
+    border: 1px solid #11ac7a;
+    color: #11ac7a;
+    font-weight: medium;
+}
+#Submit:hover{
+    background-color: #11ac7a;
+    border: 1px solid #11ac7a;
+    color: #fff;
+    /* Change the pointer to a hand */
+    cursor: pointer !important;
+}
+
+#Skip{
+    border-radius: 1em;
+    font-size: 14px;
+    background-color: #fef7ff;
+    border: 1px solid #f13140;
+    color: #f13140;
+    font-weight: medium;
+}
+
+#Skip:hover{
+    background-color: #f13140;
+    border: 1px solid #f13140;
+    color: #fff;
+    /* Change the pointer to a hand */
+    cursor: pointer !important;
+}
+
+#small-logos-container {
+    margin-top: 1em;
+    display: flex;
+    align-items: center;
+    text-align: center;
+}
+
+.small-logos {
+    max-width: 40%; /* Adjust as needed */
+    margin: 0 auto; /* Center the logos */
+}
+.developed {
+    color: #333;
+    font-size: 10px;
+    margin-top: 1em;
+    margin-left: auto;
+    margin-right: auto;
+}
+.developed:hover{
+    color: #000;
+}
+

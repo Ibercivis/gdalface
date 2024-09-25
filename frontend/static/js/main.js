@@ -76,6 +76,7 @@ $(document).ready(function () {
                 stopContextMenu: true, // Disable the default context menu
                 selection: false // Disable object selection
             });
+            $('#photo-info-text').text(response.image_name);
 
             // Add buttons behavior
             $('#Try').on('click', function () {
@@ -211,8 +212,8 @@ $(document).ready(function () {
             const static_url = "/static/images/"; // Static URL
             const imageUrl = static_url + image_name + '.JPG'; // Image URL
             console.log(response);
-            const canvasWidth = $('#column-right').width(); // Canvas width
-            const canvasHeight = $('#column-right').height(); // Canvas height
+            const canvasWidth = $('#column-photo').width(); // Canvas width
+            const canvasHeight = $('#column-photo').height(); // Canvas height
             canvas.setWidth(canvasWidth); // Set the canvas width
             canvas.setHeight(canvasHeight); // Set the canvas height
 
@@ -415,24 +416,29 @@ $(document).ready(function () {
                     iconList.forEach(function (icon) {
                         const listItem = document.createElement('li');
                         listItem.id = "li-" + icon.id; // Set the ID attribute
+                        console.log(icon.complete);
 
                         // Create Font Awesome icon element
                         const iconElement = document.createElement('i');
                         iconElement.className = 'fa-solid fa-location-dot ps-2 pe-2'; // Add the classes for the Font Awesome icon
-
+                        
+                        // Check if it is complete and add class to li
+                        if (icon.complete) {
+                            listItem.classList.add('completed');
+                        }
                         // Set the text content with the ID, X, and Y values
                         const span = document.createElement('span');
                         span.textContent = `${icon.id}`;
                         const spanRight = document.createElement('span');
                         spanRight.className = 'float-end d-block';
                         const info = document.createElement('span');
-                        info.className = 'fa-solid fa-info-circle pe-3';
+                        info.className = 'fa-solid fa-info-circle pe-3 white';
                         info.setAttribute('data-bs-toggle', 'tooltip');
                         info.setAttribute('data-bs-placement', 'right');
                         info.setAttribute('title', `px: ${icon.text.px.toFixed(2)} <br /> py: ${icon.text.py.toFixed(2)} <br> lat: ${icon.text.lat} <br> lon: ${icon.text.lon}`); // Set the tooltip text
 
                         const garbage = document.createElement('i');
-                        garbage.className = 'fa-solid fa-trash-alt pe-2 '
+                        garbage.className = 'fa-solid fa-trash-alt pe-2 white'
 
                         // If garbage icon is clicked, remove the icon
                         garbage.addEventListener('click', function () {
@@ -448,6 +454,10 @@ $(document).ready(function () {
 
                         // Append the list item to the container
                         listContainer.appendChild(listItem);
+
+                        // Scroll the coordinates div to the bottom
+                        
+
                     });
                     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
                     const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -457,6 +467,7 @@ $(document).ready(function () {
 
                         });
                     });
+                    $('#coordinates').scrollTop($('#coordinates')[0].scrollHeight);
                 }
 
 
