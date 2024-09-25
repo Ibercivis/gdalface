@@ -252,6 +252,7 @@ $(document).ready(function () {
             const canvasHeight = $('#column-photo').height(); // Canvas height
             canvas.setWidth(canvasWidth); // Set the canvas width
             canvas.setHeight(canvasHeight); // Set the canvas height
+            canvas.hoverCursor = 'default'; // Set the cursor style
 
             // Load an image into the Fabric canvas
             fabric.Image.fromURL(imageUrl, function (img) {
@@ -591,8 +592,8 @@ $(document).ready(function () {
                         id: `Point ${iconCounter}`, // Unique ID for the icon
                         className: 'fa-icon-marker', // Use custom class to style the icon
                         html: `<div class="map-icon"><span class="black">${iconCounter}</span><i class="fa-solid fa-location-dot"></i></div>`, // Font Awesome icon
-                        iconSize: [16, 32], // Set the icon size to match the font size
-                        iconAnchor: [8, 48], // Center the bottom of the icon at the clicked point
+                        iconSize: [20, 24], // Set the icon size to match the font size
+                        iconAnchor: [10, 30], // Center the bottom of the icon at the clicked point
                         popupAnchor: [0, -20] // Optional: Position of the popup relative to the icon
                     });
 
@@ -704,6 +705,7 @@ $(document).ready(function () {
                             // Update the last position for continuous movement
                             lastPosX = currentPosX;
                             lastPosY = currentPosY;
+                            canvas.hoverCursor = 'grabbing'; // Change the cursor style
 
                             canvas.requestRenderAll(); // Re-render the canvas with the new position
 
@@ -717,6 +719,7 @@ $(document).ready(function () {
 
                             // Update the start position for continuous rotation
                             startX = currentX;
+                            canvas.hoverCursor = 'grabbing'; // Change the cursor style
                         } else {
 
                         }
@@ -730,6 +733,7 @@ $(document).ready(function () {
                     // Check which mouse button was released
             
                     if (event.e.button === 0) { // Left mouse button
+                        canvas.hoverCursor = 'default'; // Change the cursor style
                       
 
                         // If we don't drag the image, add an icon
@@ -758,6 +762,7 @@ $(document).ready(function () {
 
                                 isDragging = false; // Stop the left-click drag movement
                                 isDragged = false; // Reset the drag state
+                                
                                 return;
                             }
 
@@ -769,6 +774,7 @@ $(document).ready(function () {
                     } else if (event.e.button === 2) { // Right mouse button
 
                         isRightClickDragging = false; // Stop the right-click drag rotation
+                        canvas.hoverCursor = 'default'; // Change the cursor style
                     }
                 });
             });

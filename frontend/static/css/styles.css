@@ -226,4 +226,12 @@ li.completed {
     text-align: center;
     line-height: 0.8;
 }
+#map, #canvas {
+    /* Pointer */
+    cursor: default !important;
+}
+#map:active {
+    /* Pointer */
+    cursor: grabbing !important;
+}
 
