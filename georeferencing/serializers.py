@@ -10,10 +10,22 @@ class ControlpointSerializer(serializers.ModelSerializer):
 class GeoAttemptSerializer(serializers.ModelSerializer):
     image_name = serializers.SerializerMethodField()
     photo_center_by_machine_learning = serializers.SerializerMethodField()
+    photo_taken = serializers.SerializerMethodField()
+    focal_length = serializers.SerializerMethodField()
 
     class Meta:
         model = GeoAttempt
-        fields = ['id', 'created', 'image', 'image_name', 'photo_center_by_machine_learning', 'status', 'hash', 'skipped', 'controlPoints']
+        fields = ['id', 
+                  'created',
+                  'image',
+                  'image_name',
+                  'photo_center_by_machine_learning',
+                  'status',
+                  'hash',
+                  'skipped',
+                  'controlPoints',
+                  'photo_taken',
+                  'focal_length']
         read_only_fields = ['created', 'hash']
 
     def get_image_name(self, obj):
@@ -21,7 +33,13 @@ class GeoAttemptSerializer(serializers.ModelSerializer):
     
     def get_photo_center_by_machine_learning(self, obj):
         return obj.image.photoCenterByMachineLearning
-
+    
+    def get_photo_taken(self,obj):
+        return obj.image.taken
+    
+    def get_focal_length(self, obj):
+        return obj.image.focalLength
+    
 class MiniGeoAttemptSerializer(serializers.ModelSerializer):
     class Meta:
         model = GeoAttempt

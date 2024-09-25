@@ -45,6 +45,10 @@ body, html {
     right: 0;
     color: white;
     padding: 10px; /* Adjust as needed */
+    cursor: pointer; /* Change cursor to pointer on hover */
+}
+#photo-info{
+    cursor: pointer;
 }
 #photo-info-content{
     margin: 1em;

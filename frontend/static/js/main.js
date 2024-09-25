@@ -1,5 +1,7 @@
 $(document).ready(function () {
 
+   
+
     // Function to parse the coordinate string and convert to decimal degrees
     function parseCoordinates(coordString) {
         const regex = /([0-9.]+)°\s*([NS]),\s*([0-9.]+)°\s*([EW])/;
@@ -56,6 +58,20 @@ $(document).ready(function () {
     });
     georeferencingModal = new bootstrap.Modal(document.getElementById('georeferencingModal'), {
     });
+    $('#usage-info').on('click', function () {
+        console.log('clicked');
+        $('.modal-title').html('Usage Information'); // Set the modal content
+        $('.modal-body').html(
+            'To georeference the image, please add at least three control points by clicking on the photography '
+            +'and then on the map.<br/><br />The control points should be added in the correct order.<br /><br />'
+            +'After adding the control points, click on the "Try" button to start the georeferencing process.<br /><br />'
+            +'If your georeferenciation is correct, click on the "Submit" button to submit the control points.<br /><br />'  
+            +'If you make a mistake, you can delete control points on the right bar.<br /><br />'
+            +'You can drag (left mouse button) and rotate (right mouse button) the photography for your convenience'); // Set the modal body content
+        infoModal.show(); // Show the modal
+    }); 
+    
+     
     const csrftoken = getCookie('csrftoken');
     $.ajaxSetup({
         headers: {
@@ -78,16 +94,27 @@ $(document).ready(function () {
             });
             $('#photo-info-text').text(response.image_name);
 
+            $('#photo-info').on('click', function () {
+                $('.modal-title').html('Photography Information: ' + response.image_name); // Set the modal content
+                $('.modal-body').html('Photography Name: ' + response.image_name + '<br />'
+                    +'Photography Date: ' + response.photo_taken + '<br />'
+                    +'Photography Center: ' + response.photo_center_by_machine_learning + '<br />'
+                    +'Photography Resolution: ' + response.photo_resolution + '<br />'
+                    +'Focal length: ' + response.focal_length + '<br />');
+                infoModal.show(); // Show the modal
+            });
+
             // Add buttons behavior
             $('#Try').on('click', function () {
-                if (iconList.length < 1) {
+                if (iconList.length < 3) {
 
-                    infoModal.textContent = 'Few control points!'; // Set the modal content
+                    $('.modal-title').html('Few control points!'); // Set the modal content
                     $('.modal-body').html('Please add at least three control points.'); // Set the modal body content
                     infoModal.show(); // Show the modal
                     return;
                 } else {
-                    $('.modal-body').html('We are georeferencing the image. Please wait.'); // Set the modal body content
+                    $('.modal-title').html('Georefencing in progress...'); // Set the modal content
+                    $('.modal-body').html('We are georeferencing the photography. Please wait.'); // Set the modal body content
                     georeferencingModal.show();
                     // Doing a post request to the backend
                     const data = {
@@ -170,7 +197,7 @@ $(document).ready(function () {
                         error: function (response) {
                             console.log(response);
                             georeferencingModal.hide();
-                            infoModal.textContent = 'Error!'; // Set the modal content
+                            $('.modal-title').html('Error!'); // Set the modal content
                             $('.modal-body').html('An error ' + response.status + ' occurred:<br />' + response.responseText); // Set the modal body content
                             infoModal.show(); // Show the modal
                         }
@@ -196,10 +223,10 @@ $(document).ready(function () {
                     data: JSON.stringify(data),
                     success: function (response) {
                         console.log(response);
-			location.reload()
+			            location.reload()
                     },
                     error: function (response) {
-                        infoModal.textContent = 'Error!'; // Set the modal content
+                        $('.modal-title').html('Error!'); // Set the modal content
                         $('.modal-body').html('An error ' + response.status + ' occurred:<br />' + response.responseText); // Set the modal body content
                         infoModal.show(); // Show the modal
                     }
@@ -563,7 +590,7 @@ $(document).ready(function () {
                 map.on('click', function (e) {
                     if (isTurn === 'image') {
 
-                        infoModal.textContent = 'Wrong place!'; // Set the modal content
+                        $('.modal-title').html('Wrong place!'); // Set the modal content
                         $('.modal-body').html('Please add the control point on the image first.'); // Set the modal body content
                         infoModal.show(); // Show the modal
                         return;
@@ -670,7 +697,10 @@ $(document).ready(function () {
                 // Event for mouse up
                 canvas.on('mouse:up', function (event) {
                     // Check which mouse button was released
+            
                     if (event.e.button === 0) { // Left mouse button
+                      
+
                         // If we don't drag the image, add an icon
                         if (!isDragged) {
                             console.log(isTurn);
@@ -690,12 +720,10 @@ $(document).ready(function () {
                                 isDragging = false; // Stop the left-click drag movement
                                 isDragged = false; // Reset the drag state
                             } else {
-                                var myModal = new bootstrap.Modal(document.getElementById('exampleModal'), {
-                                    keyboard: true // Allows closing the modal with the Esc key
-                                });
-                                myModal.textContent = 'Wrong place!'; // Set the modal content
+                                console.log('Wrong place!');
+                                $('.modal-title').html('Wrong place!'); // Set the modal content
                                 $('.modal-body').html('Please add a point in the map (related to the last control point).'); // Set the modal body content
-                                myModal.show(); // Show the modal
+                                infoModal.show(); // Show the modal
 
                                 isDragging = false; // Stop the left-click drag movement
                                 isDragged = false; // Reset the drag state
