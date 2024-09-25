@@ -636,7 +636,7 @@ $(document).ready(function () {
 
                 // Mouse wheel
                 canvas.on('mouse:wheel', function (event) {
-                    const delta = event.e.deltaY; // Get the scroll direction
+                    const delta = -event.e.deltaY; // Get the scroll direction
                     let zoom = group.scaleX + delta / 300; // Adjust the zoom factor
                     zoom = Math.max(0.1, zoom); // Set a minimum zoom level
                     group.scaleX = zoom; // Apply the zoom to the X-axis
