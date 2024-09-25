@@ -223,7 +223,16 @@ $(document).ready(function () {
                     data: JSON.stringify(data),
                     success: function (response) {
                         console.log(response);
-			            location.reload()
+                        console.log('Control points submitted successfully');
+                        $('.modal-title').html('Thank you for your contribution'); // Set the modal content
+                        $('.modal-body').html('Your control points have been submitted successfully.'); // Set the modal body content
+                        $('#modalClose').html('Try another one!');
+                        $('#modalClose').on('click', function () {
+                            location.reload();
+                            $('#modalClose').html('Close');
+                        });
+                        infoModal.show(); // Show the modal
+
                     },
                     error: function (response) {
                         $('.modal-title').html('Error!'); // Set the modal content
@@ -313,30 +322,52 @@ $(document).ready(function () {
                             top: y, // Position the label above the icon
                             fontSize: 16,
                             fontFamily: 'Font Awesome 6 Free',
-                            fill: '#f08ce7',
+                            fill: '#e9f900',
                             originX: 'center',
                             originY: 'center',
                             selectable: false,  // Make the label non-selectable
                             hasControls: false, // Disable controls for the label
-                            hasBorders: false   // Disable borders for the label
+                            hasBorders: false,   // Disable borders for the label
+                            stroke: '#000000',
+                            strokeWidth: 1,
                         });
 
-                        const label1 = new fabric.Text(iconCounter.toString(), {
-                            left: x,
-                            top: y - 16, // Position the label above the icon
+                        const label1Text = new fabric.Text(iconCounter.toString(), {
                             fontSize: 12,
-                            fill: '#f08ce7',
+                            fontFamily: 'Open Sans',
+                            fill: '#e9f900',
                             originX: 'center',
                             originY: 'center',
-                            selectable: false,  // Make the label non-selectable
-                            hasControls: false, // Disable controls for the label
-                            hasBorders: false   // Disable borders for the label
+                            selectable: false,
+                            hasControls: false,
+                            hasBorders: false
+                        });
+                        
+                        const label1Background = new fabric.Rect({
+                            fill: 'black',
+                            width: label1Text.width + 5,  // Add padding to the background
+                            height: label1Text.height + 5, // Add padding to the background
+                            originX: 'center',
+                            originY: 'center',
+                            rx: 5,  // Set the border radius to make it rounded
+                            ry: 5
+                        });
+                        
+                        // Group the text and background
+                        const label1Group = new fabric.Group([label1Background, label1Text], {
+                            left: x,
+                            top: y - 14,
+                            originX: 'center',
+                            originY: 'center',
+                            selectable: false,
+                            hasControls: false,
+                            hasBorders: false
                         });
 
                         // Create a unique ID for the icon
                         const iconID = `Point ${iconCounter}`;
 
-                        const iconGroup = new fabric.Group([label, label1], {
+                        const iconGroup = new fabric.Group([label1Group, label], {
                             id: iconID,
                             left: x,
                             top: y,
@@ -559,10 +590,10 @@ $(document).ready(function () {
                     var icon = L.divIcon({
                         id: `Point ${iconCounter}`, // Unique ID for the icon
                         className: 'fa-icon-marker', // Use custom class to style the icon
-                        html: `${iconCounter} <i class="fa-solid fa-location-dot"></i>`, // Font Awesome icon
+                        html: `<div class="map-icon"><span class="black">${iconCounter}</span><i class="fa-solid fa-location-dot"></i></div>`, // Font Awesome icon
                         iconSize: [16, 32], // Set the icon size to match the font size
-                        iconAnchor: [8, 40], // Center the bottom of the icon at the clicked point
-                        popupAnchor: [0, -48] // Optional: Position of the popup relative to the icon
+                        iconAnchor: [8, 48], // Center the bottom of the icon at the clicked point
+                        popupAnchor: [0, -20] // Optional: Position of the popup relative to the icon
                     });
 
                     // Add the icon as a marker to the map

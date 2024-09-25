@@ -1,0 +1,44 @@
+/* CSS of the main page */
+body, html {
+    font-family: 'Open Sans';
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding 0;
+    color: #fff !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+body {
+    background: linear-gradient(to bottom right, #562952, #663AD9) !important; /* Start with red, end with yellow */
+    min-height: 100;
+    color: #fff !important;
+}
+
+h3{
+    margin-top: 3em !important;
+    margin-bottom: 1em !important;
+    color: #fff !important;
+}
+p{
+    margin-bottom: 3em !important;
+}
+
+#content-container {
+    width: 40%;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+button {
+    border-radius: 1em !important;
+    font-size: 1em !important;
+    background-color: #e9f990 !important;
+    border-color: #e9f990 !important;
+    color: #000 !important;
+    padding-left: 1em !important;
+    padding-right: 1em !important;
+}

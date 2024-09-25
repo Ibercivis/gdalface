@@ -1,20 +1,41 @@
-{% extends "base.html" %}
-{% block content %}
-<div class="container">
-    <div class="row">
-        <div class="col-md-6">
-            <h1>GDAL Face</h1>
-            <p>Upload a raster file and get a preview of it.</p>
-            <form action="/upload" method="post" enctype="multipart/form-data">
-                <input type="file" name="file" id="file">
-                <input type="submit" value="Upload">
-            </form>
-        </div>
-        <div class="col-md-6">
-            <h2>Preview</h2>
-            <img src="/static/img/preview.png" alt="Preview" class="img-fluid">
-        </div>
-    </div>
-</div>
+{% load static %}
+{% load bootstrap5 %}
+<!DOCTYPE html>
+<html lang="en">
 
-{% endblock %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Rotation with Fabric.js</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+    {% bootstrap_css %}
+    <!-- Include jQuery from a CDN -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <link href="{% static 'css/main.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+</head>
+<body>
+    <div id="content-container">
+        <img src="{% static 'img/LogoLostAtNight.svg' %}" alt="Lost at Night Logo" class="logo" />
+        <h3>WELCOME TO LOST AT NIGHT</h3>
+        <p>This application is designed to help georeference images taken by astronauts aboard the 
+            International Space Station (ISS). The goal is to create a global map of Earth’s lights at 
+            night to measure and track light pollution. By accurately aligning images with geographical 
+            coordinates, the app contributes to valuable environmental data collection, which can be used 
+            for scientific research, monitoring light pollution, and understanding 
+            its impact on ecosystems and human health.</p>
+            <a href="/gettask">
+                <button class="btn btn-primary">Participate</button>
+            </a>
+    </div>
+</body>
+</html>
