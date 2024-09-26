@@ -135,7 +135,7 @@ $(document).ready(function () {
 
                         success: function (response) {
                             georeferencingModal.hide();
-                            let noCacheUrl = './georeferenced/' + image_name + geoattempt_hash + '/{z}/{x}/{y}.png' + '?nocache=' + new Date().getTime();
+                            let noCacheUrl = '/media/georeferenced/' + image_name + geoattempt_hash + '/{z}/{x}/{y}.png' + '?nocache=' + new Date().getTime();
                             if (lyr)
                                 map.removeLayer(lyr);
 
@@ -264,7 +264,7 @@ $(document).ready(function () {
                     }
                 });
             });
-            const static_url = "/static/images/"; // Static URL
+            const static_url = "/media/original/"; // Static URL
             const imageUrl = static_url + image_name + '.JPG'; // Image URL
             console.log(response);
             const canvasWidth = $('#column-photo').width(); // Canvas width

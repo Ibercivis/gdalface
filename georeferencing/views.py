@@ -185,16 +185,16 @@ class GeoAttemptIndividualView(APIView):
                 print('Starting the testing process')
 
                 # Ensure the georeferenced directory exists
-                if not os.path.exists('georeferenced'):
-                    os.makedirs('georeferenced')
+                if not os.path.exists('media/georeferenced'):
+                    os.makedirs('media/georeferenced')
 
                 # First command: gdal_translate
                 command = 'gdal_translate -of GTiff'
                 for item in request.data['control_points']:
                     command += ' -gcp ' + str(item['actualPx']) + ' ' + str(item['actualPy'])
                     command += ' ' + str(item['lon']) + ' ' + str(item['lat'])
-                command += ' georeferencing/static/images/' + geoattemp.image.name + '.JPG '
-                command += ' georeferenced/' + geoattemp.image.name + geoattemp.hash + '.tif'
+                command += ' media/original/' + geoattemp.image.name + '.JPG '
+                command += ' media/georeferenced/' + geoattemp.image.name + geoattemp.hash + '.tif'
                 print(command)
                 try:
                     subprocess.run(command, shell=True, check=True, capture_output=True, text=True)
@@ -204,8 +204,8 @@ class GeoAttemptIndividualView(APIView):
                 # Second command: gdalwarp
                 # Check the # of points before enable tps (-order n to pylynomial)
                 command = 'gdalwarp --config NUM_THREADS 4 -multi  -r bilinear -tps -t_srs EPSG:4326'
-                command += ' georeferenced/' + geoattemp.image.name + geoattemp.hash + '.tif'
-                command += ' georeferenced/' + geoattemp.image.name + geoattemp.hash + '.tif'
+                command += ' media/georeferenced/' + geoattemp.image.name + geoattemp.hash + '.tif'
+                command += ' media/georeferenced/' + geoattemp.image.name + geoattemp.hash + '.tif'
                 print(command)
 
                 try:    
@@ -214,9 +214,9 @@ class GeoAttemptIndividualView(APIView):
                     return Response({"error": f"gdalwarp failed: {e.stderr}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
                 
                 # Third command: Remove previous tiles
-                command = 'rm -r georeferenced/' + geoattemp.image.name + geoattemp.hash
+                command = 'rm -r media/georeferenced/' + geoattemp.image.name + geoattemp.hash
                 print(command)
-                if os.path.exists('georeferenced/' + geoattemp.image.name + geoattemp.hash):
+                if os.path.exists('media/georeferenced/' + geoattemp.image.name + geoattemp.hash):
                     try:
                         subprocess.run(command, shell=True, check=True, capture_output=True, text=True)
                     except subprocess.CalledProcessError as e:
@@ -224,8 +224,8 @@ class GeoAttemptIndividualView(APIView):
                
                 # Fourth command:
                 command = 'gdal2tiles.py -z 7-12 -r bilinear -s EPSG:4326'
-                command += ' georeferenced/' + geoattemp.image.name + geoattemp.hash + '.tif'
-                command += ' georeferenced/' + geoattemp.image.name + geoattemp.hash
+                command += ' media/georeferenced/' + geoattemp.image.name + geoattemp.hash + '.tif'
+                command += ' media/georeferenced/' + geoattemp.image.name + geoattemp.hash
                 print(command)
 
                 try:
