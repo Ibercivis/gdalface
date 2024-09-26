@@ -114,13 +114,14 @@ $(document).ready(function () {
                     return;
                 } else {
                     $('.modal-title').html('Georefencing in progress...'); // Set the modal content
-                    $('.modal-body').html('We are georeferencing the photography. Please wait.'); // Set the modal body content
+                    $('.modal-body').html('We aree georeferencing the photography. Please wait.<br /><br />'
+                        +'<div class="d-flex justify-content-center"><img width="40px" src="/static/img/doing.gif" /></div>'); // Set the modal body content
                     georeferencingModal.show();
                     // Doing a post request to the backend
                     const data = {
                         "geoattempt_id": geoatempt_id,
                         "control_points": iconList,
-                        "status": "PENDING"
+                        "status": "ASSIGNED"
                     }
                     $.ajax({
                         url: 'api/v1/geoattempt-individual/' + geoatempt_id + '/',
@@ -243,7 +244,25 @@ $(document).ready(function () {
             });
             $('#Skip').on('click', function () {
                 // Reload page
-                location.reload();
+                // We release the task
+                $.ajax({
+                    url: '/api/v1/geoattempt-individual/' + geoatempt_id + '/',
+                    type: 'PATCH',
+                    dataType: 'json',
+                    headers: {
+                        'X-CSRFToken': csrftoken,
+                        'Content-Type': 'application/json'
+                    },
+                    data: JSON.stringify({ "status": "PENDING" }),
+                    success: function (response) {
+                        location.reload();
+                    },
+                    error: function (response) {
+                        $('.modal-title').html('Error!'); // Set the modal content
+                        $('.modal-body').html('An error ' + response.status + ' occurred:<br />' + response.responseText); // Set the modal body content
+                        infoModal.show(); // Show the modal
+                    }
+                });
             });
             const static_url = "/static/images/"; // Static URL
             const imageUrl = static_url + image_name + '.JPG'; // Image URL

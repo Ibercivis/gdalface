@@ -23,6 +23,7 @@ class GeoAttempt(models.Model):
 
     STATUS_CHOICES = (
         ('PENDING', 'Pending'),
+        ('ASSIGNED', 'Assigned'),
         ('DONE', 'Done'),
     )
     created = models.DateTimeField(auto_now_add=True)

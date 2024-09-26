@@ -42,3 +42,10 @@ button {
     padding-left: 1em !important;
     padding-right: 1em !important;
 }
+.logo{
+    width: 40% !important;
+}
+.small-img{
+    width: 10px !important;
+    margin: 1em !important;
+}

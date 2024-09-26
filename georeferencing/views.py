@@ -130,13 +130,19 @@ class PendingGeoAttemptView(APIView):
             operation_summary="Get a random 'PENDING' geo attempt")
     def get(self, request):
         # Filter GeoAttempts by "PENDING" status
+        print('Here')
         pending_geoattempts = GeoAttempt.objects.filter(status="PENDING")
+        print(pending_geoattempts)
+  
 
         if not pending_geoattempts.exists():
+            print('No pending geo attempts found.')
             return Response({"error": "No pending geo attempts found."}, status=status.HTTP_404_NOT_FOUND)
 
         # Select a random GeoAttempt
         geoattempt = random.choice(pending_geoattempts)
+        geoattempt.status = 'ASSIGNED'
+        geoattempt.save()
 
         # Serialize the GeoAttempt
         serializer = GeoAttemptSerializer(geoattempt)
@@ -160,6 +166,8 @@ class GeoAttemptIndividualView(APIView):
             operation_summary="Get an image geo attempt")
     def get(self, request, pk=None):
         geoattemp = get_object_or_404(GeoAttempt, pk=pk)
+        # Changing the geoattemp status to ASSIGNED
+  
         serializer = GeoAttemptSerializer(geoattemp)
         return Response(serializer.data)
     
@@ -173,7 +181,7 @@ class GeoAttemptIndividualView(APIView):
         serializer = GeoAttemptSerializer(geoattemp, data=request.data, partial=True)
         if serializer.is_valid():
         
-            if request.data['status'] == 'PENDING':
+            if request.data['status'] == 'ASSIGNED':
                 print('Starting the testing process')
 
                 # Ensure the georeferenced directory exists
@@ -231,8 +239,14 @@ class GeoAttemptIndividualView(APIView):
                 # for the moment, launch a batch script
                 print('doing georeferencing')
                 print(request.data['controlPoints'])
+                serializer.save()
+            elif request.data['status'] == 'PENDING':
+                # Come back to pending status
+                print('Come back to pending status')
+
                 serializer.save()    
             return Response(serializer.data, status=status.HTTP_200_OK)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     @swagger_auto_schema(
