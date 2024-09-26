@@ -167,6 +167,7 @@ db.sqlite3
 # Ignore static and media files
 **/static/images/
 media/
-georeferenced/
 .DS_Store
 .env
+staticfiles/
+frontend/templates/_google_analytics.html
