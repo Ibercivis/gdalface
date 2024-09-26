@@ -203,7 +203,7 @@ class GeoAttemptIndividualView(APIView):
                 
                 # Second command: gdalwarp
                 # Check the # of points before enable tps (-order n to pylynomial)
-                command = 'gdalwarp --config NUM_THREADS 4 -multi  -r bilinear -tps -t_srs EPSG:4326'
+                command = 'gdalwarp -r bilinear -tps -t_srs EPSG:4326'
                 command += ' media/georeferenced/' + geoattemp.image.name + geoattemp.hash + '.tif'
                 command += ' media/georeferenced/' + geoattemp.image.name + geoattemp.hash + '.tif'
                 print(command)
@@ -222,8 +222,8 @@ class GeoAttemptIndividualView(APIView):
                     except subprocess.CalledProcessError as e:
                         return Response({"error": f"Failed to remove previous tiles: {e.stderr}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
                
-                # Fourth command:
-                command = 'gdal2tiles.py -z 7-12 -r bilinear -s EPSG:4326'
+                # Fourth command: (-r bilinear is slower, but....)
+                command = 'gdal2tiles.py -z 7-12 -r near -s EPSG:4326'
                 command += ' media/georeferenced/' + geoattemp.image.name + geoattemp.hash + '.tif'
                 command += ' media/georeferenced/' + geoattemp.image.name + geoattemp.hash
                 print(command)
