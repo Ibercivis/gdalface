@@ -243,6 +243,9 @@ class GeoAttemptIndividualView(APIView):
             elif request.data['status'] == 'PENDING':
                 # Come back to pending status
                 print('Come back to pending status')
+                geoattemp.skipped += 1
+                geoattemp.save()
+                
 
                 serializer.save()    
             return Response(serializer.data, status=status.HTTP_200_OK)
