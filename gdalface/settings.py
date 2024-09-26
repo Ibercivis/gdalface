@@ -28,6 +28,7 @@ SECRET_KEY = 'django-insecure-*=6q(&bzk6+*uxgus^d%4^i)c*fr!p+%3(m5kf#+ir@969^3c*
 DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = ['lostatnight.org', 'localhost', '127.0.0.1']
+CSRF_TRUSTED_ORIGINS = ['https://lostatnight.org']
 
 # Application definition
 
@@ -134,8 +135,13 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
-
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Where collected static files go in production
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),  # Your static files in development
+]
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -145,13 +151,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # settings.py
 
 # Static files (CSS, JavaScript, Images)
-STATIC_URL = '/static/'
-
-# Directory to collect static files
-STATICFILES_DIRS = [
-    BASE_DIR / "static",  # Add the base static directory at the project level
-    # or 'your_app/static' for app-level static files
-]
 
 # Serving georeferenced images
 GEOREFERENCED_ROOT = os.path.join(BASE_DIR, 'georeferenced')
