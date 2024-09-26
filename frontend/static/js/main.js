@@ -114,7 +114,7 @@ $(document).ready(function () {
                     return;
                 } else {
                     $('.modal-title').html('Georefencing in progress...'); // Set the modal content
-                    $('.modal-body').html('We aree georeferencing the photography. Please wait.<br /><br />'
+                    $('.modal-body').html('We are georeferencing the photography. Please wait.<br /><br />'
                         +'<div class="d-flex justify-content-center"><img width="40px" src="/static/img/doing.gif" /></div>'); // Set the modal body content
                     georeferencingModal.show();
                     // Doing a post request to the backend
