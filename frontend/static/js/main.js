@@ -591,7 +591,7 @@ $(document).ready(function () {
                     subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
                     transparent: true,
                 });
-                map = L.map('map', { layers: [viirs] }).setView(latLng, 10);
+                map = L.map('map', { layers: [viirs],  maxZoom: 12 }).setView(latLng, 10);
                 osmLayer.addTo(map);
 
 

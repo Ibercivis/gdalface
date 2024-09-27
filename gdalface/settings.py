@@ -150,8 +150,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # settings.py
 
-# Static files (CSS, JavaScript, Images)
-
-# Serving georeferenced images
-GEOREFERENCED_ROOT = os.path.join(BASE_DIR, 'georeferenced')
-GEOREFERENCED_URL = '/georeferenced/'
+# Media folder
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
