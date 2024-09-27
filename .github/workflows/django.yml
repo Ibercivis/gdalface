@@ -9,10 +9,20 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 4
-      matrix:
-        python-version: [3.8, 3.9]
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: gdalface
+          POSTGRES_PASSWORD: gdalface
+          POSTGRES_DB: gdalface
+        ports:
+          - 5432:5432
+        options: > 
+          --health-cmd "pg_isready -U postgres" 
+          --health-interval 10s 
+          --health-timeout 5s 
+          --health-retries 5
 
     steps:
     - uses: actions/checkout@v4
