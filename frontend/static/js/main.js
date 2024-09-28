@@ -579,7 +579,7 @@ $(document).ready(function () {
                     transparent: true,
                     tms: 1,
                     attribution: 'The Earth Observation Group (EOG)',
-                    opacity: 0.7,
+                    opacity: 0.8,
                 });
                 const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom: 12,
@@ -591,7 +591,7 @@ $(document).ready(function () {
                     subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
                     transparent: true,
                 });
-                map = L.map('map', { layers: [viirs] }).setView(latLng, 10);
+                map = L.map('map', { layers: [viirs], maxZoom: 12 }).setView(latLng, 10);
                 osmLayer.addTo(map);
 
 
