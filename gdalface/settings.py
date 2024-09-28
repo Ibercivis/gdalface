@@ -91,9 +91,9 @@ WSGI_APPLICATION = 'gdalface.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
+        'NAME': config('DB_NAME', default='gdalface'),
+        'USER': config('DB_USER', default='gdalface'),
+        'PASSWORD': config('DB_PASSWORD', default='gdalface'),
         'HOST': config('DB_HOST', default='localhost'),
         'PORT': config('DB_PORT', default='5432'),
     }
@@ -150,8 +150,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # settings.py
 
-# Static files (CSS, JavaScript, Images)
-
-# Serving georeferenced images
-GEOREFERENCED_ROOT = os.path.join(BASE_DIR, 'georeferenced')
-GEOREFERENCED_URL = '/georeferenced/'
+# Media folder
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
