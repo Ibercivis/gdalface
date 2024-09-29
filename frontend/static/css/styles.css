@@ -204,7 +204,7 @@ li.completed {
 
 .small-logos {
     max-width: 40%; /* Adjust as needed */
-    margin: 0 auto; /* Center the logos */
+    margin: 0 auto !important; /* Center the logos */
 }
 .developed {
     color: #333;
@@ -235,11 +235,15 @@ li.completed {
     cursor: grabbing !important;
 }
 #social-media {
+
     display: flex;
-    justify-content: center;
-    margin-left: 20% !important;
-    margin-right: 20% !important;
     margin-top: 0.5em;
+    text-align: center;
+}
+
+.social-media-content{
+    margin: auto !important;
+    text-align: center !important;
 }
 a.social {
     text-decoration: none;
