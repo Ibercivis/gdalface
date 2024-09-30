@@ -188,9 +188,9 @@ $(document).ready(function () {
 
                             layersControl = L.control.layers(baseLayers, overlaymaps, { collapsed: false }).addTo(map);
                             var currentZoom = map.getZoom();
-                            map.setZoom(currentZoom + 1);
+                            map.setZoom(11);
                             setTimeout(function () {
-                                map.setZoom(currentZoom);
+                                map.setZoom(12);
                             }, 300);  // Adjust the delay if necessary, 300ms works in most cases
                             $('#Submit').removeClass('disabled');
 
@@ -582,16 +582,16 @@ $(document).ready(function () {
                     opacity: 0.8,
                 });
                 const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    maxZoom: 12,
+                    maxZoom: 18,
                     attribution: '© OpenStreetMap contributors'
                 });
 
                 const googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
-                    maxZoom: 12,
+                    maxZoom: 18,
                     subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
                     transparent: true,
                 });
-                map = L.map('map', { layers: [viirs],  maxZoom: 12 }).setView(latLng, 10);
+                map = L.map('map', { layers: [viirs],  maxZoom: 18 }).setView(latLng, 10);
                 osmLayer.addTo(map);
 
 
