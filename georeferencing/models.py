@@ -26,8 +26,12 @@ class GeoAttempt(models.Model):
         ('ASSIGNED', 'Assigned'),
         ('DONE', 'Done'),
     )
-    created = models.DateTimeField(auto_now_add=True)
+    
     image = models.ForeignKey('Image', on_delete=models.CASCADE)
+    createdDateTime = models.DateTimeField(auto_now_add=True)
+    assignedDateTime = models.DateTimeField(blank=True, null=True)
+    finishedDateTime = models.DateTimeField(blank=True, null=True)
+    numberTries = models.IntegerField(default=0)
     hash = models.CharField(
         max_length=100,
         blank=True,
@@ -38,14 +42,21 @@ class GeoAttempt(models.Model):
         default = 'PENDING')
     skipped = models.IntegerField(default=0)
     controlPoints = models.JSONField(default=dict, blank=True, null=True)
+
     
     def save(self, *args, **kwargs):
         if not self.hash:
             self.hash = hashlib.md5(str(uuid.uuid4()).encode()).hexdigest()
         super(GeoAttempt, self).save(*args, **kwargs)
 
+    def elapsedTime(self):
+        if self.finished:
+            return self.finished - self.created
+        else:
+            return None
+
     def __str__(self):
-        return str(self.image.name) + " - " + str(self.created) + " - " + str(self.status)
+        return str(self.image.name) + " - " + str(self.createdDateTime) + " - " + str(self.status)
 
     
 class Image(models.Model):

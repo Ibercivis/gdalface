@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -10,6 +11,7 @@ from .models import Controlpoint, GeoAttempt, Image
 import os
 import subprocess
 import random
+
 
 
 # Create your views here.
@@ -139,9 +141,13 @@ class PendingGeoAttemptView(APIView):
             print('No pending geo attempts found.')
             return Response({"error": "No pending geo attempts found."}, status=status.HTTP_404_NOT_FOUND)
 
-        # Select a random GeoAttempt
+        # Select a random GeoAttempt and initialize some fields
         geoattempt = random.choice(pending_geoattempts)
         geoattempt.status = 'ASSIGNED'
+        geoattempt.assignedDateTime = timezone.now()
+        geoattempt.numberTries = 0
+        
+
         geoattempt.save()
 
         # Serialize the GeoAttempt
@@ -183,6 +189,9 @@ class GeoAttemptIndividualView(APIView):
         
             if request.data['status'] == 'ASSIGNED':
                 print('Starting the testing process')
+                # We increment the number of tries
+                geoattemp.numberTries += 1
+                geoattemp.save()
 
                 # Ensure the georeferenced directory exists
                 if not os.path.exists('media/georeferenced'):
