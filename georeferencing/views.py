@@ -254,7 +254,11 @@ class GeoAttemptIndividualView(APIView):
             elif request.data['status'] == 'PENDING':
                 # Come back to pending status
                 print('Come back to pending status')
+                # We are doing it mainly for control panel
                 geoattemp.skipped += 1
+                geoattemp.assignedDateTime = None
+                geoattemp.finishedDateTime = None
+                geoattemp.numberTries = 0
                 geoattemp.save()
                 
 
