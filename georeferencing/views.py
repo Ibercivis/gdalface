@@ -145,9 +145,9 @@ class PendingGeoAttemptView(APIView):
         geoattempt = random.choice(pending_geoattempts)
         geoattempt.status = 'ASSIGNED'
         geoattempt.assignedDateTime = timezone.now()
+        geoattempt.finishedDateTime = None
         geoattempt.numberTries = 0
-        
-
+        geoattempt.controlPoints = []
         geoattempt.save()
 
         # Serialize the GeoAttempt
@@ -248,6 +248,8 @@ class GeoAttemptIndividualView(APIView):
                 # for the moment, launch a batch script
                 print('doing georeferencing')
                 print(request.data['controlPoints'])
+                geoattemp.finishedDateTime = timezone.now()
+                geoattemp.save()
                 serializer.save()
             elif request.data['status'] == 'PENDING':
                 # Come back to pending status
