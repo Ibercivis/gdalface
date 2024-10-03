@@ -46,6 +46,9 @@ INSTALLED_APPS = [
     'drf_yasg',
     'bootstrap5',
     'fontawesomefree',
+
+    # Other apps
+    'django_q',
 ]
 
 MIDDLEWARE = [
@@ -154,3 +157,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Media folder
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Q Cluster
+Q_CLUSTER = {
+    'name': 'DjangoORM',
+    'workers': 4,
+    'timeout': 60,  # Task timeout (in seconds)
+    'retry': 120,  # Retry after this period (should be longer than timeout)
+    'queue_limit': 50,
+    'bulk': 10,
+    'orm': 'default',
+}
