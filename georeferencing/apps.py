@@ -23,7 +23,7 @@ def schedule_tasks(sender, **kwargs):
             schedule(
                 'georeferencing.tasks.update_assigned',
                 schedule_type='H',
-                hours=24,
+                hours=1,
                 repeats=-1  # repeat indefinitely
             )
     except OperationalError:
