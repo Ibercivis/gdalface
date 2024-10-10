@@ -654,25 +654,43 @@ $(document).ready(function () {
                 });
 
 
-                // Mouse wheel
                 canvas.on('mouse:wheel', function (event) {
                     const delta = -event.e.deltaY; // Get the scroll direction
-                    let zoom = group.scaleX + delta / 300; // Adjust the zoom factor
-                    zoom = Math.max(0.1, zoom); // Set a minimum zoom level
-                    group.scaleX = zoom; // Apply the zoom to the X-axis
-                    group.scaleY = zoom; // Apply the zoom to the Y-axis
-                    // Adjust icons' scale to maintain their original size
+                    const zoomFactor = 300;
+                
+                    // Calculate the new zoom level
+                    let zoom = group.scaleX + delta / zoomFactor; // Adjust the zoom factor
+                    zoom = Math.max(0.1, Math.min(zoom, 10)); // Set a minimum and maximum zoom level (adjust to your needs)
+                
+                    // Get the mouse position relative to the canvas before zooming
+                    const pointer = canvas.getPointer(event.e);
+                
+                    // Calculate the position of the mouse relative to the group's current position
+                    const prevZoomPointX = (pointer.x - group.left) / group.scaleX;
+                    const prevZoomPointY = (pointer.y - group.top) / group.scaleY;
+                
+                    // Apply the zoom to the group
+                    group.scaleX = zoom;
+                    group.scaleY = zoom;
+                
+                    // After zooming, recalculate the group's position so that the point under the mouse stays in the same place
+                    group.left = pointer.x - prevZoomPointX * zoom;
+                    group.top = pointer.y - prevZoomPointY * zoom;
+                
+                    // Adjust any other objects' scale inside the group (like icons)
                     group.getObjects().forEach(function (obj) {
                         if (obj !== img) { // Exclude the main image
                             obj.scaleX = originalIconScale / group.scaleX;
                             obj.scaleY = originalIconScale / group.scaleY;
                         }
                     });
-
-                    canvas.requestRenderAll(); // Re-render the canvas
-                    event.e.preventDefault(); // Prevent default scroll behavior
-                    event.e.stopPropagation(); // Stop event propagation
-                    canvas.requestRenderAll(); // Re-render the canvas with the new zoom level
+                
+                    // Re-render the canvas
+                    canvas.requestRenderAll();
+                
+                    // Prevent default scrolling behavior
+                    event.e.preventDefault();
+                    event.e.stopPropagation();
                 });
 
                 // Event for mouse down
