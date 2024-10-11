@@ -11,7 +11,7 @@ from decouple import config
 
 
 class BatchAdmin(admin.ModelAdmin):
-    list_display = ('name', 'createdDateTime', 'images_count', 'result')
+    list_display = ('name', 'createdDateTime', 'numberImages')
     list_filter = ('createdDateTime',)
     search_fields = ('name',)
     
@@ -28,10 +28,16 @@ class BatchAdmin(admin.ModelAdmin):
     # Custom view to fetch data from an external API
     def fetch_api_data(self, request):
         feat_value = request.GET.get('feat', '')
+        mission = request.GET.get('mission', '')
         url = 'https://eol.jsc.nasa.gov/SearchPhotos/PhotosDatabaseAPI/PhotosDatabaseAPI.pl'
-        query = f'query=frames|feat|like|*{feat_value}*|images|directory|like|*large*'
+        query = 'query=images|directory|like|*large*'
+        if feat_value:
+            query = f'{query}|frames|feat|like|*{feat_value}'
+        elif mission:
+            query = f'{query}|frames|mission|like|*{mission}'
         key = config('NASA_API_KEY')
         urlRequest = f'{url}?{query}&return=frames|geon|frames|feat|images|directory|images|filename|frames|fclt|frames|pdate|frames|ptime|frames|lat|frames|lon&key={key}'
+        print(urlRequest)
         
 
         try:
@@ -54,11 +60,6 @@ class BatchAdmin(admin.ModelAdmin):
         if not change:
             obj.user = request.user
         obj.save()
-
-    def images_count(self, obj):
-        return Image.objects.filter(batch=obj).count()
-
-    images_count.short_description = '# Images'
 
 
 class ImageAdmin(admin.ModelAdmin):
