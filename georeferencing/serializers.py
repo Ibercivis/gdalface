@@ -1,11 +1,5 @@
 from rest_framework import serializers
-from .models import Controlpoint, GeoAttempt, Image
-
-class ControlpointSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Controlpoint
-        fields = ['id', 'x', 'y', 'lat', 'long', 'created', 'geoAttempt']
-        read_only_fields = ['created']
+from .models import GeoAttempt, Image
 
 class GeoAttemptSerializer(serializers.ModelSerializer):
     """

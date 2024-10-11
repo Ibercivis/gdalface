@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Controlpoint, Image, GeoAttempt
+from .models import Image, GeoAttempt
 
 
 class ImageAdmin(admin.ModelAdmin):
@@ -34,11 +34,6 @@ class GeoAttemptAdmin(admin.ModelAdmin):
         self.message_user(request, f'{update} attempts marked as pending')
 
 
-
-
-
-
-admin.site.register(Controlpoint)
 admin.site.register(Image, ImageAdmin)
 admin.site.register(GeoAttempt, GeoAttemptAdmin)
 

@@ -6,86 +6,11 @@ from rest_framework.response import Response
 from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.parsers import JSONParser
-from .serializers import ControlpointSerializer, GeoAttemptSerializer, ImageSerializer, MiniGeoAttemptSerializer
-from .models import Controlpoint, GeoAttempt, Image
+from .serializers import GeoAttemptSerializer, ImageSerializer, MiniGeoAttemptSerializer
+from .models import GeoAttempt, Image
 import os
 import subprocess
 import random
-
-
-
-# Create your views here.
-
-class ControlpointView(APIView):
-    """
-    ControlpointView class for managing control points.
-    Attributes:
-        parser_classes (tuple): Tuple of parser classes for request parsing.
-    Methods:
-        get(request): Get all control points.
-        post(request): Post a control point.
-    """
-    parser_classes = (JSONParser,)
-
-    @swagger_auto_schema(
-            tags=['01. Controlpoints'],
-            operation_summary="Get all control points")
-    def get(self, request):
-        controlpoints = Controlpoint.objects.all()
-        serializer = ControlpointSerializer(controlpoints, many=True)
-        return Response(serializer.data)
-    
-    @swagger_auto_schema(
-            request_body=ControlpointSerializer,
-            tags=['01. Controlpoints'],
-            operation_summary="Post a control point")
-    def post(self, request):
-        serializer = ControlpointSerializer(data=request.data, context = {'request': request})
-        
-        if serializer.is_valid():
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    
-
-class ControlpointIndividualView(APIView):
-    """
-    ControlpointIndividualView
-    This class represents the API view for individual control points.
-    Methods:
-    - get: Retrieves a control point.
-    - patch: Updates a control point.
-    - delete: Deletes a control point.
-    """
-    parser_classes = (JSONParser,)
-
-    @swagger_auto_schema(
-            tags=['01. Controlpoints'],
-            operation_summary="Get a control point")
-    def get(self, request, pk=None):
-        controlpoint = get_object_or_404(Controlpoint, pk=pk)
-        serializer = ControlpointSerializer(controlpoint)
-        return Response(serializer.data)
-    
-    @swagger_auto_schema(
-            request_body=ControlpointSerializer,
-            tags=['01. Controlpoints'],
-            operation_summary="Patch a control point")
-    def patch(self, request, pk=None):
-        controlpoint = get_object_or_404(Controlpoint, pk=pk)
-        serializer = ControlpointSerializer(controlpoint, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    @swagger_auto_schema(
-            tags=['01. Controlpoints'],
-            operation_summary="Delete a control point")    
-    def delete(self, request, pk=None):
-        controlpoint = get_object_or_404(Controlpoint, pk=pk)
-        controlpoint.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
     
     
 class GeoAttemptView(APIView):

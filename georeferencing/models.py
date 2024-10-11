@@ -2,22 +2,6 @@ from django.db import models
 import hashlib
 import uuid
 from django.contrib.auth.models import User
-
-# Create your models here.
-class Controlpoint(models.Model):
-
-    x = models.FloatField()
-    y = models.FloatField()
-    lat = models.FloatField()
-    long = models.FloatField()
-    created = models.DateTimeField(auto_now_add=True)
-    geoAttempt = models.ForeignKey(
-        'GeoAttempt',
-        on_delete=models.CASCADE,
-        null=True,)
-
-    def __str__(self):
-        return str(self.geoAttempt.image.name) + " - " + str(self.x) + " - " + str(self.y)
     
 class GeoAttempt(models.Model):
 
