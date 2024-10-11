@@ -62,7 +62,7 @@ class GeoAttempt(models.Model):
 class Image(models.Model):
     name = models.CharField(max_length=100)
     taken = models.DateTimeField(blank=True, null=True)
-    created = models.DateTimeField(auto_now_add=True, blank = True, null = True)
+    createdDateTime = models.DateTimeField(auto_now_add=True, blank = True, null = True)
     camera = models.CharField(max_length=100, blank = True, null = True)
     focalLength = models.IntegerField(blank = True, null = True)
     cameraTilt = models.IntegerField(blank = True, null = True)
