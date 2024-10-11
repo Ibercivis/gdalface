@@ -1,0 +1,38 @@
+{% extends "admin/change_form.html" %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% endblock %}
+
+{% block after_field_sets %}
+    {{ block.super }}
+    <div>
+        <button type="button" id="fetch-data-btn" class="btn btn-primary">Fetch API Data</button>
+    </div>
+    <script>
+        $(document).ready(function() {
+            $('#fetch-data-btn').on('click', function() {
+                var featValue = $('input[name="feat"]').val();
+                var requestUrl = '{{ fetch_api_url }}?feat=' + featValue;
+                $.ajax({
+                    url: requestUrl,
+                    method: 'GET',
+                    success: function(data) {
+                        if (data.success) {
+                            const prettyJson = JSON.stringify(JSON.parse(data.result), null, 4);
+                            $('textarea[name="result"]').val(prettyJson);  // Set the result into the hidden field
+                            // count the number of elements)
+                            $('input[name=numberImages]').val(JSON.parse(data.result).length);  // Set the number of images
+                        } else {
+                            $('#api-result').html('Error: ' + data.error);
+                        }
+                    },
+                    error: function() {
+                        $('#api-result').html('Error fetching data.');
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

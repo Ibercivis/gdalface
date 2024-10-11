@@ -55,5 +55,17 @@ class Image(models.Model):
     photoCenterByMachineLearning = models.CharField(max_length=100, blank = True, null = True)
     spaceCraftAltitude = models.IntegerField( blank = True, null = True)
     link = models.URLField( blank = True, null = True)
+    batch = models.ForeignKey('Batch', on_delete=models.CASCADE, blank=True, null=True)
+    def __str__(self):
+        return self.name
+    
+
+class Batch(models.Model):
+    name = models.CharField(max_length=100)
+    createdDateTime = models.DateTimeField(auto_now_add=True)
+    feat = models.CharField(max_length=100, blank = True, null = True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    result = models.JSONField(default=dict, blank=True, null=True)
+    numberImages = models.IntegerField(default=0)
     def __str__(self):
         return self.name
