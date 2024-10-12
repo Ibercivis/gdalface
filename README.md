@@ -1,6 +1,6 @@
 To be completed
 
-django_q
+
 
 ## Instalation in development mode
 
