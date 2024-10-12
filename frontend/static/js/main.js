@@ -4,21 +4,25 @@ $(document).ready(function () {
 
     // Function to parse the coordinate string and convert to decimal degrees
     function parseCoordinates(coordString) {
-        const regex = /([0-9.]+)°\s*([NS]),\s*([0-9.]+)°\s*([EW])/;
+        // Updated regex to handle negative values and optional N/S, E/W indicators
+        const regex = /([-+]?[0-9.]+)\s*([NS])?,?\s*([-+]?[0-9.]+)\s*([EW])?/;
         const matches = coordString.match(regex);
-
+    
         if (matches) {
             let lat = parseFloat(matches[1]);
             let lng = parseFloat(matches[3]);
-
-            // Adjust for N/S and E/W
+    
+            // Adjust latitude based on N/S if present
             if (matches[2] === 'S') lat = -lat;
+    
+            // Adjust longitude based on E/W if present
             if (matches[4] === 'W') lng = -lng;
-
-            return [lat, lng];  // Return the coordinates as an array [lat, lng]
+    
+            return [lat, lng];  // Return the parsed latitude and longitude
+        } else {
+            console.error(`Invalid coordinate format: ${coordString}`);
+            throw new Error("Invalid coordinate format");
         }
-
-        throw new Error("Invalid coordinate format");
     }
 
     function getCookie(name) {
@@ -265,8 +269,9 @@ $(document).ready(function () {
                 });
             });
             const static_url = "/media/original/"; // Static URL
-            const imageUrl = static_url + image_name + '.JPG'; // Image URL
+            const imageUrl = static_url + image_name; // Image URL
             console.log(response);
+            let latLng = "";
             const canvasWidth = $('#column-photo').width(); // Canvas width
             const canvasHeight = $('#column-photo').height(); // Canvas height
             canvas.setWidth(canvasWidth); // Set the canvas width
@@ -567,7 +572,13 @@ $(document).ready(function () {
                     return { px: transformedPoint.x + img.width / 2, py: transformedPoint.y + img.height / 2 };
                 }
 
-                const latLng = parseCoordinates(response.photo_center_by_machine_learning);
+                if(response.photo_center_point){
+                    latLng = parseCoordinates(response.photo_center_point);
+                } else if (response.photo_center_by_machine_learning) {
+                    latLng = parseCoordinates(response.photo_center_by_machine_learning);
+                } else {
+                    latLng = [0, 0];
+                }
 
 
 

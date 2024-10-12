@@ -1,17 +1,37 @@
-from django.contrib import admin
-from django.urls import path, reverse
-from django.shortcuts import render, redirect
-from django.http import JsonResponse
-from django import forms
 
-from .models import Batch, Image, GeoAttempt
-from .forms import PrettyJSONWidget
-import requests
-from decouple import config 
+"""
+This module defines Django admin configurations for the georeferencing application, including
+custom admin views and actions.
+"""
 from datetime import datetime
 
+import requests
+from decouple import config
+from django import forms
+from django.contrib import admin
+from django.http import JsonResponse
+from django.urls import path, reverse
+
+from .forms import PrettyJSONWidget
+from .models import Batch, Image, GeoAttempt
+from .tasks import download_image
+
 class BatchAdminForm(forms.ModelForm):
+    """
+    BatchAdminForm is a ModelForm for the Batch model. It includes all fields of the model
+    and uses a custom widget for the 'result' field.
+    """
     class Meta:
+        """
+        Meta class for the Batch model form.
+
+        Attributes:
+            - model (Model): Specifies the model associated with the form.
+            - fields (str): Indicates that all fields of the model should be included in the 
+            form.
+            - widgets (dict): Customizes the form field for 'result' using PrettyJSONWidget 
+            with specified attributes.
+        """
         model = Batch
         fields = '__all__'
         widgets = {
@@ -20,23 +40,52 @@ class BatchAdminForm(forms.ModelForm):
 
 
 class BatchAdmin(admin.ModelAdmin):
+    """
+    Custom admin interface for managing Batch objects.
+    Attributes:
+        form (BatchAdminForm): The form class to use for creating and editing Batch objects.
+        list_display (tuple): Fields to display in the list view.
+        list_filter (tuple): Fields to filter by in the list view.
+        search_fields (tuple): Fields to search by in the list view.
+        exclude (tuple): Fields to exclude from the form.
+    """
     form = BatchAdminForm
     list_display = ('name', 'createdDateTime', 'numberImages')
     list_filter = ('createdDateTime',)
     search_fields = ('name',)
-    
     exclude = ('user',)
 
     # Add a custom URL for fetching data
     def get_urls(self):
+        """
+        Overrides the default get_urls method to add custom URLs for the admin interface.
+
+        Returns:
+            list: A list of URL patterns, including the custom URL for fetching API data.
+        """
         urls = super().get_urls()
         custom_urls = [
-            path('fetch-api-data/', self.admin_site.admin_view(self.fetch_api_data), name='fetch_api_data'),
+            path('fetch-api-data/',
+                 self.admin_site.admin_view(self.fetch_api_data),
+                 name='fetch_api_data'),
         ]
         return custom_urls + urls
 
     # Custom view to fetch data from an external API
     def fetch_api_data(self, request):
+        """
+        Fetches data from the NASA Photos Database API based on query parameters.
+        Args:
+            request (HttpRequest): The HTTP request object containing GET parameters.
+        Returns:
+            JsonResponse: A JSON response containing the success status and either the 
+                          fetched data or an error message.
+        GET Parameters:
+            feat (str): Optional. A feature value to filter the images.
+            mission (str): Optional. A mission value to filter the images.
+        Raises:
+            requests.RequestException: If there is an issue with the HTTP request.
+        """
         feat_value = request.GET.get('feat', '')
         mission = request.GET.get('mission', '')
         url = 'https://eol.jsc.nasa.gov/SearchPhotos/PhotosDatabaseAPI/PhotosDatabaseAPI.pl'
@@ -46,12 +95,14 @@ class BatchAdmin(admin.ModelAdmin):
         elif mission:
             query = f'{query}|frames|mission|like|*{mission}'
         key = config('NASA_API_KEY')
-        urlRequest = f'{url}?{query}&return=frames|frame|frames|geon|frames|feat|frames|roll|frames|mission|images|directory|images|filename|frames|fclt|frames|pdate|frames|ptime|frames|lat|frames|lon|frames|nlat|frames|nlon&key={key}'
-        print(urlRequest)
-        
-
+        url_request = (
+            f'{url}?{query}&return=frames|frame|frames|geon|frames|feat|frames|roll|'
+            f'frames|mission|images|directory|images|filename|frames|fclt|frames|pdate|'
+            f'frames|ptime|frames|lat|frames|lon|frames|nlat|frames|nlon&key={key}'
+        )
+        print(url_request)
         try:
-            response = requests.get(urlRequest)  # Replace with your API URL
+            response = requests.get(url_request, timeout=5)
             if response.status_code == 200:
                 return JsonResponse({'success': True, 'result': response.text})
             else:
@@ -62,7 +113,7 @@ class BatchAdmin(admin.ModelAdmin):
     # Override the form template to inject the custom fetch button
     def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
         extra_context = extra_context or {}
-        extra_context['fetch_api_url'] = reverse('admin:fetch_api_data')  # Use reverse to get the URL
+        extra_context['fetch_api_url'] = reverse('admin:fetch_api_data')
         return super().changeform_view(request, object_id, form_url, extra_context)
 
     # Automatically assign the current user when saving
@@ -77,16 +128,24 @@ class BatchAdmin(admin.ModelAdmin):
             for item in obj.result:
                 datetime_str = item['frames.pdate'] + ' ' + item['frames.ptime']
                 formated_datetime = datetime.strptime(datetime_str, '%Y%m%d %H%M%S')
+                largeImageURL = f"https://eol.jsc.nasa.gov/DatabaseImages/{item['images.directory']}/{item['images.filename']}"
                 image = Image.objects.create(
                     name=item['images.filename'],
                     taken=formated_datetime,
                     focalLength=item['frames.fclt'],
-                    photoCenterPoint=f"{item['frames.lat']} {item['frames.lon']}",
-                    spacecraftNadirPoint=f"{item['frames.nlat']} {item['frames.nlon']}",
+                    photoCenterPoint=f"{item['frames.lat']}, {item['frames.lon']}",
+                    spacecraftNadirPoint=f"{item['frames.nlat']}, {item['frames.nlon']}",
                     link = f"https://eol.jsc.nasa.gov/SearchPhotos/photo.pl?mission={item['frames.mission']}&roll={item['frames.roll']}&frame={item['frames.frame']}",
-                    batch=obj
+                    largeImageURL = largeImageURL,
+                    batch=obj,
+                    replicas = obj.replicas
                 )
                 image.save()
+
+                # Now, add to django-rq queue the download of the large image
+               
+                download_image.delay(image)
+
                 
 
 

@@ -55,7 +55,10 @@ class Image(models.Model):
     photoCenterByMachineLearning = models.CharField(max_length=100, blank = True, null = True)
     spaceCraftAltitude = models.IntegerField( blank = True, null = True)
     link = models.URLField( blank = True, null = True)
+    largeImageURL = models.URLField( blank = True, null = True)
+    smallImageURL = models.URLField( blank = True, null = True)
     batch = models.ForeignKey('Batch', on_delete=models.CASCADE, blank=True, null=True)
+    replicas = models.IntegerField(default=5)
     def __str__(self):
         return self.name
     

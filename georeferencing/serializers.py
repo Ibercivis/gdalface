@@ -20,6 +20,7 @@ class GeoAttemptSerializer(serializers.ModelSerializer):
     """
     image_name = serializers.SerializerMethodField()
     photo_center_by_machine_learning = serializers.SerializerMethodField()
+    photo_center_point = serializers.SerializerMethodField()
     photo_taken = serializers.SerializerMethodField()
     focal_length = serializers.SerializerMethodField()
 
@@ -32,6 +33,7 @@ class GeoAttemptSerializer(serializers.ModelSerializer):
                   'numberTries',
                   'image',
                   'image_name',
+                  'photo_center_point',
                   'photo_center_by_machine_learning',
                   'status',
                   'hash',
@@ -43,6 +45,9 @@ class GeoAttemptSerializer(serializers.ModelSerializer):
 
     def get_image_name(self, obj):
         return obj.image.name
+    
+    def get_photo_center_point(self, obj):
+        return obj.image.photoCenterPoint
     
     def get_photo_center_by_machine_learning(self, obj):
         return obj.image.photoCenterByMachineLearning

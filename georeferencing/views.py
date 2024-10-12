@@ -127,7 +127,7 @@ class GeoAttemptIndividualView(APIView):
                 for item in request.data['control_points']:
                     command += ' -gcp ' + str(item['actualPx']) + ' ' + str(item['actualPy'])
                     command += ' ' + str(item['lon']) + ' ' + str(item['lat'])
-                command += ' media/original/' + geoattemp.image.name + '.JPG '
+                command += ' media/original/' + geoattemp.image.name
                 command += ' media/georeferenced/' + geoattemp.image.name + geoattemp.hash + '.tif'
                 print(command)
                 try:
