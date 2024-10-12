@@ -2,15 +2,24 @@ from django.contrib import admin
 from django.urls import path, reverse
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
+from django import forms
 
 from .models import Batch, Image, GeoAttempt
+from .forms import PrettyJSONWidget
 import requests
 from decouple import config 
 
-
+class BatchAdminForm(forms.ModelForm):
+    class Meta:
+        model = Batch
+        fields = '__all__'
+        widgets = {
+            'result': PrettyJSONWidget(attrs={'rows': 20, 'cols': 80})
+        }
 
 
 class BatchAdmin(admin.ModelAdmin):
+    form = BatchAdminForm
     list_display = ('name', 'createdDateTime', 'numberImages')
     list_filter = ('createdDateTime',)
     search_fields = ('name',)

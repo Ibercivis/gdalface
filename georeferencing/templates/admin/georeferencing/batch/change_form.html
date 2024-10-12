@@ -1,39 +1,59 @@
 {% extends "admin/change_form.html" %}
 
 {% block extrahead %}
-    {{ block.super }}
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{{ block.super }}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.1/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.1/mode/javascript/javascript.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.1/codemirror.min.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.1/theme/monokai.min.css" rel="stylesheet" />
 {% endblock %}
 
 {% block after_field_sets %}
-    {{ block.super }}
-    <div>
-        <button type="button" id="fetch-data-btn" class="btn btn-primary">Fetch API Data</button>
-    </div>
-    <script>
-        $(document).ready(function() {
-            $('#fetch-data-btn').on('click', function() {
-                var featValue = $('input[name="feat"]').val();
-                var mission = $('input[name="mission"]').val();
-                var requestUrl = '{{ fetch_api_url }}?feat=' + featValue + '&mission=' + mission;
-                $.ajax({
-                    url: requestUrl,
-                    method: 'GET',
-                    success: function(data) {
-                        if (data.success) {
-                            const prettyJson = JSON.stringify(JSON.parse(data.result), null, 4);
-                            $('textarea[name="result"]').val(prettyJson);  // Set the result into the hidden field
-                            // count the number of elements)
-                            $('input[name=numberImages]').val(JSON.parse(data.result).length);  // Set the number of images
-                        } else {
-                            $('#api-result').html('Error: ' + data.error);
+{{ block.super }}
+<div>
+    <button type="button" id="fetch-data-btn" class="btn btn-primary">Fetch API Data</button>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#fetch-data-btn').on('click', function () {
+            var featValue = $('input[name="feat"]').val();
+            var mission = $('input[name="mission"]').val();
+            var requestUrl = '{{ fetch_api_url }}?feat=' + featValue + '&mission=' + mission;
+            $.ajax({
+                url: requestUrl,
+                method: 'GET',
+                success: function (data) {
+                    if (data.success) {
+                        // Assuming `data.result` is a JSON string
+                        try {
+                            const parsedResult = JSON.parse(data.result);  // Parse the JSON string
+                            const prettyPrintedJSON = JSON.stringify(parsedResult, null, 4);  // Prettify the JSON with 4 spaces indentation
+                            editor.setValue(prettyPrintedJSON);  // Update the CodeMirror editor with prettified JSON
+                            $('input[name="numberImages"]').val(parsedResult.length);  // Update the number of images field
+                        } catch (e) {
+                            console.error("Invalid JSON:", e);
+                            editor.setValue(data.result);  // Just set the raw result if JSON parsing fails
                         }
-                    },
-                    error: function() {
-                        $('#api-result').html('Error fetching data.');
+                    } else {
+                        console.log('Error: ' + data.error);
                     }
-                });
+                },
+                error: function () {
+                    $('#api-result').html('Error fetching data.');
+                }
             });
         });
-    </script>
+
+        var textArea = document.querySelector('textarea[name="result"]');  // Adjust 'result' to your field name
+        var editor = CodeMirror.fromTextArea(textArea, {
+            lineNumbers: true,
+            mode: "application/json",
+            theme: "default",  // You can change the theme here
+            indentUnit: 4,
+            autoCloseBrackets: true,
+            readOnly: true
+        });
+    });
+</script>
 {% endblock %}
