@@ -24,7 +24,7 @@ redis==3.5.3
 requests==2.32.3
 six==1.16.0
 soupsieve==2.6
-sqlparse==0.4.4
+sqlparse==0.5.0
 types-python-dateutil==2.9.0.20241003
 typing_extensions==4.10.0
 uritemplate==4.1.1
