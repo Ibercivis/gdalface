@@ -37,6 +37,7 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('django-rq/', include('django_rq.urls')),  # Add this for django_rq
     path('api/v1/', include('georeferencing.urls')),  # Adjust the path to your app's API
 
     

@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     'fontawesomefree',
 
     # Other apps
-    'django_q',
+    #'django_q',
+    'django_rq',
 ]
 
 MIDDLEWARE = [
@@ -158,13 +159,24 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Q Cluster
-Q_CLUSTER = {
-    'name': 'DjangoORM',
-    'workers': 4,
-    'timeout': 60,  # Task timeout (in seconds)
-    'retry': 120,  # Retry after this period (should be longer than timeout)
-    'queue_limit': 50,
-    'bulk': 10,
-    'orm': 'default',
+# Django RQ
+RQ_QUEUES = {
+    'default': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+        'DEFAULT_TIMEOUT': 360,
+    },
+    'high': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+        'DEFAULT_TIMEOUT': 500,
+    },
+    'low': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+        'DEFAULT_TIMEOUT': 600,
+    }
 }
