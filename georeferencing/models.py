@@ -70,5 +70,6 @@ class Batch(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     result = models.JSONField(default=dict, blank=True, null=True)
     numberImages = models.IntegerField(default=0)
+    replicas = models.IntegerField(default=5)
     def __str__(self):
         return self.name

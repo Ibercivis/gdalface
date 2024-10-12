@@ -8,6 +8,7 @@ from .models import Batch, Image, GeoAttempt
 from .forms import PrettyJSONWidget
 import requests
 from decouple import config 
+from datetime import datetime
 
 class BatchAdminForm(forms.ModelForm):
     class Meta:
@@ -41,11 +42,11 @@ class BatchAdmin(admin.ModelAdmin):
         url = 'https://eol.jsc.nasa.gov/SearchPhotos/PhotosDatabaseAPI/PhotosDatabaseAPI.pl'
         query = 'query=images|directory|like|*large*'
         if feat_value:
-            query = f'{query}|frames|feat|like|*{feat_value}'
+            query = f'{query}|frames|feat|like|*{feat_value}*'
         elif mission:
             query = f'{query}|frames|mission|like|*{mission}'
         key = config('NASA_API_KEY')
-        urlRequest = f'{url}?{query}&return=frames|geon|frames|feat|images|directory|images|filename|frames|fclt|frames|pdate|frames|ptime|frames|lat|frames|lon&key={key}'
+        urlRequest = f'{url}?{query}&return=frames|frame|frames|geon|frames|feat|frames|roll|frames|mission|images|directory|images|filename|frames|fclt|frames|pdate|frames|ptime|frames|lat|frames|lon|frames|nlat|frames|nlon&key={key}'
         print(urlRequest)
         
 
@@ -70,10 +71,28 @@ class BatchAdmin(admin.ModelAdmin):
             obj.user = request.user
         obj.save()
 
+        # Now, we create the images based on result, for each item in result
+        # we create an image and assign it to the batch
+        if obj.result:
+            for item in obj.result:
+                datetime_str = item['frames.pdate'] + ' ' + item['frames.ptime']
+                formated_datetime = datetime.strptime(datetime_str, '%Y%m%d %H%M%S')
+                image = Image.objects.create(
+                    name=item['images.filename'],
+                    taken=formated_datetime,
+                    focalLength=item['frames.fclt'],
+                    photoCenterPoint=f"{item['frames.lat']} {item['frames.lon']}",
+                    spacecraftNadirPoint=f"{item['frames.nlat']} {item['frames.nlon']}",
+                    link = f"https://eol.jsc.nasa.gov/SearchPhotos/photo.pl?mission={item['frames.mission']}&roll={item['frames.roll']}&frame={item['frames.frame']}",
+                    batch=obj
+                )
+                image.save()
+                
+
 
 class ImageAdmin(admin.ModelAdmin):
     list_display = ('name', 'createdDateTime', 'geoattempts_count')
-    list_filter = ('createdDateTime',)
+    list_filter = ('createdDateTime', 'batch')
     search_fields = ('name',)
 
     def geoattempts_count(self, obj):
