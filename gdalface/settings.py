@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'rest_framework',
     'gdalface',
     'georeferencing',
@@ -48,8 +49,12 @@ INSTALLED_APPS = [
     'fontawesomefree',
 
     # Other apps
-    #'django_q',
     'django_rq',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+
 ]
 
 MIDDLEWARE = [
@@ -60,6 +65,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+     # Allauth middleware
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'gdalface.urls'
@@ -180,3 +188,53 @@ RQ_QUEUES = {
         'DEFAULT_TIMEOUT': 600,
     }
 }
+RQ_SHOW_ADMIN_LINK = True # Show the Django RQ admin link in the admin panel
+
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
+
+# Allauth settings
+AUTHENTICATION_BACKENDS = [
+    # Needed to log in by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+# Redirect after login/logout
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+# Email confirmation settings
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # Options: "none", "optional", "mandatory"
+ACCOUNT_EMAIL_REQUIRED = True
+
+# Username behavior
+ACCOUNT_USERNAME_REQUIRED = False  # If you want to log in with email only
+ACCOUNT_AUTHENTICATION_METHOD = 'email'  # 'username' or 'username_email'
+
+# Allow signup via social accounts
+SOCIALACCOUNT_QUERY_EMAIL = True
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': ['profile', 'email'],
+        'AUTH_PARAMS': {'access_type': 'online'},
+        'CLIENT_ID': config('GOOGLE_CLIENT_ID', default=''),  # Fetch from environment variable
+        'SECRET': config('GOOGLE_CLIENT_SECRET', default=''),  # Fetch from environment variable
+    }
+}
+
+SITE_ID = 1

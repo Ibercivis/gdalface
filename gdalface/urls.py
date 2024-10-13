@@ -39,6 +39,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('django-rq/', include('django_rq.urls')),  # Add this for django_rq
     path('api/v1/', include('georeferencing.urls')),  # Adjust the path to your app's API
+    path('accounts/', include('allauth.urls')),  # Add this for allauth
 
     
     # Swagger and Redoc paths
