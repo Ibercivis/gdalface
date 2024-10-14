@@ -50,9 +50,12 @@ def download_image(image):
         return None
     
     # It downloaded the image successfully, so we can create the geoattempts
-    geoattemp = GeoAttempt.objects.create(
-        image = image,
-        status = 'PENDING'
-    )
+    # as many as the number of replicas of the image
+    for _ in range(image.replicas):
+        geoattemp = GeoAttempt.objects.create(
+            image = image,
+            status = 'PENDING'
+        )
+        print(f"GeoAttempt created for image {image}: {geoattemp.id}")
     geoattemp.save()
 

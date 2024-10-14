@@ -12,6 +12,7 @@ class GeoAttempt(models.Model):
     )
     
     image = models.ForeignKey('Image', on_delete=models.CASCADE)
+    assignedUser = models.ForeignKey(User, on_delete=models.DO_NOTHING, blank=True, null=True)
     createdDateTime = models.DateTimeField(auto_now_add=True)
     assignedDateTime = models.DateTimeField(blank=True, null=True)
     finishedDateTime = models.DateTimeField(blank=True, null=True)

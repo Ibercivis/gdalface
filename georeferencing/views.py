@@ -73,6 +73,8 @@ class PendingGeoAttemptView(APIView):
         geoattempt.finishedDateTime = None
         geoattempt.numberTries = 0
         geoattempt.controlPoints = []
+        if request.user.is_authenticated:
+            geoattempt.assignedUser = request.user
         geoattempt.save()
 
         # Serialize the GeoAttempt
@@ -112,7 +114,10 @@ class GeoAttemptIndividualView(APIView):
         serializer = GeoAttemptSerializer(geoattemp, data=request.data, partial=True)
         if serializer.is_valid():
         
-            if request.data['status'] == 'ASSIGNED':
+            # We are receiving this status from user, so that means
+            # that it's not finished yet, and the user is asking for
+            # a new try
+            if request.data['status'] == 'ASSIGNED': 
                 print('Starting the testing process')
                 # We increment the number of tries
                 geoattemp.numberTries += 1
@@ -167,7 +172,7 @@ class GeoAttemptIndividualView(APIView):
                 except subprocess.CalledProcessError as e:
                     return Response({"error": f"gdal2tiles failed: {e.stderr}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
               
-                
+            # That means that the user is happy with the final result    
             elif request.data['status'] == 'DONE':
                 # let's start the georeferencing process
                 # for the moment, launch a batch script
@@ -176,6 +181,13 @@ class GeoAttemptIndividualView(APIView):
                 geoattemp.finishedDateTime = timezone.now()
                 geoattemp.save()
                 serializer.save()
+                if geoattemp.assignedUser:
+                    print('User is authenticated')
+                    # we increment the number of finished geoattempts for this user
+                    
+
+            # That means that the user click on "skip" button
+            # So returning back to pending status
             elif request.data['status'] == 'PENDING':
                 # Come back to pending status
                 print('Come back to pending status')
@@ -184,9 +196,9 @@ class GeoAttemptIndividualView(APIView):
                 geoattemp.assignedDateTime = None
                 geoattemp.finishedDateTime = None
                 geoattemp.numberTries = 0
+                geoattemp.assignedUser = None
+                geoattemp.status = 'PENDING'
                 geoattemp.save()
-                
-
                 serializer.save()    
             return Response(serializer.data, status=status.HTTP_200_OK)
 

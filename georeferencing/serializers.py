@@ -27,6 +27,7 @@ class GeoAttemptSerializer(serializers.ModelSerializer):
     class Meta:
         model = GeoAttempt
         fields = ['id', 
+                  'assignedUser',
                   'createdDateTime',
                   'assignedDateTime',
                   'finishedDateTime',

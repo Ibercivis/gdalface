@@ -20,7 +20,8 @@ class ImageSerializerTest(APITestCase):
             data.keys(),
             ['id', 'name', 'photoCenterByMachineLearning', 'taken', 'focalLength', 
             'createdDateTime', 'camera', 'cameraTilt', 'spacecraftNadirPoint', 
-            'photoCenterPoint', 'spaceCraftAltitude', 'link', 'batch']
+            'photoCenterPoint', 'spaceCraftAltitude', 'link', 'batch', 'largeImageURL',
+            'smallImageURL', 'replicas']
             )
 
     def test_name_field_content(self):
