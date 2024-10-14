@@ -1,0 +1,124 @@
+{% load i18n %}
+{% load static %}
+{% load bootstrap5 %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        Lost At Night |
+        {% block head_title %}
+        {% endblock head_title %}
+    </title>
+    {% block extra_head %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+    {% include '_google_analytics.html' %}
+    {% bootstrap_css %}
+    <!-- Include jQuery from a CDN -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <link href="{% static 'css/main.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+
+    {% endblock extra_head %}
+</head>
+
+<body>
+    {% block body %}
+    {% if messages %}
+    <div>
+        <strong>{% trans "Messages:" %}</strong>
+        <ul>
+            {% for message in messages %}<li>{{ message }}</li>{% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <strong>{% trans "Menu:" %}</strong>
+                <ul>
+                    {% if user.is_authenticated %}
+                    {% url 'account_email' as email_url_ %}
+                    {% if email_url_ %}
+                    <li>
+                        <a href="{{ email_url_ }}">{% trans "Change Email" %}</a>
+                    </li>
+                    {% endif %}
+                    {% url 'account_change_password' as change_password_url_ %}
+                    {% if change_password_url_ %}
+                    <li>
+                        <a href="{{ change_password_url_ }}">{% trans "Change Password" %}</a>
+                    </li>
+                    {% endif %}
+                    {% url 'socialaccount_connections' as connections_url_ %}
+                    {% if connections_url_ %}
+                    <li>
+                        <a href="{{ connections_url_ }}">{% trans "Account Connections" %}</a>
+                    </li>
+                    {% endif %}
+                    {% url 'mfa_index' as mfa_url_ %}
+                    {% if mfa_url_ %}
+                    <li>
+                        <a href="{{ mfa_url_ }}">{% trans "Two-Factor Authentication" %}</a>
+                    </li>
+                    {% endif %}
+                    {% url 'usersessions_list' as usersessions_list_url_ %}
+                    {% if usersessions_list_url_ %}
+                    <li>
+                        <a href="{{ usersessions_list_url_ }}">{% trans "Sessions" %}</a>
+                    </li>
+                    {% endif %}
+                    {% url 'account_logout' as logout_url_ %}
+                    {% if logout_url_ %}
+                    <li>
+                        <a href="{{ logout_url_ }}">{% trans "Sign Out" %}</a>
+                    </li>
+                    {% endif %}
+                    {% else %}
+                    {% url 'account_login' as login_url_ %}
+                    {% if login_url_ %}
+                    <li>
+                        <a href="{{ login_url_ }}">{% trans "Sign In" %}</a>
+                    </li>
+                    {% endif %}
+                    {% url 'account_signup' as signup_url_ %}
+                    {% if signup_url_ %}
+                    <li>
+                        <a href="{{ signup_url_ }}">{% trans "Sign Up" %}</a>
+                    </li>
+                    {% endif %}
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-6">
+                <div class="card text-secondary p-5">
+                {% block content %}
+                {% endblock content %}
+                {% endblock body %}
+                {% block extra_body %}
+                {% endblock extra_body %}
+                </div>
+            </div>
+            <div class="col-3"></div>
+        </div>
+    </div>
+
+</body>
+
+</html>
