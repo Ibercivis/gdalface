@@ -597,6 +597,12 @@ $(document).ready(function () {
                     attribution: '© OpenStreetMap contributors'
                 });
 
+                const mapBox = L.tileLayer('https://api.mapbox.com/styles/v1/frasanz/cm2cdt26700t301pghdcsc7b0/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZnJhc2FueiIsImEiOiJjbTF4bHE2MHIwdzRmMmpxd3g1cGZkbjR3In0.6B49yUgKNVhYOCy7ibw5ww', {
+                    maxZoom: 18,
+                    tileSize: 256,
+                    attribution: '&copy; <a href="https://www.mapbox.com/about/maps/">Mapbox</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                });
+
                 const googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
                     maxZoom: 18,
                     subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
@@ -610,6 +616,7 @@ $(document).ready(function () {
                 // Add layer control to switch between layers
                 baseLayers = {
                     "OpenStreetMap": osmLayer,
+                    "MapBox": mapBox,
                     "Satellite": googleSat
                 };
                 var overlaymaps = { "VIIRS": viirs }
