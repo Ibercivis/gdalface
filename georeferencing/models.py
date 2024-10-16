@@ -70,7 +70,8 @@ class Batch(models.Model):
     # Search fields
     feat = models.CharField(max_length=100, blank = True, null = True)
     mission = models.CharField(max_length=100, blank = True, null = True)
-
+    fcltle = models.IntegerField(blank = True, null = True, verbose_name="Focal length <=")
+    fcltge = models.IntegerField(blank = True, null = True, verbose_name="Focal length >=")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     result = models.JSONField(default=dict, blank=True, null=True)
     numberImages = models.IntegerField(default=0)

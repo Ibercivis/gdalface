@@ -19,7 +19,9 @@
         $('#fetch-data-btn').on('click', function () {
             var featValue = $('input[name="feat"]').val();
             var mission = $('input[name="mission"]').val();
-            var requestUrl = '{{ fetch_api_url }}?feat=' + featValue + '&mission=' + mission;
+            var fcltle = $('input[name="fcltle"]').val();
+            var fcltge = $('input[name="fcltge"]').val();
+            var requestUrl = '{{ fetch_api_url }}?feat=' + featValue + '&mission=' + mission + '&fcltle=' + fcltle + '&fcltge=' + fcltge;
             $.ajax({
                 url: requestUrl,
                 method: 'GET',

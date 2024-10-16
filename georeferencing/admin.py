@@ -86,14 +86,21 @@ class BatchAdmin(admin.ModelAdmin):
         Raises:
             requests.RequestException: If there is an issue with the HTTP request.
         """
+        print(request.GET)
         feat_value = request.GET.get('feat', '')
         mission = request.GET.get('mission', '')
+        fcltle = request.GET.get('fcltle', '')
+        fcltge = request.GET.get('fcltge', '')
         url = 'https://eol.jsc.nasa.gov/SearchPhotos/PhotosDatabaseAPI/PhotosDatabaseAPI.pl'
         query = 'query=images|directory|like|*large*'
         if feat_value:
             query = f'{query}|frames|feat|like|*{feat_value}*'
-        elif mission:
+        if mission:
             query = f'{query}|frames|mission|like|*{mission}'
+        if fcltle:
+            query = f'{query}|frames|fclt|le|{fcltle}'
+        if fcltge:
+            query = f'{query}|frames|fclt|ge|{fcltge}'
         key = config('NASA_API_KEY')
         url_request = (
             f'{url}?{query}&return=frames|frame|frames|geon|frames|feat|frames|roll|'
