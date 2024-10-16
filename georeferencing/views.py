@@ -177,10 +177,22 @@ class GeoAttemptIndividualView(APIView):
             elif request.data['status'] == 'DONE':
                 # let's start the georeferencing process
                 # for the moment, launch a batch script
-                print('doing georeferencing')
+                print('Submitting the final result')
                 print(request.data['controlPoints'])
                 geoattemp.finishedDateTime = timezone.now()
                 geoattemp.save()
+                spend_time = (geoattemp.finishedDateTime - geoattemp.assignedDateTime).total_seconds()
+                if spend_time  < 60:
+                    print('User is cheating')
+                    geoattemp.finishedDateTime = None
+                    geoattemp.save()
+                    user_profile, created = UserProfile.objects.get_or_create(user=geoattemp.assignedUser)
+                    if created:
+                        print('User profile created')
+                    user_profile.cheating += 1
+                    user_profile.save()
+                    return Response({"error": f"Are you cheating?. {spend_time}"}, status=status.HTTP_400_BAD_REQUEST)
+                
                 serializer.save()
                 if geoattemp.assignedUser:
                     print('User is authenticated')
