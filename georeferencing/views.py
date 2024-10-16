@@ -8,6 +8,7 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework.parsers import JSONParser
 from .serializers import GeoAttemptSerializer, ImageSerializer, MiniGeoAttemptSerializer
 from .models import GeoAttempt, Image
+from user_profile.models import UserProfile
 import os
 import subprocess
 import random
@@ -183,7 +184,13 @@ class GeoAttemptIndividualView(APIView):
                 serializer.save()
                 if geoattemp.assignedUser:
                     print('User is authenticated')
-                    # we increment the number of finished geoattempts for this user
+                    user_profile, created = UserProfile.objects.get_or_create(user=geoattemp.assignedUser)
+                    if created:
+                        print('User profile created')
+                    user_profile.geoattempts_done += 1
+                    user_profile.time_spent += (geoattemp.finishedDateTime - geoattemp.assignedDateTime).total_seconds()
+                    user_profile.controlPointsDone += len(request.data['controlPoints'])
+                    user_profile.save()
                     
 
             # That means that the user click on "skip" button
