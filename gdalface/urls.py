@@ -40,6 +40,7 @@ urlpatterns = [
     path('django-rq/', include('django_rq.urls')),  # Add this for django_rq
     path('api/v1/', include('georeferencing.urls')),  # Adjust the path to your app's API
     path('accounts/', include('allauth.urls')),  # Add this for allauth
+    path('user-profile/', include('user_profile.urls')),  # Add this for user_profile
 
     
     # Swagger and Redoc paths
