@@ -152,7 +152,7 @@ class BatchAdmin(admin.ModelAdmin):
                         f"https://eol.jsc.nasa.gov/SearchPhotos/photo.pl?mission="
                         f"{item['frames.mission']}"
                         f"&roll={item['frames.roll']}&frame={item['frames.frame']}",
-                    largeImageURL=largeImageURL,
+                    largeImageURL="",
                     batch=obj,
                     replicas=obj.replicas
                 )

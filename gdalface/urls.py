@@ -22,7 +22,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
 
-schema_view = get_schema_view(
+api_schema_view = get_schema_view( # pylint: disable=invalid-name
     openapi.Info(
         title="Gdalface API",
         default_version='v1',
@@ -42,11 +42,21 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),  # Add this for allauth
     path('user-profile/', include('user_profile.urls')),  # Add this for user_profile
 
-    
     # Swagger and Redoc paths
-    re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
-    re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    re_path(r'^swagger(?P<format>\.json|\.yaml)$',
+            api_schema_view.without_ui(cache_timeout=0),
+            name='schema-json',
+            ),
+    re_path(
+        r'^swagger/$',
+        api_schema_view.with_ui('swagger', cache_timeout=0),
+        name='schema-swagger-ui',
+        ),
+    re_path(
+        r'^redoc/$',
+        api_schema_view.with_ui('redoc', cache_timeout=0),
+        name='schema-redoc',
+        ),
 
     # Frontend path
     path('', include('frontend.urls')),
@@ -57,5 +67,3 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    
-
