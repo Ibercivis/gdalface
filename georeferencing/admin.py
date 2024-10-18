@@ -16,6 +16,7 @@ from .forms import PrettyJSONWidget
 from .models import Batch, Image, GeoAttempt
 from .tasks import download_image
 
+
 class BatchAdminForm(forms.ModelForm):
     """
     BatchAdminForm is a ModelForm for the Batch model. It includes all fields of the model
@@ -133,40 +134,70 @@ class BatchAdmin(admin.ModelAdmin):
         # we create an image and assign it to the batch
         if obj.result:
             for item in obj.result:
-                datetime_str = item['frames.pdate'] + ' ' + item['frames.ptime']
-                formated_datetime = datetime.strptime(datetime_str, '%Y%m%d %H%M%S')
-                largeImageURL = f"https://eol.jsc.nasa.gov/DatabaseImages/{item['images.directory']}/{item['images.filename']}"
+                datetime_str = item['frames.pdate'] + \
+                    ' ' + item['frames.ptime']
+                formated_datetime = datetime.strptime(
+                    datetime_str, '%Y%m%d %H%M%S')
+                large_image_url = (
+                    f"https://eol.jsc.nasa.gov/DatabaseImages/"
+                    f"{item['images.directory']}/{item['images.filename']}"
+                )
                 image = Image.objects.create(
                     name=item['images.filename'],
                     taken=formated_datetime,
                     focalLength=item['frames.fclt'],
                     photoCenterPoint=f"{item['frames.lat']}, {item['frames.lon']}",
                     spacecraftNadirPoint=f"{item['frames.nlat']}, {item['frames.nlon']}",
-                    link = f"https://eol.jsc.nasa.gov/SearchPhotos/photo.pl?mission={item['frames.mission']}&roll={item['frames.roll']}&frame={item['frames.frame']}",
-                    largeImageURL = largeImageURL,
+                    link=
+                        f"https://eol.jsc.nasa.gov/SearchPhotos/photo.pl?mission="
+                        f"{item['frames.mission']}"
+                        f"&roll={item['frames.roll']}&frame={item['frames.frame']}",
+                    largeImageURL=largeImageURL,
                     batch=obj,
-                    replicas = obj.replicas
+                    replicas=obj.replicas
                 )
                 image.save()
 
                 # Now, add to django-rq queue the download of the large image
-               
-                download_image.delay(image)
 
-                
+                download_image.delay(image)
 
 
 class ImageAdmin(admin.ModelAdmin):
+    """
+    ImageAdmin is a Django ModelAdmin class for managing Image model instances 
+    in the admin interface.
+    """
     list_display = ('name', 'createdDateTime', 'geoattempts_count')
     list_filter = ('createdDateTime', 'batch')
     search_fields = ('name',)
 
     def geoattempts_count(self, obj):
+        """
+        Returns the count of GeoAttempt objects associated with the given image.
+
+        Args:
+            obj: The image object for which to count associated GeoAttempt objects.
+
+        Returns:
+            int: The number of GeoAttempt objects associated with the given image.
+        """
         return GeoAttempt.objects.filter(image=obj).count()
-    
+
     geoattempts_count.short_description = '# GeoAttempts'
 
+
 class GeoAttemptAdmin(admin.ModelAdmin):
+    """
+    GeoAttemptAdmin is a Django ModelAdmin class for managing GeoAttempt model 
+    instances in the admin interface.
+
+    Attributes:
+        list_display (tuple): Fields to display in the list view.
+        list_filter (tuple): Fields to filter the list view.
+        search_fields (tuple): Fields to search in the list view.
+        actions (list): Custom actions available in the admin interface.
+    """
     list_display = ('image', 'createdDateTime', 'status')
     list_filter = ('status', 'createdDateTime')
     search_fields = ('image__name',)
@@ -175,6 +206,16 @@ class GeoAttemptAdmin(admin.ModelAdmin):
     actions = ['mark_as_done', 'mark_as_assigned', 'mark_as_pending']
 
     def mark_as_done(self, request, queryset):
+        """
+        Marks the selected queryset items as 'DONE' and notifies the user.
+
+        Args:
+            request: The HTTP request object.
+            queryset: The queryset containing the items to be updated.
+
+        Returns:
+            None
+        """
         update = queryset.update(status='DONE')
         self.message_user(request, f'{update} attempts marked as done')
 
@@ -192,5 +233,3 @@ admin.site.register(Image, ImageAdmin)
 admin.site.register(GeoAttempt, GeoAttemptAdmin)
 
 # Register your models here.
-
-
