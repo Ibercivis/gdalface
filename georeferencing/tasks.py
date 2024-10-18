@@ -33,9 +33,12 @@ def download_image(image):
         file_name = os.path.basename(image.largeImageURL)
 
         # Send an HTTP GET request to download the image
-        response = requests.get(image.largeImageURL)
-        response.raise_for_status()  # Raise an exception for any HTTP errors
-
+        try:
+            response = requests.get(image.largeImageURL, timeout=20)
+            response.raise_for_status()  # Raise an exception for any HTTP errors
+        except requests.exceptions.RequestException as e:
+            print(f"Failed to download image from {image.largeImageURL}: {e}")
+            return None # TODO: Handle the error
         # Create the path where the image will be saved
         file_path = os.path.join('original', file_name)
 

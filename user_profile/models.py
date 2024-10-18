@@ -3,7 +3,7 @@ Models for the user_profile app.
 """
 
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 # Create your models here.
 
@@ -30,7 +30,7 @@ class UserProfile(models.Model):
     Methods:
         __str__(): Returns the username of the associated user.
     """
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
     bio = models.TextField(blank=True)
     profile_pic = models.ImageField(upload_to='profile_pics', blank=True)
     geoattempts_done = models.IntegerField(default=0)
@@ -39,4 +39,4 @@ class UserProfile(models.Model):
     controlPointsDone = models.PositiveBigIntegerField(default=0)
 
     def __str__(self):
-        return self.user.email
+        return str(self.user.email) # pylint: disable=no-member

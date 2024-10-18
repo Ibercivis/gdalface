@@ -1,8 +1,7 @@
 from django.apps import AppConfig
 from django.db.models.signals import post_migrate
 from django_rq import get_scheduler
-from datetime import datetime, timedelta
-import django_rq
+from datetime import datetime
 
 
 class GeoreferencingConfig(AppConfig):
@@ -16,6 +15,7 @@ class GeoreferencingConfig(AppConfig):
 
 def schedule_tasks(sender, **kwargs):
     scheduler = get_scheduler('default')
+    print(sender)
 
     # First, clear the existing job for update_assigned if it exists
     for job in scheduler.get_jobs():

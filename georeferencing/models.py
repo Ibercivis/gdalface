@@ -1,7 +1,7 @@
 from django.db import models
 import hashlib
 import uuid
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
     
 class GeoAttempt(models.Model):
 
@@ -12,7 +12,7 @@ class GeoAttempt(models.Model):
     )
     
     image = models.ForeignKey('Image', on_delete=models.CASCADE)
-    assignedUser = models.ForeignKey(User, on_delete=models.DO_NOTHING, blank=True, null=True)
+    assignedUser = models.ForeignKey(get_user_model(), on_delete=models.DO_NOTHING, blank=True, null=True)
     createdDateTime = models.DateTimeField(auto_now_add=True)
     assignedDateTime = models.DateTimeField(blank=True, null=True)
     finishedDateTime = models.DateTimeField(blank=True, null=True)
@@ -35,8 +35,8 @@ class GeoAttempt(models.Model):
         super(GeoAttempt, self).save(*args, **kwargs)
 
     def elapsedTime(self):
-        if self.finished:
-            return self.finished - self.created
+        if self.finishedDateTime and self.createdDateTime:
+            return self.finishedDateTime - self.createdDateTime
         else:
             return None
 
@@ -61,7 +61,7 @@ class Image(models.Model):
     batch = models.ForeignKey('Batch', on_delete=models.CASCADE, blank=True, null=True)
     replicas = models.IntegerField(default=5)
     def __str__(self):
-        return self.name
+        return str(self.name)
     
 
 class Batch(models.Model):
@@ -72,9 +72,9 @@ class Batch(models.Model):
     mission = models.CharField(max_length=100, blank = True, null = True)
     fcltle = models.IntegerField(blank = True, null = True, verbose_name="Focal length <=")
     fcltge = models.IntegerField(blank = True, null = True, verbose_name="Focal length >=")
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     result = models.JSONField(default=dict, blank=True, null=True)
     numberImages = models.IntegerField(default=0)
     replicas = models.IntegerField(default=5)
     def __str__(self):
-        return self.name
+        return str(self.name)

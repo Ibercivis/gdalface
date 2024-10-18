@@ -169,7 +169,7 @@ class GeoAttemptIndividualView(APIView):
                 print(command)
 
                 try:
-                    subprocess.run(command, shell=True, capture_output=True, text=True)
+                    subprocess.run(command, shell=True, capture_output=True, text=True, check=True)
                 except subprocess.CalledProcessError as e:
                     return Response({"error": f"gdal2tiles failed: {e.stderr}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
               
