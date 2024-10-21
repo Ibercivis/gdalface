@@ -9,6 +9,7 @@ To be completed
 1. Install supervisord `sudo apt-get install supervisor`
 2. Install gunicorn (already in requirements.txt)
 4. Install `nginx`: `sudo apt install nginx`
+5. 
 
 
 
