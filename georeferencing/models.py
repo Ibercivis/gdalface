@@ -72,6 +72,7 @@ class Batch(models.Model):
     mission = models.CharField(max_length=100, blank = True, null = True)
     fcltle = models.IntegerField(blank = True, null = True, verbose_name="Focal length <=")
     fcltge = models.IntegerField(blank = True, null = True, verbose_name="Focal length >=")
+    originalImages = models.TextField(blank = True, null = True, verbose_name="Original images")
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     result = models.JSONField(default=dict, blank=True, null=True)
     numberImages = models.IntegerField(default=0)

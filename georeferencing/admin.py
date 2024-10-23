@@ -88,35 +88,58 @@ class BatchAdmin(admin.ModelAdmin):
             requests.RequestException: If there is an issue with the HTTP request.
         """
         print(request.GET)
+        key = config('NASA_API_KEY')
         feat_value = request.GET.get('feat', '')
         mission = request.GET.get('mission', '')
         fcltle = request.GET.get('fcltle', '')
         fcltge = request.GET.get('fcltge', '')
+        original_images = request.GET.get('originalImages', '')  
         url = 'https://eol.jsc.nasa.gov/SearchPhotos/PhotosDatabaseAPI/PhotosDatabaseAPI.pl'
-        query = 'query=images|directory|like|*large*'
-        if feat_value:
-            query = f'{query}|frames|feat|like|*{feat_value}*'
-        if mission:
-            query = f'{query}|frames|mission|like|*{mission}'
-        if fcltle:
-            query = f'{query}|frames|fclt|le|{fcltle}'
-        if fcltge:
-            query = f'{query}|frames|fclt|ge|{fcltge}'
-        key = config('NASA_API_KEY')
-        url_request = (
-            f'{url}?{query}&return=frames|frame|frames|geon|frames|feat|frames|roll|'
-            f'frames|mission|images|directory|images|filename|frames|fclt|frames|pdate|'
-            f'frames|ptime|frames|lat|frames|lon|frames|nlat|frames|nlon&key={key}'
-        )
-        print(url_request)
-        try:
-            response = requests.get(url_request, timeout=5)
-            if response.status_code == 200:
-                return JsonResponse({'success': True, 'result': response.text})
-            else:
-                return JsonResponse({'success': False, 'error': f'Error {response.status_code}'})
-        except requests.RequestException as e:
-            return JsonResponse({'success': False, 'error': str(e)})
+        
+        if original_images:
+            result = '['
+            # original images can be a list of images separated by new line
+            for image in original_images.split(','):
+                query = 'query=images|directory|like|*large*'
+                query = f'{query}|images|filename|like|*{image}*'
+                url_request = (
+                    f'{url}?{query}&return=images|directory|images|filename|'
+                    f'nadir|lat|nadir|lon|nadir|elev|nadir|azi|camera|fclt'
+                    f'&key={key}'
+                )
+                print(url_request)
+                try:
+                    response = requests.get(url_request, timeout=5)
+                    if response.status_code == 200:
+                        # I want to remove brackets from the response
+                        result += response.text[1:-1]+','
+                except requests.RequestException as e:
+                    return JsonResponse({'success': False, 'error': str(e)})
+            return JsonResponse({'success': True, 'result': result})
+        else:
+            query = 'query=images|directory|like|*large*'  # Default query
+            if feat_value:
+                query = f'{query}|frames|feat|like|*{feat_value}*'
+            if mission:
+                query = f'{query}|frames|mission|like|*{mission}'
+            if fcltle:
+                query = f'{query}|frames|fclt|le|{fcltle}'
+            if fcltge:
+                query = f'{query}|frames|fclt|ge|{fcltge}'
+
+            url_request = (
+                f'{url}?{query}&return=frames|frame|frames|geon|frames|feat|frames|roll|'
+                f'frames|mission|images|directory|images|filename|frames|fclt|frames|pdate|'
+                f'frames|ptime|frames|lat|frames|lon|frames|nlat|frames|nlon&key={key}'
+            )
+            try:
+                response = requests.get(url_request, timeout=5)
+                if response.status_code == 200:
+                    return JsonResponse({'success': True, 'result': response.text+']'})
+                else:
+                    return JsonResponse({'success': False, 'error': f'Error {response.status_code}'})
+            except requests.RequestException as e:
+                return JsonResponse({'success': False, 'error': str(e)})
 
     # Override the form template to inject the custom fetch button
     def changeform_view(self, request, object_id=None, form_url='', extra_context=None):

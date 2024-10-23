@@ -21,7 +21,8 @@
             var mission = $('input[name="mission"]').val();
             var fcltle = $('input[name="fcltle"]').val();
             var fcltge = $('input[name="fcltge"]').val();
-            var requestUrl = '{{ fetch_api_url }}?feat=' + featValue + '&mission=' + mission + '&fcltle=' + fcltle + '&fcltge=' + fcltge;
+            var originalImages = $('textarea[name="originalImages"]').val();
+            var requestUrl = '{{ fetch_api_url }}?feat=' + featValue + '&mission=' + mission + '&fcltle=' + fcltle + '&fcltge=' + fcltge + '&originalImages=' + originalImages;
             $.ajax({
                 url: requestUrl,
                 method: 'GET',
