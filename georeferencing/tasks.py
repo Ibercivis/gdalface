@@ -1,6 +1,7 @@
 import os
 import requests
-from .models import GeoAttempt
+from decouple import config
+from .models import GeoAttempt, Image
 from datetime import timedelta
 from django.utils import timezone
 from django.conf import settings
@@ -67,20 +68,25 @@ def generate_from_list(image_list):
     """
     generate_from_list is a function that takes a list of Image objects and generates GeoAttempts for each image.
     """
-    for image in image_list:
+    key = config('NASA_API_KEY')
+    # We iterate over the list of images, separated by commas
+    for image in image_list.split(','):
         # We do the query to the API for each image
         url = 'https://eol.jsc.nasa.gov/SearchPhotos/PhotosDatabaseAPI/PhotosDatabaseAPI.pl'
         query = 'query=images|directory|like|*large*'
-        query = f'{query}&query=images|name|like|*{image}*'
+        query = f'{query}|images|filename|like|*{image}*'
         url_request = (
             f'{url}?{query}&return=images|directory|images|filename|'
             f'nadir|lat|nadir|lon|nadir|elev|nadir|azi|camera|fclt'
             f'&key={key}'
         )
+        print(url_request)
         try:
-            response = requests.get(url_request, timeout=5)
+            response = requests.get(url_request, timeout=10)
+            print(response)
             if response.status_code == 200:
                 data = response.json()
+                print(f"Query successful: {data}")
                 # We create the image object
                 image = Image.objects.create(
                     name = data['images'][0]['filename'],
