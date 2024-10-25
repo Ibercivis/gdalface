@@ -14,7 +14,7 @@ from django.urls import path, reverse
 
 from .forms import PrettyJSONWidget
 from .models import Batch, Image, GeoAttempt
-from .tasks import download_image
+from .tasks import download_image, generate_from_list
 
 
 class BatchAdminForm(forms.ModelForm):
@@ -96,7 +96,7 @@ class BatchAdmin(admin.ModelAdmin):
         original_images = request.GET.get('originalImages', '')  
         url = 'https://eol.jsc.nasa.gov/SearchPhotos/PhotosDatabaseAPI/PhotosDatabaseAPI.pl'
         
-        if original_images:
+        if 0:
             result = '['
             # original images can be a list of images separated by new line
             for image in original_images.split(','):
@@ -115,7 +115,7 @@ class BatchAdmin(admin.ModelAdmin):
                         result += response.text[1:-1]+','
                 except requests.RequestException as e:
                     return JsonResponse({'success': False, 'error': str(e)})
-            return JsonResponse({'success': True, 'result': result})
+            return JsonResponse({'success': True, 'result': result[0:-1]+']'})
         else:
             query = 'query=images|directory|like|*large*'  # Default query
             if feat_value:
@@ -135,7 +135,7 @@ class BatchAdmin(admin.ModelAdmin):
             try:
                 response = requests.get(url_request, timeout=5)
                 if response.status_code == 200:
-                    return JsonResponse({'success': True, 'result': response.text+']'})
+                    return JsonResponse({'success': True, 'result': response.text})
                 else:
                     return JsonResponse({'success': False, 'error': f'Error {response.status_code}'})
             except requests.RequestException as e:
@@ -151,39 +151,56 @@ class BatchAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if not change:
             obj.user = request.user
-        obj.save()
 
-        # Now, we create the images based on result, for each item in result
-        # we create an image and assign it to the batch
-        if obj.result:
-            for item in obj.result:
-                datetime_str = item['frames.pdate'] + \
-                    ' ' + item['frames.ptime']
-                formated_datetime = datetime.strptime(
-                    datetime_str, '%Y%m%d %H%M%S')
-                large_image_url = (
-                    f"https://eol.jsc.nasa.gov/DatabaseImages/"
-                    f"{item['images.directory']}/{item['images.filename']}"
-                )
-                image = Image.objects.create(
-                    name=item['images.filename'],
-                    taken=formated_datetime,
-                    focalLength=item['frames.fclt'],
-                    photoCenterPoint=f"{item['frames.lat']}, {item['frames.lon']}",
-                    spacecraftNadirPoint=f"{item['frames.nlat']}, {item['frames.nlon']}",
-                    link=
-                        f"https://eol.jsc.nasa.gov/SearchPhotos/photo.pl?mission="
-                        f"{item['frames.mission']}"
-                        f"&roll={item['frames.roll']}&frame={item['frames.frame']}",
-                    largeImageURL=large_image_url,
-                    batch=obj,
-                    replicas=obj.replicas
-                )
-                image.save()
+        # The fields to save will depend on batch type
+        if obj.type == 'SEARCH':
+            obj.originalImages = ''
+            obj.save()
+        
 
-                # Now, add to django-rq queue the download of the large image
+            # Now, we create the images based on result, for each item in result
+            # we create an image and assign it to the batch
+            if obj.result:
+                for item in obj.result:
+                    datetime_str = item['frames.pdate'] + \
+                        ' ' + item['frames.ptime']
+                    formated_datetime = datetime.strptime(
+                        datetime_str, '%Y%m%d %H%M%S')
+                    large_image_url = (
+                        f"https://eol.jsc.nasa.gov/DatabaseImages/"
+                        f"{item['images.directory']}/{item['images.filename']}"
+                    )
+                    image = Image.objects.create(
+                        name=item['images.filename'],
+                        taken=formated_datetime,
+                        focalLength=item['frames.fclt'],
+                        photoCenterPoint=f"{item['frames.lat']}, {item['frames.lon']}",
+                        spacecraftNadirPoint=f"{item['frames.nlat']}, {item['frames.nlon']}",
+                        link=
+                            f"https://eol.jsc.nasa.gov/SearchPhotos/photo.pl?mission="
+                            f"{item['frames.mission']}"
+                            f"&roll={item['frames.roll']}&frame={item['frames.frame']}",
+                        largeImageURL=large_image_url,
+                        batch=obj,
+                        replicas=obj.replicas
+                    )
+                    image.save()
 
-                download_image.delay(image)
+                    # Now, add to django-rq queue the download of the large image
+
+                    download_image.delay(image)
+        elif obj.type == 'LIST':
+            obj.originalImages = form.cleaned_data['originalImages']
+            obj.feat = None
+            obj.mission = None
+            obj.result = None
+            obj.fcltle = None
+            obj.fcltge = None
+            obj.save()
+            generate_from_list.delay(obj.originalImages)
+
+            # Now, we create the images and the geoattempt for each image
+
 
 
 class ImageAdmin(admin.ModelAdmin):
@@ -191,7 +208,7 @@ class ImageAdmin(admin.ModelAdmin):
     ImageAdmin is a Django ModelAdmin class for managing Image model instances 
     in the admin interface.
     """
-    list_display = ('name', 'createdDateTime', 'geoattempts_count')
+    list_display = ('name', 'batch', 'createdDateTime', 'geoattempts_count')
     list_filter = ('createdDateTime', 'batch')
     search_fields = ('name',)
 

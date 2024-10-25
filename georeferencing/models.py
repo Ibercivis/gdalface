@@ -10,6 +10,8 @@ class GeoAttempt(models.Model):
         ('ASSIGNED', 'Assigned'),
         ('DONE', 'Done'),
     )
+
+ 
     
     image = models.ForeignKey('Image', on_delete=models.CASCADE)
     assignedUser = models.ForeignKey(get_user_model(), on_delete=models.DO_NOTHING, blank=True, null=True)
@@ -65,8 +67,17 @@ class Image(models.Model):
     
 
 class Batch(models.Model):
+    BATCH_CHOICES = (
+        ('SEARCH', 'Search'),
+        ('LIST', 'List'),
+    )
+    
     name = models.CharField(max_length=100)
     createdDateTime = models.DateTimeField(auto_now_add=True)
+    type = models.CharField(
+        max_length=20,
+        choices = BATCH_CHOICES,
+        default = 'SEARCH')
     # Search fields
     feat = models.CharField(max_length=100, blank = True, null = True)
     mission = models.CharField(max_length=100, blank = True, null = True)

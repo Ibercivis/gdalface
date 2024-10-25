@@ -57,6 +57,60 @@
             autoCloseBrackets: true,
             readOnly: true
         });
+
+        const typeField = $('#id_type');
+
+        /* Not using it, but keeping */
+        function clearAllFields(){
+            $('input[name="feat"]').val('');
+            $('input[name="mission"]').val('');
+            $('input[name="fcltle"]').val('');
+            $('input[name="fcltge"]').val('');
+            $('textarea[name="result"]').val('');
+            $('input[name="numberImages"]').val('');
+            $('textarea[name="originalImages"]').val('');
+        }
+        
+        function countImages(){
+            console.log('counting images');
+            const images = $('textarea[name="originalImages"]').val();
+            const imagesArray = images.split(',');
+            $('input[name="numberImages"]').val(imagesArray.length-1);
+        }
+
+        function toogleType(){
+            if(typeField.val() === 'SEARCH'){
+                console.log('search');
+                // Hide the originalImages field
+                $('textarea[name="originalImages"]').closest('.form-row').hide();
+
+                // Show others fields
+                $('input[name="feat"]').closest('.form-row').show();
+                $('input[name="mission"]').closest('.form-row').show();
+                $('input[name="fcltle"]').closest('.form-row').show();
+                $('input[name="fcltge"]').closest('.form-row').show();
+                $('textarea[name="result"]').closest('.form-row').show();
+                $('#fetch-data-btn').show();
+
+            } else {
+                console.log('list');
+                // Show the originalImages field
+                $('textarea[name="originalImages"]').closest('.form-row').show();
+                // Hide others  fields
+                $('input[name="feat"]').closest('.form-row').hide();
+                $('input[name="mission"]').closest('.form-row').hide();
+                $('input[name="fcltle"]').closest('.form-row').hide();
+                $('input[name="fcltge"]').closest('.form-row').hide();
+                $('textarea[name="result"]').closest('.form-row').hide();
+                $('#fetch-data-btn').hide();
+            }
+        }
+
+        // Count images if textarea we are typing
+        $('textarea[name="originalImages"]').on('input', countImages);
+
+        toogleType();
+        typeField.on('change', toogleType);
     });
 </script>
 {% endblock %}
