@@ -197,7 +197,7 @@ class BatchAdmin(admin.ModelAdmin):
             obj.fcltle = None
             obj.fcltge = None
             obj.save()
-            generate_from_list.delay(obj.originalImages)
+            generate_from_list.delay(obj)
 
             # Now, we create the images and the geoattempt for each image
 

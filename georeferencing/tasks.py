@@ -64,13 +64,13 @@ def download_image(image):
     geoattemp.save()
 
 @job('default')  # Specify the queue (default, high, low) here
-def generate_from_list(image_list):
+def generate_from_list(batch):
     """
     generate_from_list is a function that takes a list of Image objects and generates GeoAttempts for each image.
     """
     key = config('NASA_API_KEY')
     # We iterate over the list of images, separated by commas
-    for image in image_list.split(','):
+    for image in batch.originalImages.split(','):
         # We do the query to the API for each image
         url = 'https://eol.jsc.nasa.gov/SearchPhotos/PhotosDatabaseAPI/PhotosDatabaseAPI.pl'
         query = 'query=images|directory|like|*large*'
@@ -80,24 +80,46 @@ def generate_from_list(image_list):
             f'nadir|lat|nadir|lon|nadir|elev|nadir|azi|camera|fclt'
             f'&key={key}'
         )
+
+        # We do another query to get entries on the mlfeatures table
+        # that match the image name
+        url_request2 = (
+            f'{url}?{query}&return=mlfeat|feat'
+            f'&key={key}'
+        )
+        url_request3 = (
+            f'{url}?{query}&return=mlcoord|lat|mlcoord|lon'
+            f'&key={key}'
+        )
         print(url_request)
+        print(url_request2)
+        print(url_request3)
         try:
             response = requests.get(url_request, timeout=10)
             print(response)
             if response.status_code == 200:
                 data = response.json()
                 print(f"Query successful: {data}")
-                # We create the image object
-                image = Image.objects.create(
-                    name = data['images'][0]['filename'],
-                    taken = timezone.now(),
-                    camera = data['images'][0]['camera'],
-                    focalLength = data['images'][0]['fclt'],
-                    spacecraftNadirPoint = f"{data['images'][0]['nadir']['lat']}, {data['images'][0]['nadir']['lon']}",
-                    spaceCraftAltitude = data['images'][0]['nadir']['elev'],
-                    largeImageURL = data['images'][0]['directory'] + data['images'][0]['filename'],
-                    replicas = 5
-                )
+                print(f"Data type: {type(data)}") 
+                for d in data:
+
+                    largeImageURL = (
+                        f"https://eol.jsc.nasa.gov/DatabaseImages/"
+                        f"{d['images.directory']}/{d['images.filename']}"
+                    )
+                    
+                    # We create the image object
+                    image = Image.objects.create(
+                        name = d['images.filename'],
+                        taken = timezone.now(),
+                        focalLength = d['camera.fclt'],
+                        spacecraftNadirPoint = f"{d['nadir.lat']}, {d['nadir.lon']}",
+                        spaceCraftAltitude = d['nadir.elev'],
+                        largeImageURL = largeImageURL,
+                        batch = batch,
+                        replicas = batch.replicas
+                        
+                    )
                 print(f"Image created: {image.name}")
                 # We download the image
                 download_image.delay(image)
