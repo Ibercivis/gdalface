@@ -122,6 +122,7 @@ class GeoAttemptIndividualView(APIView):
                 print('Starting the testing process')
                 # We increment the number of tries
                 geoattemp.numberTries += 1
+                geoattemp.maxZoom = 5
                 geoattemp.save()
 
                 # Ensure the georeferenced directory exists
@@ -163,7 +164,18 @@ class GeoAttemptIndividualView(APIView):
                         return Response({"error": f"Failed to remove previous tiles: {e.stderr}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
                
                 # Fourth command: (-r bilinear is slower, but....)
-                command = 'gdal2tiles.py -z 7-12 -r near -s EPSG:4326'
+                # zoom will depend on the focal length
+                if geoattemp.image.focalLength  < 30:
+                    zoom = "4-6"
+                elif geoattemp.image.focalLength < 50:
+                    zoom = "5-8"
+                elif geoattemp.image.focalLength < 100:
+                    zoom = "6-10"
+                elif geoattemp.image.focalLength < 200:
+                    zoom = "7-11"
+                else:
+                    zoom = "7-12"
+                command = 'gdal2tiles.py -z ' + zoom + ' -r near -s EPSG:4326'
                 command += ' media/georeferenced/' + geoattemp.image.name + geoattemp.hash + '.tif'
                 command += ' media/georeferenced/' + geoattemp.image.name + geoattemp.hash
                 print(command)
@@ -172,7 +184,7 @@ class GeoAttemptIndividualView(APIView):
                     subprocess.run(command, shell=True, capture_output=True, text=True, check=True)
                 except subprocess.CalledProcessError as e:
                     return Response({"error": f"gdal2tiles failed: {e.stderr}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-              
+                return Response(serializer.data, status=status.HTTP_200_OK)
             # That means that the user is happy with the final result    
             elif request.data['status'] == 'DONE':
                 # let's start the georeferencing process

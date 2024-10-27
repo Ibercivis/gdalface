@@ -59,6 +59,8 @@ class GeoAttemptSerializer(serializers.ModelSerializer):
     def get_focal_length(self, obj):
         return obj.image.focalLength
     
+
+    
 class MiniGeoAttemptSerializer(serializers.ModelSerializer):
     """
     Serializer for the GeoAttempt model, providing a minimal set of fields.

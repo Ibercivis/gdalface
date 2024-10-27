@@ -62,8 +62,33 @@ class Image(models.Model):
     smallImageURL = models.URLField( blank = True, null = True)
     batch = models.ForeignKey('Batch', on_delete=models.CASCADE, blank=True, null=True)
     replicas = models.IntegerField(default=5)
+    maxZoom = models.IntegerField(blank=True, null=True)
+    minZoom = models.IntegerField(blank=True, null=True)
+
+    def get_zoom_levels(self):
+        zoom_levels = [
+            (30, (4,6)),
+            (60, (5,7)),
+            (120, (6,8)),
+            (240, (7,9)),
+            (480, (8,10)),
+        ]
+
+        for focal, (min_zoom, max_zoom) in zoom_levels:
+            if self.focalLength <= focal:
+                return min_zoom, max_zoom
+        return 7,12
+    
+    def save(self, *args, **kwargs):
+        print(self.focalLength)
+        if self.focalLength is not None:
+            self.minZoom, self.maxZoom = self.get_zoom_levels()
+        super().save(*args, **kwargs)
+    
     def __str__(self):
         return str(self.name)
+    
+
     
 
 class Batch(models.Model):
@@ -71,7 +96,7 @@ class Batch(models.Model):
         ('SEARCH', 'Search'),
         ('LIST', 'List'),
     )
-    
+
     name = models.CharField(max_length=100)
     createdDateTime = models.DateTimeField(auto_now_add=True)
     type = models.CharField(

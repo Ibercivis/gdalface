@@ -138,6 +138,7 @@ $(document).ready(function () {
                         data: JSON.stringify(data),
 
                         success: function (response) {
+                            console.log(response);
                             georeferencingModal.hide();
                             let noCacheUrl = '/media/georeferenced/' + image_name + geoattempt_hash + '/{z}/{x}/{y}.png' + '?nocache=' + new Date().getTime();
                             if (lyr)
@@ -194,7 +195,7 @@ $(document).ready(function () {
                             var currentZoom = map.getZoom();
                             map.setZoom(11);
                             setTimeout(function () {
-                                map.setZoom(12);
+                                map.setZoom(response.maxZoom);
                             }, 300);  // Adjust the delay if necessary, 300ms works in most cases
                             $('#Submit').removeClass('disabled');
 
