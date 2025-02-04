@@ -1,4 +1,4 @@
-/* CSS of the main page */
+/* CSS of the main page, (login, etc) */
 body, html {
     font-family: 'Open Sans';
     overflow: hidden;
@@ -48,4 +48,9 @@ button {
 .small-img{
     width: 10px !important;
     margin: 1em !important;
+}
+label{
+    display: block !important;
+    font-size: 0.8em !important;
+    
 }
