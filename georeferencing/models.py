@@ -64,20 +64,6 @@ class Image(models.Model):
     replicas = models.IntegerField(default=5)
     maxZoom = models.IntegerField(blank=True, null=True)
     minZoom = models.IntegerField(blank=True, null=True)
-
-    def get_zoom_levels(self):
-        zoom_levels = [
-            (30, (4,6)),
-            (60, (5,7)),
-            (120, (6,8)),
-            (240, (7,9)),
-            (480, (8,10)),
-        ]
-
-        for focal, (min_zoom, max_zoom) in zoom_levels:
-            if self.focalLength <= focal:
-                return min_zoom, max_zoom
-        return 7,12
     
     def save(self, *args, **kwargs):
         print(self.focalLength)

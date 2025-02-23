@@ -24,6 +24,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <link href="{% static 'css/main.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'css/login.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
@@ -45,7 +46,7 @@
     {% endif %}
     <div class="container-fluid">
         <div class="row">
-            <div class="col-12">
+            <!--div class="col-12">
                 <strong>{% trans "Menu:" %}</strong>
                 <ul>
                     {% if user.is_authenticated %}
@@ -100,14 +101,13 @@
                     {% endif %}
                     {% endif %}
                 </ul>
-            </div>
+            </div-->
         </div>
 
 
-        <div class="row">
-            <div class="col-3"></div>
-            <div class="col-6">
-                <div class="card text-secondary p-5">
+        <div class="row justify-content-center">
+            <div class="col-3 text-center">
+                <div class="card text-secondary p-5 mx-auto">
                 {% block content %}
                 {% endblock content %}
                 {% endblock body %}
@@ -115,7 +115,6 @@
                 {% endblock extra_body %}
                 </div>
             </div>
-            <div class="col-3"></div>
         </div>
     </div>
 

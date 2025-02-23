@@ -1,0 +1,61 @@
+.card{
+    border-radius: 10px !important;
+}
+h1 {
+    font-size: 2em !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    color: #562952 !important;
+}
+h2 {
+    font-size: 1.5em !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    color: #562952 !important;
+}
+input{
+    width: 100% !important;
+    background-color: #fff !important;
+    border: 1px solid #562952 !important;
+    padding: 0.2em !important;
+    padding-left: 0.8em !important;
+}
+.helptext a{
+    font-size: 0.8em !important;
+    color: #000 !important;
+    float: right !important;
+}
+button{
+    width: 100% !important;
+    border-radius: 0em !important;
+    background-color: #562952 !important;
+    color: #fff !important;
+    padding: 0.5em !important;
+    border: 0px !important;
+    margin-top: 2em !important;
+}
+label[for="id_remember"] {
+    display: none !important;
+}
+#id_remember{
+    display: none !important;
+}
+p{
+    margin-bottom: 1em !important;
+}
+label{
+    font-size: 1em !important;
+    margin-bottom: 0.5em !important;
+    float: left !important;
+    color: #562952 !important;
+}
+ul.errorlist{
+    display: block !important;
+}
+ul.errorlist > li{
+    color: #dc3545;
+    list-style: none;
+}
+ul{
+    display: none !important;
+}

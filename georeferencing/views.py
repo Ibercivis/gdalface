@@ -12,8 +12,9 @@ from user_profile.models import UserProfile
 import os
 import subprocess
 import random
-    
-    
+from haversine import haversine
+
+
 class GeoAttemptView(APIView):
     """
     GeoAttemptView
@@ -27,24 +28,25 @@ class GeoAttemptView(APIView):
     parser_classes = (JSONParser,)
 
     @swagger_auto_schema(
-            tags=['02. GeoAttempts'],
-            operation_summary="Get all image geo attempts")
+        tags=['02. GeoAttempts'],
+        operation_summary="Get all image geo attempts")
     def get(self, request):
         geoattemps = GeoAttempt.objects.all()
         serializer = MiniGeoAttemptSerializer(geoattemps, many=True)
         return Response(serializer.data)
-    
+
     @swagger_auto_schema(
-            request_body=GeoAttemptSerializer,
-            tags=['02. GeoAttempts'],
-            operation_summary="Post an image geo attempt")
+        request_body=GeoAttemptSerializer,
+        tags=['02. GeoAttempts'],
+        operation_summary="Post an image geo attempt")
     def post(self, request):
-        serializer = GeoAttemptSerializer(data=request.data, context = {'request': request})
+        serializer = GeoAttemptSerializer(
+            data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
 
 class PendingGeoAttemptView(APIView):
     """
@@ -52,16 +54,15 @@ class PendingGeoAttemptView(APIView):
     Methods:
     - get: Get a random "PENDING" GeoAttempt.
     """
-    
+
     @swagger_auto_schema(
-            tags=['02. GeoAttempts'],
-            operation_summary="Get a random 'PENDING' geo attempt")
+        tags=['02. GeoAttempts'],
+        operation_summary="Get a random 'PENDING' geo attempt")
     def get(self, request):
         # Filter GeoAttempts by "PENDING" status
         print('Here')
         pending_geoattempts = GeoAttempt.objects.filter(status="PENDING")
         print(pending_geoattempts)
-  
 
         if not pending_geoattempts.exists():
             print('No pending geo attempts found.')
@@ -83,9 +84,8 @@ class PendingGeoAttemptView(APIView):
 
         # Return the serialized data
         return Response(serializer.data)
-    
 
-    
+
 class GeoAttemptIndividualView(APIView):
     """
     API view for patching and deleting an image geo attempt.
@@ -94,31 +94,82 @@ class GeoAttemptIndividualView(APIView):
     - delete: Delete an image geo attempt.
     """
     parser_classes = (JSONParser,)
+    # TODO: Remove print statements
+    def max_distance(self, points):
+        print("Input to max_distance:", points)
+        if not points or not isinstance(points, (list, tuple)) or len(points) < 2:
+            raise ValueError("At least two points are required in a list or tuple")
+    
+        max_dist = 0
+        for i, point1 in enumerate(points):
+            for point2 in points[i + 1:]:
+                print(f"Point1: {point1}, Point2: {point2}")
+                if not all(k in point1 for k in ['lat', 'lon']) or not all(k in point2 for k in ['lat', 'lon']):
+                    raise ValueError("Each point must have 'lat' and 'lon' keys")
+            
+                lat1, lon1 = float(point1['lat']), float(point1['lon'])
+                lat2, lon2 = float(point2['lat']), float(point2['lon'])
+                coord1 = (lat1, lon1)
+                coord2 = (lat2, lon2)
+                print(f"Coords to haversine: {coord1}, {coord2}")
+                dist = haversine(coord1, coord2)
+                print(f"Distance: {dist}")
+                if dist > max_dist:
+                    max_dist = dist
+        return max_dist
+    
+    # TODO: Review if this is ok or we need to change the zooms
+    def get_zooms(self, max_dist):
+        if max_dist < 0.5:
+            return "15-18"
+        elif max_dist < 1:
+            return "14-17"
+        elif max_dist < 2:
+            return "13-16"
+        elif max_dist < 4:
+            return "12-15"
+        elif max_dist < 8:
+            return "11-14"
+        elif max_dist < 16:
+            return "10-13"
+        elif max_dist < 32:
+            return "9-12"
+        elif max_dist < 64:
+            return "8-11"
+        elif max_dist < 128:
+            return "7-10"
+        elif max_dist < 256:
+            return "6-9"
+        elif max_dist < 512:
+            return "5-8"
+        else:
+            return "4-7"
 
     @swagger_auto_schema(
-            tags=['02. GeoAttempts'],
-            operation_summary="Get an image geo attempt")
+        tags=['02. GeoAttempts'],
+        operation_summary="Get an image geo attempt")
     def get(self, request, pk=None):
         geoattemp = get_object_or_404(GeoAttempt, pk=pk)
         # Changing the geoattemp status to ASSIGNED
-  
+
         serializer = GeoAttemptSerializer(geoattemp)
         return Response(serializer.data)
-    
+
     @swagger_auto_schema(
-            request_body=GeoAttemptSerializer,
-            tags=['02. GeoAttempts'],
-            operation_summary="Patch an image geo attempt")
+        request_body=GeoAttemptSerializer,
+        tags=['02. GeoAttempts'],
+        operation_summary="Patch an image geo attempt")
     def patch(self, request, pk=None):
         geoattemp = get_object_or_404(GeoAttempt, pk=pk)
         print(request.data)
-        serializer = GeoAttemptSerializer(geoattemp, data=request.data, partial=True)
+        serializer = GeoAttemptSerializer(
+            geoattemp, data=request.data, partial=True)
         if serializer.is_valid():
-        
+
             # We are receiving this status from user, so that means
             # that it's not finished yet, and the user is asking for
             # a new try
-            if request.data['status'] == 'ASSIGNED': 
+            if request.data['status'] == 'ASSIGNED':
                 print('Starting the testing process')
                 # We increment the number of tries
                 geoattemp.numberTries += 1
@@ -132,60 +183,64 @@ class GeoAttemptIndividualView(APIView):
                 # First command: gdal_translate
                 command = 'gdal_translate -of GTiff'
                 for item in request.data['control_points']:
-                    command += ' -gcp ' + str(item['actualPx']) + ' ' + str(item['actualPy'])
+                    command += ' -gcp ' + \
+                        str(item['actualPx']) + ' ' + str(item['actualPy'])
                     command += ' ' + str(item['lon']) + ' ' + str(item['lat'])
                 command += ' media/original/' + geoattemp.image.name
-                command += ' media/georeferenced/' + geoattemp.image.name + geoattemp.hash + '.tif'
+                command += ' media/georeferenced/' + \
+                    geoattemp.image.name + geoattemp.hash + '.tif'
                 print(command)
                 try:
-                    subprocess.run(command, shell=True, check=True, capture_output=True, text=True)
+                    subprocess.run(command, shell=True, check=True,
+                                   capture_output=True, text=True)
                 except subprocess.CalledProcessError as e:
                     return Response({"error": f"gdal_translate failed: {e.stderr}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-                
+
                 # Second command: gdalwarp
                 # Check the # of points before enable tps (-order n to pylynomial)
                 command = 'gdalwarp -r bilinear -tps -t_srs EPSG:4326'
-                command += ' media/georeferenced/' + geoattemp.image.name + geoattemp.hash + '.tif'
-                command += ' media/georeferenced/' + geoattemp.image.name + geoattemp.hash + '.tif'
+                command += ' media/georeferenced/' + \
+                    geoattemp.image.name + geoattemp.hash + '.tif'
+                command += ' media/georeferenced/' + \
+                    geoattemp.image.name + geoattemp.hash + '.tif'
                 print(command)
 
-                try:    
-                    subprocess.run(command, shell=True, check=True, capture_output=True, text=True)
+                try:
+                    subprocess.run(command, shell=True, check=True,
+                                   capture_output=True, text=True)
                 except subprocess.CalledProcessError as e:
                     return Response({"error": f"gdalwarp failed: {e.stderr}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-                
+
                 # Third command: Remove previous tiles
                 command = 'rm -r media/georeferenced/' + geoattemp.image.name + geoattemp.hash
                 print(command)
                 if os.path.exists('media/georeferenced/' + geoattemp.image.name + geoattemp.hash):
                     try:
-                        subprocess.run(command, shell=True, check=True, capture_output=True, text=True)
+                        subprocess.run(command, shell=True, check=True,
+                                       capture_output=True, text=True)
                     except subprocess.CalledProcessError as e:
                         return Response({"error": f"Failed to remove previous tiles: {e.stderr}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-               
+
                 # Fourth command: (-r bilinear is slower, but....)
                 # zoom will depend on the focal length
-                if geoattemp.image.focalLength  < 30:
-                    zoom = "4-6"
-                elif geoattemp.image.focalLength < 50:
-                    zoom = "5-8"
-                elif geoattemp.image.focalLength < 100:
-                    zoom = "6-10"
-                elif geoattemp.image.focalLength < 200:
-                    zoom = "7-11"
-                else:
-                    zoom = "7-12"
+                # Show max distance between two points
+                mx = self.max_distance(request.data['control_points'])
+                print(mx)
+                zoom = self.get_zooms(mx)
+                print(zoom)
                 command = 'gdal2tiles.py -z ' + zoom + ' -r near -s EPSG:4326'
-                command += ' media/georeferenced/' + geoattemp.image.name + geoattemp.hash + '.tif'
+                command += ' media/georeferenced/' + \
+                    geoattemp.image.name + geoattemp.hash + '.tif'
                 command += ' media/georeferenced/' + geoattemp.image.name + geoattemp.hash
                 print(command)
 
                 try:
-                    subprocess.run(command, shell=True, capture_output=True, text=True, check=True)
+                    subprocess.run(command, shell=True,
+                                   capture_output=True, text=True, check=True)
                 except subprocess.CalledProcessError as e:
                     return Response({"error": f"gdal2tiles failed: {e.stderr}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
                 return Response(serializer.data, status=status.HTTP_200_OK)
-            # That means that the user is happy with the final result    
+            # That means that the user is happy with the final result
             elif request.data['status'] == 'DONE':
                 # let's start the georeferencing process
                 # for the moment, launch a batch script
@@ -193,29 +248,33 @@ class GeoAttemptIndividualView(APIView):
                 print(request.data['controlPoints'])
                 geoattemp.finishedDateTime = timezone.now()
                 geoattemp.save()
-                spend_time = (geoattemp.finishedDateTime - geoattemp.assignedDateTime).total_seconds()
-                if spend_time  < 60:
+                spend_time = (geoattemp.finishedDateTime -
+                              geoattemp.assignedDateTime).total_seconds()
+                if spend_time < 60:
                     print('User is cheating')
                     geoattemp.finishedDateTime = None
                     geoattemp.save()
-                    user_profile, created = UserProfile.objects.get_or_create(user=geoattemp.assignedUser)
+                    user_profile, created = UserProfile.objects.get_or_create(
+                        user=geoattemp.assignedUser)
                     if created:
                         print('User profile created')
                     user_profile.cheating += 1
                     user_profile.save()
                     return Response({"error": f"Are you cheating?. {spend_time}"}, status=status.HTTP_400_BAD_REQUEST)
-                
+
                 serializer.save()
                 if geoattemp.assignedUser:
                     print('User is authenticated')
-                    user_profile, created = UserProfile.objects.get_or_create(user=geoattemp.assignedUser)
+                    user_profile, created = UserProfile.objects.get_or_create(
+                        user=geoattemp.assignedUser)
                     if created:
                         print('User profile created')
                     user_profile.geoattempts_done += 1
-                    user_profile.time_spent += (geoattemp.finishedDateTime - geoattemp.assignedDateTime).total_seconds()
-                    user_profile.controlPointsDone += len(request.data['controlPoints'])
+                    user_profile.time_spent += (geoattemp.finishedDateTime -
+                                                geoattemp.assignedDateTime).total_seconds()
+                    user_profile.controlPointsDone += len(
+                        request.data['controlPoints'])
                     user_profile.save()
-                    
 
             # That means that the user click on "skip" button
             # So returning back to pending status
@@ -230,24 +289,24 @@ class GeoAttemptIndividualView(APIView):
                 geoattemp.assignedUser = None
                 geoattemp.status = 'PENDING'
                 geoattemp.save()
-                serializer.save()    
+                serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
     @swagger_auto_schema(
-            tags=['02. GeoAttempts'],
-            operation_summary="Delete a geo attempt")
+        tags=['02. GeoAttempts'],
+        operation_summary="Delete a geo attempt")
     def delete(self, request, pk=None):
         geoattemp = get_object_or_404(GeoAttempt, pk=pk)
         geoattemp.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
+
 
 class ImageView(APIView):
     @swagger_auto_schema(
-            tags=['03. Images'],
-            operation_summary="Get all images")
+        tags=['03. Images'],
+        operation_summary="Get all images")
     def get(self, request):
         """
         Handles GET requests to retrieve all Image objects.
@@ -261,10 +320,11 @@ class ImageView(APIView):
         images = Image.objects.all()
         serializer = ImageSerializer(images, many=True)
         return Response(serializer.data)
+
     @swagger_auto_schema(
-            request_body=ImageSerializer,
-            tags=['03. Images'],
-            operation_summary="Post an image")
+        request_body=ImageSerializer,
+        tags=['03. Images'],
+        operation_summary="Post an image")
     def post(self, request):
         """
         Handle POST requests to create a new image entry.
@@ -283,6 +343,7 @@ class ImageView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 class ImageIndividualView(APIView):
     """
@@ -303,10 +364,9 @@ class ImageIndividualView(APIView):
         delete(request, pk=None):
     """
 
-
     @swagger_auto_schema(
-            tags=['03. Images'],
-            operation_summary="Get an image")
+        tags=['03. Images'],
+        operation_summary="Get an image")
     def get(self, request, pk=None):
         """
         Handle GET request to retrieve an image by its primary key (pk).
@@ -323,10 +383,9 @@ class ImageIndividualView(APIView):
         return Response(serializer.data)
 
     @swagger_auto_schema(
-            request_body=ImageSerializer,
-            tags=['03. Images'],
-            operation_summary="Patch an image")
-
+        request_body=ImageSerializer,
+        tags=['03. Images'],
+        operation_summary="Patch an image")
     def patch(self, request, pk=None):
         """
         Partially updates an Image instance.
@@ -350,9 +409,8 @@ class ImageIndividualView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
-            tags=['03. Images'],
-            operation_summary="Delete an image")
-
+        tags=['03. Images'],
+        operation_summary="Delete an image")
     def delete(self, request, pk=None):
         """
         Delete an image instance.

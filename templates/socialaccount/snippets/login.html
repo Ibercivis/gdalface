@@ -1,0 +1,20 @@
+{% load i18n %}
+{% load allauth %}
+{% load socialaccount %}
+{% get_providers as socialaccount_providers %}
+{% if socialaccount_providers %}
+    {% if not SOCIALACCOUNT_ONLY %}
+        {% element hr %}
+        {% endelement %}
+        {% element h2 %}
+            {% translate "Or use a third-party" %}
+        {% endelement %}
+    {% endif %}
+    <a class="btn btn-outline-primary btn-block" type="button" data-toggle="collapse" data-target="/accounts/google/login/?process=login" aria-expanded="false" aria-controls="socialaccount_providers" href="/accounts/google/login/?process=login">
+        {% translate "Sign in with Google" %}
+    </a>
+    <!--
+    {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+    {% include "socialaccount/snippets/login_extra.html" %}
+    -->
+{% endif %}
