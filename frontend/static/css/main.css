@@ -1,56 +1,617 @@
-/* CSS of the main page, (login, etc) */
+/* CSS of the main page (login, landing page, etc) */
+:root {
+    --primary-color: #562952;
+    --secondary-color: #663AD9;
+    --accent-color: #e9f990;
+    --dark-text: #24292e;
+    --light-text: #ffffff;
+    --card-bg: #fef7ff;
+    --hover-color: #f6f8fa;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+    --transition-speed: 0.3s;
+    
+    /* Variables para los mensajes */
+    --message-success-bg: rgba(56, 193, 114, 0.1);
+    --message-success-border: rgba(56, 193, 114, 0.3);
+    --message-success-color: #38c172;
+    --message-error-bg: rgba(255, 77, 77, 0.1);
+    --message-error-border: rgba(255, 77, 77, 0.3);
+    --message-error-color: #ff4d4d;
+    --message-warning-bg: rgba(255, 193, 7, 0.1);
+    --message-warning-border: rgba(255, 193, 7, 0.3);
+    --message-warning-color: #ffc107;
+    --message-info-bg: rgba(23, 162, 184, 0.1);
+    --message-info-border: rgba(23, 162, 184, 0.3);
+    --message-info-color: #17a2b8;
+}
+
 body, html {
-    font-family: 'Open Sans';
-    overflow: hidden;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     height: 100%;
     width: 100%;
     margin: 0;
-    padding 0;
-    color: #fff !important;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    padding: 0;
+    color: var(--light-text) !important;
+    overflow-x: hidden;
+    line-height: 1.6;
 }
 
 body {
-    background: linear-gradient(to bottom right, #562952, #663AD9) !important; /* Start with red, end with yellow */
-    min-height: 100;
-    color: #fff !important;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding-bottom: 0;
 }
 
-h3{
-    margin-top: 3em !important;
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 1rem;
+}
+
+h1 {
+    font-size: 2.5rem;
+    letter-spacing: -0.5px;
+}
+
+h2 {
+    font-size: 2rem;
+    margin-top: 2rem;
+}
+
+h3 {
+    font-size: 1.5rem;
+    margin-top: 2em !important;
     margin-bottom: 1em !important;
-    color: #fff !important;
-}
-p{
-    margin-bottom: 3em !important;
+    color: var(--light-text) !important;
 }
 
+p {
+    margin-bottom: 1.5rem !important;
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+/* Navigation Bar Styling */
+.navbar {
+    background-color: rgba(0, 0, 0, 0.2) !important;
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow-sm);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.nav-link {
+    font-weight: 500;
+    padding: 0.5rem 1rem !important;
+    transition: color var(--transition-speed) ease;
+}
+
+.nav-link:hover {
+    color: var(--accent-color) !important;
+}
+
+/* Hero Section - Aumentado z-index para evitar solapamiento */
+.hero-section {
+    padding: 5rem 0 3rem;
+    position: relative;
+    overflow: visible; /* Cambiado de hidden a visible para evitar recorte */
+    z-index: 20; /* Z-index más alto que info-section */
+}
+
+.hero-content {
+    padding-right: 2rem;
+}
+
+.logo-container {
+    margin-bottom: 2rem;
+}
+
+.hero-logo {
+    max-width: 180px;
+    height: auto;
+}
+
+.hero-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+}
+
+.hero-description {
+    font-size: 1.25rem;
+    margin-bottom: 2rem !important;
+    opacity: 0.9;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.action-button {
+    background-color: var(--accent-color) !important;
+    color: var(--dark-text) !important;
+    border: none !important;
+    font-weight: 600 !important;
+    padding: 0.75rem 1.5rem !important;
+    border-radius: 6px !important;
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+    box-shadow: var(--shadow-sm);
+}
+
+.action-button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.secondary-button {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    font-weight: 500 !important;
+    padding: 0.75rem 1.5rem !important;
+    border-radius: 6px !important;
+    transition: background-color var(--transition-speed), transform var(--transition-speed);
+}
+
+.secondary-button:hover {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    transform: translateY(-2px);
+}
+
+/* Floating Elements Animation */
+.hero-image-container {
+    position: relative;
+    height: 400px;
+    width: 100%;
+    overflow: visible;
+    z-index: 25; /* Z-index más alto que la hero-section */
+}
+
+.floating-element {
+    position: absolute;
+    border-radius: 50%;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    animation: float 6s ease-in-out infinite;
+    z-index: 30; /* Z-index mayor que hero-image-container */
+    width: auto; 
+    height: auto;
+    max-width: 100px;
+}
+
+.element-1 {
+    width: 100px;
+    height: 100px;
+    top: 40px;
+    left: 60px;
+    animation-delay: 0s;
+}
+
+.element-2 {
+    width: 80px;
+    height: 80px;
+    top: 180px;
+    left: 180px;
+    animation-delay: 1s;
+}
+
+.element-3 {
+    width: 120px;
+    height: 120px;
+    top: 250px;
+    left: 100px;
+    animation-delay: 2s;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0) rotate(0);
+    }
+    50% {
+        transform: translateY(-20px) rotate(5deg);
+    }
+    100% {
+        transform: translateY(0) rotate(0);
+    }
+}
+
+/* Information Section - Con z-index más bajo que hero */
+.info-section {
+    padding: 4rem 0;
+    position: relative;
+    z-index: 10; /* Z-index más bajo que hero-section */
+    margin-top: 2rem; /* Añadido margen superior para separar de hero */
+}
+
+.info-card {
+    background-color: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 2.5rem;
+    margin-bottom: 3rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: var(--light-text);
+}
+
+.section-description {
+    font-size: 1.1rem;
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.7;
+}
+
+/* Feature Cards */
+.features-row {
+    margin-top: 2rem;
+    margin-bottom: 3rem;
+}
+
+.feature-card {
+    background-color: rgba(255, 255, 255, 0.07);
+    border-radius: 12px;
+    padding: 2rem;
+    height: 100%;
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.feature-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--accent-color);
+}
+
+.feature-card h3 {
+    font-size: 1.3rem;
+    margin-top: 0 !important;
+    margin-bottom: 1rem !important;
+}
+
+.feature-card p {
+    font-size: 0.95rem;
+    margin-bottom: 0 !important;
+    opacity: 0.9;
+}
+
+.cta-row {
+    margin-top: 2rem;
+}
+
+/* Batches Cards styling */
+.card.batch-card {
+    border: 0px !important;
+    border-radius: 12px !important;
+    color: var(--primary-color);
+    overflow: hidden;
+    background-color: var(--card-bg);
+    font-size: 0.9rem;
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+    box-shadow: var(--shadow-sm);
+    height: 100%;
+}
+
+.card.batch-card:hover {
+    background-color: var(--accent-color) !important;
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+}
+
+.card-img-top {
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    object-fit: cover;
+    width: 100%;
+    transition: transform var(--transition-speed);
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.text-participate {
+    color: var(--accent-color) !important;
+    padding: 0.5em 1em;
+    background-color: rgba(0, 0, 0, 0.8);
+    border: 1px solid var(--accent-color);
+    border-radius: 6px;
+    opacity: 0;
+    transition: opacity var(--transition-speed) ease;
+    display: inline-block;
+    font-weight: 600;
+    margin-top: 1rem;
+}
+
+.card:hover .text-participate {
+    opacity: 1;
+}
+
+.card-img-top:hover {
+    transform: scale(1.05);
+}
+
+.progress-circle {
+    width: 3em;
+    height: 3em;
+    border-radius: 50%;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--card-bg) !important;
+    box-shadow: var(--shadow-sm);
+}
+
+.progress-text {
+    position: absolute;
+    font-size: 0.8em;
+    font-weight: bold;
+    color: var(--primary-color);
+    z-index: 1;
+}
+
+.progress-circle::before {
+    content: '';
+    position: absolute;
+    width: 2.6em;
+    height: 2.6em;
+    border-radius: 50%;
+    background-color: var(--card-bg);
+    z-index: 0;
+}
+
+main {
+    flex: 1;
+}
+
+/* Footer Styling */
+footer {
+    background-color: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    padding: 3rem 0 2rem;
+    margin-top: 2rem;
+    width: 100%;
+    position: relative;
+}
+
+footer .text-uppercase {
+    color: var(--accent-color);
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    margin-bottom: 1.2rem;
+}
+
+footer a {
+    color: rgba(255, 255, 255, 0.8) !important;
+    transition: color var(--transition-speed);
+}
+
+footer a:hover {
+    color: var(--accent-color) !important;
+    text-decoration: none;
+}
+
+footer p, footer li {
+    color: rgba(255, 255, 255, 0.8) !important;
+    font-size: 0.9rem;
+}
+
+.footer-link {
+    display: block;
+    padding: 0.3rem 0;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 991.98px) {
+    .hero-content {
+        padding-right: 0;
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .hero-buttons {
+        justify-content: center;
+    }
+    
+    .logo-container {
+        text-align: center;
+    }
+    
+    .hero-logo {
+        max-width: 150px;
+    }
+
+    .feature-card {
+        margin-bottom: 1.5rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .hero-section {
+        padding: 4rem 0 2rem;
+    }
+    
+    .hero-title {
+        font-size: 2rem;
+    }
+    
+    .hero-description {
+        font-size: 1.1rem;
+    }
+    
+    .section-title {
+        font-size: 1.7rem;
+    }
+    
+    .info-card {
+        padding: 2rem;
+    }
+}
+
+/* Additional legacy styles kept for compatibility */
 #content-container {
-    width: 40%;
+    width: 90%;
+    max-width: 1200px;
     text-align: center;
     margin-left: auto;
     margin-right: auto;
 }
+
 button {
-    border-radius: 1em !important;
+    border-radius: 6px !important;
     font-size: 1em !important;
-    background-color: #e9f990 !important;
-    border-color: #e9f990 !important;
-    color: #000 !important;
-    padding-left: 1em !important;
-    padding-right: 1em !important;
+    background-color: var(--accent-color) !important;
+    border-color: var(--accent-color) !important;
+    color: var(--dark-text) !important;
+    padding: 0.75rem 1.5rem !important;
+    font-weight: 600 !important;
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
 }
-.logo{
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.logo {
     width: 40% !important;
+    max-width: 180px !important;
+    margin-top: 2em !important;
 }
-.small-img{
-    width: 10px !important;
+
+.small-img {
+    width: 20px !important;
     margin: 1em !important;
 }
-label{
+
+label {
     display: block !important;
-    font-size: 0.8em !important;
-    
+    font-size: 0.9em !important;
+    font-weight: 500;
+    margin-bottom: 0.5rem !important;
 }
+
+/* Estilos para los mensajes */
+.message-alert {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.2rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    animation: slideInDown 0.5s forwards;
+}
+
+@keyframes slideInDown {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.message-alert.success {
+    background-color: var(--message-success-bg);
+    border: 1px solid var(--message-success-border);
+    color: var(--message-success-color);
+}
+
+.message-alert.error, .message-alert.danger {
+    background-color: var(--message-error-bg);
+    border: 1px solid var(--message-error-border);
+    color: var(--message-error-color);
+}
+
+.message-alert.warning {
+    background-color: var(--message-warning-bg);
+    border: 1px solid var(--message-warning-border);
+    color: var(--message-warning-color);
+}
+
+.message-alert.info {
+    background-color: var(--message-info-bg);
+    border: 1px solid var(--message-info-border);
+    color: var(--message-info-color);
+}
+
+.message-alert .message-content {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    flex: 1;
+}
+
+.message-alert .message-icon {
+    font-size: 1.5rem;
+}
+
+.message-alert .message-text {
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.message-alert .message-close {
+    background: none;
+    border: none;
+    font-size: 0.9rem;
+    padding: 0.3rem;
+    cursor: pointer;
+    color: currentColor;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.message-alert .message-close:hover {
+    opacity: 1;
+}
+
+/* Media queries para mensajes en móviles */
+@media (max-width: 576px) {
+    .message-alert {
+        padding: 0.8rem 1rem;
+    }
+    
+    .message-alert .message-icon {
+        font-size: 1.2rem;
+    }
+    
+    .message-alert .message-text {
+        font-size: 0.85rem;
+    }
+}
+
+
+

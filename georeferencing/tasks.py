@@ -47,8 +47,22 @@ def download_image(image):
         saved_path = default_storage.save(file_path, ContentFile(response.content))
         
         full_saved_path = os.path.join(settings.MEDIA_ROOT, saved_path)
+        print(f"Large image downloaded and saved to: {full_saved_path}")
 
-        print(f"Image downloaded and saved to: {full_saved_path}")
+        # Send an HTTP GET request to download the small image
+        try:
+            response = requests.get(image.smallImageURL, timeout=20)
+            response.raise_for_status()  # Raise an exception for any HTTP errors
+        except requests.exceptions.RequestException as e:
+            print(f"Failed to download image from {image.smallImageURL}: {e}")
+            return None # TODO: Handle the error
+        # Create the path where the image will be saved
+        file_path = os.path.join('small', file_name)
+
+         # Save the image to the media/original/ folder
+        saved_path = default_storage.save(file_path, ContentFile(response.content))
+        full_saved_path = os.path.join(settings.MEDIA_ROOT, saved_path)
+        print(f"Small image downloaded and saved to: {full_saved_path}")
     except requests.exceptions.RequestException as e:
         print(f"Failed to download image from {image.largeImageURL}: {e}")
         return None
@@ -71,6 +85,7 @@ def generate_from_list(batch):
     key = config('NASA_API_KEY')
     # We iterate over the list of images, separated by commas
     for image in batch.originalImages.split(','):
+        print(f"Generating from list: {image}")
         # We do the query to the API for each image
         url = 'https://eol.jsc.nasa.gov/SearchPhotos/PhotosDatabaseAPI/PhotosDatabaseAPI.pl'
         query = 'query=images|directory|like|*large*'
@@ -101,6 +116,10 @@ def generate_from_list(batch):
                 data = response.json()
                 print(f"Query successful: {data}")
                 print(f"Data type: {type(data)}") 
+                 # Check if the query returned no records
+                if data.get('result') == 'SQL found no records that match the specified criteria':
+                    print(f"No records found for image")
+                    return None
                 for d in data:
 
                     largeImageURL = (
@@ -116,6 +135,8 @@ def generate_from_list(batch):
                         spacecraftNadirPoint = f"{d['nadir.lat']}, {d['nadir.lon']}",
                         spaceCraftAltitude = d['nadir.elev'],
                         largeImageURL = largeImageURL,
+                        # SmallImageURL  is the same as largeImageURL, but small instead of large
+                        smallImageURL = largeImageURL.replace('large', 'small'),
                         batch = batch,
                         replicas = batch.replicas
                         

@@ -18,11 +18,6 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="{% static 'js/main.js'%}"></script>
-
-
-
-
-
     <link href="{% static 'css/styles.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
@@ -76,16 +71,19 @@
                     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
             </div>
             <div class="col-md-2 h-100 tools d-flex flex-column p-0">
-                <div id="title" class="flex-shrink-0">
+                <a id="title" class="flex-shrink-0" href="/">
                     <img src="{% static 'img/LogoLostAtNight.svg' %}" alt="logo" class="logo">
                     <i id="usage-info" class="fa-solid fa-circle-question pe-2 pb-2"></i>
-                </div>
+                </a>
                 <div id="photo-info">
                     <div id="photo-info-content">
                         <i id="photo-info" class="fa-solid fa-circle-info pe-1"></i>
                         <span id="photo-info-text"></span>
+                        {% if batch %}
+                        <span id="batch-name">Batch: {{ batch.name }}</span>
+                        <input type="hidden" id="batch-id" value="{{ batch.id }}">
+                        {% endif %}
                     </div>
-
                 </div>
                 <div id="coordinates" class="flex-grow-1">
                     <ul id="icon-list-items"></ul>

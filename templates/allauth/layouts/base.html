@@ -24,100 +24,349 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <link href="{% static 'css/main.css' %}" rel="stylesheet" type="text/css">
-    <link href="{% static 'css/login.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
-    {% bootstrap_css %}
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     {% bootstrap_javascript %}
 
     {% endblock extra_head %}
+    
+    <style>
+        /* Variables CSS para la autenticación */
+        :root {
+            --primary-color: #562952;
+            --secondary-color: #663AD9;
+            --accent-color: #e9f990;
+            --dark-text: #24292e;
+            --light-text: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.07);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --transition-speed: 0.3s;
+        }
+
+        /* Estilos para las tarjetas de autenticación */
+        .auth-card {
+            background-color: rgba(255, 255, 255, 0.07);
+            border-radius: 12px !important;
+            padding: 1.5rem !important;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+            color: var(--light-text);
+        }
+        
+        .auth-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .auth-card h1, .auth-card h2 {
+            color: var(--accent-color) !important;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .auth-card label {
+            color: var(--light-text) !important;
+            font-weight: 500;
+            font-size: 0.9rem !important;
+            margin-bottom: 0.3rem !important;
+            display: block !important;
+        }
+        
+        .auth-card input, .auth-card textarea {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            border-radius: 6px !important;
+            padding: 0.6rem 1rem !important;
+            margin-bottom: 0.7rem !important;
+            color: var(--light-text) !important;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            width: 100% !important;
+            display: block;
+        }
+        
+        .auth-card input:focus, .auth-card textarea:focus {
+            background-color: rgba(255, 255, 255, 0.15) !important;
+            color: var(--light-text) !important;
+            box-shadow: none !important;
+            border-color: var(--accent-color) !important;
+        }
+        
+        .auth-card button[type="submit"], .auth-card .btn-primary {
+            background-color: var(--accent-color) !important;
+            color: var(--dark-text) !important;
+            border: none !important;
+            border-radius: 6px !important;
+            font-weight: 600 !important;
+            width: 100% !important;
+            padding: 0.6rem 1.25rem !important;
+            margin-top: 0.7rem !important;
+            font-size: 1rem !important;
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .auth-card button[type="submit"]:hover, .auth-card .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .auth-card a {
+            color: var(--accent-color) !important;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+        
+        .auth-card a:hover {
+            color: #f6ffb5 !important;
+            text-decoration: underline;
+        }
+
+        /* Estilo para checkbox "Remember Me" */
+        .auth-card .form-check-input {
+            width: 1.2em;
+            height: 1.2em;
+            margin-top: 0.25em;
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        }
+
+        .auth-card .form-check-input:checked {
+            background-color: var(--accent-color) !important;
+            border-color: var(--accent-color) !important;
+        }
+
+        .auth-card .form-check-label {
+            color: var(--light-text) !important;
+            font-weight: 500;
+            font-size: 0.9rem !important;
+        }
+        
+        /* Añadir para alinear el contenedor de "Remember Me" a la izquierda */
+        .auth-card .form-check {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            padding-left: 0;
+            margin-bottom: 0.7rem;
+        }
+        
+        .helptext {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7) !important;
+            margin-top: -0.5rem;
+            margin-bottom: 0.5rem;
+            display: block;
+            font-style: italic;
+        }
+        
+        .errorlist {
+            color: #ff7e7e;
+            list-style: none;
+            padding-left: 0;
+            font-size: 0.9rem;
+            margin-top: -0.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        /* Para inputs de login social */
+        .socialaccount_providers {
+            display: flex;
+            justify-content: center;
+            gap: 0.8rem;
+            margin: 1rem 0;
+        }
+        
+        .socialaccount_provider {
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--light-text);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .socialaccount_provider:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
+        
+        /* Estilo para los separadores */
+        .or-divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 1rem 0;
+            color: var(--light-text);
+        }
+        
+        .or-divider::before,
+        .or-divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .or-divider span {
+            padding: 0 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        /* Estilos para los mensajes */
+        .message-alert {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-speed);
+        }
+
+        .message-alert.success {
+            background-color: rgba(56, 193, 114, 0.1);
+            border: 1px solid rgba(56, 193, 114, 0.3);
+        }
+
+        .message-alert.error, .message-alert.danger {
+            background-color: rgba(255, 77, 77, 0.1);
+            border: 1px solid rgba(255, 77, 77, 0.3);
+        }
+
+        .message-alert.warning {
+            background-color: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .message-alert.info {
+            background-color: rgba(23, 162, 184, 0.1);
+            border: 1px solid rgba(23, 162, 184, 0.3);
+        }
+
+        .message-alert .message-content {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .message-alert .message-icon {
+            font-size: 1.5rem;
+        }
+
+        .message-alert .message-text {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .message-alert .message-close {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: rgba(0, 0, 0, 0.5);
+        }
+
+        .message-alert .message-close:hover {
+            color: rgba(0, 0, 0, 0.8);
+        }
+    </style>
 </head>
 
 <body>
     {% block body %}
+    
+    <!-- Añadimos el topbar -->
+    {% include '_topbar.html' %}
+    
     {% if messages %}
-    <div>
-        <strong>{% trans "Messages:" %}</strong>
-        <ul>
-            {% for message in messages %}<li>{{ message }}</li>{% endfor %}
-        </ul>
+    <div class="container mt-3">
+        {% for message in messages %}
+        <div class="message-alert {% if message.tags %}{{ message.tags }}{% endif %}">
+            <div class="message-content">
+                <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' or message.tags == 'danger' %}fa-exclamation-circle{% elif message.tags == 'warning' %}fa-exclamation-triangle{% elif message.tags == 'info' %}fa-info-circle{% else %}fa-bell{% endif %} message-icon"></i>
+                <span class="message-text">{{ message }}</span>
+            </div>
+            <button type="button" class="btn-close message-close" aria-label="Close"></button>
+        </div>
+        {% endfor %}
     </div>
     {% endif %}
-    <div class="container-fluid">
-        <div class="row">
-            <!--div class="col-12">
-                <strong>{% trans "Menu:" %}</strong>
-                <ul>
-                    {% if user.is_authenticated %}
-                    {% url 'account_email' as email_url_ %}
-                    {% if email_url_ %}
-                    <li>
-                        <a href="{{ email_url_ }}">{% trans "Change Email" %}</a>
-                    </li>
-                    {% endif %}
-                    {% url 'account_change_password' as change_password_url_ %}
-                    {% if change_password_url_ %}
-                    <li>
-                        <a href="{{ change_password_url_ }}">{% trans "Change Password" %}</a>
-                    </li>
-                    {% endif %}
-                    {% url 'socialaccount_connections' as connections_url_ %}
-                    {% if connections_url_ %}
-                    <li>
-                        <a href="{{ connections_url_ }}">{% trans "Account Connections" %}</a>
-                    </li>
-                    {% endif %}
-                    {% url 'mfa_index' as mfa_url_ %}
-                    {% if mfa_url_ %}
-                    <li>
-                        <a href="{{ mfa_url_ }}">{% trans "Two-Factor Authentication" %}</a>
-                    </li>
-                    {% endif %}
-                    {% url 'usersessions_list' as usersessions_list_url_ %}
-                    {% if usersessions_list_url_ %}
-                    <li>
-                        <a href="{{ usersessions_list_url_ }}">{% trans "Sessions" %}</a>
-                    </li>
-                    {% endif %}
-                    {% url 'account_logout' as logout_url_ %}
-                    {% if logout_url_ %}
-                    <li>
-                        <a href="{{ logout_url_ }}">{% trans "Sign Out" %}</a>
-                    </li>
-                    {% endif %}
-                    {% else %}
-                    {% url 'account_login' as login_url_ %}
-                    {% if login_url_ %}
-                    <li>
-                        <a href="{{ login_url_ }}">{% trans "Sign In" %}</a>
-                    </li>
-                    {% endif %}
-                    {% url 'account_signup' as signup_url_ %}
-                    {% if signup_url_ %}
-                    <li>
-                        <a href="{{ signup_url_ }}">{% trans "Sign Up" %}</a>
-                    </li>
-                    {% endif %}
-                    {% endif %}
-                </ul>
-            </div-->
-        </div>
-
-
+    
+    <div class="container mt-5 pt-4">
         <div class="row justify-content-center">
-            <div class="col-3 text-center">
-                <div class="card text-secondary p-5 mx-auto">
-                {% block content %}
-                {% endblock content %}
-                {% endblock body %}
-                {% block extra_body %}
-                {% endblock extra_body %}
+            <div class="col-md-6">
+                <div class="contact-card auth-card">
+                    {% block content %}
+                    {% endblock content %}
                 </div>
             </div>
         </div>
     </div>
-
+    
+    <!-- Añadimos el footer -->
+    {% include '_footer.html' %}
+    
+    {% endblock body %}
+    
+    {% block extra_body %}
+    <script>
+        // Agregar funcionalidad para cerrar mensajes
+        document.addEventListener('DOMContentLoaded', function() {
+            const closeButtons = document.querySelectorAll('.message-close');
+            
+            closeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const messageAlert = this.closest('.message-alert');
+                    
+                    // Agregar clase para animación de desvanecimiento
+                    messageAlert.style.opacity = '0';
+                    messageAlert.style.transform = 'translateY(-10px)';
+                    messageAlert.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                    
+                    // Eliminar el mensaje después de la animación
+                    setTimeout(() => {
+                        messageAlert.remove();
+                    }, 300);
+                });
+            });
+            
+            // Auto-cerrar mensajes después de 5 segundos
+            const messages = document.querySelectorAll('.message-alert');
+            if (messages.length > 0) {
+                setTimeout(() => {
+                    messages.forEach(message => {
+                        if (message) {
+                            message.style.opacity = '0';
+                            message.style.transform = 'translateY(-10px)';
+                            message.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                            
+                            setTimeout(() => {
+                                if (message.parentNode) {
+                                    message.remove();
+                                }
+                            }, 300);
+                        }
+                    });
+                }, 5000);
+            }
+        });
+    </script>
+    {% endblock extra_body %}
 </body>
 
 </html>

@@ -6,13 +6,20 @@ from rest_framework.response import Response
 from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.parsers import JSONParser
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated  # Add this import
 from .serializers import GeoAttemptSerializer, ImageSerializer, MiniGeoAttemptSerializer
-from .models import GeoAttempt, Image
+from .models import GeoAttempt, Image, Batch, GeoAttemptsByUserByDay
 from user_profile.models import UserProfile
 import os
 import subprocess
 import random
 from haversine import haversine
+from datetime import datetime, timedelta
+# import isAuthenticated from rest_framework.permissions
+# from django.contrib.auth.decorators import login_required
+
+
 
 
 class GeoAttemptView(APIView):
@@ -50,39 +57,50 @@ class GeoAttemptView(APIView):
 
 class PendingGeoAttemptView(APIView):
     """
-    API view to retrieve a random GeoAttempt with a status of "PENDING".
-    Methods:
-    - get: Get a random "PENDING" GeoAttempt.
+    API view to handle pending GeoAttempts.
+    - GET /geoattempt-pending/: Get a random 'PENDING' GeoAttempt from any batch.
+    - GET /geoattempt-pending/<pk>/: Get a random 'PENDING' GeoAttempt from a specific batch.
     """
 
     @swagger_auto_schema(
         tags=['02. GeoAttempts'],
-        operation_summary="Get a random 'PENDING' geo attempt")
-    def get(self, request):
-        # Filter GeoAttempts by "PENDING" status
-        print('Here')
-        pending_geoattempts = GeoAttempt.objects.filter(status="PENDING")
-        print(pending_geoattempts)
+        operation_summary="Get a random 'PENDING' geo attempt (optionally from a specific batch)")
+    def get(self, request, pk=None):
+        # Determine the queryset based on whether pk (batch ID) is provided
+        if pk is None:
+            # No batch specified: get all pending GeoAttempts
+            pending_geoattempts = GeoAttempt.objects.filter(status="PENDING")
+        else:
+            # Batch specified: get pending GeoAttempts for that batch
+            print("Batch ID provided:", pk)
+            try:
+                batch = Batch.objects.get(id=pk)
+                print(batch)
+                pending_geoattempts = GeoAttempt.objects.filter(status="PENDING", image__batch=batch)
+            except Batch.DoesNotExist:
+                return Response({"error": "Batch not found."}, status=status.HTTP_404_NOT_FOUND)
 
+        # Check if any pending GeoAttempts exist
         if not pending_geoattempts.exists():
-            print('No pending geo attempts found.')
-            return Response({"error": "No pending geo attempts found."}, status=status.HTTP_404_NOT_FOUND)
+            error_msg = "No pending geo attempts found" + (" in this batch." if pk else ".")
+            return Response({"error": error_msg}, status=status.HTTP_404_NOT_FOUND)
 
-        # Select a random GeoAttempt and initialize some fields
+        # Select a random GeoAttempt and update it
         geoattempt = random.choice(pending_geoattempts)
         geoattempt.status = 'ASSIGNED'
         geoattempt.assignedDateTime = timezone.now()
         geoattempt.finishedDateTime = None
         geoattempt.numberTries = 0
-        geoattempt.controlPoints = []
+        geoattempt.controlPoints = []  # Assuming controlPoints is a list in your JSONField
         if request.user.is_authenticated:
             geoattempt.assignedUser = request.user
+        else:
+            # Handle case where user isn’t authenticated (optional)
+            geoattempt.assignedUser = None  # Or raise an error if assignment requires a user
         geoattempt.save()
 
-        # Serialize the GeoAttempt
+        # Serialize and return the GeoAttempt
         serializer = GeoAttemptSerializer(geoattempt)
-
-        # Return the serialized data
         return Response(serializer.data)
 
 
@@ -250,7 +268,33 @@ class GeoAttemptIndividualView(APIView):
                 geoattemp.save()
                 spend_time = (geoattemp.finishedDateTime -
                               geoattemp.assignedDateTime).total_seconds()
-                if spend_time < 60:
+                # Now, if the user is logged in, we can add a geoattempt to today
+                if geoattemp.assignedUser:
+                    print('User is authenticated')
+                    user_profile, created = UserProfile.objects.get_or_create(
+                        user=geoattemp.assignedUser)
+                    if created:
+                        print('User profile created')
+                    user_profile.geoattempts_done += 1
+                    user_profile.time_spent += spend_time
+                    user_profile.controlPointsDone += len(
+                        request.data['controlPoints'])
+                    user_profile.save()
+                        
+                    # Now, we can add a geoattempt to today
+                    today = timezone.now().date()
+                    geoattempts_today, created = GeoAttemptsByUserByDay.objects.get_or_create(
+                        user=geoattemp.assignedUser, date=today)
+                    if created:
+                        print('GeoAttemptsByUserByDay created')
+                        geoattempts_today.numberGeoAttempts += 1
+                        geoattempts_today.save()
+                    else:
+                        print('GeoAttemptsByUserByDay updated')
+                        geoattempts_today.numberGeoAttempts += 1
+                        geoattempts_today.save()
+
+                if spend_time < 10:
                     print('User is cheating')
                     geoattemp.finishedDateTime = None
                     geoattemp.save()
@@ -263,18 +307,6 @@ class GeoAttemptIndividualView(APIView):
                     return Response({"error": f"Are you cheating?. {spend_time}"}, status=status.HTTP_400_BAD_REQUEST)
 
                 serializer.save()
-                if geoattemp.assignedUser:
-                    print('User is authenticated')
-                    user_profile, created = UserProfile.objects.get_or_create(
-                        user=geoattemp.assignedUser)
-                    if created:
-                        print('User profile created')
-                    user_profile.geoattempts_done += 1
-                    user_profile.time_spent += (geoattemp.finishedDateTime -
-                                                geoattemp.assignedDateTime).total_seconds()
-                    user_profile.controlPointsDone += len(
-                        request.data['controlPoints'])
-                    user_profile.save()
 
             # That means that the user click on "skip" button
             # So returning back to pending status
@@ -425,3 +457,52 @@ class ImageIndividualView(APIView):
         image = get_object_or_404(Image, pk=pk)
         image.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+class GeoAttemptsCalendarView(APIView):
+    permission_classes = [IsAuthenticated]  # Restrict to logged-in users
+
+    def get(self, request):
+        # Get the current logged-in user
+        user = request.user
+        
+        # Current date
+        current_date = datetime.now()
+        
+        # Start date: one year back from today
+        start_date = datetime(current_date.year - 1, current_date.month, current_date.day)
+        
+        # End date: end of the current month
+        end_date = datetime(current_date.year, current_date.month + 1, 1) - timedelta(days=1)
+        if current_date.month == 12:  # Handle December case
+            end_date = datetime(current_date.year + 1, 1, 1) - timedelta(days=1)
+            
+        print(f"Calendar range: {start_date} to {end_date}")
+        
+        # Generate all days in the range
+        all_days = [
+            start_date + timedelta(days=i)
+            for i in range((end_date - start_date).days + 1)
+        ]
+        
+        # Fetch GeoAttempts data for the user in this date range
+        geo_attempts = GeoAttemptsByUserByDay.objects.filter(
+            user=user,
+            date__gte=start_date,
+            date__lte=end_date
+        ).values('date', 'numberGeoAttempts')
+        
+        print(f"Found {len(geo_attempts)} geo attempts in date range")
+        
+        # Convert to dict for lookup
+        attempts_dict = {str(item['date']): item['numberGeoAttempts'] for item in geo_attempts}
+        
+        # Build calendar data
+        calendar_data = [
+            {
+                "date": day.strftime("%Y-%m-%d"),
+                "count": attempts_dict.get(day.strftime("%Y-%m-%d"), 0)
+            }
+            for day in all_days
+        ]
+        
+        return Response(calendar_data)

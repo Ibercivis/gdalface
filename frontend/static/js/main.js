@@ -1,7 +1,4 @@
 $(document).ready(function () {
-
-   
-
     // Function to parse the coordinate string and convert to decimal degrees
     function parseCoordinates(coordString) {
         // Updated regex to handle negative values and optional N/S, E/W indicators
@@ -82,8 +79,12 @@ $(document).ready(function () {
             'X-CSRFToken': csrftoken
         }
     });
+    url = '/api/v1/geoattempt-pending/';
+    if ($('#batch-id').val() != null) {
+        url = '/api/v1/geoattempt-pending/' + $('#batch-id').val() + '/';
+    }
     $.ajax({
-        url: '/api/v1/geoattempt-pending/',
+        url: url,
         type: 'GET',
         dataType: 'json',
         success: function (response) {
@@ -97,13 +98,14 @@ $(document).ready(function () {
                 selection: false // Disable object selection
             });
             $('#photo-info-text').text(response.image_name);
+           
 
             $('#photo-info').on('click', function () {
-                $('.modal-title').html('Photography Information: ' + response.image_name); // Set the modal content
-                $('.modal-body').html('Photography Name: ' + response.image_name + '<br />'
+                $('.modal-title').html(response.image_name); // Set the modal content
+                $('.modal-body').html(''
                     +'Photography Date: ' + response.photo_taken + '<br />'
                     +'Photography Center: ' + response.photo_center_by_machine_learning + '<br />'
-                    +'Photography Resolution: ' + response.photo_resolution + '<br />'
+                    +'Spacecraft Nadir Point: ' + response.spacecraft_nadir_point + '<br />'
                     +'Focal length: ' + response.focal_length + '<br />');
                 infoModal.show(); // Show the modal
             });
@@ -128,7 +130,7 @@ $(document).ready(function () {
                         "status": "ASSIGNED"
                     }
                     $.ajax({
-                        url: 'api/v1/geoattempt-individual/' + geoatempt_id + '/',
+                        url: '/api/v1/geoattempt-individual/' + geoatempt_id + '/',
                         type: 'PATCH',
                         dataType: 'json',
                         headers: {
@@ -599,7 +601,8 @@ $(document).ready(function () {
                 });
 
                 //const mapBox = L.tileLayer('https://api.mapbox.com/styles/v1/frasanz/cm2cdt26700t301pghdcsc7b0/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZnJhc2FueiIsImEiOiJjbTF4bHE2MHIwdzRmMmpxd3g1cGZkbjR3In0.6B49yUgKNVhYOCy7ibw5ww', {
-                const mapBox = L.tileLayer('https://api.mapbox.com/styles/v1/germangil/cm2x26xaf00ns01qw9jooe6wm/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZnJhc2FueiIsImEiOiJjbTF4bHE2MHIwdzRmMmpxd3g1cGZkbjR3In0.6B49yUgKNVhYOCy7ibw5ww',{    
+                //const mapBox = L.tileLayer('https://api.mapbox.com/styles/v1/germangil/cm2x26xaf00ns01qw9jooe6w/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZ2VybWFuZ2lsIiwiYSI6ImNsbXQxbDBoNTAwbjkybGxvcngxNDBhYzgifQ.kcRn3hE1wUpA1KpdxiG23g',{ 
+                const mapBox = L.tileLayer('https://api.mapbox.com/styles/v1/frasanz/cm2cctm8400u501pbb8tvgom7/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZnJhc2FueiIsImEiOiJjbTF4bHE2MHIwdzRmMmpxd3g1cGZkbjR3In0.6B49yUgKNVhYOCy7ibw5ww', {
                     maxZoom: 18,
                     tileSize: 256,
                     attribution: '&copy; <a href="https://www.mapbox.com/about/maps/">Mapbox</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -815,6 +818,7 @@ $(document).ready(function () {
                                 console.log('Wrong place!');
                                 $('.modal-title').html('Wrong place!'); // Set the modal content
                                 $('.modal-body').html('Please add a point in the map (related to the last control point).'); // Set the modal body content
+                            
                                 infoModal.show(); // Show the modal
 
                                 isDragging = false; // Stop the left-click drag movement
@@ -835,6 +839,19 @@ $(document).ready(function () {
                     }
                 });
             });
+        },
+        error: function (response) {
+            console.log(response);
+            $('.modal-title').html('Error!'); // Set the modal content
+            $('.modal-body').html('An error ' + response.status + ' occurred:<br />' + response.responseText); // Set the modal body content
+                // Add a button to go to /batch url
+                $('.modal-footer').html('<button type="button" class="btn btn-primary" id="go-to-batch">Go to batchs </button>');
+                $('#go-to-batch').on('click', function () {
+                    window.location.href = '/batchs';
+                }
+                );
+            infoModal.show(); // Show the modal
         }
+
     });
 });

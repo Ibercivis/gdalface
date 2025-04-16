@@ -15,6 +15,7 @@ from pathlib import Path
 from decouple import config
 
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -48,6 +49,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'bootstrap5',
     'fontawesomefree',
+    'django_countries',
 
     # Other apps
     'django_rq',
@@ -89,6 +91,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'frontend.context_processors.menu_context',  # Añadimos el nuevo context processor
             ],
         },
     },
@@ -220,8 +223,11 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 # Redirect after login/logout
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
+# Redirect to this URL after login
+LOGIN_REDIRECT_URL = '/'  # Redirige a la página principal después del inicio de sesión
+
+# Redirect to this URL after logout
+LOGOUT_REDIRECT_URL = '/'  # Redirect to home or another page
 
 # Email confirmation settings
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # Options: "none", "optional", "mandatory"
@@ -244,3 +250,23 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 SITE_ID = 1
+
+# Django-countries settings
+COUNTRIES_FLAG_URL = 'https://flagcdn.com/32x24/{code}.png'
+
+# EMAIL
+# Use django-ses as the email backend
+EMAIL_BACKEND = "django_ses.SESBackend"
+
+# Amazon SES region (change if needed)
+AWS_SES_REGION_NAME = config('AWS_SES_REGION_NAME', default='us-east-1')
+AWS_SES_REGION_ENDPOINT = config('AWS_SES_REGION_ENDPOINT', default='email.us-east-1.amazonaws.com')
+
+# AWS Credentials
+AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID', default='')
+AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY', default='')   
+
+# Default email sender
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='')
+# Default recipient email - convertido a tupla
+DEFAULT_TO_EMAIL = (config('DEFAULT_TO_EMAIL', default='contact@lostatnight.org'),)

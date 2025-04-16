@@ -13,7 +13,7 @@ from django.http import JsonResponse
 from django.urls import path, reverse
 
 from .forms import PrettyJSONWidget
-from .models import Batch, Image, GeoAttempt
+from .models import Batch, Image, GeoAttempt, GeoAttemptsByUserByDay
 from .tasks import download_image, generate_from_list
 
 
@@ -170,6 +170,8 @@ class BatchAdmin(admin.ModelAdmin):
                         f"https://eol.jsc.nasa.gov/DatabaseImages/"
                         f"{item['images.directory']}/{item['images.filename']}"
                     )
+                    # small_image_url is the same as large_image_url but with changing large to small
+                    small_image_url = large_image_url.replace('large', 'small')
                     image = Image.objects.create(
                         name=item['images.filename'],
                         taken=formated_datetime,
@@ -181,6 +183,7 @@ class BatchAdmin(admin.ModelAdmin):
                             f"{item['frames.mission']}"
                             f"&roll={item['frames.roll']}&frame={item['frames.frame']}",
                         largeImageURL=large_image_url,
+                        smallImageURL=small_image_url,
                         batch=obj,
                         replicas=obj.replicas
                     )
@@ -271,5 +274,6 @@ class GeoAttemptAdmin(admin.ModelAdmin):
 admin.site.register(Batch, BatchAdmin)
 admin.site.register(Image, ImageAdmin)
 admin.site.register(GeoAttempt, GeoAttemptAdmin)
+admin.site.register(GeoAttemptsByUserByDay)
 
 # Register your models here.

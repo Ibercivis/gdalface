@@ -21,22 +21,574 @@
     <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
-    {% bootstrap_css %}
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     {% bootstrap_javascript %}
+    
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow-x: hidden;
+        }
+        
+        /* Night sky gradient - azul oscuro a rojo simulando anochecer */
+        body {
+            background: linear-gradient(to bottom, #0f1135 0%, #2b1155 40%, #581e65 70%, #6a1b54 100%);
+            color: #fff;
+            position: relative;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        /* Content wrapper */
+        .content-wrapper {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero-section {
+            position: relative;
+            padding: 6rem 0;
+            z-index: 1;
+        }
+        
+        .hero-content {
+            position: relative;
+        }
+        
+        .logo-container {
+            margin-bottom: 2rem;
+        }
+        
+        .hero-title {
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            font-size: 2.5rem;
+        }
+        
+        .hero-description {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .info-section {
+            position: relative;
+            z-index: 1;
+            padding: 3rem 0;
+            background-color: rgba(15, 17, 53, 0.5);
+            backdrop-filter: blur(5px);
+        }
+        
+        .info-card, .feature-card {
+            background-color: rgba(43, 17, 85, 0.6);
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .section-title {
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .action-button {
+            background: #7639ba;
+            border: none;
+            box-shadow: 0 4px 15px rgba(118, 57, 186, 0.4);
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+        }
+        
+        .action-button:hover {
+            background: #8c55d8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(118, 57, 186, 0.5);
+        }
+        
+        .secondary-button {
+            background-color: transparent;
+            border: 1px solid #9966cc;
+            color: #fff;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+        }
+        
+        .secondary-button:hover {
+            background-color: rgba(153, 102, 204, 0.2);
+            color: #ffffff;
+        }
+        
+        .highlight-text {
+            color: #c0e83d;
+        }
+        
+        .batch-section {
+            padding: 2rem 0 4rem;
+        }
+        
+        .batch-card {
+            background-color: rgba(43, 17, 85, 0.6);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .batch-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+        }
+        
+        .batch-card .card-img-top {
+            height: 150px;
+            object-fit: cover;
+        }
+        
+        .batch-card .card-footer {
+            background-color: rgba(43, 17, 85, 0.8);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 1rem;
+        }
+        
+        .card-img-overlay {
+            background-color: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .batch-card:hover .card-img-overlay {
+            opacity: 1;
+        }
+        
+        .text-participate {
+            background-color: #7639ba;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 5px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 15px rgba(118, 57, 186, 0.4);
+        }
+        
+        .progress-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .progress-circle::before {
+            content: "";
+            position: absolute;
+            inset: 2px;
+            border-radius: 50%;
+            background-color: rgba(43, 17, 85);
+        }
+        
+        .progress-text {
+            position: relative;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        /* Estilos para la sección de contacto */
+        .contact-section {
+            padding: 4rem 0;
+            margin-top: 2rem;
+            background-color: rgba(15, 17, 53, 0.7);
+            backdrop-filter: blur(5px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .contact-card {
+            background-color: rgba(43, 17, 85, 0.6);
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .contact-form .form-control {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+        
+        .contact-form .form-control:focus {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            box-shadow: none;
+            border-color: #7639ba;
+        }
+        
+        .contact-form .form-label {
+            color: #eee;
+        }
+        
+        .contact-form button[type="submit"] {
+            background: #7639ba;
+            border: none;
+            box-shadow: 0 4px 15px rgba(118, 57, 186, 0.4);
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+        }
+        
+        .contact-form button[type="submit"]:hover {
+            background: #8c55d8;
+            transform: translateY(-2px);
+        }
+        
+        .contact-info {
+            padding: 2rem;
+            background-color: rgba(43, 17, 85, 0.6);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .contact-info h4 {
+            color: #c0e83d;
+            margin-bottom: 1rem;
+        }
+        
+        .contact-info p {
+            color: #eee;
+        }
+        
+        .social-links a {
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            color: #7639ba;
+            transform: translateY(-3px);
+            display: inline-block;
+        }
+        
+        /* Estilos para los mensajes de alerta personalizados */
+        .message-alert {
+            margin-bottom: 1.5rem;
+            border-radius: 10px;
+            padding: 1rem 3rem 1rem 1rem; /* Aumentado el padding derecho para acomodar el botón */
+            position: relative;
+            background-color: rgba(43, 17, 85, 0.7);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+        }
+        
+        .message-alert.success {
+            background-color: rgba(56, 193, 114, 0.2);
+            border: 1px solid rgba(56, 193, 114, 0.3);
+            color: rgba(56, 193, 114, 0.9);
+        }
+        
+        .message-alert.error, .message-alert.danger {
+            background-color: rgba(255, 77, 77, 0.2);
+            border: 1px solid rgba(255, 77, 77, 0.3);
+            color: rgba(255, 77, 77, 0.9);
+        }
+        
+        .message-alert.warning {
+            background-color: rgba(255, 193, 7, 0.2);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            color: rgba(255, 193, 7, 0.9);
+        }
+        
+        .message-alert.info {
+            background-color: rgba(13, 202, 240, 0.2);
+            border: 1px solid rgba(13, 202, 240, 0.3);
+            color: rgba(13, 202, 240, 0.9);
+        }
+        
+        .message-alert .btn-close {
+            position: absolute;
+            top: 50%;
+            right: 1rem;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            background-color: #371861;
+            border: none;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            opacity: 1;
+            /* Eliminamos el ícono predeterminado de Bootstrap */
+            background-image: none;
+        }
+        
+        .message-alert .btn-close::after {
+            content: "×";
+            font-size: 20px;
+            line-height: 1;
+            color: #000000; /* Cambiado de #ffffff a #000000 */
+            font-weight: 500;
+        }
+        
+        .message-alert .btn-close:hover {
+            background-color: #4a2380;
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .message-alert .btn-close:focus {
+            box-shadow: 0 0 0 3px rgba(55, 24, 97, 0.5);
+            outline: none;
+        }
+    </style>
 </head>
 <body>
-    <div id="content-container">
-        <img src="{% static 'img/LogoLostAtNight.png' %}" alt="Lost at Night Logo" class="logo" />
-        <h3>WELCOME TO LOST AT NIGHT</h3>
-        <p>This application is designed to help georeference images taken by astronauts aboard the 
-            International Space Station (ISS). The goal is to create a global map of Earth’s lights at 
-            night to measure and track light pollution. By accurately aligning images with geographical 
-            coordinates, the app contributes to valuable environmental data collection, which can be used 
-            for scientific research, monitoring light pollution, and understanding 
-            its impact on ecosystems and human health.</p>
-            <a href="/gettask">
-                <button class="btn btn-primary">Participate</button>
-            </a>
+    <!-- All content wrapped to ensure it's above stars background -->
+    <div class="content-wrapper">
+        {% include '_topbar.html' %}
+        
+        <!-- Mensajes del sistema -->
+        {% include '_message.html' %}
+        
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 hero-content">
+                        <div class="logo-container">
+                            <img src="{% static 'img/LogoLostAtNight.png' %}" alt="Lost at Night Logo" class="hero-logo" />
+                        </div>
+                        <h1 class="hero-title">{% if user.is_authenticated %}{{ user | upper }}, WELCOME BACK<br>TO <span class="highlight-text">LOST AT NIGHT</span>{% else %}WELCOME TO <span class="highlight-text">LOST AT NIGHT</span>{% endif %}</h1>
+                        <p class="hero-description">
+                            Help map Earth's lights from space and combat light pollution
+                        </p>
+                        <div class="hero-buttons">
+                            <a href="/gettask" class="btn btn-lg action-button">Participate Now</a>
+                            <a href="#batch-section" class="btn btn-lg secondary-button">Select Batches</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Information Section -->
+        <section class="info-section">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-10">
+                        <div class="info-card">
+                            <h2 class="section-title">Our Mission</h2>
+                            <p class="section-description">
+                                This application is designed to help georeference images taken by astronauts aboard the 
+                                International Space Station (ISS). The goal is to create a global map of Earth's lights at 
+                                night to measure and track light pollution. By accurately aligning images with geographical 
+                                coordinates, the app contributes to valuable environmental data collection, which can be used 
+                                for scientific research, monitoring light pollution, and understanding 
+                                its impact on ecosystems and human health.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Features Section -->
+                <div class="row features-row">
+                    <div class="col-md-4">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-globe-americas"></i>
+                            </div>
+                            <h3>Georeference Images</h3>
+                            <p>Help align ISS night images with precise geographic coordinates</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-map-marked-alt"></i>
+                            </div>
+                            <h3>Map Light Pollution</h3>
+                            <p>Contribute to a global database of nighttime light patterns</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-microscope"></i>
+                            </div>
+                            <h3>Support Research</h3>
+                            <p>Enable scientific studies on light pollution's environmental impact</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row cta-row">
+                    <div class="col-12 text-center">
+                        <a href="/gettask" class="btn btn-lg action-button">Start Contributing</a>
+                    </div>
+                </div>
+                
+                <!-- Batch Section - Con ID para navegación -->
+                <div id="batch-section" class="row batch-section">
+                    <div class="col-12 text-center mb-4">
+                        <h2 class="section-title">Available Batches</h2>
+                        <p class="text-center mb-5">Select a specific batch of images to work with</p>
+                    </div>
+                    
+                    {% for batch in batchs %}
+                    <div class="col-md-3 col-sm-6 mb-4">
+                        <div class="card batch-card" onClick="window.location.href='/gettask/{{ batch.id }}'">
+                            <div class="position-relative">
+                                <img src="{{ batch.get_example_image }}" class="card-img-top" alt="{{ batch.name }}">
+                                <div class="card-img-overlay d-flex align-items-center justify-content-center">
+                                    <div class="text-center text-participate">Participate</div>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="row">
+                                    <div class="col-9">
+                                        Name: <b>{{ batch.name }}</b> <br/>
+                                        Images: <b>{{ batch.get_number_images }}</b>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="progress-circle" style="background: conic-gradient(#000 {{ batch.get_percentage_remaining }}%, #fef7ff 0);">
+                                            <span class="progress-text">{{ batch.get_percentage_remaining }}%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Contact Section - Integrado desde la página de contacto -->
+                <div id="contact-section" class="row contact-section">
+                    <div class="col-12 text-center mb-4">
+                        <h2 class="section-title">Contact Us</h2>
+                        <p class="text-center mb-5">Have questions about Lost at Night? We'd love to hear from you!</p>
+                    </div>
+                    
+                    <div class="row justify-content-center">
+                        <div class="col-md-6">
+                            <div class="contact-card">
+                                <form action="#" method="post" class="contact-form">
+                                    {% csrf_token %}
+                                    <div class="mb-3">
+                                        <label for="name" class="form-label">Your Name</label>
+                                        <input type="text" class="form-control" id="name" name="name" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Email Address</label>
+                                        <input type="email" class="form-control" id="email" name="email" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="subject" class="form-label">Subject</label>
+                                        <input type="text" class="form-control" id="subject" name="subject" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="message" class="form-label">Message</label>
+                                        <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Send Message</button>
+                                </form>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mt-4 mt-md-0">
+                            <div class="contact-info">
+                                <h4><i class="fas fa-users me-2"></i>Our Social Media</h4>
+                                
+                                <!-- Social Media Links in Two Columns -->
+                                <div class="row">
+                                    <!-- Cities at Night column -->
+                                    <div class="col-md-12 mb-3">
+                                        <h6 class="mb-2">Cities at Night</h6>
+                                        <div class="d-flex social-links mb-3">
+                                            <!-- Twitter -->
+                                            <a href="https://twitter.com/cities4tnight" target="_blank" class="me-3">
+                                                <i class="fa-brands fa-x-twitter fa-2x"></i>
+                                            </a>
+                                            <!-- Youtube -->
+                                            <a href="https://www.youtube.com/watch?v=CrxuuCsPzU4" target="_blank" class="me-3">
+                                                <i class="fab fa-youtube fa-2x"></i>
+                                            </a>
+                                            <!-- Newsletter -->
+                                            <a href="https://citiesatnight.us19.list-manage.com/subscribe?u=777a5063c074ee154eaaf851e&id=036e3689d9" target="_blank" class="me-3">
+                                                <i class="fa-solid fa-envelope fa-2x"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Plan-B project column -->
+                                    <div class="col-md-12 mb-3">
+                                        <h6 class="mb-2">Plan-B project</h6>
+                                        <div class="d-flex social-links mb-3">
+                                            <!-- Twitter -->
+                                            <a href="https://twitter.com/Planb_team" target="_blank" class="me-3">
+                                                <i class="fa-brands fa-x-twitter fa-2x"></i>
+                                            </a>
+                                            <!-- Wordpress -->
+                                            <a href="https://plan-b-project.eu" target="_blank" class="me-3">
+                                                <i class="fa-brands fa-wordpress-simple fa-2x"></i>
+                                            </a>
+                                            <!-- Linkedin -->
+                                            <a href="https://www.linkedin.com/company/plan-b-project-eu/" target="_blank" class="me-3">
+                                                <i class="fa-brands fa-linkedin fa-2x"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Development credit -->
+                                <div class="text-center text-md-start mt-4">
+                                    <a href="https://github.com/Ibercivis/gdalface" target="_blank" class="text-white text-decoration-none">
+                                        Developed by <b>Ibercivis</b>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        {% include '_footer.html' %}
     </div>
+    
+    <script>
+        // Script para hacer funcionar los botones de cierre de los mensajes de alerta
+        document.addEventListener('DOMContentLoaded', function() {
+            const closeButtons = document.querySelectorAll('.message-alert .btn-close');
+            
+            closeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const messageAlert = this.closest('.message-alert');
+                    messageAlert.style.opacity = '0';
+                    messageAlert.style.transition = 'opacity 0.3s ease';
+                    
+                    // Eliminar el mensaje después de la animación
+                    setTimeout(() => {
+                        messageAlert.remove();
+                    }, 300);
+                });
+            });
+        });
+    </script>
 </body>
 </html>

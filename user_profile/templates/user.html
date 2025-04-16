@@ -1,7 +1,589 @@
-{% load i18n %}
 {% load static %}
 {% load bootstrap5 %}
+<!DOCTYPE html>
+<html lang="en">
 
-iaa
-{{ user.email }}
-{{ time}}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lost At Night - User Profile</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+    {% include '_google_analytics.html' %}
+    {% bootstrap_css %}
+    <!-- Include jQuery from a CDN -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <link href="{% static 'css/main.css' %}" rel="stylesheet" type="text/css">
+
+    <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/cal-heatmap/dist/cal-heatmap.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/cal-heatmap/dist/cal-heatmap.css">
+
+    <!-- Google Fonts - Added for consistency with the main page -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script src="{% static 'js/calheatmap.js'%}"></script>
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <style>
+        body {
+            background-color: #4b2e83; /* Purple color similar to the image */
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1280px;
+            padding: 24px 16px;
+        }
+
+        /* User profile with adapted colors */
+        .profile-header {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .profile-avatar {
+            width: 220px;
+            margin-right: 24px;
+        }
+
+        .avatar-wrapper {
+            position: relative;
+            margin-bottom: 16px;
+            width: 100%;
+            max-width: 220px;
+            padding-top: 100%; /* This creates a square container */
+            overflow: hidden;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background-color: #333;
+        }
+
+        .avatar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* This is key to maintain the 1:1 ratio */
+            object-position: center;
+        }
+
+        .profile-details {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-size: 26px;
+            font-weight: 600;
+            line-height: 1.25;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .profile-username {
+            font-size: 20px;
+            font-weight: 300;
+            line-height: 24px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 16px;
+        }
+
+        .profile-bio {
+            margin-bottom: 16px;
+            font-size: 16px;
+            color: #ffffff;
+        }
+
+        .profile-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+
+        .btn-edit-profile {
+            display: inline-block;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 20px;
+            white-space: nowrap;
+            vertical-align: middle;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            color: #ffffff;
+            background-color: transparent;
+            transition: background-color 0.2s;
+            width: 100%;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-edit-profile:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.4);
+            transition-duration: 0.1s;
+            text-decoration: none;
+        }
+
+        /* User statistics */
+        .stats-container {
+            margin-bottom: 36px;
+        }
+
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            gap: 20px;
+            margin-bottom: 16px;
+        }
+
+        .stats-card {
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background-color: rgba(59, 48, 84, 0.9); /* Dark purple color */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            color: #fff;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .stats-section-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stats-section-title i {
+            margin-right: 10px;
+            color: rgba(233, 249, 144, 0.9); /* Accent color similar to the image */
+        }
+
+        .stats-icon {
+            font-size: 36px;
+            margin-bottom: 16px;
+            color: rgba(233, 249, 144, 0.9); /* Accent color similar to the image */
+        }
+
+        .stats-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .stats-label {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 4px;
+        }
+
+        /* Contribution graph */
+        .contribution-section {
+            margin-bottom: 30px;
+        }
+        
+        .personal-contrib-heading {
+            font-size: 20px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .personal-contrib-heading i {
+            margin-right: 10px;
+            color: rgba(233, 249, 144, 0.9);
+        }
+
+        .contribution-graph {
+            background-color: rgba(59, 48, 84, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            overflow-x: auto;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .contribution-graph:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .contribution-footer {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-top: 12px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .legend-cell {
+            width: 12px;
+            height: 12px;
+            margin: 0 3px;
+            display: inline-block;
+            border-radius: 2px;
+        }
+
+        /* Ranking tables */
+        .ranking-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(356px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .ranking-card {
+            border-radius: 12px;
+            background-color: rgba(59, 48, 84, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .ranking-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .ranking-header {
+            padding: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-weight: 600;
+            font-size: 16px;
+            color: #ffffff;
+            background-color: rgba(43, 36, 61, 0.8);
+        }
+
+        .ranking-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .ranking-table th, .ranking-table td {
+            padding: 10px 16px;
+            text-align: left;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .ranking-table th {
+            background-color: rgba(31, 26, 44, 0.6);
+            font-weight: 600;
+            color: rgba(233, 249, 144, 0.9);
+        }
+
+        .ranking-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .ranking-table tr.highlight-row {
+            background-color: rgba(233, 249, 144, 0.1);
+        }
+
+        .ranking-table tr:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+            }
+            
+            .profile-avatar {
+                width: 180px;
+                margin-right: 0;
+                margin-bottom: 16px;
+                align-self: center;
+            }
+            
+            .repo-grid, .ranking-section, .stats-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    {% include '_topbar.html' %}
+    
+    <!-- System messages -->
+    {% include '_message.html' %}
+    
+    <div class="container">
+        <!-- Profile header -->
+        <div class="profile-header">
+            <div class="profile-avatar">
+                <div class="avatar-wrapper">
+                    {% if profile.profile_pic %}
+                        <img src="{{ profile.profile_pic.url }}" alt="Profile Picture" class="avatar">
+                    {% else %}
+                        <img src="https://avatars.githubusercontent.com/u/10137?v=4" alt="Default Profile Avatar" class="avatar">
+                    {% endif %}
+                </div>
+                
+                <a href="{% url 'edit_profile' %}" class="btn-edit-profile">
+                    Edit profile
+                </a>
+                
+                <a href="{% url 'account_logout' %}" class="btn-edit-profile mt-2" style="background-color: rgba(255, 100, 100, 0.2); border-color: rgba(255, 100, 100, 0.4);">
+                    <i class="fas fa-sign-out-alt"></i> Log out
+                </a>
+                
+                <a href="{% url 'delete_account' %}" class="btn-edit-profile mt-2" style="background-color: rgba(255, 50, 50, 0.2); border-color: rgba(255, 50, 50, 0.5);">
+                    <i class="fas fa-trash-alt"></i> Delete account
+                </a>
+            </div>
+            
+            <div class="profile-details">
+                <h1 class="profile-name">{{ user.get_full_name|default:user.username }}</h1>
+                
+                {% if profile.bio %}
+                <div class="profile-bio">
+                    {{ profile.bio }}
+                </div>
+                {% endif %}
+                
+                <div class="profile-meta">
+                    <div class="meta-item">
+                        <i class="fas fa-envelope"></i>&nbsp;
+                        {{ user.email }}
+                    </div>
+                    {% if profile.location %}
+                    <div class="meta-item">
+                        <i class="fas fa-map-marker-alt"></i>&nbsp;
+                        {{ profile.location }}
+                    </div>
+                    {% endif %}
+                    {% if profile.country %}
+                    <div class="meta-item">
+                        <img src="https://flagcdn.com/32x24/{{ profile.country.code|lower }}.png" alt="{{ profile.country.name }}" style="width: 24px; height: 18px; margin-right: 5px;">
+                        {{ profile.country.name }}
+                    </div>
+                    {% endif %}    
+                </div>
+            </div>
+        </div>
+        
+        <!-- Statistics -->
+        <div class="stats-container">
+            <!-- Personal statistics -->
+            <div class="stats-section-title">
+                <i class="fas fa-user-circle"></i> Your Personal Statistics
+            </div>
+            <div class="stats-section">
+                <div class="stats-card personal">
+                    <div class="stats-icon"><i class="fas fa-tasks"></i></div>
+                    <div class="stats-value">{{ geo }}</div>
+                    <div class="stats-label">Completed Tasks</div>
+                </div>
+                
+                <div class="stats-card personal">
+                    <div class="stats-icon"><i class="fas fa-clock"></i></div>
+                    <div class="stats-value">{{ time }}</div>
+                    <div class="stats-label">Time Invested</div>
+                </div>
+                
+                <div class="stats-card personal">
+                    <div class="stats-icon"><i class="fas fa-trophy"></i></div>
+                    <div class="stats-value">#{{ user_task_position }}</div>
+                    <div class="stats-label">Your Position in Tasks</div>
+                </div>
+                
+                <div class="stats-card personal">
+                    <div class="stats-icon"><i class="fas fa-medal"></i></div>
+                    <div class="stats-value">#{{ user_time_position }}</div>
+                    <div class="stats-label">Your Position in Time</div>
+                </div>
+            </div>
+            
+            <!-- Personal contribution graph -->
+            <div class="contribution-section mt-4">
+                <div class="section-heading personal-contrib-heading">
+                    <span><i class="fas fa-calendar-alt"></i> Your Daily Contributions (April 2024 - April 2025)</span>
+                </div>
+                
+                <div class="contribution-graph">
+                    <div id="github-like-heatmap"></div>
+                    
+                    <div class="contribution-footer">
+                        <span style="margin-right: 4px;">Less</span>
+                        <div class="legend-cell" style="background-color: #ffffff; border: 1px solid #ddd;"></div>
+                        <div class="legend-cell" style="background-color: #9be9a8;"></div>
+                        <div class="legend-cell" style="background-color: #40c463;"></div>
+                        <div class="legend-cell" style="background-color: #30a14e;"></div>
+                        <div class="legend-cell" style="background-color: #216e39;"></div>
+                        <span style="margin-left: 4px;">More</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Project statistics -->
+            <div class="stats-section-title mt-4">
+                <i class="fas fa-project-diagram"></i> Project Statistics
+            </div>
+            <div class="stats-section">
+                <div class="stats-card project">
+                    <div class="stats-icon"><i class="fas fa-users"></i></div>
+                    <div class="stats-value">{{ total_users }}</div>
+                    <div class="stats-label">Total Users</div>
+                </div>
+                
+                <div class="stats-card project">
+                    <div class="stats-icon"><i class="fas fa-tasks"></i></div>
+                    <div class="stats-value">{{ total_tasks_completed }}</div>
+                    <div class="stats-label">Total Tasks</div>
+                </div>
+                
+                <div class="stats-card project">
+                    <div class="stats-icon"><i class="fas fa-clock"></i></div>
+                    <div class="stats-value">{{ total_time_spent }}</div>
+                    <div class="stats-label">Total Time</div>
+                </div>
+                
+                <div class="stats-card project">
+                    <div class="stats-icon"><i class="fas fa-chart-line"></i></div>
+                    <div class="stats-value">{{ avg_tasks_per_user }}</div>
+                    <div class="stats-label">Average Tasks per User</div>
+                </div>
+                
+                <div class="stats-card project">
+                    <div class="stats-icon"><i class="fas fa-percentage"></i></div>
+                    <div class="stats-value">{{ user_tasks_percentage }}%</div>
+                    <div class="stats-label">Your % Contribution in Tasks</div>
+                </div>
+                
+                <div class="stats-card project">
+                    <div class="stats-icon"><i class="fas fa-hourglass-half"></i></div>
+                    <div class="stats-value">{{ user_time_percentage }}%</div>
+                    <div class="stats-label">Your % Contribution in Time</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Ranking tables -->
+        <div class="ranking-section">
+            <!-- Top 10 by tasks -->
+            <div class="ranking-card">
+                <div class="ranking-header">
+                    Top 10 Users by Tasks (Your rank: #{{ user_task_position }})
+                </div>
+                <table class="ranking-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>User</th>
+                            <th>Tasks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for username, tasks, user_profile in task_ranking %}
+                            <tr {% if username == user.username %}class="highlight-row"{% endif %}>
+                                <td>{{ forloop.counter }}</td>
+                                <td>
+                                    <div style="display: flex; align-items: center;">
+                                        {% if user_profile.profile_pic %}
+                                            <img src="{{ user_profile.profile_pic.url }}" alt="Profile of {{ username }}" 
+                                                 style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px; object-fit: cover;">
+                                        {% else %}
+                                            <div style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px; 
+                                                      background-color: #6a1b54; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-user" style="font-size: 12px; color: #fff;"></i>
+                                            </div>
+                                        {% endif %}
+                                        {{ username }}
+                                    </div>
+                                </td>
+                                <td>{{ tasks }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Top 10 by time -->
+            <div class="ranking-card">
+                <div class="ranking-header">
+                    Top 10 Users by Time (Your rank: #{{ user_time_position }})
+                </div>
+                <table class="ranking-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>User</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for username, time_spent, user_profile in time_ranking %}
+                            <tr {% if username == user.username %}class="highlight-row"{% endif %}>
+                                <td>{{ forloop.counter }}</td>
+                                <td>
+                                    <div style="display: flex; align-items: center;">
+                                        {% if user_profile.profile_pic %}
+                                            <img src="{{ user_profile.profile_pic.url }}" alt="Profile of {{ username }}" 
+                                                 style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px; object-fit: cover;">
+                                        {% else %}
+                                            <div style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px; 
+                                                      background-color: #6a1b54; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-user" style="font-size: 12px; color: #fff;"></i>
+                                            </div>
+                                        {% endif %}
+                                        {{ username }}
+                                    </div>
+                                </td>
+                                <td>{{ time_spent }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    {% include '_footer.html' %}
+</body>
+</html>
+

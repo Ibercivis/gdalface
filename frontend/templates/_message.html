@@ -1,0 +1,108 @@
+{% if messages %}
+<div class="container mt-3">
+    {% for message in messages %}
+    <div class="message-alert {{ message.tags }}">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<style>
+    /* Estilos para los mensajes de alerta personalizados */
+    .message-alert {
+        margin-bottom: 1.5rem;
+        border-radius: 10px;
+        padding: 1rem 3rem 1rem 1rem; /* Aumentado el padding derecho para acomodar el botón */
+        position: relative;
+        background-color: rgba(43, 17, 85, 0.7);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+    }
+    
+    .message-alert.success {
+        background-color: rgba(56, 193, 114, 0.2);
+        border: 1px solid rgba(56, 193, 114, 0.3);
+        color: rgba(56, 193, 114, 0.9);
+    }
+    
+    .message-alert.error, .message-alert.danger {
+        background-color: rgba(255, 77, 77, 0.2);
+        border: 1px solid rgba(255, 77, 77, 0.3);
+        color: rgba(255, 77, 77, 0.9);
+    }
+    
+    .message-alert.warning {
+        background-color: rgba(255, 193, 7, 0.2);
+        border: 1px solid rgba(255, 193, 7, 0.3);
+        color: rgba(255, 193, 7, 0.9);
+    }
+    
+    .message-alert.info {
+        background-color: rgba(13, 202, 240, 0.2);
+        border: 1px solid rgba(13, 202, 240, 0.3);
+        color: rgba(13, 202, 240, 0.9);
+    }
+    
+    .message-alert .btn-close {
+        position: absolute;
+        top: 50%;
+        right: 1rem;
+        transform: translateY(-50%);
+        width: 24px;
+        height: 24px;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        background-color: #371861;
+        border: none;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        opacity: 1;
+        /* Eliminamos el ícono predeterminado de Bootstrap */
+        background-image: none;
+    }
+    
+    .message-alert .btn-close::after {
+        content: "×";
+        font-size: 20px;
+        line-height: 1;
+        color: #000000;
+        font-weight: 500;
+    }
+    
+    .message-alert .btn-close:hover {
+        background-color: #4a2380;
+        transform: translateY(-50%) scale(1.1);
+    }
+    
+    .message-alert .btn-close:focus {
+        box-shadow: 0 0 0 3px rgba(55, 24, 97, 0.5);
+        outline: none;
+    }
+</style>
+
+<script>
+    // Script para hacer funcionar los botones de cierre de los mensajes de alerta
+    document.addEventListener('DOMContentLoaded', function() {
+        const closeButtons = document.querySelectorAll('.message-alert .btn-close');
+        
+        closeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const messageAlert = this.closest('.message-alert');
+                messageAlert.style.opacity = '0';
+                messageAlert.style.transition = 'opacity 0.3s ease';
+                
+                // Eliminar el mensaje después de la animación
+                setTimeout(() => {
+                    messageAlert.remove();
+                }, 300);
+            });
+        });
+    });
+</script>

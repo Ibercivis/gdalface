@@ -21,8 +21,11 @@ class GeoAttemptSerializer(serializers.ModelSerializer):
     image_name = serializers.SerializerMethodField()
     photo_center_by_machine_learning = serializers.SerializerMethodField()
     photo_center_point = serializers.SerializerMethodField()
+    spacecraft_nadir_point = serializers.SerializerMethodField()
     photo_taken = serializers.SerializerMethodField()
     focal_length = serializers.SerializerMethodField()
+    batch_name = serializers.CharField(source='image.batch.name', read_only=True)
+    batch_id = serializers.IntegerField(source='image.batch.id', read_only=True)
 
     class Meta:
         model = GeoAttempt
@@ -36,12 +39,15 @@ class GeoAttemptSerializer(serializers.ModelSerializer):
                   'image_name',
                   'photo_center_point',
                   'photo_center_by_machine_learning',
+                  'spacecraft_nadir_point',
                   'status',
                   'hash',
                   'skipped',
                   'controlPoints',
                   'photo_taken',
-                  'focal_length']
+                  'focal_length',
+                  'batch_name',
+                  'batch_id']
         read_only_fields = ['createdDateTime', 'hash']
 
     def get_image_name(self, obj):
@@ -58,6 +64,9 @@ class GeoAttemptSerializer(serializers.ModelSerializer):
     
     def get_focal_length(self, obj):
         return obj.image.focalLength
+    
+    def get_spacecraft_nadir_point(self, obj):
+        return obj.image.spacecraftNadirPoint
     
 
     

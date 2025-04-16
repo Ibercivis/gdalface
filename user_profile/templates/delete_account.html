@@ -1,0 +1,127 @@
+{% load static %}
+{% load bootstrap5 %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lost At Night - Eliminar Cuenta</title>
+    {% include '_google_analytics.html' %}
+    {% bootstrap_css %}
+    <link href="{% static 'css/main.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    {% bootstrap_javascript %}
+    <style>
+        body {
+            background: linear-gradient(to bottom, #0f1135 0%, #2b1155 40%, #581e65 70%, #6a1b54 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            color: #fff;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            padding: 50px 15px;
+        }
+        
+        .delete-card {
+            background-color: rgba(43, 17, 85, 0.8);
+            border-radius: 12px !important;
+            overflow: hidden;
+            color: #ffffff;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            backdrop-filter: blur(10px);
+        }
+        
+        .card-header {
+            background-color: rgba(255, 77, 77, 0.2);
+            border-bottom: 1px solid rgba(255, 77, 77, 0.3);
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        .btn-cancel {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            border-radius: 6px !important;
+            padding: 0.7rem 2rem !important;
+            font-weight: 500 !important;
+            transition: all 0.3s;
+        }
+        
+        .btn-cancel:hover {
+            background-color: rgba(255, 255, 255, 0.2) !important;
+            transform: translateY(-3px);
+        }
+        
+        .btn-delete {
+            background-color: rgba(255, 77, 77, 0.2) !important;
+            color: rgba(255, 77, 77, 0.9) !important;
+            border: 1px solid rgba(255, 77, 77, 0.3) !important;
+            border-radius: 6px !important;
+            padding: 0.7rem 2rem !important;
+            font-weight: 600 !important;
+            transition: all 0.3s;
+        }
+        
+        .btn-delete:hover {
+            background-color: rgba(255, 77, 77, 0.3) !important;
+            transform: translateY(-3px);
+        }
+        
+        .warning-icon {
+            font-size: 4rem;
+            color: rgba(255, 77, 77, 0.9);
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    {% include '_topbar.html' %}
+    
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card delete-card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Eliminar cuenta</h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <i class="fas fa-exclamation-triangle warning-icon"></i>
+                        
+                        <h4 class="mb-3">¿Estás seguro que quieres eliminar tu cuenta?</h4>
+                        
+                        <p class="text-light mb-4">
+                            Esta acción eliminará permanentemente tu cuenta y todos tus datos asociados.
+                            No podrás recuperar esta información.
+                        </p>
+                        
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            <div class="d-flex justify-content-center mt-4">
+                                <a href="{% url 'user' %}" class="btn btn-cancel me-3">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-delete">
+                                    <i class="fas fa-trash-alt"></i> Eliminar permanentemente
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% include '_footer.html' %}
+</body>
+</html>

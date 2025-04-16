@@ -1,0 +1,299 @@
+{% load static %}
+{% load bootstrap5 %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lost At Night - Edit Profile</title>
+    {% include '_google_analytics.html' %}
+    {% bootstrap_css %}
+    <link href="{% static 'css/main.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    {% bootstrap_javascript %}
+    <style>
+        body {
+            background: linear-gradient(to bottom, #0f1135 0%, #2b1155 40%, #581e65 70%, #6a1b54 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+        }
+        
+        .profile-card {
+            background-color: rgba(43, 17, 85, 0.8);
+            border-radius: 12px !important;
+            overflow: hidden;
+            color: #ffffff;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .profile-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .profile-card .card-header {
+            background-color: rgba(33, 37, 41, 0.6);
+            color: white;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1.2rem 1.5rem;
+            font-weight: 600;
+        }
+
+        .profile-card .card-body {
+            background-color: transparent;
+            color: #fff;
+            padding: 2rem;
+        }
+
+        h5.card-title {
+            color: #e9f990;
+            font-weight: 600;
+            font-size: 1.3rem;
+        }
+
+        .form-label {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+        
+        .form-control {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            color: #ffffff !important;
+            border-radius: 6px !important;
+            padding: 0.7rem 1rem !important;
+        }
+        
+        .form-control:focus {
+            background-color: rgba(255, 255, 255, 0.15) !important;
+            box-shadow: none;
+            border-color: #e9f990 !important;
+            color: #ffffff !important;
+        }
+        
+        .form-control:disabled {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            color: rgba(255, 255, 255, 0.7) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
+        .btn-save {
+            background-color: #e9f990 !important;
+            color: #2b1155 !important;
+            border: none !important;
+            border-radius: 6px !important;
+            padding: 0.7rem 2rem !important;
+            font-weight: 600 !important;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 10px rgba(233, 249, 144, 0.3);
+        }
+        
+        .btn-save:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(233, 249, 144, 0.4);
+        }
+        
+        .btn-cancel {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            border-radius: 6px !important;
+            padding: 0.7rem 2rem !important;
+            font-weight: 500 !important;
+            transition: all 0.3s;
+        }
+        
+        .btn-cancel:hover {
+            background-color: rgba(255, 255, 255, 0.2) !important;
+            transform: translateY(-3px);
+        }
+        
+        .message-alert {
+            margin-bottom: 1.5rem;
+            border-radius: 6px;
+            padding: 1rem;
+        }
+        
+        .message-alert.success {
+            background-color: rgba(56, 193, 114, 0.2);
+            border: 1px solid rgba(56, 193, 114, 0.3);
+            color: rgba(56, 193, 114, 0.9);
+        }
+        
+        .message-alert.error, .message-alert.danger {
+            background-color: rgba(255, 77, 77, 0.2);
+            border: 1px solid rgba(255, 77, 77, 0.3);
+            color: rgba(255, 77, 77, 0.9);
+        }
+        
+        .profile-image-container {
+            margin: 1rem 0;
+            text-align: center;
+        }
+        
+        .profile-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgba(233, 249, 144, 0.7);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+        }
+        
+        .profile-image:hover {
+            transform: scale(1.05);
+            border-color: #e9f990;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .image-preview {
+            display: none;
+            margin-top: 1rem;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    {% include '_topbar.html' %}
+    
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card profile-card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Profile Information</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="message-alert {{ message.tags }}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            
+                            <div class="mb-3">
+                                <label for="id_username" class="form-label">Username:</label>
+                                <input type="text" class="form-control" id="id_username" value="{{ user.username }}" disabled>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="id_email" class="form-label">Email:</label>
+                                <input type="email" class="form-control" id="id_email" value="{{ user.email }}" disabled>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="id_location" class="form-label">Ciudad</label>
+                                {{ form.location }}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="id_country" class="form-label">País</label>
+                                {{ form.country }}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="id_bio" class="form-label">Biography</label>
+                                <textarea name="bio" cols="40" rows="4" class="form-control" placeholder="Tell us about yourself" id="id_bio">{{ form.bio.value|default:'' }}</textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="id_profile_pic" class="form-label">Profile Picture</label>
+                                <input type="file" name="profile_pic" class="form-control" id="id_profile_pic" accept="image/*">
+                                {% if user.userprofile.profile_pic %}
+                                <div class="profile-image-container">
+                                    <img src="{{ user.userprofile.profile_pic.url }}" alt="Profile Picture" class="profile-image">
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mt-4 text-center">
+                                <button type="submit" class="btn btn-save">Save Changes</button>
+                                <a href="{% url 'user' %}" class="btn btn-cancel ms-2">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% include '_footer.html' %}
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const profilePicInput = document.getElementById('id_profile_pic');
+            const profileImageContainer = document.querySelector('.profile-image-container') || document.createElement('div');
+            
+            // Asegurar que el contenedor existe o crearlo si no existe
+            if (!document.querySelector('.profile-image-container')) {
+                profileImageContainer.className = 'profile-image-container';
+                const formGroup = profilePicInput.closest('.mb-3');
+                formGroup.appendChild(profileImageContainer);
+            }
+            
+            // Manejar el cambio de archivo
+            profilePicInput.addEventListener('change', function() {
+                const file = this.files[0];
+                
+                if (file) {
+                    // Si ya existe una vista previa, eliminarla
+                    const existingPreview = profileImageContainer.querySelector('.preview-image');
+                    if (existingPreview) {
+                        profileImageContainer.removeChild(existingPreview);
+                    }
+                    
+                    // Eliminar mensaje previo si existe
+                    const existingMsg = profileImageContainer.querySelector('.preview-message');
+                    if (existingMsg) {
+                        profileImageContainer.removeChild(existingMsg);
+                    }
+                    
+                    // Crear nueva vista previa
+                    const img = document.createElement('img');
+                    img.className = 'profile-image preview-image';
+                    img.alt = 'Vista previa de imagen de perfil';
+                    
+                    // Crear una URL para la imagen seleccionada
+                    const objectUrl = URL.createObjectURL(file);
+                    img.src = objectUrl;
+                    
+                    // Agregar mensaje de vista previa
+                    const previewMsg = document.createElement('p');
+                    previewMsg.className = 'text-light mt-2 preview-message';
+                    previewMsg.innerHTML = '<strong>Vista previa:</strong> Nueva imagen seleccionada';
+                    
+                    // Agregar imagen y mensaje a la página
+                    profileImageContainer.appendChild(previewMsg);
+                    profileImageContainer.appendChild(img);
+                    
+                    // Limpiar URL del objeto cuando ya no sea necesario
+                    img.onload = function() {
+                        URL.revokeObjectURL(objectUrl);
+                    };
+                }
+            });
+        });
+    </script>
+</body>
+</html>

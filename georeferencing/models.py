@@ -62,13 +62,9 @@ class Image(models.Model):
     smallImageURL = models.URLField( blank = True, null = True)
     batch = models.ForeignKey('Batch', on_delete=models.CASCADE, blank=True, null=True)
     replicas = models.IntegerField(default=5)
-    maxZoom = models.IntegerField(blank=True, null=True)
-    minZoom = models.IntegerField(blank=True, null=True)
     
     def save(self, *args, **kwargs):
         print(self.focalLength)
-        if self.focalLength is not None:
-            self.minZoom, self.maxZoom = self.get_zoom_levels()
         super().save(*args, **kwargs)
     
     def __str__(self):
@@ -101,3 +97,23 @@ class Batch(models.Model):
     replicas = models.IntegerField(default=5)
     def __str__(self):
         return str(self.name)
+    
+    def get_example_image(self):
+        image = Image.objects.filter(batch=self).first()
+        return f"/media/small/{image.name}" if image else "/media/small/default.jpg"
+    
+    def get_number_images(self):
+        return Image.objects.filter(batch=self).count()
+
+    def get_percentage_remaining(self):
+        geoattemps_created = GeoAttempt.objects.filter(image__batch=self).count()
+        geoattemps_done = GeoAttempt.objects.filter(image__batch=self, status='DONE').count()
+        return round(geoattemps_done / geoattemps_created * 100) if geoattemps_created > 0 else 0
+    
+class GeoAttemptsByUserByDay(models.Model):
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    date = models.DateField()
+    numberGeoAttempts = models.IntegerField(default=0)
+        
+    def __str__(self):
+        return str(self.user) +  " - " + str(self.date) + " - " + str(self.numberGeoAttempts)

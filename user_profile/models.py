@@ -4,6 +4,7 @@ Models for the user_profile app.
 
 from django.db import models
 from django.contrib.auth import get_user_model
+from django_countries.fields import CountryField
 
 # Create your models here.
 
@@ -26,6 +27,8 @@ class UserProfile(models.Model):
         cheated, defaults to 0.
         - controlPointsDone (PositiveBigIntegerField): The number of 
         control points completed by the user, defaults to 0.
+        - country (CountryField): The country of the user, optional.
+        - location (CharField): The city of the user, optional.
 
     Methods:
         __str__(): Returns the username of the associated user.
@@ -37,6 +40,8 @@ class UserProfile(models.Model):
     time_spent = models.PositiveBigIntegerField(default=0)
     cheating = models.IntegerField(default=0)
     controlPointsDone = models.PositiveBigIntegerField(default=0)
+    country = CountryField(blank=True, null=True, verbose_name="País")
+    location = models.CharField(max_length=100, blank=True, verbose_name="Ciudad")
 
     def __str__(self):
         return str(self.user.email) # pylint: disable=no-member

@@ -59,3 +59,8 @@ ul.errorlist > li{
 ul{
     display: none !important;
 }
+.row.justify-content-center {
+    display: flex;
+    min-height: 100vh; /* Altura total de la ventana */
+    align-items: center;
+  }
