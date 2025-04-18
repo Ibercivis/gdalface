@@ -467,7 +467,8 @@
                                 <div class="row">
                                     <div class="col-9">
                                         Name: <b>{{ batch.name }}</b> <br/>
-                                        Images: <b>{{ batch.get_number_images }}</b>
+                                        Images: <b>{{ batch.get_number_images }}</b><br />
+                                        Tasks: <b>{{ batch.get_number_geoattempts }}</b> <br/>
                                     </div>
                                     <div class="col-3">
                                         <div class="progress-circle" style="background: conic-gradient(#000 {{ batch.get_percentage_remaining }}%, #fef7ff 0);">

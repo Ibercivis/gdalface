@@ -105,6 +105,9 @@ class Batch(models.Model):
     def get_number_images(self):
         return Image.objects.filter(batch=self).count()
 
+    def get_number_geoattempts(self):
+        return GeoAttempt.objects.filter(image__batch=self).count()
+    
     def get_percentage_remaining(self):
         geoattemps_created = GeoAttempt.objects.filter(image__batch=self).count()
         geoattemps_done = GeoAttempt.objects.filter(image__batch=self, status='DONE').count()
