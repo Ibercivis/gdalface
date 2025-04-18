@@ -40,13 +40,42 @@ body, html {
 
 }
 #usage-info {
-    position: absolute;
-    bottom: 0;
-    right: 0;
+    position: absolute !important;
+    top: 12px;
+    right: 15px;
+    padding: 5px;
+    width: 28px;
+    height: 28px;
     color: white;
-    padding: 10px; /* Adjust as needed */
     cursor: pointer; /* Change cursor to pointer on hover */
 }
+
+.user-icon-link-top {
+    position: absolute;
+    bottom: 0px;
+    right: 10px;
+    padding: 5px;
+    cursor: pointer; /* Cambia el cursor a puntero al pasar el mouse */
+}
+
+/* Estilos compartidos para iconos */
+.icon-help, .user-icon, .fa-user-secret, .fa-user-circle {
+    color: white;
+    font-size: 20px;
+    width: 28px;
+    height: 28px;
+    transition: transform 0.2s ease;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.icon-help:hover, .user-icon:hover, .fa-user-secret:hover, .fa-user-circle:hover {
+    transform: scale(1.2);
+    cursor: pointer;
+}
+
+/* Posicionamiento del icono de ayuda */
 #photo-info{
     cursor: pointer;
 }

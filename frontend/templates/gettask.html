@@ -75,10 +75,29 @@
                     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
             </div>
             <div class="col-md-2 h-100 tools d-flex flex-column p-0">
-                <a id="title" class="flex-shrink-0" href="/">
-                    <img src="{% static 'img/LogoLostAtNight.svg' %}" alt="logo" class="logo">
-                    <i id="usage-info" class="fa-solid fa-circle-question pe-2 pb-2"></i>
-                </a>
+                <div id="title" class="flex-shrink-0">
+                    <a href="/"><img src="{% static 'img/LogoLostAtNight.svg' %}" alt="logo" class="logo"></a>
+                    <i id="usage-info" class="fa-solid fa-circle-question icon-help" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Help"></i>
+                
+                
+                <!-- Icono de usuario con tooltips de Bootstrap movido debajo del botón de ayuda -->
+              
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'user' %}" class="user-icon-link-top" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Go to your profile">
+                            {% if user.userprofile.profile_pic %}
+                                <img src="{{ user.userprofile.profile_pic.url }}" alt="{{ user.username }}" class="user-icon rounded-circle">
+                            {% else %}
+                                <i class="fa-solid fa-user-circle user-icon"></i>
+                            {% endif %}
+                        </a>
+                    {% else %}
+                        <a href="{% url 'account_login' %}" class="user-icon-link-top" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="You are participating as anonymous">
+                            <i class="fa-solid fa-user-secret user-icon"></i>
+                        </a>
+                    {% endif %}
+                </div>
+                
+                
                 <div id="photo-info">
                     <div id="photo-info-content">
                         <i id="photo-info" class="fa-solid fa-circle-info pe-1"></i>
@@ -89,17 +108,20 @@
                         {% endif %}
                     </div>
                 </div>
+                
                 <div id="coordinates" class="flex-grow-1">
                     <ul id="icon-list-items"></ul>
                 </div>
-                <div id="buttons flex-shrink-0 m-2">
+                
+                <div id="" class="flex-shrink-0 m-2">
                     <div id="button-container">
-                        <button id="Try" class="btn btn-primary mb-2">Try</button>
-                        <button id="Submit" class="btn btn-primary mb-2 disabled">Submit</button>
-                        <button id="Skip" class="btn btn-primary mb-2">Skip</button>
+                        <button id="Try" class="btn mb-2">Try</button>
+                        <button id="Submit" class="btn mb-2 disabled">Submit</button>
+                        <button id="Skip" class="btn mb-2">Skip</button>
                     </div>
                 </div>
-                <div id="social-media row" class="row">
+                
+                <div id="social-media" class="row">
                     <div class="col-12 text-center">
                         <a href="https://github.com/Ibercivis/gdalface" target="_blank" class="developed">Developed by
                             <b>Ibercivis</b>
@@ -111,9 +133,16 @@
             
         </div>
 
-
-
     <div>
+    
+    <!-- Script para inicializar los tooltips de Bootstrap -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar todos los tooltips
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+        });
+    </script>
 </body>
 
 </html>
