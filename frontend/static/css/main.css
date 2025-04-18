@@ -598,6 +598,29 @@ label {
     opacity: 1;
 }
 
+/* Estilos para el control de opacidad en el selector de capas */
+.leaflet-layer-control-wrapper {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.leaflet-layer-control-wrapper input[type="range"] {
+    width: 80px;
+    vertical-align: middle;
+    margin-left: 5px;
+}
+
+/* Estilo para el control de capas */
+.leaflet-control-layers-selector {
+    margin-right: 5px;
+}
+
+.leaflet-control-layers-overlays label {
+    display: flex !important;
+    align-items: center;
+}
+
 /* Media queries para mensajes en móviles */
 @media (max-width: 576px) {
     .message-alert {

@@ -153,49 +153,125 @@ $(document).ready(function () {
                                 format: 'image/png',
                             }).addTo(map);
 
+                            // Eliminar controles existentes
+                            if (layersControl) {
+                                map.removeControl(layersControl);
+                            }
+                            if (opacityControl) {
+                                map.removeControl(opacityControl);
+                            }
+                            
+                            // Definir capas base y superposiciones - necesitamos recrear las capas base
+                            const osmLayerSuccess = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                maxZoom: 18,
+                                attribution: '© OpenStreetMap contributors'
+                            });
+                            
+                            const mapBoxSuccess = L.tileLayer('https://api.mapbox.com/styles/v1/frasanz/cm2cctm8400u501pbb8tvgom7/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZnJhc2FueiIsImEiOiJjbTF4bHE2MHIwdzRmMmpxd3g1cGZkbjR3In0.6B49yUgKNVhYOCy7ibw5ww', {
+                                maxZoom: 18,
+                                tileSize: 256,
+                                attribution: '&copy; <a href="https://www.mapbox.com/about/maps/">Mapbox</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                            });
+
+                            const googleSatSuccess = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+                                maxZoom: 18,
+                                subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+                                transparent: true,
+                            });
+                            
+                            // Definir capas base y superposiciones
+                            baseLayers = {
+                                "OpenStreetMap": osmLayerSuccess,
+                                "MapBox": mapBoxSuccess,
+                                "Satellite": googleSatSuccess
+                            };
+                            
                             var overlaymaps = {
                                 "VIIRS": viirs,
                                 "SDGSAT EU/UK": sdgsatEuUk,
                                 "Georeferenced": lyr
-                            }
-                            // Delete L.control.layers
-                            if (layersControl) {
-                                console.log('removing control');
-                                map.removeControl(layersControl);
-                            }
-                            if (opacityControl)
-                                map.removeControl(opacityControl);
-                            opacityControl = L.control({ position: 'bottomright' });
-                            // When the control is added to the map, insert the slider into it
-                            opacityControl.onAdd = function (map) {
-                                var div = L.DomUtil.create('div', 'opacity-slider-container');
-
-                                // Add the label and the slider input
-                                div.innerHTML = `
-                                        <label for="opacity-slider">Opacity</label><br>
-                                        <input id="opacity-slider" type="range" min="0" max="1" step="0.05" value="0.9">
-                                        `;
-
-                                // Disable map interactions (dragging, zooming) when interacting with the slider
-                                L.DomEvent.disableClickPropagation(div);
-                                return div;
                             };
-                            // Add the custom control (with the slider) to the map
-                            opacityControl.addTo(map);
-
-                            // Get the slider element and span for displaying the value
-                            const slider = document.getElementById('opacity-slider');
-
-
-                            // Listen for slider input and update the opacity of the layer
-                            slider.addEventListener('input', function () {
-                                const opacityValue = parseFloat(this.value);
-                                lyr.setOpacity(opacityValue);  // Adjust the opacity of the layer
-
-                            });
-
-
-                            layersControl = L.control.layers(baseLayers, overlaymaps, { collapsed: false }).addTo(map);
+                            
+                            // Crear un nuevo control de capas estándar
+                            layersControl = L.control.layers(baseLayers, overlaymaps, { 
+                                collapsed: false 
+                            }).addTo(map);
+                            
+                            // Agregar el control deslizante dentro de la caja de control de capas
+                            setTimeout(function() {
+                                // Buscar todas las etiquetas en el control de capas
+                                var layerControlElement = document.querySelector('.leaflet-control-layers');
+                                if (!layerControlElement) return;
+                                
+                                var labels = layerControlElement.querySelectorAll('.leaflet-control-layers-overlays label');
+                                
+                                // Procesar todas las etiquetas para añadir sliders de opacidad
+                                for (var i = 0; i < labels.length; i++) {
+                                    var label = labels[i];
+                                    var spanElement = label.querySelector('span');
+                                    
+                                    if (spanElement) {
+                                        var text = spanElement.textContent.trim();
+                                        var sliderContainer = document.createElement('div');
+                                        sliderContainer.className = 'opacity-slider-inline';
+                                        sliderContainer.style.display = 'inline-block';
+                                        sliderContainer.style.marginLeft = '10px';
+                                        sliderContainer.style.verticalAlign = 'middle';
+                                        
+                                        var slider = document.createElement('input');
+                                        slider.type = 'range';
+                                        slider.min = '0';
+                                        slider.max = '1';
+                                        slider.step = '0.05';
+                                        slider.style.width = '80px';
+                                        slider.style.verticalAlign = 'middle';
+                                        
+                                        // Configurar valor inicial y capa objetivo según el nombre
+                                        if (text === 'VIIRS') {
+                                            slider.value = '0.8'; // Valor inicial de VIIRS es 0.8
+                                            slider.setAttribute('data-layer', 'viirs');
+                                        } else if (text === 'SDGSAT EU/UK') {
+                                            slider.value = '0.8'; // Valor inicial de SDGSAT es 0.8
+                                            slider.setAttribute('data-layer', 'sdgsat');
+                                        } else if (text === 'Georeferenced') {
+                                            slider.value = '0.9'; // Valor inicial de Georeferenced es 0.9
+                                            slider.setAttribute('data-layer', 'georeferenced');
+                                        }
+                                        
+                                        // Añadir el slider al contenedor
+                                        sliderContainer.appendChild(slider);
+                                        
+                                        // Añadir el contenedor después del texto
+                                        spanElement.appendChild(sliderContainer);
+                                        
+                                        // Configurar el evento para cambiar la opacidad
+                                        slider.addEventListener('input', function() {
+                                            var layerType = this.getAttribute('data-layer');
+                                            var opacityValue = parseFloat(this.value);
+                                            
+                                            if (layerType === 'viirs') {
+                                                viirs.setOpacity(opacityValue);
+                                            } else if (layerType === 'sdgsat') {
+                                                sdgsatEuUk.setOpacity(opacityValue);
+                                            } else if (layerType === 'georeferenced') {
+                                                lyr.setOpacity(opacityValue);
+                                            }
+                                        });
+                                        
+                                        // Evitar que al hacer clic en el slider se active/desactive la capa
+                                        slider.addEventListener('click', function(e) {
+                                            e.stopPropagation();
+                                        });
+                                        
+                                        // Ajustar el estilo del label para que tenga más espacio
+                                        label.style.display = 'flex';
+                                        label.style.alignItems = 'center';
+                                        label.style.width = '100%';
+                                    }
+                                }
+                            }, 100);
+                            
+                            // Ajustar zoom
                             var currentZoom = map.getZoom();
                             map.setZoom(11);
                             setTimeout(function () {
@@ -642,6 +718,77 @@ $(document).ready(function () {
                 }
 
                 layersControl = L.control.layers(baseLayers, overlaymaps, { collapsed: false }).addTo(map);
+
+                // Añadir sliders de opacidad para VIIRS y SDGSAT desde el inicio
+                setTimeout(function() {
+                    // Buscar todas las etiquetas en el control de capas
+                    var layerControlElement = document.querySelector('.leaflet-control-layers');
+                    if (!layerControlElement) return;
+                    
+                    var labels = layerControlElement.querySelectorAll('.leaflet-control-layers-overlays label');
+                    
+                    // Procesar las etiquetas para añadir sliders de opacidad
+                    for (var i = 0; i < labels.length; i++) {
+                        var label = labels[i];
+                        var spanElement = label.querySelector('span');
+                        
+                        if (spanElement) {
+                            var text = spanElement.textContent.trim();
+                            if (text === 'VIIRS' || text === 'SDGSAT EU/UK') {
+                                var sliderContainer = document.createElement('div');
+                                sliderContainer.className = 'opacity-slider-inline';
+                                sliderContainer.style.display = 'inline-block';
+                                sliderContainer.style.marginLeft = '10px';
+                                sliderContainer.style.verticalAlign = 'middle';
+                                
+                                var slider = document.createElement('input');
+                                slider.type = 'range';
+                                slider.min = '0';
+                                slider.max = '1';
+                                slider.step = '0.05';
+                                slider.style.width = '80px';
+                                slider.style.verticalAlign = 'middle';
+                                
+                                // Configurar valor inicial y capa objetivo según el nombre
+                                if (text === 'VIIRS') {
+                                    slider.value = '0.8';
+                                    slider.setAttribute('data-layer', 'viirs');
+                                } else if (text === 'SDGSAT EU/UK') {
+                                    slider.value = '0.8';
+                                    slider.setAttribute('data-layer', 'sdgsat');
+                                }
+                                
+                                // Añadir el slider al contenedor
+                                sliderContainer.appendChild(slider);
+                                
+                                // Añadir el contenedor después del texto
+                                spanElement.appendChild(sliderContainer);
+                                
+                                // Configurar el evento para cambiar la opacidad
+                                slider.addEventListener('input', function() {
+                                    var layerType = this.getAttribute('data-layer');
+                                    var opacityValue = parseFloat(this.value);
+                                    
+                                    if (layerType === 'viirs') {
+                                        viirs.setOpacity(opacityValue);
+                                    } else if (layerType === 'sdgsat') {
+                                        sdgsatEuUk.setOpacity(opacityValue);
+                                    }
+                                });
+                                
+                                // Evitar que al hacer clic en el slider se active/desactive la capa
+                                slider.addEventListener('click', function(e) {
+                                    e.stopPropagation();
+                                });
+                                
+                                // Ajustar el estilo del label
+                                label.style.display = 'flex';
+                                label.style.alignItems = 'center';
+                                label.style.width = '100%';
+                            }
+                        }
+                    }
+                }, 100);
 
                 function addIconToMap(lat, lon) {
                     // Create a custom icon using Leaflet's divIcon and Font Awesome
