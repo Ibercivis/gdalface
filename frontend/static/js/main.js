@@ -667,7 +667,8 @@ $(document).ready(function () {
                     //viirs = L.tileLayer('https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_Black_Marble/default/2016-01-01/GoogleMapsCompatible_Level8/{z}/{x}/{y}.png', {   
                     //viirs = L.tileLayer('https://earthengine.googleapis.com/v1/projects/ee-pmisson/maps/7f05e1c56c7139d418df9f275abae720-880cdb032adeb5dabd4855934e8d1764/tiles/{z}/{x}/{y}', { 
                     //viirs = L.tileLayer('https://earthengine.googleapis.com/v1/projects/ee-pmisson/maps/7f05e1c56c7139d418df9f275abae720-880cdb032adeb5dabd4855934e8d1764/tiles/{z}/{x}/{y}', {
-                    maxZoom: 12,
+                    maxZoom: 18,
+                    maxNativeZoom: 12,
                     transparent: true,
                     tms: 1,
                     attribution: 'The Earth Observation Group (EOG)',
@@ -676,7 +677,8 @@ $(document).ready(function () {
 
                 // Añadir la nueva capa SDGSAT_EU_UK
                 sdgsatEuUk = L.tileLayer('https://lostatnight.org/tileset/SDGSAT_EU_UK/{z}/{x}/{y}.png', {
-                    maxZoom: 12,
+                    maxZoom: 18,
+                    maxNativeZoom: 13,
                     transparent: true,
                     tms: 1,
                     attribution: 'SDGSAT @ LostAtNight.org',
@@ -703,8 +705,14 @@ $(document).ready(function () {
                 });
                 map = L.map('map', { layers: [viirs],  maxZoom: 18 }).setView(latLng, 10);
                 osmLayer.addTo(map);
-
-
+                console.log("Here");
+                console.log(map.getZoom());
+                map.on('zoom', function() {
+                    console.log("Zoom level changed:", map.getZoom());
+                    // zoombox update
+                    document.getElementById('zoombox').innerHTML = 'Zoom level: ' + map.getZoom();
+                });
+           
 
                 // Add layer control to switch between layers
                 baseLayers = {
@@ -716,6 +724,26 @@ $(document).ready(function () {
                     "VIIRS": viirs,
                     "SDGSAT EU/UK": sdgsatEuUk
                 }
+
+                // Crear un control personalizado para mostrar "hola" debajo de los botones de zoom
+                L.Control.HelloMessage = L.Control.extend({
+                    onAdd: function(map) {
+                        var div = L.DomUtil.create('div', 'hello-message-control');
+                        div.innerHTML = '<div id="zoombox" style="background-color: white; padding: 5px; border-radius: 4px; box-shadow: 0 1px 5px rgba(0,0,0,0.4); margin: 15px; text-align: center;"></div>';
+                        return div;
+                    },
+                    
+                    onRemove: function(map) {
+                        // Nada que hacer aquí
+                    }
+                });
+                
+                // Añadir el control personalizado al mapa, en la misma posición que los controles de zoom
+                L.control.helloMessage = function(opts) {
+                    return new L.Control.HelloMessage(opts);
+                }
+                
+                L.control.helloMessage({ position: 'bottomleft' }).addTo(map);
 
                 layersControl = L.control.layers(baseLayers, overlaymaps, { collapsed: false }).addTo(map);
 
