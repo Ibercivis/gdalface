@@ -54,6 +54,7 @@ $(document).ready(function () {
     let infoModal;
     let georeferencingModal;
     let viirs;
+    let sdgsatEuUk; // Nueva variable para la capa SDGSAT_EU_UK
     infoModal = new bootstrap.Modal(document.getElementById('infoModal'), {
         keyboard: true // Allows closing the modal with the Esc key
     });
@@ -154,6 +155,7 @@ $(document).ready(function () {
 
                             var overlaymaps = {
                                 "VIIRS": viirs,
+                                "SDGSAT EU/UK": sdgsatEuUk,
                                 "Georeferenced": lyr
                             }
                             // Delete L.control.layers
@@ -595,6 +597,16 @@ $(document).ready(function () {
                     attribution: 'The Earth Observation Group (EOG)',
                     opacity: 0.8,
                 });
+
+                // Añadir la nueva capa SDGSAT_EU_UK
+                sdgsatEuUk = L.tileLayer('https://lostatnight.org/tileset/SDGSAT_EU_UK/{z}/{x}/{y}.png', {
+                    maxZoom: 12,
+                    transparent: true,
+                    tms: 1,
+                    attribution: 'SDGSAT @ LostAtNight.org',
+                    opacity: 0.8,
+                });
+
                 const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom: 18,
                     attribution: '© OpenStreetMap contributors'
@@ -624,7 +636,10 @@ $(document).ready(function () {
                     "MapBox": mapBox,
                     "Satellite": googleSat
                 };
-                var overlaymaps = { "VIIRS": viirs }
+                var overlaymaps = { 
+                    "VIIRS": viirs,
+                    "SDGSAT EU/UK": sdgsatEuUk
+                }
 
                 layersControl = L.control.layers(baseLayers, overlaymaps, { collapsed: false }).addTo(map);
 
