@@ -246,7 +246,7 @@ class GeoAttemptIndividualView(APIView):
                 print(mx)
                 zoom = self.get_zooms(mx)
                 print(zoom)
-                command = 'gdal2tiles.py -z ' + zoom + ' -r near -s EPSG:4326'
+                command = 'gdal2tiles -z ' + zoom + ' -r near -s EPSG:4326'
                 command += ' media/georeferenced/' + \
                     geoattemp.image.name + geoattemp.hash + '.tif'
                 command += ' media/georeferenced/' + geoattemp.image.name + geoattemp.hash
