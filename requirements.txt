@@ -4,6 +4,8 @@ astroid==3.3.5
 async-timeout==4.0.3
 beautifulsoup4==4.12.3
 blessed==1.20.0
+boto3==1.37.4
+botocore==1.37.4
 certifi==2024.8.30
 cffi==1.17.1
 charset-normalizer==3.4.0
@@ -15,16 +17,20 @@ dill==0.3.9
 Django==4.2.16
 django-allauth==65.0.2
 django-bootstrap-v5==1.0.11
+django-countries==7.6.1
 django-picklefield==3.2
 django-rq==2.10.2
 django-rq-scheduler==2023.9.0
+django-ses==4.4.0
 djangorestframework==3.15.2
 drf-yasg==1.21.7
 fontawesomefree==6.6.0
 freezegun==1.5.1
+haversine==2.9.0
 idna==3.10
 inflection==0.5.1
 isort==5.13.2
+jmespath==1.0.1
 mccabe==0.7.0
 packaging==24.1
 pillow==10.4.0
@@ -43,6 +49,7 @@ redis==5.1.1
 requests==2.32.3
 rq==1.16.2
 rq-scheduler==0.13.1
+s3transfer==0.11.3
 six==1.16.0
 soupsieve==2.6
 sqlparse==0.5.1
@@ -51,5 +58,5 @@ tomlkit==0.13.2
 types-python-dateutil==2.9.0.20241003
 typing_extensions==4.12.2
 uritemplate==4.1.1
-urllib3==2.2.3
+urllib3==1.26.20
 wcwidth==0.2.13
