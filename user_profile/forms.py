@@ -11,16 +11,21 @@ class UserProfileForm(forms.ModelForm):
     """
     class Meta:
         model = UserProfile
-        fields = ['bio', 'profile_pic', 'country', 'location']
+        fields = ['bio', 'profile_pic', 'country', 'location', 'visible']
         widgets = {
             'bio': forms.Textarea(attrs={'rows': 4, 'class': 'form-control'}),
             'profile_pic': forms.FileInput(attrs={'class': 'form-control'}),
             'country': CountrySelectWidget(attrs={'class': 'form-control form-select'}),
-            'location': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ciudad'})
+            'location': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'City'}),
+            'visible': forms.CheckboxInput(attrs={'class': 'form-check-input'})
         }
         labels = {
             'bio': 'Biography',
             'profile_pic': 'Profile Picture',
-            'country': 'País',
-            'location': 'Ciudad'
+            'country': 'Country',
+            'location': 'City',
+            'visible': 'Visible in rankings'
+        }
+        help_texts = {
+            'visible': 'If disabled, your profile will not appear in public rankings'
         }

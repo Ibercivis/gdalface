@@ -4,10 +4,13 @@ frontend app.
 """
 
 from django.shortcuts import render, redirect
-from georeferencing.models import Batch
+from georeferencing.models import Batch, GeoAttempt, Image
 from django.core.mail import send_mail
 from django.contrib import messages
 from django.conf import settings
+from django.contrib.auth.models import User
+from django.db.models import Count, Sum, Avg, F, ExpressionWrapper, fields, Q
+from django.utils import timezone
 
 # Create your views here.
 
@@ -28,6 +31,74 @@ def index(request):
     user = request.user
     # Get all batches to display them on the homepage
     batchs = Batch.objects.all()
+    
+    # Calculating project statistics
+    # Total users
+    total_users = User.objects.count()
+    
+    # Total tasks and completed tasks
+    total_tasks = GeoAttempt.objects.count()
+    completed_tasks = GeoAttempt.objects.filter(status='DONE').count()
+    
+    # Total images and images with completed georeferencing
+    total_images = Image.objects.count()
+    images_with_georeference = Image.objects.filter(
+        id__in=GeoAttempt.objects.filter(status='DONE').values('image')
+    ).distinct().count()
+    
+    # Total control points
+    total_control_points = 0
+    try:
+        # Obtenemos los geoattempts completados que tienen puntos de control
+        completed_attempts = GeoAttempt.objects.filter(
+            status='DONE',
+            controlPoints__isnull=False
+        )
+        
+        # Sumamos la cantidad de puntos de control en cada intento
+        for attempt in completed_attempts:
+            # controlPoints es un JSONField que puede contener una lista de puntos
+            if attempt.controlPoints and isinstance(attempt.controlPoints, list):
+                total_control_points += len(attempt.controlPoints)
+    except Exception as e:
+        # Log the error but continue with total_control_points = 0
+        print(f"Error calculating total control points: {str(e)}")
+    
+    # Total minutes spent on tasks
+    total_minutes = 0
+    try:
+        # Calculate total time using the correct fields (finishedDateTime - assignedDateTime)
+        finished_attempts = GeoAttempt.objects.filter(
+            status='DONE',
+            finishedDateTime__isnull=False,
+            assignedDateTime__isnull=False
+        )
+        
+        # Create a duration expression
+        duration_expr = ExpressionWrapper(
+            F('finishedDateTime') - F('assignedDateTime'),
+            output_field=fields.DurationField()
+        )
+        
+        # Calculate total duration in seconds
+        result = finished_attempts.annotate(
+            duration=duration_expr
+        ).aggregate(
+            total_seconds=Sum('duration')
+        )
+        
+        if result['total_seconds']:
+            # Convert to minutes
+            total_minutes = int(result['total_seconds'].total_seconds() / 60)
+        
+    except Exception as e:
+        # Log the error but continue with total_minutes = 0
+        print(f"Error calculating total minutes: {str(e)}")
+    
+    # Average tasks per user
+    avg_tasks_per_user = 0
+    if total_users > 0:
+        avg_tasks_per_user = round(completed_tasks / total_users, 1)
     
     # Check if this is a POST request (contact form submission)
     if request.method == 'POST':
@@ -67,7 +138,16 @@ def index(request):
     # Prepare context
     context = {
         'user': user,
-        'batchs': batchs
+        'batchs': batchs,
+        # Adding statistics to the context
+        'total_users': total_users,
+        'total_tasks': total_tasks,
+        'completed_tasks': completed_tasks,
+        'total_minutes': total_minutes,
+        'avg_tasks_per_user': avg_tasks_per_user,
+        'total_images': total_images,
+        'images_with_georeference': images_with_georeference,
+        'total_control_points': total_control_points
     }
     return render(request, 'index.html', context)
 

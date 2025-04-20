@@ -29,6 +29,7 @@ class UserProfile(models.Model):
         control points completed by the user, defaults to 0.
         - country (CountryField): The country of the user, optional.
         - location (CharField): The city of the user, optional.
+        - visible (BooleanField): Whether the user profile should be visible in rankings, defaults to True.
 
     Methods:
         __str__(): Returns the username of the associated user.
@@ -40,8 +41,9 @@ class UserProfile(models.Model):
     time_spent = models.PositiveBigIntegerField(default=0)
     cheating = models.IntegerField(default=0)
     controlPointsDone = models.PositiveBigIntegerField(default=0)
-    country = CountryField(blank=True, null=True, verbose_name="País")
-    location = models.CharField(max_length=100, blank=True, verbose_name="Ciudad")
+    country = CountryField(blank=True, null=True, verbose_name="Country")
+    location = models.CharField(max_length=100, blank=True, verbose_name="City")
+    visible = models.BooleanField(default=True, verbose_name="Visible in rankings", help_text="If disabled, your profile will not appear in public rankings")
 
     def __str__(self):
         return str(self.user.email) # pylint: disable=no-member

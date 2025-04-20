@@ -207,18 +207,24 @@
                             </div>
                             
                             <div class="mb-3">
-                                <label for="id_location" class="form-label">Ciudad</label>
+                                <label for="id_location" class="form-label">City</label>
                                 {{ form.location }}
                             </div>
                             
                             <div class="mb-3">
-                                <label for="id_country" class="form-label">País</label>
+                                <label for="id_country" class="form-label">Country</label>
                                 {{ form.country }}
                             </div>
                             
                             <div class="mb-3">
                                 <label for="id_bio" class="form-label">Biography</label>
                                 <textarea name="bio" cols="40" rows="4" class="form-control" placeholder="Tell us about yourself" id="id_bio">{{ form.bio.value|default:'' }}</textarea>
+                            </div>
+                            
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" name="visible" class="form-check-input" id="id_visible" {% if form.visible.value %}checked{% endif %}>
+                                <label for="id_visible" class="form-check-label">{{ form.visible.label }}</label>
+                                <small class="form-text text-light d-block mt-1">{{ form.visible.help_text }}</small>
                             </div>
                             
                             <div class="mb-3">
@@ -249,49 +255,49 @@
             const profilePicInput = document.getElementById('id_profile_pic');
             const profileImageContainer = document.querySelector('.profile-image-container') || document.createElement('div');
             
-            // Asegurar que el contenedor existe o crearlo si no existe
+            // Make sure the container exists or create it if it doesn't
             if (!document.querySelector('.profile-image-container')) {
                 profileImageContainer.className = 'profile-image-container';
                 const formGroup = profilePicInput.closest('.mb-3');
                 formGroup.appendChild(profileImageContainer);
             }
             
-            // Manejar el cambio de archivo
+            // Handle file change
             profilePicInput.addEventListener('change', function() {
                 const file = this.files[0];
                 
                 if (file) {
-                    // Si ya existe una vista previa, eliminarla
+                    // If a preview already exists, remove it
                     const existingPreview = profileImageContainer.querySelector('.preview-image');
                     if (existingPreview) {
                         profileImageContainer.removeChild(existingPreview);
                     }
                     
-                    // Eliminar mensaje previo si existe
+                    // Remove previous message if it exists
                     const existingMsg = profileImageContainer.querySelector('.preview-message');
                     if (existingMsg) {
                         profileImageContainer.removeChild(existingMsg);
                     }
                     
-                    // Crear nueva vista previa
+                    // Create new preview
                     const img = document.createElement('img');
                     img.className = 'profile-image preview-image';
-                    img.alt = 'Vista previa de imagen de perfil';
+                    img.alt = 'Profile picture preview';
                     
-                    // Crear una URL para la imagen seleccionada
+                    // Create a URL for the selected image
                     const objectUrl = URL.createObjectURL(file);
                     img.src = objectUrl;
                     
-                    // Agregar mensaje de vista previa
+                    // Add preview message
                     const previewMsg = document.createElement('p');
                     previewMsg.className = 'text-light mt-2 preview-message';
-                    previewMsg.innerHTML = '<strong>Vista previa:</strong> Nueva imagen seleccionada';
+                    previewMsg.innerHTML = '<strong>Preview:</strong> New image selected';
                     
-                    // Agregar imagen y mensaje a la página
+                    // Add image and message to the page
                     profileImageContainer.appendChild(previewMsg);
                     profileImageContainer.appendChild(img);
                     
-                    // Limpiar URL del objeto cuando ya no sea necesario
+                    // Clean up object URL when no longer needed
                     img.onload = function() {
                         URL.revokeObjectURL(objectUrl);
                     };

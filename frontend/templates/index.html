@@ -190,12 +190,17 @@
             align-items: center;
             justify-content: center;
             position: relative;
+            background-clip: content-box;
         }
         
         .progress-circle::before {
             content: "";
             position: absolute;
-            inset: 2px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 37px;
+            height: 37px;
             border-radius: 50%;
             background-color: rgba(43, 17, 85);
         }
@@ -205,7 +210,9 @@
             font-size: 0.7rem;
             font-weight: 600;
             color: white;
+            z-index: 1;
         }
+    
 
         /* Estilos para la sección de contacto */
         .contact-section {
@@ -360,6 +367,37 @@
             box-shadow: 0 0 0 3px rgba(55, 24, 97, 0.5);
             outline: none;
         }
+
+        /* Estilos para las tarjetas de estadísticas */
+        .stats-card {
+            background-color: rgba(33, 12, 66, 0.8) !important; /* Color más oscuro para las estadísticas */
+        }
+        
+        .stats-card i {
+            color: rgb(233, 249, 144); /* Verde brillante para los iconos */
+            margin-bottom: 0.5rem;
+        }
+        
+        .stats-card h4 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+        
+        /* Estilos para la sección de redes sociales */
+        .contact-info h4 i, 
+        .social-links a i, 
+        .text-center.text-md-start.mt-4 a i {
+            color: rgb(233, 249, 144); /* Verde brillante para los iconos de redes sociales */
+        }
+        
+        .social-links a:hover i {
+            color: #ffffff; /* Al pasar el ratón, cambia a blanco para contraste */
+        }
+        
+        .contact-info h6 {
+            color: rgba(233, 249, 144, 0.8); /* Versión más suave del mismo color para los títulos */
+        }
     </style>
 </head>
 <body>
@@ -471,7 +509,7 @@
                                         Tasks: <b>{{ batch.get_number_geoattempts }}</b> <br/>
                                     </div>
                                     <div class="col-3">
-                                        <div class="progress-circle" style="background: conic-gradient(#000 {{ batch.get_percentage_remaining }}%, #fef7ff 0);">
+                                        <div class="progress-circle" style="background: conic-gradient(#999 {{ batch.get_percentage_remaining }}%, #fef7ff 0);">
                                             <span class="progress-text">{{ batch.get_percentage_remaining }}%</span>
                                         </div>
                                     </div>
@@ -480,6 +518,94 @@
                         </div>
                     </div>
                     {% endfor %}
+                </div>
+                
+                <!-- Project Statistics Section -->
+                <div id="statistics-section" class="row batch-section">
+                    <div class="col-12 text-center mb-4">
+                        <h2 class="section-title">Project Statistics</h2>
+                        <p class="text-center mb-5">Global impact of our community's contributions</p>
+                    </div>
+                    
+                    <div class="row justify-content-center">
+                        <div class="col-md-10">
+                            <div class="row">
+                                <!-- Primera fila - 4 columnas -->
+                                <!-- Total Users -->
+                                <div class="col-md-3 mb-4">
+                                    <div class="info-card stats-card h-100 d-flex flex-column align-items-center justify-content-center py-4">
+                                        <i class="fas fa-users fa-3x"></i>
+                                        <h4>{{ total_users }}</h4>
+                                        <p class="text-center">Total Users</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Total Images -->
+                                <div class="col-md-3 mb-4">
+                                    <div class="info-card stats-card h-100 d-flex flex-column align-items-center justify-content-center py-4">
+                                        <i class="fas fa-images fa-3x"></i>
+                                        <h4>{{ total_images }}</h4>
+                                        <p class="text-center">Total Images</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Images with Georeference -->
+                                <div class="col-md-3 mb-4">
+                                    <div class="info-card stats-card h-100 d-flex flex-column align-items-center justify-content-center py-4">
+                                        <i class="fas fa-map-marked fa-3x"></i>
+                                        <h4>{{ images_with_georeference }}</h4>
+                                        <p class="text-center">Images with Georeference</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Total Tasks -->
+                                <div class="col-md-3 mb-4">
+                                    <div class="info-card stats-card h-100 d-flex flex-column align-items-center justify-content-center py-4">
+                                        <i class="fas fa-tasks fa-3x"></i>
+                                        <h4>{{ total_tasks }}</h4>
+                                        <p class="text-center">Total Tasks</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Segunda fila - 4 columnas -->
+                                <!-- Completed Tasks -->
+                                <div class="col-md-3 mb-4">
+                                    <div class="info-card stats-card h-100 d-flex flex-column align-items-center justify-content-center py-4">
+                                        <i class="fas fa-check-circle fa-3x"></i>
+                                        <h4>{{ completed_tasks }}</h4>
+                                        <p class="text-center">Completed Tasks</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Average Tasks per User -->
+                                <div class="col-md-3 mb-4">
+                                    <div class="info-card stats-card h-100 d-flex flex-column align-items-center justify-content-center py-4">
+                                        <i class="fas fa-user-clock fa-3x"></i>
+                                        <h4>{{ avg_tasks_per_user }}</h4>
+                                        <p class="text-center">Average Tasks per User</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Control Points -->
+                                <div class="col-md-3 mb-4">
+                                    <div class="info-card stats-card h-100 d-flex flex-column align-items-center justify-content-center py-4">
+                                        <i class="fas fa-map-pin fa-3x"></i>
+                                        <h4>{{ total_control_points }}</h4>
+                                        <p class="text-center">Total Control Points</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Total Minutes -->
+                                <div class="col-md-3 mb-4">
+                                    <div class="info-card stats-card h-100 d-flex flex-column align-items-center justify-content-center py-4">
+                                        <i class="fas fa-clock fa-3x"></i>
+                                        <h4>{{ total_minutes }}</h4>
+                                        <p class="text-center">Total Minutes</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- Contact Section - Integrado desde la página de contacto -->

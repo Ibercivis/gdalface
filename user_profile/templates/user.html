@@ -391,6 +391,16 @@
                 {% endif %}
                 
                 <div class="profile-meta">
+                    <!-- Indicador de visibilidad -->
+                    <div class="meta-item visibility-status" style="margin-bottom: 5px;">
+                        {% if profile.visible %}
+                        <i class="fas fa-eye" style="color: #e9f990;"></i>&nbsp;
+                        <span style="color: #e9f990; font-weight: 500;">Visible</span>
+                        {% else %}
+                        <i class="fas fa-eye-slash" style="color: #ff9090;"></i>&nbsp;
+                        <span style="color: #ff9090; font-weight: 500;">Invisible</span>
+                        {% endif %}
+                    </div>
                     <div class="meta-item">
                         <i class="fas fa-envelope"></i>&nbsp;
                         {{ user.email }}
@@ -413,15 +423,22 @@
         
         <!-- Statistics -->
         <div class="stats-container">
-            <!-- Personal statistics -->
+            <!-- Personal statistics - Todas las estadísticas juntas, ordenadas con lógica -->
             <div class="stats-section-title">
                 <i class="fas fa-user-circle"></i> Your Personal Statistics
             </div>
             <div class="stats-section">
+                <!-- Estadísticas primarias - lo que el usuario ha hecho -->
                 <div class="stats-card personal">
                     <div class="stats-icon"><i class="fas fa-tasks"></i></div>
                     <div class="stats-value">{{ geo }}</div>
                     <div class="stats-label">Completed Tasks</div>
+                </div>
+                
+                <div class="stats-card personal">
+                    <div class="stats-icon"><i class="fas fa-map-pin"></i></div>
+                    <div class="stats-value">{{ cp }}</div>
+                    <div class="stats-label">Control Points</div>
                 </div>
                 
                 <div class="stats-card personal">
@@ -430,6 +447,7 @@
                     <div class="stats-label">Time Invested</div>
                 </div>
                 
+                <!-- Posiciones en rankings -->
                 <div class="stats-card personal">
                     <div class="stats-icon"><i class="fas fa-trophy"></i></div>
                     <div class="stats-value">#{{ user_task_position }}</div>
@@ -437,9 +455,34 @@
                 </div>
                 
                 <div class="stats-card personal">
+                    <div class="stats-icon"><i class="fas fa-award"></i></div>
+                    <div class="stats-value">#{{ user_points_position }}</div>
+                    <div class="stats-label">Your Position in Control Points</div>
+                </div>
+                
+                <div class="stats-card personal">
                     <div class="stats-icon"><i class="fas fa-medal"></i></div>
                     <div class="stats-value">#{{ user_time_position }}</div>
                     <div class="stats-label">Your Position in Time</div>
+                </div>
+                
+                <!-- Porcentajes de contribución -->
+                <div class="stats-card personal">
+                    <div class="stats-icon"><i class="fas fa-percentage"></i></div>
+                    <div class="stats-value">{{ user_tasks_percentage }}%</div>
+                    <div class="stats-label">Your % Contribution in Tasks</div>
+                </div>
+                
+                <div class="stats-card personal">
+                    <div class="stats-icon"><i class="fas fa-map-pin"></i></div>
+                    <div class="stats-value">{{ user_control_points_percentage }}%</div>
+                    <div class="stats-label">Your % Contribution in Control Points</div>
+                </div>
+                
+                <div class="stats-card personal">
+                    <div class="stats-icon"><i class="fas fa-hourglass-half"></i></div>
+                    <div class="stats-value">{{ user_time_percentage }}%</div>
+                    <div class="stats-label">Your % Contribution in Time</div>
                 </div>
             </div>
             
@@ -463,126 +506,91 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Project statistics -->
-            <div class="stats-section-title mt-4">
-                <i class="fas fa-project-diagram"></i> Project Statistics
-            </div>
-            <div class="stats-section">
-                <div class="stats-card project">
-                    <div class="stats-icon"><i class="fas fa-users"></i></div>
-                    <div class="stats-value">{{ total_users }}</div>
-                    <div class="stats-label">Total Users</div>
-                </div>
-                
-                <div class="stats-card project">
-                    <div class="stats-icon"><i class="fas fa-tasks"></i></div>
-                    <div class="stats-value">{{ total_tasks_completed }}</div>
-                    <div class="stats-label">Total Tasks</div>
-                </div>
-                
-                <div class="stats-card project">
-                    <div class="stats-icon"><i class="fas fa-clock"></i></div>
-                    <div class="stats-value">{{ total_time_spent }}</div>
-                    <div class="stats-label">Total Time</div>
-                </div>
-                
-                <div class="stats-card project">
-                    <div class="stats-icon"><i class="fas fa-chart-line"></i></div>
-                    <div class="stats-value">{{ avg_tasks_per_user }}</div>
-                    <div class="stats-label">Average Tasks per User</div>
-                </div>
-                
-                <div class="stats-card project">
-                    <div class="stats-icon"><i class="fas fa-percentage"></i></div>
-                    <div class="stats-value">{{ user_tasks_percentage }}%</div>
-                    <div class="stats-label">Your % Contribution in Tasks</div>
-                </div>
-                
-                <div class="stats-card project">
-                    <div class="stats-icon"><i class="fas fa-hourglass-half"></i></div>
-                    <div class="stats-value">{{ user_time_percentage }}%</div>
-                    <div class="stats-label">Your % Contribution in Time</div>
-                </div>
-            </div>
         </div>
         
-        <!-- Ranking tables -->
+        <!-- Ranking table unificada -->
         <div class="ranking-section">
-            <!-- Top 10 by tasks -->
-            <div class="ranking-card">
+            <div class="ranking-card" style="grid-column: 1 / -1;">
                 <div class="ranking-header">
-                    Top 10 Users by Tasks (Your rank: #{{ user_task_position }})
+                    Ranking (Your position: #{{ user_task_position }} in tasks)
                 </div>
-                <table class="ranking-table">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>User</th>
-                            <th>Tasks</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for username, tasks, user_profile in task_ranking %}
-                            <tr {% if username == user.username %}class="highlight-row"{% endif %}>
-                                <td>{{ forloop.counter }}</td>
-                                <td>
-                                    <div style="display: flex; align-items: center;">
-                                        {% if user_profile.profile_pic %}
-                                            <img src="{{ user_profile.profile_pic.url }}" alt="Profile of {{ username }}" 
-                                                 style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px; object-fit: cover;">
-                                        {% else %}
-                                            <div style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px; 
-                                                      background-color: #6a1b54; display: flex; align-items: center; justify-content: center;">
-                                                <i class="fas fa-user" style="font-size: 12px; color: #fff;"></i>
-                                            </div>
-                                        {% endif %}
-                                        {{ username }}
-                                    </div>
-                                </td>
-                                <td>{{ tasks }}</td>
+                <div style="overflow-x: auto;">
+                    <table class="ranking-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>User</th>
+                                <th>Country</th>
+                                <th>Tasks <span class="small">(Pos)</span></th>
+                                <th>Control Points <span class="small">(Pos)</span></th>
+                                <th>Time <span class="small">(Pos)</span></th>
                             </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            
-            <!-- Top 10 by time -->
-            <div class="ranking-card">
-                <div class="ranking-header">
-                    Top 10 Users by Time (Your rank: #{{ user_time_position }})
+                        </thead>
+                        <tbody>
+                            {% for user_data in unified_ranking %}
+                                <tr {% if user_data.username == user.username %}class="highlight-row"{% endif %}>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>
+                                        <div style="display: flex; align-items: center;">
+                                            {% if user_data.profile.visible or user_data.username == user.username %}
+                                                {% if user_data.profile.profile_pic %}
+                                                    <img src="{{ user_data.profile.profile_pic.url }}" alt="Profile of {{ user_data.username }}" 
+                                                        style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px; object-fit: cover;">
+                                                {% else %}
+                                                    <div style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px; 
+                                                            background-color: #6a1b54; display: flex; align-items: center; justify-content: center;">
+                                                        <i class="fas fa-user" style="font-size: 12px; color: #fff;"></i>
+                                                    </div>
+                                                {% endif %}
+                                                {{ user_data.username }}
+                                            {% else %}
+                                                <div style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px; 
+                                                        background-color: #4b2e83; display: flex; align-items: center; justify-content: center;">
+                                                    <i class="fas fa-eye-slash" style="font-size: 12px; color: #ff9090;"></i>
+                                                </div>
+                                                <span style="color: rgba(255, 255, 255, 0.6);">Invisible user</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if user_data.profile.visible or user_data.username == user.username %}
+                                            {% if user_data.profile.country %}
+                                                <div style="display: flex; align-items: center;">
+                                                    <img src="https://flagcdn.com/32x24/{{ user_data.profile.country.code|lower }}.png" 
+                                                        alt="{{ user_data.profile.country.name }}" 
+                                                        style="width: 24px; height: 18px; margin-right: 5px;">
+                                                    {{ user_data.profile.country.name }}
+                                                </div>
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        {% else %}
+                                            <span style="color: rgba(255, 255, 255, 0.6);">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ user_data.tasks }}
+                                        {% if user_data.tasks_position %}
+                                            <span class="badge rounded-pill" style="background-color: #7639ba; font-size: 0.7rem; margin-left: 5px;">#{{ user_data.tasks_position }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ user_data.points }}
+                                        {% if user_data.points_position %}
+                                            <span class="badge rounded-pill" style="background-color: #7639ba; font-size: 0.7rem; margin-left: 5px;">#{{ user_data.points_position }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ user_data.time_spent }}
+                                        {% if user_data.time_position %}
+                                            <span class="badge rounded-pill" style="background-color: #7639ba; font-size: 0.7rem; margin-left: 5px;">#{{ user_data.time_position }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
-                <table class="ranking-table">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>User</th>
-                            <th>Time</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for username, time_spent, user_profile in time_ranking %}
-                            <tr {% if username == user.username %}class="highlight-row"{% endif %}>
-                                <td>{{ forloop.counter }}</td>
-                                <td>
-                                    <div style="display: flex; align-items: center;">
-                                        {% if user_profile.profile_pic %}
-                                            <img src="{{ user_profile.profile_pic.url }}" alt="Profile of {{ username }}" 
-                                                 style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px; object-fit: cover;">
-                                        {% else %}
-                                            <div style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px; 
-                                                      background-color: #6a1b54; display: flex; align-items: center; justify-content: center;">
-                                                <i class="fas fa-user" style="font-size: 12px; color: #fff;"></i>
-                                            </div>
-                                        {% endif %}
-                                        {{ username }}
-                                    </div>
-                                </td>
-                                <td>{{ time_spent }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
             </div>
         </div>
     </div>
