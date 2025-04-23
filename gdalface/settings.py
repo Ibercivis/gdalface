@@ -29,7 +29,15 @@ SECRET_KEY = 'django-insecure-*=6q(&bzk6+*uxgus^d%4^i)c*fr!p+%3(m5kf#+ir@969^3c*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
+# Obtener la IP adicional desde el archivo .env
+ADDITIONAL_IP = config('ADDITIONAL_IP', default=None)
+
+# Hosts permitidos
 ALLOWED_HOSTS = ['lostatnight.org', 'localhost', '127.0.0.1']
+# Agregar la IP adicional si está configurada en el .env
+if ADDITIONAL_IP:
+    ALLOWED_HOSTS.append(ADDITIONAL_IP)
+
 CSRF_TRUSTED_ORIGINS = ['https://lostatnight.org']
 
 # Application definition

@@ -55,7 +55,7 @@ class BatchAdmin(admin.ModelAdmin):
     list_filter = ('createdDateTime',)
     search_fields = ('name',)
     exclude = ('user',)
-
+    readonly_fields = ('createdDateTime', 'processing_start_time', 'processing_end_time', 'processing_status', 'numberImages')
     # Add a custom URL for fetching data
     def get_urls(self):
         """

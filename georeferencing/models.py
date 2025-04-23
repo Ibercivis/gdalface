@@ -79,6 +79,13 @@ class Batch(models.Model):
         ('LIST', 'List'),
     )
 
+    PROCESSING_STATUS_CHOICES = (
+        ('NOT_STARTED', 'Not Started'),
+        ('PROCESSING', 'Processing'),
+        ('COMPLETED', 'Completed'),
+        ('FAILED', 'Failed'),
+    )
+
     name = models.CharField(max_length=100)
     createdDateTime = models.DateTimeField(auto_now_add=True)
     type = models.CharField(
@@ -95,6 +102,17 @@ class Batch(models.Model):
     result = models.JSONField(default=dict, blank=True, null=True)
     numberImages = models.IntegerField(default=0)
     replicas = models.IntegerField(default=5)
+    log = models.TextField(blank = True, null = True)
+
+    processing_status = models.CharField(
+        max_length=20,
+        choices = PROCESSING_STATUS_CHOICES,
+        default = 'NOT_STARTED',
+        verbose_name="Processing Status"
+    )
+    processing_start_time = models.DateTimeField(blank=True, null=True)
+    processing_end_time = models.DateTimeField(blank=True, null=True)
+    
     def __str__(self):
         return str(self.name)
     

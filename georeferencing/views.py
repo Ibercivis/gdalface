@@ -27,7 +27,7 @@ class GeoAttemptView(APIView):
     GeoAttemptView
     This class-based view handles the API endpoints for image geo attempts.
     Attributes:
-        parser_classes (tuple): A tuple of parser classes used for request parsing.
+        parser_classes (tuple): A tuple of parser classes used for request parsing
     Methods:
         get(request): Retrieves all image geo attempts.
         post(request): Creates a new image geo attempt.
@@ -246,7 +246,7 @@ class GeoAttemptIndividualView(APIView):
                 print(mx)
                 zoom = self.get_zooms(mx)
                 print(zoom)
-                command = 'gdal2tiles -z ' + zoom + ' -r near -s EPSG:4326'
+                command = 'gdal2tiles.py -z ' + zoom + ' -r near -s EPSG:4326'
                 command += ' media/georeferenced/' + \
                     geoattemp.image.name + geoattemp.hash + '.tif'
                 command += ' media/georeferenced/' + geoattemp.image.name + geoattemp.hash
@@ -256,7 +256,7 @@ class GeoAttemptIndividualView(APIView):
                     subprocess.run(command, shell=True,
                                    capture_output=True, text=True, check=True)
                 except subprocess.CalledProcessError as e:
-                    return Response({"error": f"gdal2tiles failed: {e.stderr}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                    return Response({"error": f"gdal2tiles.py failed: {e.stderr}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
                 return Response(serializer.data, status=status.HTTP_200_OK)
             # That means that the user is happy with the final result
             elif request.data['status'] == 'DONE':
