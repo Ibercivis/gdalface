@@ -92,22 +92,54 @@ $(document).ready(function () {
             image_name = response.image_name;
             geoatempt_id = response.id;
             geoattempt_hash = response.hash;
+            
+            // Eliminar la extensión JPG del nombre de la imagen para el texto informativo
+            let displayImageName = image_name;
+            displayImageName = displayImageName.replace(/\.JPG$|\.jpg$/, '');
+            $('#photo-info-text').text(displayImageName);
+
             // Initialize Fabric.js canvas
             const canvas = new fabric.Canvas('canvas', {
                 fireRightClick: true, // Enable right-click events
                 stopContextMenu: true, // Disable the default context menu
                 selection: false // Disable object selection
             });
-            $('#photo-info-text').text(response.image_name);
+            $('#photo-info-text').text(displayImageName);
            
 
             $('#photo-info').on('click', function () {
-                $('.modal-title').html(response.image_name); // Set the modal content
+                // Format date if it's in ISO format
+                let formattedDate = response.photo_taken || "Not provided";
+                if (formattedDate && formattedDate.includes('T')) {
+                    // Parse ISO date string
+                    const date = new Date(response.photo_taken);
+                    // Format the date as "YYYY-MM-DD HH:MM:SS" in English format
+                    const year = date.getFullYear();
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const day = String(date.getDate()).padStart(2, '0');
+                    const hours = String(date.getHours()).padStart(2, '0');
+                    const minutes = String(date.getMinutes()).padStart(2, '0');
+                    const seconds = String(date.getSeconds()).padStart(2, '0');
+                    formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+                }
+                
+                // Handle null values for all fields
+                const photoCenterPoint = response.photo_center_point || "Not provided";
+                const photoCenterByML = response.photo_center_by_machine_learning || "Not provided";
+                const spacecraftNadirPoint = response.spacecraft_nadir_point || "Not provided";
+                const focalLength = response.focal_length || "Not provided";
+                
+                // Eliminar la extensión JPG del nombre de la imagen para el título
+                let imageTitle = response.image_name || "Untitled Image";
+                imageTitle = imageTitle.replace(/\.JPG$|\.jpg$/, '');
+                
+                $('.modal-title').html(imageTitle); // Set the modal content with image name without JPG extension
                 $('.modal-body').html(''
-                    +'Photography Date: ' + response.photo_taken + '<br />'
-                    +'Photography Center: ' + response.photo_center_by_machine_learning + '<br />'
-                    +'Spacecraft Nadir Point: ' + response.spacecraft_nadir_point + '<br />'
-                    +'Focal length: ' + response.focal_length + '<br />');
+                    +'Photography Date: ' + formattedDate + '<br />'
+                    +'Photography Center: ' + photoCenterPoint + '<br />'
+                    +'Photography Center by Machine Learning: ' + photoCenterByML + '<br />'
+                    +'ISS Position (Spacecraft Nadir Point): ' + spacecraftNadirPoint + '<br />'
+                    +'Focal length: ' + focalLength + '<br />');
                 infoModal.show(); // Show the modal
             });
 
@@ -658,7 +690,7 @@ $(document).ready(function () {
                 } else if (response.photo_center_by_machine_learning) {
                     latLng = parseCoordinates(response.photo_center_by_machine_learning);
                 } else {
-                    latLng = [0, 0];
+                    latLng = parseCoordinates(response.spacecraft_nadir_point);
                 }
 
 

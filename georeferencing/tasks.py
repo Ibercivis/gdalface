@@ -2,7 +2,7 @@ import os
 import requests
 from decouple import config
 from .models import GeoAttempt, Image
-from datetime import timedelta
+from datetime import timedelta, datetime
 from django.utils import timezone
 from django.conf import settings
 from django.core.files.storage import default_storage
@@ -121,11 +121,12 @@ def generate_from_list(batch):
                 base_url = 'https://eol.jsc.nasa.gov/SearchPhotos/PhotosDatabaseAPI/PhotosDatabaseAPI.pl'
                 params = {
                     'query': f'images|directory|like|*large*|images|filename|like|*{image}*',
-                    'return': 'images|directory|images|filename|nadir|lat|nadir|lon|nadir|elev|nadir|azi|camera|fclt|',
+                    'return': 'images|directory|images|filename|nadir|lat|nadir|lon|nadir|elev|nadir|azi|nadir|pdate|nadir|ptime|camera|fclt|',
                     'key': key
                 }
                 url_request = f"{base_url}?{'&'.join(f'{k}={v}' for k, v in params.items())}"
                 add_log_info(f"Consultando API para {image}")
+                add_log_info(f"URL de consulta: {url_request}")
 
                 try:
                     response = requests.get(url_request, timeout=10)
@@ -223,11 +224,34 @@ def generate_from_list(batch):
                                 
                                 # We create the image object
                                 try:
+                                    # Intentar formatear la fecha a partir de nadir.pdate y nadir.ptime
+                                    taken_datetime = timezone.now()  # Valor predeterminado si no hay datos
+                                    nadir_pdate = d.get('nadir.pdate')
+                                    nadir_ptime = d.get('nadir.ptime')
+                                    
+                                    if nadir_pdate and nadir_ptime:
+                                        try:
+                                            datetime_str = f"{nadir_pdate} {nadir_ptime}"
+                                            add_log_info(f"Cadena de fecha formateada: {datetime_str}")
+                                            taken_datetime = datetime.strptime(datetime_str, '%Y%m%d %H%M%S')
+                                            add_log_info(f"Fecha formateada a partir de nadir.pdate y nadir.ptime: {taken_datetime}")
+                                        except (ValueError, TypeError) as e:
+                                            add_log_error(f"Error formateando fecha: {str(e)}")
+                                            add_log_error(f"Datos de fecha originales - pdate: {nadir_pdate}, ptime: {nadir_ptime}")
+                                    
+                                    # Formatear punto central y nadir con mejor manejo de valores nulos o vacíos
+                                    nadir_lat = d.get('nadir.lat')
+                                    nadir_lon = d.get('nadir.lon')
+                                    spacecraft_nadir_point = None
+                                    
+                                    if nadir_lat is not None and nadir_lon is not None:
+                                        spacecraft_nadir_point = f"{nadir_lat}, {nadir_lon}"
+                                    
                                     img = Image.objects.create(
                                         name = filename,
-                                        taken = timezone.now(),
+                                        taken = taken_datetime,
                                         focalLength = d.get('camera.fclt', 0),  # Proporcionar valor predeterminado
-                                        spacecraftNadirPoint = f"{d.get('nadir.lat', 0)}, {d.get('nadir.lon', 0)}",  # Valores predeterminados
+                                        spacecraftNadirPoint = spacecraft_nadir_point,  # Mejorado para manejar valores nulos
                                         spaceCraftAltitude = d.get('nadir.elev', 0),  # Valor predeterminado
                                         # Usar frames_center para photoCenterPoint si está disponible
                                         photoCenterPoint = frames_center,
