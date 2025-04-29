@@ -33,7 +33,7 @@ isort==5.13.2
 jmespath==1.0.1
 mccabe==0.7.0
 packaging==24.1
-pillow==10.4.0
+pillow==11.1.0
 platformdirs==4.3.6
 psycopg2-binary==2.9.10
 pycparser==2.22
