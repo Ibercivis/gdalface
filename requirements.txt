@@ -12,7 +12,7 @@ charset-normalizer==3.4.0
 click==8.1.7
 croniter==1.4.1
 crontab==1.0.1
-cryptography==43.0.1
+cryptography==44.0.0
 dill==0.3.9
 Django==4.2.16
 django-allauth==65.0.2
