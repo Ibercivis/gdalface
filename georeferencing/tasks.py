@@ -82,7 +82,8 @@ def download_image(image):
         # Catch any other unexpected errors
         return None
 
-@job('default')  # Specify the queue (default, high, low) here
+# 4 horas = 4*60*60 = 14400
+@job('default', timeout=14400)  # Specify the queue (default, high, low) here
 def generate_from_list(batch):
     """
     generate_from_list is a function that takes a list of Image objects and generates GeoAttempts for each image.
@@ -118,10 +119,20 @@ def generate_from_list(batch):
                 add_log_info(f"Procesando imagen: {image}")
                 
                 # Construir URL para la consulta a la API de la NASA
+                # También es importante saber: 
+                #
+                # https://eol.jsc.nasa.gov/SearchPhotos/PhotosDatabaseAPI
+                #
+                # The nadir table hold spacecraft position and sun position information 
+                # at the time the photos were taken for photos that have not yet been cataloged. 
+                # When photos are cataloged, record for the photo is removed from this table and merged into the frames table.
+
+
                 base_url = 'https://eol.jsc.nasa.gov/SearchPhotos/PhotosDatabaseAPI/PhotosDatabaseAPI.pl'
                 params = {
                     'query': f'images|directory|like|*large*|images|filename|like|*{image}*',
-                    'return': 'images|directory|images|filename|nadir|lat|nadir|lon|nadir|elev|nadir|azi|nadir|pdate|nadir|ptime|camera|fclt|',
+                    #'return': 'images|directory|images|filename|nadir|lat|nadir|lon|nadir|elev|nadir|azi|nadir|pdate|nadir|ptime|camera|fclt|',
+                    'return': 'images|directory|images|filename|frames|lat|frames|lon|frames|elev|frames|azi|frames|pdate|frames|ptime|frames|fclt|',
                     'key': key
                 }
                 url_request = f"{base_url}?{'&'.join(f'{k}={v}' for k, v in params.items())}"

@@ -257,7 +257,7 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-SITE_ID = 1
+SITE_ID = 2
 
 # Django-countries settings
 COUNTRIES_FLAG_URL = 'https://flagcdn.com/32x24/{code}.png'
