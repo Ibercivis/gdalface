@@ -1,0 +1,28 @@
+{% extends "admin/change_list.html" %}
+
+{% block content_title %}
+  {{ block.super }}
+  {% if tutorial_summary %}
+  <div style="margin:12px 0;padding:12px 16px;background:#f6f9fc;border:1px solid #d6e2ec;border-radius:4px;">
+    <h2 style="margin:0 0 8px 0;font-size:14px;">Tutorial summary</h2>
+    <p style="margin:0;">
+      <strong>Started:</strong> {{ tutorial_summary.started }}
+      (auth {{ tutorial_summary.auth_started }} / anon {{ tutorial_summary.anon_started }})
+      &nbsp;·&nbsp;
+      <strong>Completed:</strong> {{ tutorial_summary.completed }}
+      &nbsp;·&nbsp;
+      <strong>Dismissed:</strong> {{ tutorial_summary.dismissed }}
+      &nbsp;·&nbsp;
+      <strong>Completion rate:</strong> {{ tutorial_summary.completion_rate }}%
+    </p>
+    {% if tutorial_summary.per_step %}
+    <p style="margin:6px 0 0 0;">
+      <strong>Per step:</strong>
+      {% for s in tutorial_summary.per_step %}
+        step {{ s.step }} → {{ s.n }}{% if not forloop.last %} · {% endif %}
+      {% endfor %}
+    </p>
+    {% endif %}
+  </div>
+  {% endif %}
+{% endblock %}

@@ -1,3 +1,4 @@
+{% load i18n %}
 <!-- Footer -->
 <footer class="text-white text-center text-lg-start mt-5">
     <div class="container p-4">
@@ -6,32 +7,33 @@
             <div class="col-lg-5 col-md-6 mb-4 mb-md-0">
                 <h5 class="text-uppercase">Lost at Night</h5>
                 <p>
-                    This application is designed to help georeference images taken by astronauts aboard the International Space Station (ISS).
+                    {% trans "This application is designed to help georeference images taken by astronauts aboard the International Space Station (ISS)." %}
                 </p>
-                
+
                 <!-- EU Funding information -->
                 <div class="small mt-4">
                     <div class="d-flex align-items-center">
                         <img src="/static/img/fundedbyEU.png" alt="EU Flag" height="30" class="me-2">
-                        <p class="mb-0">Funded by the European Union under the Horizon Europe Programme, Grant Agreement No. 101135308 (PLAN-B). Research and Innovation Action | HORIZON-CL6-2023-BIODIV-01.</p>
+                        <p class="mb-0">{% trans "Funded by the European Union under the Horizon Europe Programme, Grant Agreement No. 101135308 (PLAN-B). Research and Innovation Action | HORIZON-CL6-2023-BIODIV-01." %}</p>
                     </div>
                 </div>
             </div>
 
             <!-- Quick Links -->
             <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-                <h5 class="text-uppercase">Quick Links</h5>
+                <h5 class="text-uppercase">{% trans "Quick Links" %}</h5>
                 <ul class="list-unstyled">
-                    <li><a href="/" class="text-white text-decoration-none">Home</a></li>
-                    <li><a href="/#batches" class="text-white text-decoration-none">Batches</a></li>
-                    <li><a href="/gettask" class="text-white text-decoration-none">Participate</a></li>
-                    <li><a href="/#contact" class="text-white text-decoration-none">Contact</a></li>
+                    <li><a href="/" class="text-white text-decoration-none">{% trans "Home" %}</a></li>
+                    <li><a href="/#batches" class="text-white text-decoration-none">{% trans "Batches" %}</a></li>
+                    <li><a href="/gettask" class="text-white text-decoration-none">{% trans "Participate" %}</a></li>
+                    <li><a href="https://youtu.be/kY5j1wxKZYc" target="_blank" rel="noopener" class="text-white text-decoration-none">{% trans "Video tutorial" %} <i class="fa-brands fa-youtube ms-1"></i></a></li>
+                    <li><a href="/#contact" class="text-white text-decoration-none">{% trans "Contact" %}</a></li>
                 </ul>
             </div>
 
             <!-- Contact Info -->
             <div class="col-lg-4 col-md-12 mb-4 mb-md-0">
-                <h5 class="text-uppercase">Contact</h5>
+                <h5 class="text-uppercase">{% trans "Contact" %}</h5>
                 
                 <!-- Social Media Links in Two Columns -->
                 <div class="row">
@@ -77,7 +79,7 @@
                 <!-- Development credit -->
                 <div class="text-center text-md-start mt-4">
                     <a href="https://github.com/Ibercivis/gdalface" target="_blank" class="text-white text-decoration-none">
-                        Developed by <b>Ibercivis</b>
+                        {% blocktrans %}Developed by <b>Ibercivis</b>{% endblocktrans %}
                         <i class="fa-brands fa-github fa-lg ms-2"></i>
                     </a>
                 </div>
@@ -87,6 +89,6 @@
 
     <!-- Copyright Section -->
     <div class="text-center p-3">
-        © 2025 Lost at Night. All rights reserved.
+        {% trans "© 2025 Lost at Night. All rights reserved." %}
     </div>
 </footer>

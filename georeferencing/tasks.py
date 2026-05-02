@@ -1,15 +1,18 @@
 import os
+import re
 import requests
 from decouple import config
-from .models import GeoAttempt, Image
+from .models import GeoAttempt, Image, Batch
 from datetime import timedelta, datetime
 from django.utils import timezone
 from django.conf import settings
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+from django.db.models import F, Value
+from django.db.models.functions import Concat, Coalesce
 from django_rq import job
 
-@job('default')  # Specify the queue (default, high, low) here
+@job('lost_scheduler')  # Specify the queue (default, high, low) here
 def update_assigned(*args, **kwargs):
     """
     update_assigned is an RQ task that updates the status of GeoAttempts that have been assigned but not finished.
@@ -25,314 +28,315 @@ def update_assigned(*args, **kwargs):
         return None
 
 
-@job('default')  # Specify the queue (default, high, low) here
+@job('lost_scheduler')  # Specify the queue (default, high, low) here
 def download_image(image):
     """
     download_image is an RQ task that downloads an image from a given URL and stores it in the 'media/original/' folder.
+    Sets image.status to DOWNLOADED, FAILED_DOWNLOADED, or DOWNLOADED_GENERATED accordingly.
     """
     try:
-        url = image.largeImageURL
         file_name = os.path.basename(image.largeImageURL)
+        large_ok = False
+        small_ok = False
 
-        # Send an HTTP GET request to download the large image
+        # Download large image
         try:
             response = requests.get(image.largeImageURL, timeout=20)
-            response.raise_for_status()  # Raise an exception for any HTTP errors
-        
-            # Create the path where the image will be saved
-            file_path = os.path.join('original', file_name)
-
-            # Save the image to the media/original/ folder
-            saved_path = default_storage.save(file_path, ContentFile(response.content))
-            full_saved_path = os.path.join(settings.MEDIA_ROOT, saved_path)
-        except requests.exceptions.RequestException as e:
-            # Continue with small image even if large image fails
+            response.raise_for_status()
+            saved_path = default_storage.save(os.path.join('original', file_name), ContentFile(response.content))
+            large_ok = True
+        except requests.exceptions.RequestException:
             pass
 
-        # Send an HTTP GET request to download the small image
+        # Download small image
         try:
             response = requests.get(image.smallImageURL, timeout=20)
-            response.raise_for_status()  # Raise an exception for any HTTP errors
-        
-            # Create the path where the image will be saved
-            file_path = os.path.join('small', file_name)
+            response.raise_for_status()
+            saved_path = default_storage.save(os.path.join('small', file_name), ContentFile(response.content))
+            small_ok = True
+        except requests.exceptions.RequestException:
+            pass
 
-            # Save the image to the media/original/ folder
-            saved_path = default_storage.save(file_path, ContentFile(response.content))
-            full_saved_path = os.path.join(settings.MEDIA_ROOT, saved_path)
-        except requests.exceptions.RequestException as e:
-            # Continue even if small image fails
-            pass
-        
-        # Create GeoAttempts regardless of download success
-        try:
-            # It downloaded the image successfully, so we can create the geoattempts
-            # as many as the number of replicas of the image
-            for _ in range(image.replicas):
-                geoattemp = GeoAttempt.objects.create(
-                    image = image,
-                    status = 'PENDING'
-                )
-            geoattemp.save()
-        except Exception as e:
-            # Fail silently if there's a problem creating GeoAttempts
-            pass
-            
+        if not large_ok and not small_ok:
+            # Both downloads failed — mark image as failed, do not create GeoAttempts
+            image.status = 'FAILED_DOWNLOADED'
+            image.save(update_fields=['status'])
+            return None
+
+        # At least one download succeeded — create GeoAttempts
+        image.status = 'DOWNLOADED'
+        image.save(update_fields=['status'])
+
+        for _ in range(image.replicas):
+            GeoAttempt.objects.create(image=image, status='PENDING')
+
+        image.status = 'DOWNLOADED_GENERATED'
+        image.save(update_fields=['status'])
+
     except Exception as e:
         # Catch any other unexpected errors
+        try:
+            image.status = 'FAILED_DOWNLOADED'
+            image.save(update_fields=['status'])
+        except Exception:
+            pass
         return None
 
-# 4 horas = 4*60*60 = 14400
-@job('default', timeout=14400)  # Specify the queue (default, high, low) here
+def _add_log(batch_id, level, message):
+    """Append a log line to the batch log atomically (null-safe)."""
+    timestamp = timezone.now().strftime("%Y-%m-%d %H:%M:%S")
+    line = f"\n[{level}] {timestamp} - {message}"
+    Batch.objects.filter(pk=batch_id).update(
+        log=Concat(Coalesce(F('log'), Value('')), Value(line))
+    )
+
+
+def _flush_log(batch_id, lines):
+    """Write a list of log lines to the batch log in a single atomic update."""
+    if not lines:
+        return
+    block = ''.join(lines)
+    Batch.objects.filter(pk=batch_id).update(
+        log=Concat(Coalesce(F('log'), Value('')), Value(block))
+    )
+
+
+@job('lost_scheduler', timeout=300)
 def generate_from_list(batch):
     """
-    generate_from_list is a function that takes a list of Image objects and generates GeoAttempts for each image.
+    Dispatcher: splits the image list and enqueues one process_single_image job per entry.
+    Finishes in seconds regardless of list size.
     """
-    # Actualizar el estado del batch a 'PROCESSING' y guardar la hora de inicio
-    batch.processing_status = 'PROCESSING'
-    batch.processing_start_time = timezone.now()
-    batch.save(update_fields=['processing_status', 'processing_start_time'])
-    
-    # Función auxiliar para registrar información en el log del batch
-    def add_log_info(message):
+    image_list = [img.strip() for img in re.split(r'[,\n\r]+', batch.originalImages) if img.strip()]
+    total = len(image_list)
+
+    # Initialise batch state, clearing the previous log and counters
+    Batch.objects.filter(pk=batch.pk).update(
+        processing_status='PROCESSING',
+        processing_start_time=timezone.now(),
+        processing_end_time=None,
+        total_images_in_queue=total,
+        processed_images_in_queue=0,
+        numberImages=0,
+        log=f"[II] {timezone.now().strftime('%Y-%m-%d %H:%M:%S')} - ====== INICIO DEL PROCESAMIENTO DEL BATCH ===="
+    )
+    _add_log(batch.pk, 'II', f"Batch '{batch.name}' — Total de imágenes a procesar: {total}")
+
+    for idx, image_name in enumerate(image_list, start=1):
+        process_single_image.delay(batch.pk, image_name, idx, total)
+
+    _add_log(batch.pk, 'II', f"Todos los jobs encolados ({total}). El batch se marcará COMPLETED cuando terminen.")
+    return True
+
+
+@job('lost_scheduler', timeout=600)
+def process_single_image(batch_id, image_name, idx, total):
+    """
+    Processes a single image name end-to-end: queries NASA API, creates Image objects,
+    downloads the files, creates GeoAttempts, then writes a single log entry and marks
+    the batch COMPLETED when it is the last job.
+    Log lines are buffered in memory and flushed in a single write at the end.
+    """
+    log_buffer = []
+    images_ready = 0  # images fully downloaded with GeoAttempts created
+
+    def log_info(msg):
         timestamp = timezone.now().strftime("%Y-%m-%d %H:%M:%S")
-        batch.log = (batch.log or "") + f"\n[II] {timestamp} - {message}"
-        batch.save(update_fields=['log'])
-    
-    # Función auxiliar para registrar errores en el log del batch
-    def add_log_error(message):
+        log_buffer.append(f"\n[II] {timestamp} - {msg}")
+
+    def log_error(msg):
         timestamp = timezone.now().strftime("%Y-%m-%d %H:%M:%S")
-        batch.log = (batch.log or "") + f"\n[EE] {timestamp} - {message}"
-        batch.save(update_fields=['log'])
-    
-    # Contador de imágenes creadas
-    total_images_created = 0
-    
+        log_buffer.append(f"\n[EE] {timestamp} - {msg}")
+
     try:
-        key = config('NASA_API_KEY')
-        add_log_info(f"====== INICIO DEL PROCESAMIENTO DEL BATCH ====")
-        add_log_info(f"Iniciando procesamiento del batch '{batch.name}' con {len(batch.originalImages.split(','))} imágenes")
-        
-        # We iterate over the list of images, separated by commas
-        for image in batch.originalImages.split(','):
+        batch = Batch.objects.get(pk=batch_id)
+    except Batch.DoesNotExist:
+        return None
+
+    key = config('NASA_API_KEY')
+    base_url = 'https://eol.jsc.nasa.gov/SearchPhotos/PhotosDatabaseAPI/PhotosDatabaseAPI.pl'
+
+    log_info(f"=================================")
+    log_info(f"[{idx}/{total}] Procesando imagen: {image_name}")
+
+    errors = []
+
+    try:
+        params = {
+            'query': f'images|directory|like|*large*|images|filename|like|*{image_name}*',
+            'return': 'images|directory|images|filename|frames|lat|frames|lon|frames|elev|frames|azi|frames|pdate|frames|ptime|frames|fclt|',
+            'key': key
+        }
+        url_request = f"{base_url}?{'&'.join(f'{k}={v}' for k, v in params.items())}"
+
+        try:
+            response = requests.get(url_request, timeout=10)
+        except requests.exceptions.RequestException as e:
+            log_error(f"[{idx}/{total}] Error de conexión con la API: {str(e)}")
+            _flush_log(batch_id, log_buffer)
+            return _finalize_if_last(batch_id, idx, total, 0)
+
+        if response.status_code != 200:
+            log_error(f"[{idx}/{total}] La API respondió con código de error: {response.status_code}")
+            _flush_log(batch_id, log_buffer)
+            return _finalize_if_last(batch_id, idx, total, 0)
+
+        data = response.json()
+
+        if isinstance(data, dict) and data.get('result') == 'SQL found no records that match the specified criteria':
+            log_error(f"[{idx}/{total}] No se encontraron registros para {image_name}")
+            _flush_log(batch_id, log_buffer)
+            return _finalize_if_last(batch_id, idx, total, 0)
+
+        if isinstance(data, list) and len(data) == 0:
+            log_error(f"[{idx}/{total}] Lista de resultados vacía para {image_name}")
+            _flush_log(batch_id, log_buffer)
+            return _finalize_if_last(batch_id, idx, total, 0)
+
+        log_info(f"[{idx}/{total}] API devolvió {len(data)} registro(s)")
+
+        for d in data:
             try:
-                add_log_info(f"Procesando imagen: {image}")
-                
-                # Construir URL para la consulta a la API de la NASA
-                # También es importante saber: 
-                #
-                # https://eol.jsc.nasa.gov/SearchPhotos/PhotosDatabaseAPI
-                #
-                # The nadir table hold spacecraft position and sun position information 
-                # at the time the photos were taken for photos that have not yet been cataloged. 
-                # When photos are cataloged, record for the photo is removed from this table and merged into the frames table.
+                filename = d['images.filename']
+                largeImageURL = f"https://eol.jsc.nasa.gov/DatabaseImages/{d['images.directory']}/{filename}"
 
+                url_request2 = (
+                    f'{base_url}?query=images|directory|like|*large*|images|filename|like|*{filename}*'
+                    f'&return=frames|lat|frames|lon&key={key}'
+                )
+                url_request3 = (
+                    f'{base_url}?query=images|directory|like|*large*|images|filename|like|*{filename}*'
+                    f'&return=mlcoord|lat|mlcoord|lon&key={key}'
+                )
 
-                base_url = 'https://eol.jsc.nasa.gov/SearchPhotos/PhotosDatabaseAPI/PhotosDatabaseAPI.pl'
-                params = {
-                    'query': f'images|directory|like|*large*|images|filename|like|*{image}*',
-                    #'return': 'images|directory|images|filename|nadir|lat|nadir|lon|nadir|elev|nadir|azi|nadir|pdate|nadir|ptime|camera|fclt|',
-                    'return': 'images|directory|images|filename|frames|lat|frames|lon|frames|elev|frames|azi|frames|pdate|frames|ptime|frames|fclt|',
-                    'key': key
-                }
-                url_request = f"{base_url}?{'&'.join(f'{k}={v}' for k, v in params.items())}"
-                add_log_info(f"Consultando API para {image}")
-                add_log_info(f"URL de consulta: {url_request}")
+                # frames center
+                frames_center = None
+                try:
+                    r2 = requests.get(url_request2, timeout=10)
+                    if r2.status_code == 200:
+                        fd = r2.json()
+                        if isinstance(fd, list) and fd:
+                            flat, flon = fd[0].get('frames.lat'), fd[0].get('frames.lon')
+                            if flat is not None and flon is not None:
+                                frames_center = f"{flat}, {flon}"
+                except requests.exceptions.RequestException:
+                    pass
+
+                # ML coords
+                ml_coords = None
+                try:
+                    r3 = requests.get(url_request3, timeout=10)
+                    if r3.status_code == 200:
+                        md = r3.json()
+                        if isinstance(md, list) and md:
+                            mlat, mlon = md[0].get('mlcoord.lat'), md[0].get('mlcoord.lon')
+                            if mlat is not None and mlon is not None:
+                                ml_coords = f"{mlat}, {mlon}"
+                except requests.exceptions.RequestException:
+                    pass
+
+                # Date
+                taken_datetime = timezone.now()
+                pdate, ptime = d.get('frames.pdate'), d.get('frames.ptime')
+                if pdate and ptime:
+                    try:
+                        taken_datetime = datetime.strptime(f"{pdate} {ptime}", '%Y%m%d %H%M%S')
+                    except (ValueError, TypeError):
+                        pass
+
+                nadir_lat, nadir_lon = d.get('nadir.lat'), d.get('nadir.lon')
+                spacecraft_nadir_point = f"{nadir_lat}, {nadir_lon}" if nadir_lat is not None and nadir_lon is not None else None
+
+                img = Image.objects.create(
+                    name=filename,
+                    taken=taken_datetime,
+                    focalLength=d.get('frames.fclt', 0),
+                    spacecraftNadirPoint=spacecraft_nadir_point,
+                    spaceCraftAltitude=d.get('frames.elev', 0),
+                    photoCenterPoint=frames_center,
+                    photoCenterByMachineLearning=ml_coords,
+                    largeImageURL=largeImageURL,
+                    smallImageURL=largeImageURL.replace('large', 'small'),
+                    batch=batch,
+                    replicas=batch.replicas,
+                    status='PENDING',
+                )
+
+                # --- Inline download (large + small) ---
+                file_name = os.path.basename(largeImageURL)
+                large_ok = False
+                small_ok = False
 
                 try:
-                    response = requests.get(url_request, timeout=10)
-                    if response.status_code == 200:
-                        data = response.json()
-                        add_log_info(f"Respuesta API exitosa. Datos recibidos: {len(data) if isinstance(data, list) else 'Object'}")
-                        
-                        # Check if the query returned no records
-                        if isinstance(data, dict) and data.get('result') == 'SQL found no records that match the specified criteria':
-                            add_log_error(f"No se encontraron registros para {image}")
-                            continue
-                        # También verificamos si la lista está vacía
-                        if isinstance(data, list) and len(data) == 0:
-                            add_log_error(f"Lista de resultados vacía para {image}")
-                            continue
-                        
-                        # Variable para almacenar todas las imágenes creadas en este batch
-                        created_images = []
-                        
-                        for d in data:
-                            try:
-                                filename = d['images.filename']
-                                add_log_info(f"Procesando imagen encontrada: {filename}")
-                                
-                                largeImageURL = (
-                                    f"https://eol.jsc.nasa.gov/DatabaseImages/"
-                                    f"{d['images.directory']}/{filename}"
-                                )
-                                
-                                # Creamos url_request2 para obtener frames|lat y frames|lon para el PhotoCenterPoint
-                                url_request2 = (
-                                    f'{base_url}?query=images|directory|like|*large*|images|filename|like|*{filename}*'
-                                    f'&return=frames|lat|frames|lon&key={key}'
-                                )
-                                
-                                url_request3 = (
-                                    f'{base_url}?query=images|directory|like|*large*|images|filename|like|*{filename}*'
-                                    f'&return=mlcoord|lat|mlcoord|lon&key={key}'
-                                )
-                                
-                                # Consultar frames|lat y frames|lon para PhotoCenterPoint
-                                try:
-                                    add_log_info(f"Consultando coordenadas del centro (frames) para {filename}")
-                                    response2 = requests.get(url_request2, timeout=10)
-                                    frames_center = None
-                                    if response2.status_code == 200:
-                                        frames_center_data = response2.json()
-                                        
-                                        # Verificar si hay datos válidos
-                                        if isinstance(frames_center_data, list) and len(frames_center_data) > 0:
-                                            # Obtener las coordenadas del centro desde la tabla frames
-                                            frames_lat = frames_center_data[0].get('frames.lat')
-                                            frames_lon = frames_center_data[0].get('frames.lon')
-                                            
-                                            if frames_lat is not None and frames_lon is not None:
-                                                frames_center = f"{frames_lat}, {frames_lon}"
-                                                add_log_info(f"Coordenadas centro (frames) encontradas: {frames_center}")
-                                            else:
-                                                add_log_error(f"Coordenadas centro (frames) incompletas para {filename}")
-                                        else:
-                                            add_log_error(f"No se encontraron datos de centro (frames) para {filename}")
-                                    else:
-                                        add_log_error(f"Error consultando coordenadas centro (código: {response2.status_code})")
-                                    
-                                except requests.exceptions.RequestException as e:
-                                    add_log_error(f"Error de red consultando centro (frames): {str(e)}")
-                                    frames_center = None
-                                
-                                # Consultar las coordenadas del center point by machine learning mlcoord|lat y mlcoord|lon de la API
-                                try:
-                                    add_log_info(f"Consultando coordenadas ML para {filename}")
-                                    response3 = requests.get(url_request3, timeout=10)
-                                    ml_coords = None
-                                    if response3.status_code == 200:
-                                        ml_data = response3.json()
-                                        
-                                        # Verificar si hay datos válidos
-                                        if isinstance(ml_data, list) and len(ml_data) > 0:
-                                            # Obtener las coordenadas de machine learning
-                                            ml_lat = ml_data[0].get('mlcoord.lat')
-                                            ml_lon = ml_data[0].get('mlcoord.lon')
-                                            
-                                            if ml_lat is not None and ml_lon is not None:
-                                                ml_coords = f"{ml_lat}, {ml_lon}"
-                                                add_log_info(f"Coordenadas ML encontradas: {ml_coords}")
-                                            else:
-                                                add_log_error(f"Coordenadas ML incompletas para {filename}")
-                                        else:
-                                            add_log_error(f"No se encontraron datos de ML para {filename}")
-                                    else:
-                                        add_log_error(f"Error consultando coordenadas ML (código: {response3.status_code})")
-                                except requests.exceptions.RequestException as e:
-                                    add_log_error(f"Error de red consultando ML: {str(e)}")
-                                    ml_coords = None
-                                
-                                # We create the image object
-                                try:
-                                    # Intentar formatear la fecha a partir de nadir.pdate y nadir.ptime
-                                    taken_datetime = timezone.now()  # Valor predeterminado si no hay datos
-                                    nadir_pdate = d.get('nadir.pdate')
-                                    nadir_ptime = d.get('nadir.ptime')
-                                    
-                                    if nadir_pdate and nadir_ptime:
-                                        try:
-                                            datetime_str = f"{nadir_pdate} {nadir_ptime}"
-                                            add_log_info(f"Cadena de fecha formateada: {datetime_str}")
-                                            taken_datetime = datetime.strptime(datetime_str, '%Y%m%d %H%M%S')
-                                            add_log_info(f"Fecha formateada a partir de nadir.pdate y nadir.ptime: {taken_datetime}")
-                                        except (ValueError, TypeError) as e:
-                                            add_log_error(f"Error formateando fecha: {str(e)}")
-                                            add_log_error(f"Datos de fecha originales - pdate: {nadir_pdate}, ptime: {nadir_ptime}")
-                                    
-                                    # Formatear punto central y nadir con mejor manejo de valores nulos o vacíos
-                                    nadir_lat = d.get('nadir.lat')
-                                    nadir_lon = d.get('nadir.lon')
-                                    spacecraft_nadir_point = None
-                                    
-                                    if nadir_lat is not None and nadir_lon is not None:
-                                        spacecraft_nadir_point = f"{nadir_lat}, {nadir_lon}"
-                                    
-                                    img = Image.objects.create(
-                                        name = filename,
-                                        taken = taken_datetime,
-                                        focalLength = d.get('camera.fclt', 0),  # Proporcionar valor predeterminado
-                                        spacecraftNadirPoint = spacecraft_nadir_point,  # Mejorado para manejar valores nulos
-                                        spaceCraftAltitude = d.get('nadir.elev', 0),  # Valor predeterminado
-                                        # Usar frames_center para photoCenterPoint si está disponible
-                                        photoCenterPoint = frames_center,
-                                        photoCenterByMachineLearning = ml_coords,  # Añadir las coordenadas ML
-                                        largeImageURL = largeImageURL,
-                                        # SmallImageURL  is the same as largeImageURL, but small instead of large
-                                        smallImageURL = largeImageURL.replace('large', 'small'),
-                                        batch = batch,
-                                        replicas = batch.replicas
-                                    )
-                                    
-                                    created_images.append(img)
-                                    total_images_created += 1  # Incrementar contador de imágenes
-                                    add_log_info(f"Imagen creada: {filename}")
-                                except Exception as e:
-                                    add_log_error(f"Error creando objeto Image para {filename}: {str(e)}")
-                                    # Si falla la creación de una imagen, continuamos con la siguiente
-                                    continue
-                            except Exception as e:
-                                add_log_error(f"Error procesando datos: {str(e)}")
-                                # Si falla el procesamiento de un dato, continuamos con el siguiente
-                                continue
+                    resp = requests.get(largeImageURL, timeout=20)
+                    resp.raise_for_status()
+                    default_storage.save(os.path.join('original', file_name), ContentFile(resp.content))
+                    large_ok = True
+                except requests.exceptions.RequestException:
+                    pass
 
-                        # Procesar la descarga de cada imagen creada
-                        add_log_info(f"Programando descarga para {len(created_images)} imágenes")
-                        for img in created_images:
-                            try:
-                                # We download the image
-                                download_image.delay(img)
-                                add_log_info(f"Descarga programada para: {img.name}")
-                            except Exception as e:
-                                add_log_error(f"Error programando descarga de {img.name}: {str(e)}")
-                                # Si falla la programación de la descarga, continuamos con la siguiente imagen
-                                continue
-                    else:
-                        add_log_error(f"La API respondió con código de error: {response.status_code}")
-                except requests.exceptions.RequestException as e:
-                    add_log_error(f"Error de conexión con la API: {str(e)}")
-                    # Si falla la consulta principal a la API, continuamos con la siguiente imagen
+                try:
+                    resp = requests.get(img.smallImageURL, timeout=20)
+                    resp.raise_for_status()
+                    default_storage.save(os.path.join('small', file_name), ContentFile(resp.content))
+                    small_ok = True
+                except requests.exceptions.RequestException:
+                    pass
+
+                if not large_ok and not small_ok:
+                    img.status = 'FAILED_DOWNLOADED'
+                    img.save(update_fields=['status'])
+                    errors.append(f"Descarga fallida para {filename}")
                     continue
+
+                img.status = 'DOWNLOADED'
+                img.save(update_fields=['status'])
+
+                for _ in range(img.replicas):
+                    GeoAttempt.objects.create(image=img, status='PENDING')
+
+                img.status = 'DOWNLOADED_GENERATED'
+                img.save(update_fields=['status'])
+                images_ready += 1
+
             except Exception as e:
-                add_log_error(f"Error general procesando {image}: {str(e)}")
-                # Si falla el procesamiento completo de una imagen, continuamos con la siguiente
+                errors.append(f"{filename if 'filename' in dir() else '?'}: {str(e)}")
                 continue
-        
-        # Actualizar el número de imágenes en el batch
-        batch.numberImages += total_images_created
-        batch.save(update_fields=['numberImages'])
-        add_log_info(f"Procesamiento del batch '{batch.name}' completado. Total de imágenes creadas: {total_images_created}")
-        
-        # Actualizar el estado del batch a 'COMPLETED' y guardar la hora de finalización
-        batch.processing_status = 'COMPLETED'
-        batch.processing_end_time = timezone.now()
-        batch.save(update_fields=['processing_status', 'processing_end_time'])
-        
+
     except Exception as e:
-        add_log_error(f"Error fatal en el procesamiento del batch: {str(e)}")
-        # Asegurarse de actualizar el número de imágenes incluso en caso de error
-        if total_images_created > 0:
-            batch.numberImages += total_images_created
-            batch.save(update_fields=['numberImages'])
-            
-        # Marcar el batch como fallido
-        batch.processing_status = 'FAILED'
-        batch.processing_end_time = timezone.now()
-        batch.save(update_fields=['processing_status', 'processing_end_time'])
-        
-        # Manejamos cualquier excepción no prevista
-        return None
-    
+        log_error(f"[{idx}/{total}] Error general procesando {image_name}: {str(e)}")
+
+    # Single summary log entry written after everything (API + download + GeoAttempts) is done
+    status = 'OK' if images_ready > 0 else 'SIN RESULTADOS'
+    log_info(f"[{idx}/{total}] '{image_name}': {images_ready} imagen(es) lista(s) — {status}")
+    for err in errors:
+        log_error(f"[{idx}/{total}] {err}")
+
+    _flush_log(batch_id, log_buffer)
+    return _finalize_if_last(batch_id, idx, total, images_ready)
+
+
+def _finalize_if_last(batch_id, idx, total, images_created):
+    """
+    Atomically increments processed_images_in_queue and numberImages.
+    If this is the last job, marks the batch as COMPLETED (exactly once).
+    """
+    Batch.objects.filter(pk=batch_id).update(
+        processed_images_in_queue=F('processed_images_in_queue') + 1,
+        numberImages=F('numberImages') + images_created,
+    )
+    batch = Batch.objects.get(pk=batch_id)
+
+    if batch.processed_images_in_queue >= total:
+        # Conditional update prevents double-completion in parallel workers
+        updated = Batch.objects.filter(pk=batch_id, processing_status='PROCESSING').update(
+            processing_status='COMPLETED',
+            processing_end_time=timezone.now(),
+        )
+        if updated:
+            batch.refresh_from_db()
+            _add_log(batch_id, 'II', f"====== BATCH COMPLETADO. Total imágenes: {batch.numberImages} / {total} procesadas ======")
+
     return True
 
 

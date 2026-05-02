@@ -1,5 +1,6 @@
 {% load static %}
 {% load bootstrap5 %}
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -181,7 +182,7 @@
             <div class="col-md-8">
                 <div class="card profile-card">
                     <div class="card-header">
-                        <h5 class="card-title mb-0">Profile Information</h5>
+                        <h5 class="card-title mb-0">{% trans "Profile Information" %}</h5>
                     </div>
                     <div class="card-body">
                         {% if messages %}
@@ -196,28 +197,28 @@
                             {% csrf_token %}
                             
                             <div class="mb-3">
-                                <label for="id_username" class="form-label">Username:</label>
+                                <label for="id_username" class="form-label">{% trans "Username:" %}</label>
                                 <input type="text" class="form-control" id="id_username" value="{{ user.username }}" disabled>
                             </div>
-                            
+
                             <div class="mb-3">
-                                <label for="id_email" class="form-label">Email:</label>
+                                <label for="id_email" class="form-label">{% trans "Email:" %}</label>
                                 <input type="email" class="form-control" id="id_email" value="{{ user.email }}" disabled>
                             </div>
-                            
+
                             <div class="mb-3">
-                                <label for="id_location" class="form-label">City</label>
+                                <label for="id_location" class="form-label">{% trans "City" %}</label>
                                 {{ form.location }}
                             </div>
-                            
+
                             <div class="mb-3">
-                                <label for="id_country" class="form-label">Country</label>
+                                <label for="id_country" class="form-label">{% trans "Country" %}</label>
                                 {{ form.country }}
                             </div>
-                            
+
                             <div class="mb-3">
-                                <label for="id_bio" class="form-label">Biography</label>
-                                <textarea name="bio" cols="40" rows="4" class="form-control" placeholder="Tell us about yourself" id="id_bio">{{ form.bio.value|default:'' }}</textarea>
+                                <label for="id_bio" class="form-label">{% trans "Biography" %}</label>
+                                <textarea name="bio" cols="40" rows="4" class="form-control" placeholder="{% trans 'Tell us about yourself' %}" id="id_bio">{{ form.bio.value|default:'' }}</textarea>
                             </div>
                             
                             <div class="mb-3 form-check">
@@ -227,8 +228,8 @@
                             </div>
                             
                             <div class="mb-3">
-                                <label for="id_profile_pic" class="form-label">Profile Picture</label>
-                                <input type="file" name="profile_pic" class="form-control" id="id_profile_pic" accept="image/*">
+                                <label for="id_profile_pic" class="form-label">{% trans "Profile Picture" %}</label>
+                                <input type="file" name="profile_pic" class="form-control" id="id_profile_pic" accept="image/*" data-preview-msg="{% trans 'Preview: New image selected' %}">
                                 {% if user.userprofile.profile_pic %}
                                 <div class="profile-image-container">
                                     <img src="{{ user.userprofile.profile_pic.url }}" alt="Profile Picture" class="profile-image">
@@ -237,8 +238,8 @@
                             </div>
                             
                             <div class="mt-4 text-center">
-                                <button type="submit" class="btn btn-save">Save Changes</button>
-                                <a href="{% url 'user' %}" class="btn btn-cancel ms-2">Cancel</a>
+                                <button type="submit" class="btn btn-save">{% trans "Save Changes" %}</button>
+                                <a href="{% url 'user' %}" class="btn btn-cancel ms-2">{% trans "Cancel" %}</a>
                             </div>
                         </form>
                     </div>
@@ -290,7 +291,7 @@
                     // Add preview message
                     const previewMsg = document.createElement('p');
                     previewMsg.className = 'text-light mt-2 preview-message';
-                    previewMsg.innerHTML = '<strong>Preview:</strong> New image selected';
+                    previewMsg.innerHTML = profilePicInput.dataset.previewMsg;
                     
                     // Add image and message to the page
                     profileImageContainer.appendChild(previewMsg);

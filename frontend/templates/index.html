@@ -1,5 +1,6 @@
 {% load static %}
 {% load bootstrap5 %}
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -113,7 +114,31 @@
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(118, 57, 186, 0.5);
         }
-        
+
+        .action-button-secondary {
+            background: transparent;
+            border: 2px solid #fff;
+            color: #fff;
+            padding: 0.65rem 1.75rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .action-button-secondary:hover {
+            background: #c00;
+            border-color: #c00;
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(204, 0, 0, 0.4);
+        }
+
+        @media (max-width: 575px) {
+            .cta-row .action-button-secondary {
+                margin-left: 0 !important;
+                margin-top: 0.75rem;
+            }
+        }
+
         .secondary-button {
             background-color: transparent;
             border: 1px solid #9966cc;
@@ -415,13 +440,13 @@
                         <div class="logo-container">
                             <img src="{% static 'img/LogoLostAtNight.png' %}" alt="Lost at Night Logo" class="hero-logo" />
                         </div>
-                        <h1 class="hero-title">{% if user.is_authenticated %}{{ user | upper }}, WELCOME BACK<br>TO <span class="highlight-text">LOST AT NIGHT</span>{% else %}WELCOME TO <span class="highlight-text">LOST AT NIGHT</span>{% endif %}</h1>
+                        <h1 class="hero-title">{% if user.is_authenticated %}{{ user | upper }}, {% trans "WELCOME BACK" %}<br>{% trans "TO" %} <span class="highlight-text">{% trans "LOST AT NIGHT" %}</span>{% else %}{% trans "WELCOME TO" %} <span class="highlight-text">{% trans "LOST AT NIGHT" %}</span>{% endif %}</h1>
                         <p class="hero-description">
-                            Help map Earth's lights from space and combat light pollution
+                            {% trans "Help map Earth's lights from space and combat light pollution" %}
                         </p>
                         <div class="hero-buttons">
-                            <a href="/gettask" class="btn btn-lg action-button">Participate Now</a>
-                            <a href="#batch-section" class="btn btn-lg secondary-button">Select Batches</a>
+                            <a href="/gettask" class="btn btn-lg action-button">{% trans "Participate Now" %}</a>
+                            <a href="#batch-section" class="btn btn-lg secondary-button">{% trans "Select Batches" %}</a>
                         </div>
                     </div>
                 </div>
@@ -434,14 +459,9 @@
                 <div class="row justify-content-center">
                     <div class="col-lg-10">
                         <div class="info-card">
-                            <h2 class="section-title">Our Mission</h2>
+                            <h2 class="section-title">{% trans "Our Mission" %}</h2>
                             <p class="section-description">
-                                This application is designed to help georeference images taken by astronauts aboard the 
-                                International Space Station (ISS). The goal is to create a global map of Earth's lights at 
-                                night to measure and track light pollution. By accurately aligning images with geographical 
-                                coordinates, the app contributes to valuable environmental data collection, which can be used 
-                                for scientific research, monitoring light pollution, and understanding 
-                                its impact on ecosystems and human health.
+                                {% blocktrans %}This application is designed to help georeference images taken by astronauts aboard the International Space Station (ISS). The goal is to create a global map of Earth's lights at night to measure and track light pollution. By accurately aligning images with geographical coordinates, the app contributes to valuable environmental data collection, which can be used for scientific research, monitoring light pollution, and understanding its impact on ecosystems and human health.{% endblocktrans %}
                             </p>
                         </div>
                     </div>
@@ -454,8 +474,8 @@
                             <div class="feature-icon">
                                 <i class="fas fa-globe-americas"></i>
                             </div>
-                            <h3>Georeference Images</h3>
-                            <p>Help align ISS night images with precise geographic coordinates</p>
+                            <h3>{% trans "Georeference Images" %}</h3>
+                            <p>{% trans "Help align ISS night images with precise geographic coordinates" %}</p>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -463,8 +483,8 @@
                             <div class="feature-icon">
                                 <i class="fas fa-map-marked-alt"></i>
                             </div>
-                            <h3>Map Light Pollution</h3>
-                            <p>Contribute to a global database of nighttime light patterns</p>
+                            <h3>{% trans "Map Light Pollution" %}</h3>
+                            <p>{% trans "Contribute to a global database of nighttime light patterns" %}</p>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -472,23 +492,26 @@
                             <div class="feature-icon">
                                 <i class="fas fa-microscope"></i>
                             </div>
-                            <h3>Support Research</h3>
-                            <p>Enable scientific studies on light pollution's environmental impact</p>
+                            <h3>{% trans "Support Research" %}</h3>
+                            <p>{% trans "Enable scientific studies on light pollution's environmental impact" %}</p>
                         </div>
                     </div>
                 </div>
                 
                 <div class="row cta-row">
                     <div class="col-12 text-center">
-                        <a href="/gettask" class="btn btn-lg action-button">Start Contributing</a>
+                        <a href="/gettask" class="btn btn-lg action-button">{% trans "Start Contributing" %}</a>
+                        <a href="https://youtu.be/kY5j1wxKZYc" target="_blank" rel="noopener" class="btn btn-lg action-button-secondary ms-2">
+                            <i class="fa-brands fa-youtube me-1"></i> {% trans "Watch the video tutorial" %}
+                        </a>
                     </div>
                 </div>
                 
                 <!-- Batch Section - Con ID para navegación -->
                 <div id="batch-section" class="row batch-section">
                     <div class="col-12 text-center mb-4">
-                        <h2 class="section-title">Available Batches</h2>
-                        <p class="text-center mb-5">Select a specific batch of images to work with</p>
+                        <h2 class="section-title">{% trans "Available Batches" %}</h2>
+                        <p class="text-center mb-5">{% trans "Select a specific batch of images to work with" %}</p>
                     </div>
                     
                     {% for batch in batchs %}
@@ -497,15 +520,15 @@
                             <div class="position-relative">
                                 <img src="{{ batch.get_example_image }}" class="card-img-top" alt="{{ batch.name }}">
                                 <div class="card-img-overlay d-flex align-items-center justify-content-center">
-                                    <div class="text-center text-participate">Participate</div>
+                                    <div class="text-center text-participate">{% trans "Participate" %}</div>
                                 </div>
                             </div>
                             <div class="card-footer">
                                 <div class="row">
                                     <div class="col-9">
-                                        Name: <b>{{ batch.name }}</b> <br/>
-                                        Images: <b>{{ batch.get_number_images }}</b><br />
-                                        Tasks: <b>{{ batch.get_number_geoattempts }}</b> <br/>
+                                        {% trans "Name:" %} <b>{{ batch.name }}</b> <br/>
+                                        {% trans "Images:" %} <b>{{ batch.get_number_images }}</b><br />
+                                        {% trans "Tasks:" %} <b>{{ batch.get_number_geoattempts }}</b> <br/>
                                     </div>
                                     <div class="col-3">
                                         <div class="progress-circle" style="background: conic-gradient(#999 {{ batch.get_percentage_remaining }}%, #fef7ff 0);">
@@ -522,8 +545,8 @@
                 <!-- Project Statistics Section -->
                 <div id="statistics-section" class="row batch-section">
                     <div class="col-12 text-center mb-4">
-                        <h2 class="section-title">Project Statistics</h2>
-                        <p class="text-center mb-5">Global impact of our community's contributions</p>
+                        <h2 class="section-title">{% trans "Project Statistics" %}</h2>
+                        <p class="text-center mb-5">{% trans "Global impact of our community's contributions" %}</p>
                     </div>
                     
                     <div class="row justify-content-center">
@@ -535,71 +558,71 @@
                                     <div class="info-card stats-card h-100 d-flex flex-column align-items-center justify-content-center py-4">
                                         <i class="fas fa-users fa-3x"></i>
                                         <h4>{{ total_users }}</h4>
-                                        <p class="text-center">Total Users</p>
+                                        <p class="text-center">{% trans "Total Users" %}</p>
                                     </div>
                                 </div>
-                                
+
                                 <!-- Total Images -->
                                 <div class="col-md-3 mb-4">
                                     <div class="info-card stats-card h-100 d-flex flex-column align-items-center justify-content-center py-4">
                                         <i class="fas fa-images fa-3x"></i>
                                         <h4>{{ total_images }}</h4>
-                                        <p class="text-center">Total Images</p>
+                                        <p class="text-center">{% trans "Total Images" %}</p>
                                     </div>
                                 </div>
-                                
+
                                 <!-- Images with Georeference -->
                                 <div class="col-md-3 mb-4">
                                     <div class="info-card stats-card h-100 d-flex flex-column align-items-center justify-content-center py-4">
                                         <i class="fas fa-map-marked fa-3x"></i>
                                         <h4>{{ images_with_georeference }}</h4>
-                                        <p class="text-center">Images with Georeference</p>
+                                        <p class="text-center">{% trans "Images with Georeference" %}</p>
                                     </div>
                                 </div>
-                                
+
                                 <!-- Total Tasks -->
                                 <div class="col-md-3 mb-4">
                                     <div class="info-card stats-card h-100 d-flex flex-column align-items-center justify-content-center py-4">
                                         <i class="fas fa-tasks fa-3x"></i>
                                         <h4>{{ total_tasks }}</h4>
-                                        <p class="text-center">Total Tasks</p>
+                                        <p class="text-center">{% trans "Total Tasks" %}</p>
                                     </div>
                                 </div>
-                                
+
                                 <!-- Segunda fila - 4 columnas -->
                                 <!-- Completed Tasks -->
                                 <div class="col-md-3 mb-4">
                                     <div class="info-card stats-card h-100 d-flex flex-column align-items-center justify-content-center py-4">
                                         <i class="fas fa-check-circle fa-3x"></i>
                                         <h4>{{ completed_tasks }}</h4>
-                                        <p class="text-center">Completed Tasks</p>
+                                        <p class="text-center">{% trans "Completed Tasks" %}</p>
                                     </div>
                                 </div>
-                                
+
                                 <!-- Average Tasks per User -->
                                 <div class="col-md-3 mb-4">
                                     <div class="info-card stats-card h-100 d-flex flex-column align-items-center justify-content-center py-4">
                                         <i class="fas fa-user-clock fa-3x"></i>
                                         <h4>{{ avg_tasks_per_user }}</h4>
-                                        <p class="text-center">Average Tasks per User</p>
+                                        <p class="text-center">{% trans "Average Tasks per User" %}</p>
                                     </div>
                                 </div>
-                                
+
                                 <!-- Control Points -->
                                 <div class="col-md-3 mb-4">
                                     <div class="info-card stats-card h-100 d-flex flex-column align-items-center justify-content-center py-4">
                                         <i class="fas fa-map-pin fa-3x"></i>
                                         <h4>{{ total_control_points }}</h4>
-                                        <p class="text-center">Total Control Points</p>
+                                        <p class="text-center">{% trans "Total Control Points" %}</p>
                                     </div>
                                 </div>
-                                
+
                                 <!-- Total Minutes -->
                                 <div class="col-md-3 mb-4">
                                     <div class="info-card stats-card h-100 d-flex flex-column align-items-center justify-content-center py-4">
                                         <i class="fas fa-clock fa-3x"></i>
                                         <h4>{{ total_minutes }}</h4>
-                                        <p class="text-center">Total Minutes</p>
+                                        <p class="text-center">{% trans "Total Minutes" %}</p>
                                     </div>
                                 </div>
                             </div>
@@ -610,8 +633,8 @@
                 <!-- Contact Section - Integrado desde la página de contacto -->
                 <div id="contact-section" class="row contact-section">
                     <div class="col-12 text-center mb-4">
-                        <h2 class="section-title">Contact Us</h2>
-                        <p class="text-center mb-5">Have questions about Lost at Night? We'd love to hear from you!</p>
+                        <h2 class="section-title">{% trans "Contact Us" %}</h2>
+                        <p class="text-center mb-5">{% trans "Have questions about Lost at Night? We'd love to hear from you!" %}</p>
                     </div>
                     
                     <div class="row justify-content-center">
@@ -620,29 +643,29 @@
                                 <form action="#" method="post" class="contact-form">
                                     {% csrf_token %}
                                     <div class="mb-3">
-                                        <label for="name" class="form-label">Your Name</label>
+                                        <label for="name" class="form-label">{% trans "Your Name" %}</label>
                                         <input type="text" class="form-control" id="name" name="name" required>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="email" class="form-label">Email Address</label>
+                                        <label for="email" class="form-label">{% trans "Email Address" %}</label>
                                         <input type="email" class="form-control" id="email" name="email" required>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="subject" class="form-label">Subject</label>
+                                        <label for="subject" class="form-label">{% trans "Subject" %}</label>
                                         <input type="text" class="form-control" id="subject" name="subject" required>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="message" class="form-label">Message</label>
+                                        <label for="message" class="form-label">{% trans "Message" %}</label>
                                         <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
                                     </div>
-                                    <button type="submit" class="btn btn-primary">Send Message</button>
+                                    <button type="submit" class="btn btn-primary">{% trans "Send Message" %}</button>
                                 </form>
                             </div>
                         </div>
                         
                         <div class="col-md-4 mt-4 mt-md-0">
                             <div class="contact-info">
-                                <h4><i class="fas fa-users me-2"></i>Our Social Media</h4>
+                                <h4><i class="fas fa-users me-2"></i>{% trans "Our Social Media" %}</h4>
                                 
                                 <!-- Social Media Links in Two Columns -->
                                 <div class="row">
@@ -688,7 +711,7 @@
                                 <!-- Development credit -->
                                 <div class="text-center text-md-start mt-4">
                                     <a href="https://github.com/Ibercivis/gdalface" target="_blank" class="text-white text-decoration-none">
-                                        Developed by <b>Ibercivis</b>
+                                        {% blocktrans %}Developed by <b>Ibercivis</b>{% endblocktrans %}
                                         <i class="fa-brands fa-github fa-lg ms-2"></i>
                                     </a>
                                 </div>

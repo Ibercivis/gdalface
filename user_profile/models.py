@@ -5,6 +5,7 @@ Models for the user_profile app.
 from django.db import models
 from django.contrib.auth import get_user_model
 from django_countries.fields import CountryField
+from django.utils.translation import gettext_lazy as _
 
 # Create your models here.
 
@@ -41,9 +42,9 @@ class UserProfile(models.Model):
     time_spent = models.PositiveBigIntegerField(default=0)
     cheating = models.IntegerField(default=0)
     controlPointsDone = models.PositiveBigIntegerField(default=0)
-    country = CountryField(blank=True, null=True, verbose_name="Country")
-    location = models.CharField(max_length=100, blank=True, verbose_name="City")
-    visible = models.BooleanField(default=True, verbose_name="Visible in rankings", help_text="If disabled, your profile will not appear in public rankings")
+    country = CountryField(blank=True, null=True, verbose_name=_("Country"))
+    location = models.CharField(max_length=100, blank=True, verbose_name=_("City"))
+    visible = models.BooleanField(default=True, verbose_name=_("Visible in rankings"), help_text=_("If disabled, your profile will not appear in public rankings"))
 
     def __str__(self):
         return str(self.user.email) # pylint: disable=no-member

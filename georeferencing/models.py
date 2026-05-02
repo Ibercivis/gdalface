@@ -2,13 +2,14 @@ from django.db import models
 import hashlib
 import uuid
 from django.contrib.auth import get_user_model
+from django.utils.translation import gettext_lazy as _
     
 class GeoAttempt(models.Model):
 
     STATUS_CHOICES = (
-        ('PENDING', 'Pending'),
-        ('ASSIGNED', 'Assigned'),
-        ('DONE', 'Done'),
+        ('PENDING', _('Pending')),
+        ('ASSIGNED', _('Assigned')),
+        ('DONE', _('Done')),
     )
 
  
@@ -47,7 +48,20 @@ class GeoAttempt(models.Model):
 
     
 class Image(models.Model):
+
+    IMAGE_STATUS_CHOICES = (
+        ('PENDING',              _('Pending download')),
+        ('DOWNLOADED',           _('Downloaded')),
+        ('FAILED_DOWNLOADED',    _('Failed download')),
+        ('DOWNLOADED_GENERATED', _('Downloaded & Generated')),
+    )
+
     name = models.CharField(max_length=100)
+    status = models.CharField(
+        max_length=30,
+        choices=IMAGE_STATUS_CHOICES,
+        default='PENDING',
+    )
     taken = models.DateTimeField(blank=True, null=True)
     createdDateTime = models.DateTimeField(auto_now_add=True, blank = True, null = True)
     camera = models.CharField(max_length=100, blank = True, null = True)
@@ -75,15 +89,15 @@ class Image(models.Model):
 
 class Batch(models.Model):
     BATCH_CHOICES = (
-        ('SEARCH', 'Search'),
-        ('LIST', 'List'),
+        ('SEARCH', _('Search')),
+        ('LIST', _('List')),
     )
 
     PROCESSING_STATUS_CHOICES = (
-        ('NOT_STARTED', 'Not Started'),
-        ('PROCESSING', 'Processing'),
-        ('COMPLETED', 'Completed'),
-        ('FAILED', 'Failed'),
+        ('NOT_STARTED', _('Not Started')),
+        ('PROCESSING', _('Processing')),
+        ('COMPLETED', _('Completed')),
+        ('FAILED', _('Failed')),
     )
 
     name = models.CharField(max_length=100)
@@ -95,9 +109,9 @@ class Batch(models.Model):
     # Search fields
     feat = models.CharField(max_length=100, blank = True, null = True)
     mission = models.CharField(max_length=100, blank = True, null = True)
-    fcltle = models.IntegerField(blank = True, null = True, verbose_name="Focal length <=")
-    fcltge = models.IntegerField(blank = True, null = True, verbose_name="Focal length >=")
-    originalImages = models.TextField(blank = True, null = True, verbose_name="Original images")
+    fcltle = models.IntegerField(blank = True, null = True, verbose_name=_("Focal length <="))
+    fcltge = models.IntegerField(blank = True, null = True, verbose_name=_("Focal length >="))
+    originalImages = models.TextField(blank = True, null = True, verbose_name=_("Original images"))
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     result = models.JSONField(default=dict, blank=True, null=True)
     numberImages = models.IntegerField(default=0)
@@ -108,10 +122,12 @@ class Batch(models.Model):
         max_length=20,
         choices = PROCESSING_STATUS_CHOICES,
         default = 'NOT_STARTED',
-        verbose_name="Processing Status"
+        verbose_name=_("Processing Status")
     )
     processing_start_time = models.DateTimeField(blank=True, null=True)
     processing_end_time = models.DateTimeField(blank=True, null=True)
+    total_images_in_queue = models.IntegerField(default=0)
+    processed_images_in_queue = models.IntegerField(default=0)
     
     def __str__(self):
         return str(self.name)
@@ -131,10 +147,42 @@ class Batch(models.Model):
         geoattemps_done = GeoAttempt.objects.filter(image__batch=self, status='DONE').count()
         return round(geoattemps_done / geoattemps_created * 100) if geoattemps_created > 0 else 0
     
+class Expedition(models.Model):
+    number = models.IntegerField(unique=True)
+    crew = models.JSONField(default=list)  # list of astronaut name strings
+
+    def __str__(self):
+        return f"Expedition {self.number}"
+
+
 class GeoAttemptsByUserByDay(models.Model):
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     date = models.DateField()
     numberGeoAttempts = models.IntegerField(default=0)
-        
+
     def __str__(self):
         return str(self.user) +  " - " + str(self.date) + " - " + str(self.numberGeoAttempts)
+
+
+class TutorialEvent(models.Model):
+    EVENT_CHOICES = (
+        ('started', _('Started')),
+        ('step', _('Step')),
+        ('completed', _('Completed')),
+        ('dismissed', _('Dismissed')),
+    )
+
+    user = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, blank=True, null=True)
+    session_key = models.CharField(max_length=40, blank=True)
+    event = models.CharField(max_length=20, choices=EVENT_CHOICES)
+    step = models.PositiveSmallIntegerField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['event', 'created_at']),
+        ]
+
+    def __str__(self):
+        who = self.user.username if self.user else f"anon:{self.session_key[:8]}"
+        return f"{who} - {self.event}{f' #{self.step}' if self.step is not None else ''} - {self.created_at:%Y-%m-%d %H:%M}"

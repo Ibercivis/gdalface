@@ -1,5 +1,6 @@
 {% load static %}
 {% load bootstrap5 %}
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -34,14 +35,14 @@
                     <div class="position-relative">
                         <img src="{{ batch.get_example_image }}" class="card-img-top" alt="...">
                         <div class="card-img-overlay d-flex align-items-center justify-content-center">
-                            <div class="text-center text-participate">Participate</div>
+                            <div class="text-center text-participate">{% trans "Participate" %}</div>
                         </div>
                     </div>
                     <div class="card-footer">
                         <div class="row">
                             <div class="col-9">
-                                Name: <b>{{ batch.name }}</b> <br/>
-                                Images: <b>{{ batch.get_number_images }}</b>
+                                {% trans "Name:" %} <b>{{ batch.name }}</b> <br/>
+                                {% trans "Images:" %} <b>{{ batch.get_number_images }}</b>
                             </div>
                             <div class="col-3">
                                 <div class="progress-circle" style="background: conic-gradient(#000 {{ batch.get_percentage_remaining }}%, #fef7ff 0);">

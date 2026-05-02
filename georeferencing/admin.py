@@ -13,7 +13,7 @@ from django.http import JsonResponse
 from django.urls import path, reverse
 
 from .forms import PrettyJSONWidget
-from .models import Batch, Image, GeoAttempt, GeoAttemptsByUserByDay
+from .models import Batch, Image, GeoAttempt, GeoAttemptsByUserByDay, TutorialEvent
 from .tasks import download_image, generate_from_list
 
 
@@ -55,7 +55,20 @@ class BatchAdmin(admin.ModelAdmin):
     list_filter = ('createdDateTime',)
     search_fields = ('name',)
     exclude = ('user',)
-    readonly_fields = ('createdDateTime', 'processing_start_time', 'processing_end_time', 'processing_status', 'numberImages')
+    readonly_fields = ('createdDateTime', 'processing_start_time', 'processing_end_time', 'processing_status', 'numberImages', 'total_images_in_queue', 'processed_images_in_queue', 'batch_log')
+    exclude = ('user', 'log')
+
+    def batch_log(self, obj):
+        from django.utils.html import format_html
+        return format_html(
+            '<pre id="batch-log-content" style="'
+            'background:#1e1e1e;color:#d4d4d4;padding:12px;border-radius:4px;'
+            'max-height:400px;overflow-y:auto;white-space:pre-wrap;font-size:12px;">'
+            '{}</pre>',
+            obj.log or ''
+        )
+    batch_log.short_description = 'Log'
+
     # Add a custom URL for fetching data
     def get_urls(self):
         """
@@ -69,8 +82,18 @@ class BatchAdmin(admin.ModelAdmin):
             path('fetch-api-data/',
                  self.admin_site.admin_view(self.fetch_api_data),
                  name='fetch_api_data'),
+            path('<int:batch_id>/log-json/',
+                 self.admin_site.admin_view(self.log_json),
+                 name='batch_log_json'),
         ]
         return custom_urls + urls
+
+    def log_json(self, request, batch_id):
+        try:
+            batch = Batch.objects.get(pk=batch_id)
+            return JsonResponse({'log': batch.log or '', 'status': batch.processing_status})
+        except Batch.DoesNotExist:
+            return JsonResponse({'error': 'not found'}, status=404)
 
     # Custom view to fetch data from an external API
     def fetch_api_data(self, request):
@@ -211,9 +234,10 @@ class ImageAdmin(admin.ModelAdmin):
     ImageAdmin is a Django ModelAdmin class for managing Image model instances 
     in the admin interface.
     """
-    list_display = ('name', 'batch', 'createdDateTime', 'geoattempts_count')
-    list_filter = ('createdDateTime', 'batch')
+    list_display = ('name', 'batch', 'status', 'createdDateTime', 'geoattempts_count')
+    list_filter = ('status', 'createdDateTime', 'batch')
     search_fields = ('name',)
+    readonly_fields = ('status',)
 
     def geoattempts_count(self, obj):
         """
@@ -271,9 +295,47 @@ class GeoAttemptAdmin(admin.ModelAdmin):
         self.message_user(request, f'{update} attempts marked as pending')
 
 
+class TutorialEventAdmin(admin.ModelAdmin):
+    list_display = ('event', 'step', 'user', 'session_key_short', 'created_at')
+    list_filter = ('event', 'created_at')
+    search_fields = ('user__username', 'session_key')
+    readonly_fields = ('user', 'session_key', 'event', 'step', 'created_at')
+    date_hierarchy = 'created_at'
+    change_list_template = 'admin/georeferencing/tutorialevent/change_list.html'
+
+    def session_key_short(self, obj):
+        return obj.session_key[:8] if obj.session_key else ''
+    session_key_short.short_description = 'Session'
+
+    def changelist_view(self, request, extra_context=None):
+        from django.db.models import Count, Q
+        qs = TutorialEvent.objects.all()
+        started = qs.filter(event='started').count()
+        completed = qs.filter(event='completed').count()
+        dismissed = qs.filter(event='dismissed').count()
+        rate = round(completed / started * 100, 1) if started else 0.0
+        per_step = list(
+            qs.filter(event='step').values('step').annotate(n=Count('id')).order_by('step')
+        )
+        auth_started = qs.filter(event='started', user__isnull=False).count()
+        anon_started = started - auth_started
+        extra_context = extra_context or {}
+        extra_context['tutorial_summary'] = {
+            'started': started,
+            'completed': completed,
+            'dismissed': dismissed,
+            'completion_rate': rate,
+            'per_step': per_step,
+            'auth_started': auth_started,
+            'anon_started': anon_started,
+        }
+        return super().changelist_view(request, extra_context=extra_context)
+
+
 admin.site.register(Batch, BatchAdmin)
 admin.site.register(Image, ImageAdmin)
 admin.site.register(GeoAttempt, GeoAttemptAdmin)
 admin.site.register(GeoAttemptsByUserByDay)
+admin.site.register(TutorialEvent, TutorialEventAdmin)
 
 # Register your models here.

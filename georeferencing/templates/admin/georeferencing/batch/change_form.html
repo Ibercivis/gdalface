@@ -111,6 +111,37 @@
 
         toogleType();
         typeField.on('change', toogleType);
+
+        // Auto-refresh log
+        {% if original %}
+        const batchId = {{ original.pk }};
+        const logEl = document.getElementById('batch-log-content');
+
+        function scrollLogToBottom() {
+            if (logEl) logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        function fetchLog() {
+            fetch(`/admin/georeferencing/batch/${batchId}/log-json/`)
+                .then(r => r.json())
+                .then(data => {
+                    if (logEl) {
+                        logEl.textContent = data.log || '';
+                        scrollLogToBottom();
+                    }
+                    if (data.status === 'PROCESSING') {
+                        setTimeout(fetchLog, 3000);
+                    }
+                })
+                .catch(() => setTimeout(fetchLog, 5000));
+        }
+
+        {% if original.processing_status == 'PROCESSING' %}
+        fetchLog();
+        {% else %}
+        scrollLogToBottom();
+        {% endif %}
+        {% endif %}
     });
 </script>
 {% endblock %}

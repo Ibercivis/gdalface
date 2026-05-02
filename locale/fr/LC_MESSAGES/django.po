@@ -1,0 +1,793 @@
+# Lost at Night - French translations.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Lost at Night team, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-24 16:06+0000\n"
+"PO-Revision-Date: 2026-03-24 15:44+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: French <fr@li.org>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: frontend/templates/_footer.html:10
+msgid ""
+"This application is designed to help georeference images taken by astronauts "
+"aboard the International Space Station (ISS)."
+msgstr ""
+"Cette application est conçue pour aider à géoréférencer des images prises "
+"par des astronautes à bord de la Station spatiale internationale (ISS)."
+
+#: frontend/templates/_footer.html:17
+msgid ""
+"Funded by the European Union under the Horizon Europe Programme, Grant "
+"Agreement No. 101135308 (PLAN-B). Research and Innovation Action | HORIZON-"
+"CL6-2023-BIODIV-01."
+msgstr ""
+"Financé par l'Union européenne dans le cadre du programme Horizon Europe, "
+"accord de subvention n° 101135308 (PLAN-B). Action de recherche et "
+"d'innovation | HORIZON-CL6-2023-BIODIV-01."
+
+#: frontend/templates/_footer.html:24
+msgid "Quick Links"
+msgstr "Liens rapides"
+
+#: frontend/templates/_footer.html:26 frontend/templates/_topbar.html:102
+msgid "Home"
+msgstr "Accueil"
+
+#: frontend/templates/_footer.html:27 frontend/templates/_topbar.html:103
+msgid "Batches"
+msgstr "Lots"
+
+#: frontend/templates/_footer.html:28 frontend/templates/_topbar.html:105
+#: frontend/templates/batchs.html:38 frontend/templates/index.html:496
+msgid "Participate"
+msgstr "Participer"
+
+#: frontend/templates/_footer.html:29 frontend/templates/_footer.html:35
+#: frontend/templates/_topbar.html:106
+msgid "Contact"
+msgstr "Contact"
+
+#: frontend/templates/_footer.html:81 frontend/templates/gettask.html:221
+#: frontend/templates/index.html:687
+msgid "Developed by <b>Ibercivis</b>"
+msgstr "Développé par <b>Ibercivis</b>"
+
+#: frontend/templates/_footer.html:91
+msgid "© 2025 Lost at Night. All rights reserved."
+msgstr "© 2025 Lost at Night. Tous droits réservés."
+
+#: frontend/templates/_topbar.html:95
+msgid "Toggle navigation"
+msgstr "Basculer la navigation"
+
+#: frontend/templates/_topbar.html:104
+msgid "Statistics"
+msgstr "Statistiques"
+
+#: frontend/templates/_topbar.html:109
+msgid "Your personal area"
+msgstr "Votre espace personnel"
+
+#: frontend/templates/_topbar.html:111
+msgid "Profile picture"
+msgstr "Photo de profil"
+
+#: frontend/templates/_topbar.html:121
+msgid "Login"
+msgstr "Connexion"
+
+#: frontend/templates/batchs.html:44 frontend/templates/index.html:502
+msgid "Name:"
+msgstr "Nom :"
+
+#: frontend/templates/batchs.html:45 frontend/templates/index.html:503
+msgid "Images:"
+msgstr "Images :"
+
+#: frontend/templates/contact.html:35 frontend/templates/index.html:609
+msgid "Contact Us"
+msgstr "Contactez-nous"
+
+#: frontend/templates/contact.html:36 frontend/templates/index.html:610
+msgid "Have questions about Lost at Night? We'd love to hear from you!"
+msgstr ""
+"Vous avez des questions sur Lost at Night ? Nous serions ravis de vous "
+"entendre !"
+
+#: frontend/templates/contact.html:47 frontend/templates/index.html:619
+msgid "Your Name"
+msgstr "Votre nom"
+
+#: frontend/templates/contact.html:51 frontend/templates/index.html:623
+msgid "Email Address"
+msgstr "Adresse e-mail"
+
+#: frontend/templates/contact.html:55 frontend/templates/index.html:627
+msgid "Subject"
+msgstr "Objet"
+
+#: frontend/templates/contact.html:59 frontend/templates/index.html:631
+msgid "Message"
+msgstr "Message"
+
+#: frontend/templates/contact.html:62 frontend/templates/index.html:634
+msgid "Send Message"
+msgstr "Envoyer le message"
+
+#: frontend/templates/contact.html:70
+msgid "Find Us"
+msgstr "Nous trouver"
+
+#: frontend/templates/contact.html:71
+msgid "Cities at Night Project"
+msgstr "Projet Cities at Night"
+
+#: frontend/templates/contact.html:71
+msgid "International Space Station Imagery Analysis"
+msgstr "Analyse des images de la Station spatiale internationale"
+
+#: frontend/templates/contact.html:73
+msgid "Email Us"
+msgstr "Écrivez-nous"
+
+#: frontend/templates/contact.html:76
+msgid "Social Media"
+msgstr "Réseaux sociaux"
+
+#: frontend/templates/gettask.html:42
+msgid "New Task"
+msgstr "Nouvelle tâche"
+
+#: frontend/templates/gettask.html:49
+msgid "Photo info"
+msgstr "Infos photo"
+
+#: frontend/templates/gettask.html:50
+msgid "Image:"
+msgstr "Image :"
+
+#: frontend/templates/gettask.html:51
+msgid "Date:"
+msgstr "Date :"
+
+#: frontend/templates/gettask.html:52
+msgid "Focal length:"
+msgstr "Longueur focale :"
+
+#: frontend/templates/gettask.html:53
+msgid "Location:"
+msgstr "Emplacement :"
+
+#: frontend/templates/gettask.html:53
+msgid "looking up…"
+msgstr "recherche en cours…"
+
+#: frontend/templates/gettask.html:54
+msgid "Nadir point:"
+msgstr "Point nadir :"
+
+#: frontend/templates/gettask.html:55
+msgid "Photo center:"
+msgstr "Centre de photo :"
+
+#: frontend/templates/gettask.html:56
+msgid "Photo center (ML):"
+msgstr "Centre de photo (ML) :"
+
+#: frontend/templates/gettask.html:60
+msgid "ISS Expedition"
+msgstr "Expédition ISS"
+
+#: frontend/templates/gettask.html:60
+msgid "crew"
+msgstr "équipage"
+
+#: frontend/templates/gettask.html:67
+msgid "Your stats"
+msgstr "Vos statistiques"
+
+#: frontend/templates/gettask.html:73
+msgid "Total"
+msgstr "Total"
+
+#: frontend/templates/gettask.html:74
+msgid "Rank"
+msgstr "Rang"
+
+#: frontend/templates/gettask.html:75
+msgid "To next"
+msgstr "Au suivant"
+
+#: frontend/templates/gettask.html:76
+msgid "To #1"
+msgstr "Au n° 1"
+
+#: frontend/templates/gettask.html:81 user_profile/templates/user.html:535
+msgid "Tasks"
+msgstr "Tâches"
+
+#: frontend/templates/gettask.html:88
+msgid "Control pts"
+msgstr "Points de contrôle"
+
+#: frontend/templates/gettask.html:95
+msgid "Hours"
+msgstr "Heures"
+
+#: frontend/templates/gettask.html:109
+#, python-format
+msgid ""
+"You're participating anonymously — <a href=\"%(url)s\">create an account</a> "
+"to save your progress and appear on the leaderboard!"
+msgstr ""
+"Vous participez anonymement — <a href=\"%(url)s\">créez un compte</a> pour "
+"sauvegarder votre progression et apparaître dans le classement !"
+
+#: frontend/templates/gettask.html:114
+msgid "Let's go!"
+msgstr "C'est parti !"
+
+#: frontend/templates/gettask.html:125
+#, fuzzy
+#| msgid "Georeference Images"
+msgid "Georeferencing!"
+msgstr "Géoréférencer des images"
+
+#: frontend/templates/gettask.html:142
+msgid "Brightness"
+msgstr "Luminosité"
+
+#: frontend/templates/gettask.html:147
+msgid "Contrast"
+msgstr "Contraste"
+
+#: frontend/templates/gettask.html:152
+msgid "Gamma"
+msgstr "Gamma"
+
+#: frontend/templates/gettask.html:157
+msgid "Saturation"
+msgstr "Saturation"
+
+#: frontend/templates/gettask.html:162
+msgid "Reset"
+msgstr "Réinitialiser"
+
+#: frontend/templates/gettask.html:175
+msgid "Help"
+msgstr "Aide"
+
+#: frontend/templates/gettask.html:181
+msgid "Go to your profile"
+msgstr "Aller à votre profil"
+
+#: frontend/templates/gettask.html:189
+msgid "You are participating as anonymous"
+msgstr "Vous participez en tant qu'anonyme"
+
+#: frontend/templates/gettask.html:201
+#, fuzzy
+#| msgid "Batches"
+msgid "Batch:"
+msgstr "Lots"
+
+#: frontend/templates/gettask.html:213
+msgid "Try"
+msgstr "Essayer"
+
+#: frontend/templates/gettask.html:214
+msgid "Submit"
+msgstr "Soumettre"
+
+#: frontend/templates/gettask.html:215
+msgid "Skip"
+msgstr "Passer"
+
+#: frontend/templates/index.html:419
+msgid "WELCOME BACK"
+msgstr "CONTENT DE VOUS REVOIR"
+
+#: frontend/templates/index.html:419
+msgid "TO"
+msgstr "À"
+
+#: frontend/templates/index.html:419
+msgid "LOST AT NIGHT"
+msgstr "LOST AT NIGHT"
+
+#: frontend/templates/index.html:419
+msgid "WELCOME TO"
+msgstr "BIENVENUE SUR"
+
+#: frontend/templates/index.html:421
+msgid "Help map Earth's lights from space and combat light pollution"
+msgstr ""
+"Aidez à cartographier les lumières de la Terre depuis l'espace et à lutter "
+"contre la pollution lumineuse"
+
+#: frontend/templates/index.html:424
+msgid "Participate Now"
+msgstr "Participer maintenant"
+
+#: frontend/templates/index.html:425
+msgid "Select Batches"
+msgstr "Sélectionner des lots"
+
+#: frontend/templates/index.html:438
+msgid "Our Mission"
+msgstr "Notre mission"
+
+#: frontend/templates/index.html:440
+msgid ""
+"This application is designed to help georeference images taken by astronauts "
+"aboard the International Space Station (ISS). The goal is to create a global "
+"map of Earth's lights at night to measure and track light pollution. By "
+"accurately aligning images with geographical coordinates, the app "
+"contributes to valuable environmental data collection, which can be used for "
+"scientific research, monitoring light pollution, and understanding its "
+"impact on ecosystems and human health."
+msgstr ""
+"Cette application est conçue pour aider à géoréférencer des images prises "
+"par des astronautes à bord de la Station spatiale internationale (ISS). "
+"L'objectif est de créer une carte mondiale des lumières de la Terre la nuit "
+"afin de mesurer et de suivre la pollution lumineuse. En alignant précisément "
+"les images avec des coordonnées géographiques, l'application contribue à la "
+"collecte de données environnementales précieuses, qui peuvent être utilisées "
+"pour la recherche scientifique, la surveillance de la pollution lumineuse et "
+"la compréhension de son impact sur les écosystèmes et la santé humaine."
+
+#: frontend/templates/index.html:453
+msgid "Georeference Images"
+msgstr "Géoréférencer des images"
+
+#: frontend/templates/index.html:454
+msgid "Help align ISS night images with precise geographic coordinates"
+msgstr ""
+"Aidez à aligner les images nocturnes de l'ISS avec des coordonnées "
+"géographiques précises"
+
+#: frontend/templates/index.html:462
+msgid "Map Light Pollution"
+msgstr "Cartographier la pollution lumineuse"
+
+#: frontend/templates/index.html:463
+msgid "Contribute to a global database of nighttime light patterns"
+msgstr ""
+"Contribuez à une base de données mondiale des schémas de lumière nocturne"
+
+#: frontend/templates/index.html:471
+msgid "Support Research"
+msgstr "Soutenir la recherche"
+
+#: frontend/templates/index.html:472
+msgid "Enable scientific studies on light pollution's environmental impact"
+msgstr ""
+"Permettez des études scientifiques sur l'impact environnemental de la "
+"pollution lumineuse"
+
+#: frontend/templates/index.html:479
+msgid "Start Contributing"
+msgstr "Commencer à contribuer"
+
+#: frontend/templates/index.html:486
+msgid "Available Batches"
+msgstr "Lots disponibles"
+
+#: frontend/templates/index.html:487
+msgid "Select a specific batch of images to work with"
+msgstr "Sélectionnez un lot d'images spécifique avec lequel travailler"
+
+#: frontend/templates/index.html:504
+msgid "Tasks:"
+msgstr "Tâches :"
+
+#: frontend/templates/index.html:521
+msgid "Project Statistics"
+msgstr "Statistiques du projet"
+
+#: frontend/templates/index.html:522
+msgid "Global impact of our community's contributions"
+msgstr "Impact mondial des contributions de notre communauté"
+
+#: frontend/templates/index.html:534
+msgid "Total Users"
+msgstr "Utilisateurs totaux"
+
+#: frontend/templates/index.html:543
+msgid "Total Images"
+msgstr "Images totales"
+
+#: frontend/templates/index.html:552
+msgid "Images with Georeference"
+msgstr "Images géoréférencées"
+
+#: frontend/templates/index.html:561
+msgid "Total Tasks"
+msgstr "Tâches totales"
+
+#: frontend/templates/index.html:571 user_profile/templates/user.html:446
+msgid "Completed Tasks"
+msgstr "Tâches terminées"
+
+#: frontend/templates/index.html:580
+msgid "Average Tasks per User"
+msgstr "Tâches moyennes par utilisateur"
+
+#: frontend/templates/index.html:589
+msgid "Total Control Points"
+msgstr "Points de contrôle totaux"
+
+#: frontend/templates/index.html:598
+msgid "Total Minutes"
+msgstr "Minutes totales"
+
+#: frontend/templates/index.html:641
+msgid "Our Social Media"
+msgstr "Nos réseaux sociaux"
+
+#: frontend/views.py:134
+msgid "Your message has been sent successfully!"
+msgstr "Votre message a été envoyé avec succès !"
+
+#: frontend/views.py:137
+#, python-format
+msgid "Could not send the message: %(error)s"
+msgstr "Impossible d'envoyer le message : %(error)s"
+
+#: gdalface/settings.py:159
+msgid "English"
+msgstr "Anglais"
+
+#: gdalface/settings.py:160
+msgid "Spanish"
+msgstr "Espagnol"
+
+#: gdalface/settings.py:161
+msgid "French"
+msgstr "Français"
+
+#: gdalface/settings.py:162
+msgid "German"
+msgstr "Allemand"
+
+#: gdalface/settings.py:163
+msgid "Italian"
+msgstr "Italien"
+
+#: gdalface/settings.py:164
+msgid "Portuguese"
+msgstr "Portugais"
+
+#: gdalface/settings.py:165
+msgid "Japanese"
+msgstr "Japonais"
+
+#: gdalface/settings.py:166
+msgid "Russian"
+msgstr "Russe"
+
+#: gdalface/settings.py:167
+msgid "Chinese"
+msgstr "Chinois"
+
+#: georeferencing/models.py:10
+msgid "Pending"
+msgstr "En attente"
+
+#: georeferencing/models.py:11
+msgid "Assigned"
+msgstr "Assigné"
+
+#: georeferencing/models.py:12
+msgid "Done"
+msgstr "Terminé"
+
+#: georeferencing/models.py:53
+msgid "Pending download"
+msgstr "Téléchargement en attente"
+
+#: georeferencing/models.py:54
+msgid "Downloaded"
+msgstr "Téléchargé"
+
+#: georeferencing/models.py:55
+msgid "Failed download"
+msgstr "Téléchargement échoué"
+
+#: georeferencing/models.py:56
+msgid "Downloaded & Generated"
+msgstr "Téléchargé et généré"
+
+#: georeferencing/models.py:92
+msgid "Search"
+msgstr "Recherche"
+
+#: georeferencing/models.py:93
+msgid "List"
+msgstr "Liste"
+
+#: georeferencing/models.py:97
+msgid "Not Started"
+msgstr "Non démarré"
+
+#: georeferencing/models.py:98
+msgid "Processing"
+msgstr "En traitement"
+
+#: georeferencing/models.py:99
+msgid "Completed"
+msgstr "Terminé"
+
+#: georeferencing/models.py:100
+msgid "Failed"
+msgstr "Échoué"
+
+#: georeferencing/models.py:112
+msgid "Focal length <="
+msgstr "Longueur focale <="
+
+#: georeferencing/models.py:113
+msgid "Focal length >="
+msgstr "Longueur focale >="
+
+#: georeferencing/models.py:114
+msgid "Original images"
+msgstr "Images originales"
+
+#: georeferencing/models.py:125
+msgid "Processing Status"
+msgstr "Statut de traitement"
+
+#: templates/account/login.html:5 templates/account/login.html:9
+msgid "Welcome back!"
+msgstr "Bon retour !"
+
+#: templates/account/login.html:19
+#, python-format
+msgid ""
+"If you have not created an account yet, then please %(link)ssign "
+"up%(end_link)s first."
+msgstr ""
+"Si vous n'avez pas encore créé de compte, veuillez d'abord %(link)svous "
+"inscrire%(end_link)s."
+
+#: templates/account/login.html:31
+msgid "Sign In"
+msgstr "Se connecter"
+
+#: templates/account/login.html:42
+msgid "Sign in with a passkey"
+msgstr "Se connecter avec une clé d'accès"
+
+#: templates/account/login.html:47
+msgid "Mail me a sign-in code"
+msgstr "Envoyez-moi un code de connexion"
+
+#: templates/socialaccount/snippets/login.html:10
+msgid "Or use a third-party"
+msgstr "Ou utiliser un service tiers"
+
+#: templates/socialaccount/snippets/login.html:14
+msgid "Sign in with Google"
+msgstr "Se connecter avec Google"
+
+#: user_profile/models.py:45 user_profile/templates/edit_profile.html:215
+#: user_profile/templates/user.html:534
+msgid "Country"
+msgstr "Pays"
+
+#: user_profile/models.py:46 user_profile/templates/edit_profile.html:210
+msgid "City"
+msgstr "Ville"
+
+#: user_profile/models.py:47
+msgid "Visible in rankings"
+msgstr "Visible dans les classements"
+
+#: user_profile/models.py:47
+msgid "If disabled, your profile will not appear in public rankings"
+msgstr ""
+"Si désactivé, votre profil n'apparaîtra pas dans les classements publics"
+
+#: user_profile/templates/delete_account.html:10
+#: user_profile/templates/delete_account.html:99
+msgid "Delete Account"
+msgstr "Supprimer le compte"
+
+#: user_profile/templates/delete_account.html:104
+msgid "Are you sure you want to delete your account?"
+msgstr "Êtes-vous sûr de vouloir supprimer votre compte ?"
+
+#: user_profile/templates/delete_account.html:107
+msgid ""
+"This action will permanently delete your account and all associated data. "
+"You will not be able to recover this information."
+msgstr ""
+"Cette action supprimera définitivement votre compte et toutes les données "
+"associées. Vous ne pourrez pas récupérer ces informations."
+
+#: user_profile/templates/delete_account.html:115
+#: user_profile/templates/edit_profile.html:242
+msgid "Cancel"
+msgstr "Annuler"
+
+#: user_profile/templates/delete_account.html:118
+msgid "Delete permanently"
+msgstr "Supprimer définitivement"
+
+#: user_profile/templates/edit_profile.html:185
+msgid "Profile Information"
+msgstr "Informations du profil"
+
+#: user_profile/templates/edit_profile.html:200
+msgid "Username:"
+msgstr "Nom d'utilisateur :"
+
+#: user_profile/templates/edit_profile.html:205
+msgid "Email:"
+msgstr "E-mail :"
+
+#: user_profile/templates/edit_profile.html:220
+msgid "Biography"
+msgstr "Biographie"
+
+#: user_profile/templates/edit_profile.html:221
+msgid "Tell us about yourself"
+msgstr "Parlez-nous de vous"
+
+#: user_profile/templates/edit_profile.html:231
+msgid "Profile Picture"
+msgstr "Photo de profil"
+
+#: user_profile/templates/edit_profile.html:232
+msgid "Preview: New image selected"
+msgstr "Aperçu : nouvelle image sélectionnée"
+
+#: user_profile/templates/edit_profile.html:241
+msgid "Save Changes"
+msgstr "Enregistrer les modifications"
+
+#: user_profile/templates/user.html:373
+msgid "Edit profile"
+msgstr "Modifier le profil"
+
+#: user_profile/templates/user.html:377
+msgid "Log out"
+msgstr "Se déconnecter"
+
+#: user_profile/templates/user.html:381
+msgid "Delete account"
+msgstr "Supprimer le compte"
+
+#: user_profile/templates/user.html:399
+msgid "Visible"
+msgstr "Visible"
+
+#: user_profile/templates/user.html:402
+msgid "Invisible"
+msgstr "Invisible"
+
+#: user_profile/templates/user.html:428
+msgid "My Visited Places"
+msgstr "Mes lieux visités"
+
+#: user_profile/templates/user.html:439
+msgid "Your Personal Statistics"
+msgstr "Vos statistiques personnelles"
+
+#: user_profile/templates/user.html:452 user_profile/templates/user.html:536
+msgid "Control Points"
+msgstr "Points de contrôle"
+
+#: user_profile/templates/user.html:458
+msgid "Time Invested"
+msgstr "Temps investi"
+
+#: user_profile/templates/user.html:465
+msgid "Your Position in Tasks"
+msgstr "Votre position dans les tâches"
+
+#: user_profile/templates/user.html:471
+msgid "Your Position in Control Points"
+msgstr "Votre position dans les points de contrôle"
+
+#: user_profile/templates/user.html:477
+msgid "Your Position in Time"
+msgstr "Votre position dans le temps"
+
+#: user_profile/templates/user.html:484
+#, python-format
+msgid "Your %% Contribution in Tasks"
+msgstr "Votre %% de contribution aux tâches"
+
+#: user_profile/templates/user.html:490
+#, python-format
+msgid "Your %% Contribution in Control Points"
+msgstr "Votre %% de contribution aux points de contrôle"
+
+#: user_profile/templates/user.html:496
+#, python-format
+msgid "Your %% Contribution in Time"
+msgstr "Votre %% de contribution au temps"
+
+#: user_profile/templates/user.html:503
+#, python-format
+msgid "Your Daily Contributions (%(start)s - %(end)s)"
+msgstr "Vos contributions quotidiennes (%(start)s - %(end)s)"
+
+#: user_profile/templates/user.html:510
+msgid "Less"
+msgstr "Moins"
+
+#: user_profile/templates/user.html:516
+msgid "More"
+msgstr "Plus"
+
+#: user_profile/templates/user.html:526
+#, python-format
+msgid "Ranking (Your position: #%(pos)s in tasks)"
+msgstr "Classement (Votre position : n° %(pos)s dans les tâches)"
+
+#: user_profile/templates/user.html:533
+msgid "User"
+msgstr "Utilisateur"
+
+#: user_profile/templates/user.html:535 user_profile/templates/user.html:536
+#: user_profile/templates/user.html:537
+msgid "Pos"
+msgstr "Pos"
+
+#: user_profile/templates/user.html:562
+msgid "Invisible user"
+msgstr "Utilisateur invisible"
+
+#: user_profile/templates/user.html:637
+msgid "No completed tasks yet"
+msgstr "Aucune tâche terminée pour l'instant"
+
+#: user_profile/views.py:312
+msgid "Your profile has been updated successfully!"
+msgstr "Votre profil a été mis à jour avec succès !"
+
+#: user_profile/views.py:344
+#, python-format
+msgid "%(count)d day"
+msgid_plural "%(count)d days"
+msgstr[0] "%(count)d jour"
+msgstr[1] "%(count)d jours"
+
+#: user_profile/views.py:346
+#, python-format
+msgid "%(count)d hour"
+msgid_plural "%(count)d hours"
+msgstr[0] "%(count)d heure"
+msgstr[1] "%(count)d heures"
+
+#: user_profile/views.py:348
+#, python-format
+msgid "%(count)d minute"
+msgid_plural "%(count)d minutes"
+msgstr[0] "%(count)d minute"
+msgstr[1] "%(count)d minutes"
+
+#: user_profile/views.py:352
+msgid " and "
+msgstr " et "
+
+#: user_profile/views.py:356
+msgid "0 minutes"
+msgstr "0 minute"
+
+#: user_profile/views.py:389
+msgid "Your account has been permanently deleted."
+msgstr "Votre compte a été supprimé définitivement."

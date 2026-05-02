@@ -1,6 +1,9 @@
 #map{
     height: 100%;
 }
+.leaflet-container {
+    background: rgb(33, 37, 41);
+}
 body, html {
     overflow: hidden; /* Disable scrolling */
     height: 100%;
@@ -73,6 +76,20 @@ body, html {
 .icon-help:hover, .user-icon:hover, .fa-user-secret:hover, .fa-user-circle:hover {
     transform: scale(1.2);
     cursor: pointer;
+}
+
+.anon-notice {
+    font-size: 10px;
+    color: #aaa;
+    text-align: center;
+    padding: 4px 8px;
+    line-height: 1.4;
+    background-color: rgba(86, 41, 82, 0.4);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.anon-notice a {
+    color: #7eb8f7;
+    text-decoration: underline;
 }
 
 /* Posicionamiento del icono de ayuda */
@@ -153,6 +170,7 @@ li.completed {
 .fa-icon-marker {
     color: #e9f990; /* Customize the color of the icon */
     font-size: 16px; /* Adjust the font size to fit the icon */
+    cursor: all-scroll !important;
 }
 .fa-location-dot{
     color: #e9f990; /* Customize the color of the icon */
@@ -167,7 +185,7 @@ li.completed {
     text-align: center;
 }
 
-#Try{
+#Try, #TryLocal {
     border-radius: 1em;
     font-size: 14px;
     color: #fff;
@@ -175,13 +193,12 @@ li.completed {
     border: 1px solid #562952;
     font-weight: medium;
 }
-#Try:hover{
+#Try:hover, #TryLocal:hover {
     background-color: #fef7ff;
     border: 1px solid #562952;
     color: #562952;
-    /* Change the pointer to a hand */
     cursor: pointer !important;
-}   
+}
 
 #Submit.disabled{
     border-radius: 1em;

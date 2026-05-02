@@ -1,5 +1,6 @@
 {% load static %}
 {% load bootstrap5 %}
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -158,7 +159,7 @@
 
         .stats-section {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 20px;
             margin-bottom: 16px;
         }
@@ -369,15 +370,15 @@
                 </div>
                 
                 <a href="{% url 'edit_profile' %}" class="btn-edit-profile">
-                    Edit profile
+                    {% trans "Edit profile" %}
                 </a>
-                
+
                 <a href="{% url 'account_logout' %}" class="btn-edit-profile mt-2" style="background-color: rgba(255, 100, 100, 0.2); border-color: rgba(255, 100, 100, 0.4);">
-                    <i class="fas fa-sign-out-alt"></i> Log out
+                    <i class="fas fa-sign-out-alt"></i> {% trans "Log out" %}
                 </a>
-                
+
                 <a href="{% url 'delete_account' %}" class="btn-edit-profile mt-2" style="background-color: rgba(255, 50, 50, 0.2); border-color: rgba(255, 50, 50, 0.5);">
-                    <i class="fas fa-trash-alt"></i> Delete account
+                    <i class="fas fa-trash-alt"></i> {% trans "Delete account" %}
                 </a>
             </div>
             
@@ -395,10 +396,10 @@
                     <div class="meta-item visibility-status" style="margin-bottom: 5px;">
                         {% if profile.visible %}
                         <i class="fas fa-eye" style="color: #e9f990;"></i>&nbsp;
-                        <span style="color: #e9f990; font-weight: 500;">Visible</span>
+                        <span style="color: #e9f990; font-weight: 500;">{% trans "Visible" %}</span>
                         {% else %}
                         <i class="fas fa-eye-slash" style="color: #ff9090;"></i>&nbsp;
-                        <span style="color: #ff9090; font-weight: 500;">Invisible</span>
+                        <span style="color: #ff9090; font-weight: 500;">{% trans "Invisible" %}</span>
                         {% endif %}
                     </div>
                     <div class="meta-item">
@@ -421,88 +422,98 @@
             </div>
         </div>
         
+        <!-- Visited places map -->
+        <div class="contribution-section mb-4">
+            <div class="section-heading personal-contrib-heading">
+                <span><i class="fas fa-map-marked-alt"></i> {% trans "My Visited Places" %}</span>
+            </div>
+            <div class="contribution-graph" style="padding:0;overflow:hidden;border-radius:12px;">
+                <div id="visited-map" style="height:640px;width:100%;border-radius:12px;"></div>
+            </div>
+        </div>
+
         <!-- Statistics -->
         <div class="stats-container">
             <!-- Personal statistics - Todas las estadísticas juntas, ordenadas con lógica -->
             <div class="stats-section-title">
-                <i class="fas fa-user-circle"></i> Your Personal Statistics
+                <i class="fas fa-user-circle"></i> {% trans "Your Personal Statistics" %}
             </div>
             <div class="stats-section">
                 <!-- Estadísticas primarias - lo que el usuario ha hecho -->
                 <div class="stats-card personal">
                     <div class="stats-icon"><i class="fas fa-tasks"></i></div>
                     <div class="stats-value">{{ geo }}</div>
-                    <div class="stats-label">Completed Tasks</div>
+                    <div class="stats-label">{% trans "Completed Tasks" %}</div>
                 </div>
-                
+
                 <div class="stats-card personal">
                     <div class="stats-icon"><i class="fas fa-map-pin"></i></div>
                     <div class="stats-value">{{ cp }}</div>
-                    <div class="stats-label">Control Points</div>
+                    <div class="stats-label">{% trans "Control Points" %}</div>
                 </div>
-                
+
                 <div class="stats-card personal">
                     <div class="stats-icon"><i class="fas fa-clock"></i></div>
                     <div class="stats-value">{{ time }}</div>
-                    <div class="stats-label">Time Invested</div>
+                    <div class="stats-label">{% trans "Time Invested" %}</div>
                 </div>
-                
+
                 <!-- Posiciones en rankings -->
                 <div class="stats-card personal">
                     <div class="stats-icon"><i class="fas fa-trophy"></i></div>
                     <div class="stats-value">#{{ user_task_position }}</div>
-                    <div class="stats-label">Your Position in Tasks</div>
+                    <div class="stats-label">{% trans "Your Position in Tasks" %}</div>
                 </div>
-                
+
                 <div class="stats-card personal">
                     <div class="stats-icon"><i class="fas fa-award"></i></div>
                     <div class="stats-value">#{{ user_points_position }}</div>
-                    <div class="stats-label">Your Position in Control Points</div>
+                    <div class="stats-label">{% trans "Your Position in Control Points" %}</div>
                 </div>
-                
+
                 <div class="stats-card personal">
                     <div class="stats-icon"><i class="fas fa-medal"></i></div>
                     <div class="stats-value">#{{ user_time_position }}</div>
-                    <div class="stats-label">Your Position in Time</div>
+                    <div class="stats-label">{% trans "Your Position in Time" %}</div>
                 </div>
-                
+
                 <!-- Porcentajes de contribución -->
                 <div class="stats-card personal">
                     <div class="stats-icon"><i class="fas fa-percentage"></i></div>
                     <div class="stats-value">{{ user_tasks_percentage }}%</div>
-                    <div class="stats-label">Your % Contribution in Tasks</div>
+                    <div class="stats-label">{% trans "Your % Contribution in Tasks" %}</div>
                 </div>
-                
+
                 <div class="stats-card personal">
                     <div class="stats-icon"><i class="fas fa-map-pin"></i></div>
                     <div class="stats-value">{{ user_control_points_percentage }}%</div>
-                    <div class="stats-label">Your % Contribution in Control Points</div>
+                    <div class="stats-label">{% trans "Your % Contribution in Control Points" %}</div>
                 </div>
-                
+
                 <div class="stats-card personal">
                     <div class="stats-icon"><i class="fas fa-hourglass-half"></i></div>
                     <div class="stats-value">{{ user_time_percentage }}%</div>
-                    <div class="stats-label">Your % Contribution in Time</div>
+                    <div class="stats-label">{% trans "Your % Contribution in Time" %}</div>
                 </div>
             </div>
             
             <!-- Personal contribution graph -->
             <div class="contribution-section mt-4">
                 <div class="section-heading personal-contrib-heading">
-                    <span><i class="fas fa-calendar-alt"></i> Your Daily Contributions (April 2024 - April 2025)</span>
+                    <span><i class="fas fa-calendar-alt"></i> {% blocktrans with start=heatmap_start end=heatmap_end %}Your Daily Contributions ({{ start }} - {{ end }}){% endblocktrans %}</span>
                 </div>
                 
                 <div class="contribution-graph">
                     <div id="github-like-heatmap"></div>
                     
                     <div class="contribution-footer">
-                        <span style="margin-right: 4px;">Less</span>
+                        <span style="margin-right: 4px;">{% trans "Less" %}</span>
                         <div class="legend-cell" style="background-color: #ffffff; border: 1px solid #ddd;"></div>
                         <div class="legend-cell" style="background-color: #9be9a8;"></div>
                         <div class="legend-cell" style="background-color: #40c463;"></div>
                         <div class="legend-cell" style="background-color: #30a14e;"></div>
                         <div class="legend-cell" style="background-color: #216e39;"></div>
-                        <span style="margin-left: 4px;">More</span>
+                        <span style="margin-left: 4px;">{% trans "More" %}</span>
                     </div>
                 </div>
             </div>
@@ -512,18 +523,18 @@
         <div class="ranking-section">
             <div class="ranking-card" style="grid-column: 1 / -1;">
                 <div class="ranking-header">
-                    Ranking (Your position: #{{ user_task_position }} in tasks)
+                    {% blocktrans with pos=user_task_position %}Ranking (Your position: #{{ pos }} in tasks){% endblocktrans %}
                 </div>
                 <div style="overflow-x: auto;">
                     <table class="ranking-table">
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>User</th>
-                                <th>Country</th>
-                                <th>Tasks <span class="small">(Pos)</span></th>
-                                <th>Control Points <span class="small">(Pos)</span></th>
-                                <th>Time <span class="small">(Pos)</span></th>
+                                <th>{% trans "User" %}</th>
+                                <th>{% trans "Country" %}</th>
+                                <th>{% trans "Tasks" %} <span class="small">({% trans "Pos" %})</span></th>
+                                <th>{% trans "Control Points" %} <span class="small">({% trans "Pos" %})</span></th>
+                                <th>{% trans "Time" %} <span class="small">({% trans "Pos" %})</span></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -548,7 +559,7 @@
                                                         background-color: #4b2e83; display: flex; align-items: center; justify-content: center;">
                                                     <i class="fas fa-eye-slash" style="font-size: 12px; color: #ff9090;"></i>
                                                 </div>
-                                                <span style="color: rgba(255, 255, 255, 0.6);">Invisible user</span>
+                                                <span style="color: rgba(255, 255, 255, 0.6);">{% trans "Invisible user" %}</span>
                                             {% endif %}
                                         </div>
                                     </td>
@@ -596,6 +607,86 @@
     </div>
     
     {% include '_footer.html' %}
+
+    <script>
+    (function() {
+        const places = {{ visited_places|safe }};
+
+        const visitedMap = L.map('visited-map', {zoomControl: true, scrollWheelZoom: false}).setView([20, 0], 2);
+
+        // Dark tile layer
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
+            maxZoom: 18
+        }).addTo(visitedMap);
+
+        // Custom icon matching the app style
+        function makeIcon(color) {
+            return L.divIcon({
+                className: '',
+                html: '<div style="width:14px;height:14px;border-radius:50%;background:' + color + ';border:2px solid #fff;box-shadow:0 0 4px rgba(0,0,0,0.6);"></div>',
+                iconSize: [14, 14],
+                iconAnchor: [7, 7]
+            });
+        }
+
+        const icon = makeIcon('#e9f990');
+
+        if (places.length === 0) {
+            document.getElementById('visited-map').insertAdjacentHTML('beforeend',
+                '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#aaa;z-index:999;text-align:center;">{% trans "No completed tasks yet" %}</div>');
+        } else {
+            const bounds = [];
+            const geocodeCache = {};
+
+            places.forEach(function(p) {
+                const imgHtml = p.small_url
+                    ? '<img src="' + p.small_url + '" style="width:100%;border-radius:4px;display:block;margin-bottom:6px;" />'
+                    : '';
+                const name = p.name.replace(/\.JPG$/i, '');
+                const popupId = 'city-' + Math.random().toString(36).slice(2);
+                const popupHtml =
+                    // Note: these strings are in JS and not translatable via Django i18n
+                '<div style="width:180px;font-size:12px;">' +
+                    imgHtml +
+                    '<strong>' + name + '</strong><br>' +
+                    '<span id="' + popupId + '" style="color:#666;"><em>Looking up location…</em></span>' +
+                    '</div>';
+
+                const marker = L.marker([p.lat, p.lon], {icon: icon})
+                    .bindPopup(popupHtml, {maxWidth: 200})
+                    .addTo(visitedMap);
+
+                marker.on('popupopen', function() {
+                    const el = document.getElementById(popupId);
+                    if (!el) return;
+                    const key = p.lat.toFixed(2) + ',' + p.lon.toFixed(2);
+                    if (geocodeCache[key]) {
+                        el.textContent = geocodeCache[key];
+                        return;
+                    }
+                    fetch('https://nominatim.openstreetmap.org/reverse?lat=' + p.lat + '&lon=' + p.lon + '&format=json', {
+                        headers: {'Accept-Language': 'en'}
+                    })
+                    .then(r => r.json())
+                    .then(geo => {
+                        const addr = geo.address || {};
+                        const city = addr.city || addr.town || addr.village || addr.county || '';
+                        const country = addr.country || '';
+                        const label = [city, country].filter(Boolean).join(', ') || 'Open ocean';
+                        geocodeCache[key] = label;
+                        const el2 = document.getElementById(popupId);
+                        if (el2) el2.textContent = label;
+                    })
+                    .catch(() => { if (el) el.textContent = 'Unknown'; });
+                });
+
+                bounds.push([p.lat, p.lon]);
+            });
+            visitedMap.fitBounds(bounds, {padding: [40, 40], maxZoom: 8});
+        }
+    })();
+    </script>
 </body>
 </html>
 

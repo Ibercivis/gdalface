@@ -1,0 +1,756 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-25 08:09+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: zh-hans\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: frontend/templates/_footer.html:10
+msgid ""
+"This application is designed to help georeference images taken by astronauts "
+"aboard the International Space Station (ISS)."
+msgstr "此应用程序旨在帮助对国际空间站（ISS）宇航员拍摄的图像进行地理配准。"
+
+#: frontend/templates/_footer.html:17
+msgid ""
+"Funded by the European Union under the Horizon Europe Programme, Grant "
+"Agreement No. 101135308 (PLAN-B). Research and Innovation Action | HORIZON-"
+"CL6-2023-BIODIV-01."
+msgstr "由欧盟在“地平线欧洲”计划下资助，资助协议编号101135308（PLAN-B）。研究与创新行动 | HORIZON-CL6-2023-BIODIV-01。"
+
+#: frontend/templates/_footer.html:24
+msgid "Quick Links"
+msgstr "快速链接"
+
+#: frontend/templates/_footer.html:26 frontend/templates/_topbar.html:102
+msgid "Home"
+msgstr "首页"
+
+#: frontend/templates/_footer.html:27 frontend/templates/_topbar.html:103
+msgid "Batches"
+msgstr "批次"
+
+#: frontend/templates/_footer.html:28 frontend/templates/_topbar.html:105
+#: frontend/templates/batchs.html:38 frontend/templates/index.html:496
+msgid "Participate"
+msgstr "参与"
+
+#: frontend/templates/_footer.html:29 frontend/templates/_footer.html:35
+#: frontend/templates/_topbar.html:106
+msgid "Contact"
+msgstr "联系我们"
+
+#: frontend/templates/_footer.html:81 frontend/templates/gettask.html:221
+#: frontend/templates/index.html:687
+msgid "Developed by <b>Ibercivis</b>"
+msgstr "由 <b>Ibercivis</b> 开发"
+
+#: frontend/templates/_footer.html:91
+msgid "© 2025 Lost at Night. All rights reserved."
+msgstr "© 2025 Lost at Night. 保留所有权利。"
+
+#: frontend/templates/_topbar.html:95
+msgid "Toggle navigation"
+msgstr "切换导航"
+
+#: frontend/templates/_topbar.html:104
+msgid "Statistics"
+msgstr "统计"
+
+#: frontend/templates/_topbar.html:109
+msgid "Your personal area"
+msgstr "个人中心"
+
+#: frontend/templates/_topbar.html:111
+msgid "Profile picture"
+msgstr "头像"
+
+#: frontend/templates/_topbar.html:121
+msgid "Login"
+msgstr "登录"
+
+#: frontend/templates/batchs.html:44 frontend/templates/index.html:502
+msgid "Name:"
+msgstr "名称："
+
+#: frontend/templates/batchs.html:45 frontend/templates/index.html:503
+msgid "Images:"
+msgstr "图像："
+
+#: frontend/templates/contact.html:35 frontend/templates/index.html:609
+msgid "Contact Us"
+msgstr "联系我们"
+
+#: frontend/templates/contact.html:36 frontend/templates/index.html:610
+msgid "Have questions about Lost at Night? We'd love to hear from you!"
+msgstr "对 Lost at Night 有疑问？我们很乐意倾听您的声音！"
+
+#: frontend/templates/contact.html:47 frontend/templates/index.html:619
+msgid "Your Name"
+msgstr "您的姓名"
+
+#: frontend/templates/contact.html:51 frontend/templates/index.html:623
+msgid "Email Address"
+msgstr "电子邮件地址"
+
+#: frontend/templates/contact.html:55 frontend/templates/index.html:627
+msgid "Subject"
+msgstr "主题"
+
+#: frontend/templates/contact.html:59 frontend/templates/index.html:631
+msgid "Message"
+msgstr "消息"
+
+#: frontend/templates/contact.html:62 frontend/templates/index.html:634
+msgid "Send Message"
+msgstr "发送消息"
+
+#: frontend/templates/contact.html:70
+msgid "Find Us"
+msgstr "联系方式"
+
+#: frontend/templates/contact.html:71
+msgid "Cities at Night Project"
+msgstr "Cities at Night 项目"
+
+#: frontend/templates/contact.html:71
+msgid "International Space Station Imagery Analysis"
+msgstr "国际空间站图像分析"
+
+#: frontend/templates/contact.html:73
+msgid "Email Us"
+msgstr "发送邮件"
+
+#: frontend/templates/contact.html:76
+msgid "Social Media"
+msgstr "社交媒体"
+
+#: frontend/templates/gettask.html:42
+msgid "New Task"
+msgstr "新任务"
+
+#: frontend/templates/gettask.html:49
+msgid "Photo info"
+msgstr "照片信息"
+
+#: frontend/templates/gettask.html:50
+msgid "Image:"
+msgstr "图像："
+
+#: frontend/templates/gettask.html:51
+msgid "Date:"
+msgstr "日期："
+
+#: frontend/templates/gettask.html:52
+msgid "Focal length:"
+msgstr "焦距："
+
+#: frontend/templates/gettask.html:53
+msgid "Location:"
+msgstr "位置："
+
+#: frontend/templates/gettask.html:53
+msgid "looking up…"
+msgstr "查找中…"
+
+#: frontend/templates/gettask.html:54
+msgid "Nadir point:"
+msgstr "星下点："
+
+#: frontend/templates/gettask.html:55
+msgid "Photo center:"
+msgstr "照片中心："
+
+#: frontend/templates/gettask.html:56
+msgid "Photo center (ML):"
+msgstr "照片中心（ML）："
+
+#: frontend/templates/gettask.html:60
+msgid "ISS Expedition"
+msgstr "ISS 远征"
+
+#: frontend/templates/gettask.html:60
+msgid "crew"
+msgstr "机组人员"
+
+#: frontend/templates/gettask.html:67
+msgid "Your stats"
+msgstr "您的统计"
+
+#: frontend/templates/gettask.html:73
+msgid "Total"
+msgstr "总计"
+
+#: frontend/templates/gettask.html:74
+msgid "Rank"
+msgstr "排名"
+
+#: frontend/templates/gettask.html:75
+msgid "To next"
+msgstr "距下一名"
+
+#: frontend/templates/gettask.html:76
+msgid "To #1"
+msgstr "距第1名"
+
+#: frontend/templates/gettask.html:81 user_profile/templates/user.html:535
+msgid "Tasks"
+msgstr "任务"
+
+#: frontend/templates/gettask.html:88
+msgid "Control pts"
+msgstr "控制点"
+
+#: frontend/templates/gettask.html:95
+msgid "Hours"
+msgstr "小时"
+
+#: frontend/templates/gettask.html:109
+#, python-format
+msgid ""
+"You're participating anonymously — <a href=\"%(url)s\">create an account</a> "
+"to save your progress and appear on the leaderboard!"
+msgstr ""
+
+#: frontend/templates/gettask.html:114
+msgid "Let's go!"
+msgstr "开始吧！"
+
+#: frontend/templates/gettask.html:125
+msgid "Georeferencing!"
+msgstr "地理配准！"
+
+#: frontend/templates/gettask.html:142
+msgid "Brightness"
+msgstr "亮度"
+
+#: frontend/templates/gettask.html:147
+msgid "Contrast"
+msgstr "对比度"
+
+#: frontend/templates/gettask.html:152
+msgid "Gamma"
+msgstr "伽马"
+
+#: frontend/templates/gettask.html:157
+msgid "Saturation"
+msgstr "饱和度"
+
+#: frontend/templates/gettask.html:162
+msgid "Reset"
+msgstr "重置"
+
+#: frontend/templates/gettask.html:175
+msgid "Help"
+msgstr "帮助"
+
+#: frontend/templates/gettask.html:181
+msgid "Go to your profile"
+msgstr "前往个人主页"
+
+#: frontend/templates/gettask.html:189
+msgid "You are participating as anonymous"
+msgstr "您正在匿名参与"
+
+#: frontend/templates/gettask.html:201
+msgid "Batch:"
+msgstr "批次："
+
+#: frontend/templates/gettask.html:213
+msgid "Try"
+msgstr "尝试"
+
+#: frontend/templates/gettask.html:214
+msgid "Submit"
+msgstr "提交"
+
+#: frontend/templates/gettask.html:215
+msgid "Skip"
+msgstr "跳过"
+
+#: frontend/templates/index.html:419
+msgid "WELCOME BACK"
+msgstr "欢迎回来"
+
+#: frontend/templates/index.html:419
+msgid "TO"
+msgstr "到"
+
+#: frontend/templates/index.html:419
+msgid "LOST AT NIGHT"
+msgstr "LOST AT NIGHT"
+
+#: frontend/templates/index.html:419
+msgid "WELCOME TO"
+msgstr "欢迎来到"
+
+#: frontend/templates/index.html:421
+msgid "Help map Earth's lights from space and combat light pollution"
+msgstr "从太空绘制地球灯光地图，共同对抗光污染"
+
+#: frontend/templates/index.html:424
+msgid "Participate Now"
+msgstr "立即参与"
+
+#: frontend/templates/index.html:425
+msgid "Select Batches"
+msgstr "选择批次"
+
+#: frontend/templates/index.html:438
+msgid "Our Mission"
+msgstr "我们的使命"
+
+#: frontend/templates/index.html:440
+msgid ""
+"This application is designed to help georeference images taken by astronauts "
+"aboard the International Space Station (ISS). The goal is to create a global "
+"map of Earth's lights at night to measure and track light pollution. By "
+"accurately aligning images with geographical coordinates, the app "
+"contributes to valuable environmental data collection, which can be used for "
+"scientific research, monitoring light pollution, and understanding its "
+"impact on ecosystems and human health."
+msgstr "此应用程序旨在帮助对国际空间站（ISS）宇航员拍摄的图像进行地理配准。目标是创建一张地球夜间灯光的全球地图，以测量和追踪光污染。通过将图像与地理坐标精确对齐，该应用有助于收集宝贵的环境数据，可用于科学研究、光污染监测以及了解其对生态系统和人类健康的影响。"
+
+#: frontend/templates/index.html:453
+msgid "Georeference Images"
+msgstr "图像地理配准"
+
+#: frontend/templates/index.html:454
+msgid "Help align ISS night images with precise geographic coordinates"
+msgstr "帮助将 ISS 夜间图像与精确地理坐标对齐"
+
+#: frontend/templates/index.html:462
+msgid "Map Light Pollution"
+msgstr "绘制光污染地图"
+
+#: frontend/templates/index.html:463
+msgid "Contribute to a global database of nighttime light patterns"
+msgstr "为夜间光照模式全球数据库做贡献"
+
+#: frontend/templates/index.html:471
+msgid "Support Research"
+msgstr "支持研究"
+
+#: frontend/templates/index.html:472
+msgid "Enable scientific studies on light pollution's environmental impact"
+msgstr "推动关于光污染环境影响的科学研究"
+
+#: frontend/templates/index.html:479
+msgid "Start Contributing"
+msgstr "开始贡献"
+
+#: frontend/templates/index.html:486
+msgid "Available Batches"
+msgstr "可用批次"
+
+#: frontend/templates/index.html:487
+msgid "Select a specific batch of images to work with"
+msgstr "选择一个特定的图像批次进行处理"
+
+#: frontend/templates/index.html:504
+msgid "Tasks:"
+msgstr "任务："
+
+#: frontend/templates/index.html:521
+msgid "Project Statistics"
+msgstr "项目统计"
+
+#: frontend/templates/index.html:522
+msgid "Global impact of our community's contributions"
+msgstr "我们社区贡献的全球影响"
+
+#: frontend/templates/index.html:534
+msgid "Total Users"
+msgstr "总用户数"
+
+#: frontend/templates/index.html:543
+msgid "Total Images"
+msgstr "总图像数"
+
+#: frontend/templates/index.html:552
+msgid "Images with Georeference"
+msgstr "已地理配准的图像"
+
+#: frontend/templates/index.html:561
+msgid "Total Tasks"
+msgstr "总任务数"
+
+#: frontend/templates/index.html:571 user_profile/templates/user.html:446
+msgid "Completed Tasks"
+msgstr "已完成任务"
+
+#: frontend/templates/index.html:580
+msgid "Average Tasks per User"
+msgstr "每用户平均任务数"
+
+#: frontend/templates/index.html:589
+msgid "Total Control Points"
+msgstr "总控制点数"
+
+#: frontend/templates/index.html:598
+msgid "Total Minutes"
+msgstr "总分钟数"
+
+#: frontend/templates/index.html:641
+msgid "Our Social Media"
+msgstr "我们的社交媒体"
+
+#: frontend/views.py:134
+msgid "Your message has been sent successfully!"
+msgstr "您的消息已成功发送！"
+
+#: frontend/views.py:137
+#, python-format
+msgid "Could not send the message: %(error)s"
+msgstr "无法发送消息：%(error)s"
+
+#: gdalface/settings.py:159
+msgid "English"
+msgstr "英语"
+
+#: gdalface/settings.py:160
+msgid "Spanish"
+msgstr "西班牙语"
+
+#: gdalface/settings.py:161
+msgid "French"
+msgstr "法语"
+
+#: gdalface/settings.py:162
+msgid "German"
+msgstr "德语"
+
+#: gdalface/settings.py:163
+msgid "Italian"
+msgstr "意大利语"
+
+#: gdalface/settings.py:164
+msgid "Portuguese"
+msgstr "葡萄牙语"
+
+#: gdalface/settings.py:165
+msgid "Japanese"
+msgstr "日语"
+
+#: gdalface/settings.py:166
+msgid "Russian"
+msgstr "俄语"
+
+#: georeferencing/models.py:10
+msgid "Pending"
+msgstr "待处理"
+
+#: georeferencing/models.py:11
+msgid "Assigned"
+msgstr "已分配"
+
+#: georeferencing/models.py:12
+msgid "Done"
+msgstr "完成"
+
+#: georeferencing/models.py:53
+msgid "Pending download"
+msgstr "待下载"
+
+#: georeferencing/models.py:54
+msgid "Downloaded"
+msgstr "已下载"
+
+#: georeferencing/models.py:55
+msgid "Failed download"
+msgstr "下载失败"
+
+#: georeferencing/models.py:56
+msgid "Downloaded & Generated"
+msgstr "已下载并生成"
+
+#: georeferencing/models.py:92
+msgid "Search"
+msgstr "搜索"
+
+#: georeferencing/models.py:93
+msgid "List"
+msgstr "列表"
+
+#: georeferencing/models.py:97
+msgid "Not Started"
+msgstr "未开始"
+
+#: georeferencing/models.py:98
+msgid "Processing"
+msgstr "处理中"
+
+#: georeferencing/models.py:99
+msgid "Completed"
+msgstr "已完成"
+
+#: georeferencing/models.py:100
+msgid "Failed"
+msgstr "失败"
+
+#: georeferencing/models.py:112
+msgid "Focal length <="
+msgstr "焦距 <="
+
+#: georeferencing/models.py:113
+msgid "Focal length >="
+msgstr "焦距 >="
+
+#: georeferencing/models.py:114
+msgid "Original images"
+msgstr "原始图像"
+
+#: georeferencing/models.py:125
+msgid "Processing Status"
+msgstr "处理状态"
+
+#: templates/account/login.html:5 templates/account/login.html:9
+msgid "Welcome back!"
+msgstr "欢迎回来！"
+
+#: templates/account/login.html:19
+#, python-format
+msgid ""
+"If you have not created an account yet, then please %(link)ssign "
+"up%(end_link)s first."
+msgstr "如果您还没有账户，请先 %(link)s注册%(end_link)s。"
+
+#: templates/account/login.html:31
+msgid "Sign In"
+msgstr "登录"
+
+#: templates/account/login.html:42
+msgid "Sign in with a passkey"
+msgstr "使用通行密钥登录"
+
+#: templates/account/login.html:47
+msgid "Mail me a sign-in code"
+msgstr "向我发送登录验证码"
+
+#: templates/socialaccount/snippets/login.html:10
+msgid "Or use a third-party"
+msgstr "或使用第三方服务"
+
+#: templates/socialaccount/snippets/login.html:14
+msgid "Sign in with Google"
+msgstr "使用 Google 登录"
+
+#: user_profile/models.py:45 user_profile/templates/edit_profile.html:215
+#: user_profile/templates/user.html:534
+msgid "Country"
+msgstr "国家"
+
+#: user_profile/models.py:46 user_profile/templates/edit_profile.html:210
+msgid "City"
+msgstr "城市"
+
+#: user_profile/models.py:47
+msgid "Visible in rankings"
+msgstr "在排行榜中显示"
+
+#: user_profile/models.py:47
+msgid "If disabled, your profile will not appear in public rankings"
+msgstr "如果禁用，您的个人资料将不会出现在公开排行榜中"
+
+#: user_profile/templates/delete_account.html:10
+#: user_profile/templates/delete_account.html:99
+msgid "Delete Account"
+msgstr "删除账户"
+
+#: user_profile/templates/delete_account.html:104
+msgid "Are you sure you want to delete your account?"
+msgstr "您确定要删除账户吗？"
+
+#: user_profile/templates/delete_account.html:107
+msgid ""
+"This action will permanently delete your account and all associated data. "
+"You will not be able to recover this information."
+msgstr "此操作将永久删除您的账户及所有相关数据，该信息将无法恢复。"
+
+#: user_profile/templates/delete_account.html:115
+#: user_profile/templates/edit_profile.html:242
+msgid "Cancel"
+msgstr "取消"
+
+#: user_profile/templates/delete_account.html:118
+msgid "Delete permanently"
+msgstr "永久删除"
+
+#: user_profile/templates/edit_profile.html:185
+msgid "Profile Information"
+msgstr "个人信息"
+
+#: user_profile/templates/edit_profile.html:200
+msgid "Username:"
+msgstr "用户名："
+
+#: user_profile/templates/edit_profile.html:205
+msgid "Email:"
+msgstr "电子邮件："
+
+#: user_profile/templates/edit_profile.html:220
+msgid "Biography"
+msgstr "个人简介"
+
+#: user_profile/templates/edit_profile.html:221
+msgid "Tell us about yourself"
+msgstr "介绍一下您自己"
+
+#: user_profile/templates/edit_profile.html:231
+msgid "Profile Picture"
+msgstr "头像"
+
+#: user_profile/templates/edit_profile.html:232
+msgid "Preview: New image selected"
+msgstr "预览：已选择新图像"
+
+#: user_profile/templates/edit_profile.html:241
+msgid "Save Changes"
+msgstr "保存更改"
+
+#: user_profile/templates/user.html:373
+msgid "Edit profile"
+msgstr "编辑个人资料"
+
+#: user_profile/templates/user.html:377
+msgid "Log out"
+msgstr "退出登录"
+
+#: user_profile/templates/user.html:381
+msgid "Delete account"
+msgstr "删除账户"
+
+#: user_profile/templates/user.html:399
+msgid "Visible"
+msgstr "可见"
+
+#: user_profile/templates/user.html:402
+msgid "Invisible"
+msgstr "隐藏"
+
+#: user_profile/templates/user.html:428
+msgid "My Visited Places"
+msgstr "我访问过的地方"
+
+#: user_profile/templates/user.html:439
+msgid "Your Personal Statistics"
+msgstr "个人统计"
+
+#: user_profile/templates/user.html:452 user_profile/templates/user.html:536
+msgid "Control Points"
+msgstr "控制点"
+
+#: user_profile/templates/user.html:458
+msgid "Time Invested"
+msgstr "投入时间"
+
+#: user_profile/templates/user.html:465
+msgid "Your Position in Tasks"
+msgstr "您的任务排名"
+
+#: user_profile/templates/user.html:471
+msgid "Your Position in Control Points"
+msgstr "您的控制点排名"
+
+#: user_profile/templates/user.html:477
+msgid "Your Position in Time"
+msgstr "您的时间排名"
+
+#: user_profile/templates/user.html:484
+#, python-format
+msgid "Your %% Contribution in Tasks"
+msgstr "您在任务中的%%贡献"
+
+#: user_profile/templates/user.html:490
+#, python-format
+msgid "Your %% Contribution in Control Points"
+msgstr "您在控制点中的%%贡献"
+
+#: user_profile/templates/user.html:496
+#, python-format
+msgid "Your %% Contribution in Time"
+msgstr "您在时间上的%%贡献"
+
+#: user_profile/templates/user.html:503
+#, python-format
+msgid "Your Daily Contributions (%(start)s - %(end)s)"
+msgstr "您的每日贡献（%(start)s - %(end)s）"
+
+#: user_profile/templates/user.html:510
+msgid "Less"
+msgstr "较少"
+
+#: user_profile/templates/user.html:516
+msgid "More"
+msgstr "较多"
+
+#: user_profile/templates/user.html:526
+#, python-format
+msgid "Ranking (Your position: #%(pos)s in tasks)"
+msgstr "排行榜（您的排名：任务第 #%(pos)s）"
+
+#: user_profile/templates/user.html:533
+msgid "User"
+msgstr "用户"
+
+#: user_profile/templates/user.html:535 user_profile/templates/user.html:536
+#: user_profile/templates/user.html:537
+msgid "Pos"
+msgstr "排名"
+
+#: user_profile/templates/user.html:562
+msgid "Invisible user"
+msgstr "隐藏用户"
+
+#: user_profile/templates/user.html:637
+msgid "No completed tasks yet"
+msgstr "暂无已完成的任务"
+
+#: user_profile/views.py:312
+msgid "Your profile has been updated successfully!"
+msgstr "您的个人资料已成功更新！"
+
+#: user_profile/views.py:344
+#, python-format
+msgid "%(count)d day"
+msgid_plural "%(count)d days"
+msgstr[0] "%(count)d天"
+msgstr[1] ""
+
+#: user_profile/views.py:346
+#, python-format
+msgid "%(count)d hour"
+msgid_plural "%(count)d hours"
+msgstr[0] "%(count)d小时"
+msgstr[1] ""
+
+#: user_profile/views.py:348
+#, python-format
+msgid "%(count)d minute"
+msgid_plural "%(count)d minutes"
+msgstr[0] "%(count)d分钟"
+msgstr[1] ""
+
+#: user_profile/views.py:352
+msgid " and "
+msgstr "和"
+
+#: user_profile/views.py:356
+msgid "0 minutes"
+msgstr "0分钟"
+
+#: user_profile/views.py:389
+msgid "Your account has been permanently deleted."
+msgstr "您的账户已被永久删除。"

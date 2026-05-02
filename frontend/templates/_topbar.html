@@ -1,3 +1,4 @@
+{% load i18n %}
 <!-- Topbar -->
 <style>
     /* Estilos para hacer el navbar semitransparente */
@@ -91,23 +92,23 @@
         <a class="navbar-brand" href="/">LostAtNight</a>
 
         <!-- Mobile Toggle Button -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="{% trans 'Toggle navigation' %}">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <!-- Navbar Links -->
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link {% if current_path == '/' %}active{% endif %}" href="/">Home</a></li>
-                <li class="nav-item"><a class="nav-link scroll-link" href="{% if not is_homepage %}/{% endif %}#batch-section" data-section="batch-section">Batches</a></li>
-                <li class="nav-item"><a class="nav-link scroll-link" href="{% if not is_homepage %}/{% endif %}#statistics-section" data-section="statistics-section">Statistics</a></li>
-                <li class="nav-item"><a class="nav-link {% if current_path == '/gettask' %}active{% endif %}" href="/gettask">Participate</a></li>
-                <li class="nav-item"><a class="nav-link scroll-link" href="{% if not is_homepage %}/{% endif %}#contact-section" data-section="contact-section">Contact</a></li>
+                <li class="nav-item"><a class="nav-link {% if current_path == '/' %}active{% endif %}" href="/">{% trans "Home" %}</a></li>
+                <li class="nav-item"><a class="nav-link scroll-link" href="{% if not is_homepage %}/{% endif %}#batch-section" data-section="batch-section">{% trans "Batches" %}</a></li>
+                <li class="nav-item"><a class="nav-link scroll-link" href="{% if not is_homepage %}/{% endif %}#statistics-section" data-section="statistics-section">{% trans "Statistics" %}</a></li>
+                <li class="nav-item"><a class="nav-link {% if current_path == '/gettask' %}active{% endif %}" href="/gettask">{% trans "Participate" %}</a></li>
+                <li class="nav-item"><a class="nav-link scroll-link" href="{% if not is_homepage %}/{% endif %}#contact-section" data-section="contact-section">{% trans "Contact" %}</a></li>
                 {% if user.is_authenticated %}
                 <li class="nav-item">
-                    <a class="nav-link avatar-link {% if current_path == '/user-profile' %}active{% endif %}" href="/user-profile" title="Tu área personal">
+                    <a class="nav-link avatar-link {% if current_path == '/user-profile' %}active{% endif %}" href="/user-profile" title="{% trans 'Your personal area' %}">
                         {% if user.userprofile.profile_pic %}
-                            <img src="{{ user.userprofile.profile_pic.url }}" alt="Imagen de perfil" class="user-avatar">
+                            <img src="{{ user.userprofile.profile_pic.url }}" alt="{% trans 'Profile picture' %}" class="user-avatar">
                         {% else %}
                             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-person-circle user-avatar" viewBox="0 0 16 16" style="background-color: rgba(255,255,255,0.2); padding: 2px;">
                                 <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
@@ -117,8 +118,22 @@
                     </a>
                 </li>
                 {% else %}
-                <li class="nav-item"><a class="nav-link {% if current_path == '/accounts/login' %}active{% endif %}" href="/accounts/login">Login</a></li>
+                <li class="nav-item"><a class="nav-link {% if current_path == '/accounts/login' %}active{% endif %}" href="/accounts/login">{% trans "Login" %}</a></li>
                 {% endif %}
+                <!-- Language selector -->
+                <li class="nav-item ms-2">
+                    {% get_current_language as LANGUAGE_CODE %}
+                    {% get_available_languages as LANGUAGES %}
+                    <form action="{% url 'set_language' %}" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <input name="next" type="hidden" value="{{ request.path }}">
+                        <select name="language" onchange="this.form.submit()" class="form-select form-select-sm bg-transparent text-white border-secondary" style="width:auto;">
+                            {% for lang_code, lang_name in LANGUAGES %}
+                            <option value="{{ lang_code }}" {% if lang_code == LANGUAGE_CODE %}selected{% endif %} style="color:#000;">{{ lang_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                </li>
             </ul>
         </div>
     </div>

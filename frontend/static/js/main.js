@@ -48,30 +48,39 @@ $(document).ready(function () {
     let map; // Variable to store the Leaflet map object
     var baseLayers = null; // Variable to store the base layers
     let icon;
-    var layersControl = null;
     let lyr;
     let opacityControl;
     let infoModal;
     let georeferencingModal;
     let viirs;
     let sdgsatEuUk; // Nueva variable para la capa SDGSAT_EU_UK
-    infoModal = new bootstrap.Modal(document.getElementById('infoModal'), {
+    infoModal = new bootstrap.Modal(document.getElementById('taskInfoModal'), {
         keyboard: true // Allows closing the modal with the Esc key
     });
     georeferencingModal = new bootstrap.Modal(document.getElementById('georeferencingModal'), {
     });
+
+    // Public namespace for trylocal.js
+    window.LAN = {
+        get iconList() { return iconList; },
+        get map()      { return map; },
+        infoModal: infoModal,
+        georeferencingModal: georeferencingModal,
+        currentMapFilter: '',
+        geoLayer: null,
+        tryLocalLayer: null,
+        applyMapFilters: function() {
+            var f = window.LAN.currentMapFilter;
+            var tl = window.LAN.tryLocalLayer;
+            var gl = window.LAN.geoLayer;
+            if (tl && tl._image) tl._image.style.filter = f;
+            if (gl && gl._container) gl._container.style.filter = f;
+        },
+    };
     $('#usage-info').on('click', function () {
-        console.log('clicked');
-        $('.modal-title').html('Usage Information'); // Set the modal content
-        $('.modal-body').html(
-            'To georeference the image, please add at least three control points by clicking on the photography '
-            +'and then on the map.<br/><br />The control points should be added in the correct order.<br /><br />'
-            +'After adding the control points, click on the "Try" button to start the georeferencing process.<br /><br />'
-            +'If your georeferenciation is correct, click on the "Submit" button to submit the control points.<br /><br />'  
-            +'If you make a mistake, you can delete control points on the right bar.<br /><br />'
-            +'You can drag (left mouse button) and rotate (right mouse button) the photography for your convenience'); // Set the modal body content
-        infoModal.show(); // Show the modal
-    }); 
+        georeferencingModal.hide();
+        infoModal.show();
+    });
     
      
     const csrftoken = getCookie('csrftoken');
@@ -92,11 +101,121 @@ $(document).ready(function () {
             image_name = response.image_name;
             geoatempt_id = response.id;
             geoattempt_hash = response.hash;
-            
+            var opacitySlidersDiv = null;
+            var makeSliderRow = null;
+
             // Eliminar la extensión JPG del nombre de la imagen para el texto informativo
             let displayImageName = image_name;
             displayImageName = displayImageName.replace(/\.JPG$|\.jpg$/, '');
             $('#photo-info-text').text(displayImageName);
+
+            // --- Task Info Modal ---
+            (function showTaskInfoModal() {
+
+                $('#ti-image').text(displayImageName);
+
+                // Date — slice ISO string directly to avoid timezone shift
+                let formattedDate = response.photo_taken
+                    ? response.photo_taken.substring(0, 10)
+                    : 'Unknown';
+                $('#ti-date').text(formattedDate);
+
+                // Focal length
+                $('#ti-focal').text(response.focal_length || 'Unknown');
+
+                // Coordinates
+                const fmtCoord = c => c ? c : '—';
+                $('#ti-nadir').text(fmtCoord(response.spacecraft_nadir_point));
+                $('#ti-photo-center').text(fmtCoord(response.photo_center_point));
+                if (response.photo_center_by_machine_learning) {
+                    $('#ti-ml-center').text(response.photo_center_by_machine_learning);
+                    $('#ti-ml-row').show();
+                } else {
+                    $('#ti-ml-row').hide();
+                }
+
+                // Expedition & crew
+                if (response.expedition_number) {
+                    $('#ti-exp-number').text(response.expedition_number);
+                    const crewList = $('#ti-crew-list').empty();
+                    const crew = response.crew || [];
+                    if (crew.length === 0) {
+                        crewList.append($('<span class="text-muted">').text('Crew data not available'));
+                    } else {
+                        crew.forEach(function(member) {
+                            const name = typeof member === 'object' ? member.name : member;
+                            const imgUrl = typeof member === 'object' ? member.image_url : '';
+                            const wikiUrl = typeof member === 'object' ? member.wikipedia_url : '';
+                            const card = $('<div class="text-center" style="width:70px">');
+                            const inner = wikiUrl
+                                ? $('<a>').attr({href: wikiUrl, target: '_blank', title: name}).css({color: 'inherit', textDecoration: 'none'})
+                                : $('<span>').attr('title', name);
+                            if (imgUrl) {
+                                inner.append($('<img>').attr({src: imgUrl, alt: name})
+                                    .addClass('rounded-circle mb-1 d-block mx-auto')
+                                    .css({width:'52px', height:'52px', objectFit:'cover'}));
+                            }
+                            inner.append($('<div class="small lh-sm">').text(name.split(' ').pop()));
+                            card.append(inner);
+                            crewList.append(card);
+                        });
+                    }
+                } else {
+                    $('#ti-crew-col').hide();
+                }
+
+                // User stats
+                if (response.user_stats) {
+                    const s = response.user_stats;
+                    const fmt = (rank, val) => rank === 1 ? '🥇' : val;
+                    const fmtRank = r => r ? '#' + r : '—';
+
+                    $('#ti-stat-tasks').text(s.tasks_done);
+                    $('#ti-stat-tasks-rank').text(fmtRank(s.tasks_rank));
+                    $('#ti-stat-tasks-next').text(fmt(s.tasks_rank, s.tasks_to_next));
+                    $('#ti-stat-tasks-first').text(fmt(s.tasks_rank, s.tasks_to_first));
+
+                    $('#ti-stat-cp').text(s.control_points);
+                    $('#ti-stat-cp-rank').text(fmtRank(s.cp_rank));
+                    $('#ti-stat-cp-next').text(fmt(s.cp_rank, s.cp_to_next));
+                    $('#ti-stat-cp-first').text(fmt(s.cp_rank, s.cp_to_first));
+
+                    $('#ti-stat-hours').text(s.hours + 'h');
+                    $('#ti-stat-hours-rank').text(fmtRank(s.time_rank));
+                    $('#ti-stat-hours-next').text(fmt(s.time_rank, s.time_to_next + 'h'));
+                    $('#ti-stat-hours-first').text(fmt(s.time_rank, s.time_to_first + 'h'));
+
+                    $('#ti-stats-section').removeClass('d-none');
+                }
+
+                // Reverse geocode photoCenterPoint via Nominatim
+                const coords = response.photo_center_point || response.spacecraft_nadir_point;
+                if (coords) {
+                    const parts = coords.split(',');
+                    const lat = parseFloat(parts[0]);
+                    const lon = parseFloat(parts[1]);
+                    if (!isNaN(lat) && !isNaN(lon)) {
+                        fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`, {
+                            headers: {'Accept-Language': 'en'}
+                        })
+                        .then(r => r.json())
+                        .then(geo => {
+                            const addr = geo.address || {};
+                            const city = addr.city || addr.town || addr.village || addr.county || '';
+                            const country = addr.country || '';
+                            $('#ti-location').text([city, country].filter(Boolean).join(', ') || 'Open ocean / unknown');
+                        })
+                        .catch(() => $('#ti-location').text('Could not determine'));
+                    } else {
+                        $('#ti-location').text('Not available');
+                    }
+                } else {
+                    $('#ti-location').text('Not available');
+                }
+
+                infoModal.show();
+            })();
+            // --- End Task Info Modal ---
 
             // Initialize Fabric.js canvas
             const canvas = new fabric.Canvas('canvas', {
@@ -108,39 +227,7 @@ $(document).ready(function () {
            
 
             $('#photo-info').on('click', function () {
-                // Format date if it's in ISO format
-                let formattedDate = response.photo_taken || "Not provided";
-                if (formattedDate && formattedDate.includes('T')) {
-                    // Parse ISO date string
-                    const date = new Date(response.photo_taken);
-                    // Format the date as "YYYY-MM-DD HH:MM:SS" in English format
-                    const year = date.getFullYear();
-                    const month = String(date.getMonth() + 1).padStart(2, '0');
-                    const day = String(date.getDate()).padStart(2, '0');
-                    const hours = String(date.getHours()).padStart(2, '0');
-                    const minutes = String(date.getMinutes()).padStart(2, '0');
-                    const seconds = String(date.getSeconds()).padStart(2, '0');
-                    formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-                }
-                
-                // Handle null values for all fields
-                const photoCenterPoint = response.photo_center_point || "Not provided";
-                const photoCenterByML = response.photo_center_by_machine_learning || "Not provided";
-                const spacecraftNadirPoint = response.spacecraft_nadir_point || "Not provided";
-                const focalLength = response.focal_length || "Not provided";
-                
-                // Eliminar la extensión JPG del nombre de la imagen para el título
-                let imageTitle = response.image_name || "Untitled Image";
-                imageTitle = imageTitle.replace(/\.JPG$|\.jpg$/, '');
-                
-                $('.modal-title').html(imageTitle); // Set the modal content with image name without JPG extension
-                $('.modal-body').html(''
-                    +'Photography Date: ' + formattedDate + '<br />'
-                    +'Photography Center: ' + photoCenterPoint + '<br />'
-                    +'Photography Center by Machine Learning: ' + photoCenterByML + '<br />'
-                    +'ISS Position (Spacecraft Nadir Point): ' + spacecraftNadirPoint + '<br />'
-                    +'Focal length: ' + focalLength + '<br />');
-                infoModal.show(); // Show the modal
+                infoModal.show();
             });
 
             // Add buttons behavior
@@ -184,131 +271,18 @@ $(document).ready(function () {
                                 opacity: 0.9,
                                 format: 'image/png',
                             }).addTo(map);
+                            window.LAN.geoLayer = lyr;
+                            window.LAN.applyMapFilters();
 
-                            // Eliminar controles existentes
-                            if (layersControl) {
-                                map.removeControl(layersControl);
+                            // Add/replace Georeferenced slider (always recreate so it binds to the new lyr)
+                            if (opacitySlidersDiv) {
+                                var existing = document.getElementById('georef-slider-row');
+                                if (existing) existing.remove();
+                                opacitySlidersDiv.appendChild(makeSliderRow('Georeferenced', lyr, 0.9, 'georef-slider-row'));
                             }
-                            if (opacityControl) {
-                                map.removeControl(opacityControl);
-                            }
-                            
-                            // Definir capas base y superposiciones - necesitamos recrear las capas base
-                            const osmLayerSuccess = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                                maxZoom: 18,
-                                attribution: '© OpenStreetMap contributors'
-                            });
-                            
-                            const mapBoxSuccess = L.tileLayer('https://api.mapbox.com/styles/v1/frasanz/cm2cctm8400u501pbb8tvgom7/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZnJhc2FueiIsImEiOiJjbTF4bHE2MHIwdzRmMmpxd3g1cGZkbjR3In0.6B49yUgKNVhYOCy7ibw5ww', {
-                                maxZoom: 18,
-                                tileSize: 256,
-                                attribution: '&copy; <a href="https://www.mapbox.com/about/maps/">Mapbox</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                            });
 
-                            const googleSatSuccess = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
-                                maxZoom: 18,
-                                subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-                                transparent: true,
-                            });
-                            
-                            // Definir capas base y superposiciones
-                            baseLayers = {
-                                "OpenStreetMap": osmLayerSuccess,
-                                "MapBox": mapBoxSuccess,
-                                "Satellite": googleSatSuccess
-                            };
-                            
-                            var overlaymaps = {
-                                "VIIRS": viirs,
-                                "SDGSAT EU/UK": sdgsatEuUk,
-                                "Georeferenced": lyr
-                            };
-                            
-                            // Crear un nuevo control de capas estándar
-                            layersControl = L.control.layers(baseLayers, overlaymaps, { 
-                                collapsed: false 
-                            }).addTo(map);
-                            
-                            // Agregar el control deslizante dentro de la caja de control de capas
-                            setTimeout(function() {
-                                // Buscar todas las etiquetas en el control de capas
-                                var layerControlElement = document.querySelector('.leaflet-control-layers');
-                                if (!layerControlElement) return;
-                                
-                                var labels = layerControlElement.querySelectorAll('.leaflet-control-layers-overlays label');
-                                
-                                // Procesar todas las etiquetas para añadir sliders de opacidad
-                                for (var i = 0; i < labels.length; i++) {
-                                    var label = labels[i];
-                                    var spanElement = label.querySelector('span');
-                                    
-                                    if (spanElement) {
-                                        var text = spanElement.textContent.trim();
-                                        var sliderContainer = document.createElement('div');
-                                        sliderContainer.className = 'opacity-slider-inline';
-                                        sliderContainer.style.display = 'inline-block';
-                                        sliderContainer.style.marginLeft = '10px';
-                                        sliderContainer.style.verticalAlign = 'middle';
-                                        
-                                        var slider = document.createElement('input');
-                                        slider.type = 'range';
-                                        slider.min = '0';
-                                        slider.max = '1';
-                                        slider.step = '0.05';
-                                        slider.style.width = '80px';
-                                        slider.style.verticalAlign = 'middle';
-                                        
-                                        // Configurar valor inicial y capa objetivo según el nombre
-                                        if (text === 'VIIRS') {
-                                            slider.value = '0.8'; // Valor inicial de VIIRS es 0.8
-                                            slider.setAttribute('data-layer', 'viirs');
-                                        } else if (text === 'SDGSAT EU/UK') {
-                                            slider.value = '0.8'; // Valor inicial de SDGSAT es 0.8
-                                            slider.setAttribute('data-layer', 'sdgsat');
-                                        } else if (text === 'Georeferenced') {
-                                            slider.value = '0.9'; // Valor inicial de Georeferenced es 0.9
-                                            slider.setAttribute('data-layer', 'georeferenced');
-                                        }
-                                        
-                                        // Añadir el slider al contenedor
-                                        sliderContainer.appendChild(slider);
-                                        
-                                        // Añadir el contenedor después del texto
-                                        spanElement.appendChild(sliderContainer);
-                                        
-                                        // Configurar el evento para cambiar la opacidad
-                                        slider.addEventListener('input', function() {
-                                            var layerType = this.getAttribute('data-layer');
-                                            var opacityValue = parseFloat(this.value);
-                                            
-                                            if (layerType === 'viirs') {
-                                                viirs.setOpacity(opacityValue);
-                                            } else if (layerType === 'sdgsat') {
-                                                sdgsatEuUk.setOpacity(opacityValue);
-                                            } else if (layerType === 'georeferenced') {
-                                                lyr.setOpacity(opacityValue);
-                                            }
-                                        });
-                                        
-                                        // Evitar que al hacer clic en el slider se active/desactive la capa
-                                        slider.addEventListener('click', function(e) {
-                                            e.stopPropagation();
-                                        });
-                                        
-                                        // Ajustar el estilo del label para que tenga más espacio
-                                        label.style.display = 'flex';
-                                        label.style.alignItems = 'center';
-                                        label.style.width = '100%';
-                                    }
-                                }
-                            }, 100);
-                            
                             // Ajustar zoom
-                            var currentZoom = map.getZoom();
-                            map.setZoom(11);
-                            setTimeout(function () {
-                                map.setZoom(response.maxZoom);
-                            }, 300);  // Adjust the delay if necessary, 300ms works in most cases
+                            map.setZoom(response.maxZoom);
                             $('#Submit').removeClass('disabled');
 
                         },
@@ -383,6 +357,7 @@ $(document).ready(function () {
             });
             const static_url = "/media/original/"; // Static URL
             const imageUrl = static_url + image_name; // Image URL
+            window.LAN.imageUrl = imageUrl;
             console.log(response);
             let latLng = "";
             const canvasWidth = $('#column-photo').width(); // Canvas width
@@ -400,7 +375,7 @@ $(document).ready(function () {
                 let isRightClickDragging = false; // Flag to track right-click drag state
                 let isDragging = false; // Flag to track left-click drag state
                 let isDragged = false; // Flag to track if the image was dragged
-                let startX; // Initial X position for rotation calculation
+                let startAngle; // Initial angle (radians) from group center to mouse, for rotation
                 let isPKeyActive = false;
                 let isDKeyActive = false;
                 let lastPosX; // Last X position for drag movement
@@ -424,8 +399,72 @@ $(document).ready(function () {
                     selectable: false, // Make the group non-selectable
                     hasControls: false, // Disable controls for the group
                     hasBorders: false, // Disable borders for the group
+                    objectCaching: false,
                 });
                 canvas.add(group);
+
+                // Image filters (brightness, contrast, gamma, saturation)
+                // Force 2D backend to avoid WebGL dimension issues with images inside groups
+                fabric.filterBackend = new fabric.Canvas2dFilterBackend();
+
+                var brightnessFilter  = new fabric.Image.filters.Brightness({ brightness: 0 });
+                var contrastFilter    = new fabric.Image.filters.Contrast({ contrast: 0 });
+                var gammaFilter       = new fabric.Image.filters.Gamma({ gamma: [1, 1, 1] });
+                var saturationFilter  = new fabric.Image.filters.Saturation({ saturation: 0 });
+                img.filters = [brightnessFilter, contrastFilter, gammaFilter, saturationFilter];
+
+                function applyImageFilters() {
+                    img.applyFilters();
+                    group.dirty = true;
+                    canvas.requestRenderAll();
+                    // Apply equivalent CSS filters to the map layers
+                    var b = brightnessFilter.brightness;   // -1 to 1
+                    var c = contrastFilter.contrast;       // -1 to 1
+                    var s = saturationFilter.saturation;   // -1 to 1
+                    window.LAN.currentMapFilter =
+                        'brightness(' + Math.max(0, 1 + b).toFixed(3) + ') ' +
+                        'contrast('   + Math.max(0, 1 + c).toFixed(3) + ') ' +
+                        'saturate('   + Math.max(0, 1 + s).toFixed(3) + ')';
+                    window.LAN.applyMapFilters();
+                }
+
+                document.getElementById('brightness-slider').addEventListener('input', function() {
+                    brightnessFilter.brightness = parseFloat(this.value);
+                    document.getElementById('brightness-val').textContent = this.value;
+                    applyImageFilters();
+                });
+                document.getElementById('contrast-slider').addEventListener('input', function() {
+                    contrastFilter.contrast = parseFloat(this.value);
+                    document.getElementById('contrast-val').textContent = this.value;
+                    applyImageFilters();
+                });
+                document.getElementById('gamma-slider').addEventListener('input', function() {
+                    var g = parseFloat(this.value);
+                    gammaFilter.gamma = [g, g, g];
+                    document.getElementById('gamma-val').textContent = this.value;
+                    applyImageFilters();
+                });
+                document.getElementById('saturation-slider').addEventListener('input', function() {
+                    saturationFilter.saturation = parseFloat(this.value);
+                    document.getElementById('saturation-val').textContent = this.value;
+                    applyImageFilters();
+                });
+                document.getElementById('reset-filters').addEventListener('click', function() {
+                    document.getElementById('brightness-slider').value = 0;
+                    document.getElementById('contrast-slider').value = 0;
+                    document.getElementById('gamma-slider').value = 1;
+                    document.getElementById('saturation-slider').value = 0;
+                    document.getElementById('brightness-val').textContent = '0';
+                    document.getElementById('contrast-val').textContent = '0';
+                    document.getElementById('gamma-val').textContent = '1';
+                    document.getElementById('saturation-val').textContent = '0';
+                    brightnessFilter.brightness = 0;
+                    contrastFilter.contrast = 0;
+                    gammaFilter.gamma = [1, 1, 1];
+                    saturationFilter.saturation = 0;
+                    applyImageFilters();
+                });
+
                 document.addEventListener('keydown', function (event) {
                     if (event.key === 'p' || event.key === 'P') {
                         isPKeyActive = true;
@@ -468,6 +507,7 @@ $(document).ready(function () {
                             hasBorders: false,   // Disable borders for the label
                             stroke: '#000000',
                             strokeWidth: 1,
+                            objectCaching: false,
                         });
 
                         const label1Text = new fabric.Text(iconCounter.toString(), {
@@ -478,9 +518,10 @@ $(document).ready(function () {
                             originY: 'center',
                             selectable: false,
                             hasControls: false,
-                            hasBorders: false
+                            hasBorders: false,
+                            objectCaching: false,
                         });
-                        
+
                         const label1Background = new fabric.Rect({
                             fill: 'black',
                             width: label1Text.width + 5,  // Add padding to the background
@@ -488,9 +529,10 @@ $(document).ready(function () {
                             originX: 'center',
                             originY: 'center',
                             rx: 5,  // Set the border radius to make it rounded
-                            ry: 5
+                            ry: 5,
+                            objectCaching: false,
                         });
-                        
+
                         // Group the text and background
                         const label1Group = new fabric.Group([label1Background, label1Text], {
                             left: x,
@@ -499,7 +541,8 @@ $(document).ready(function () {
                             originY: 'center',
                             selectable: false,
                             hasControls: false,
-                            hasBorders: false
+                            hasBorders: false,
+                            objectCaching: false,
                         });
 
                         // Create a unique ID for the icon
@@ -513,7 +556,8 @@ $(document).ready(function () {
                             originY: 'bottom',
                             selectable: true,  // Make the group selectable
                             hasControls: false, // Disable controls for the group
-                            hasBorders: false   // Disable borders for the group
+                            hasBorders: false,  // Disable borders for the group
+                            objectCaching: false,
                         });
 
                         // Store the icon object in the list
@@ -668,6 +712,7 @@ $(document).ready(function () {
 
 
 
+
                 // Function to convert canvas click coordinates to image coordinates
                 function getImageCoordinates(event) {
                     // Get the pointer position on the canvas
@@ -684,6 +729,7 @@ $(document).ready(function () {
 
                     return { px: transformedPoint.x + img.width / 2, py: transformedPoint.y + img.height / 2 };
                 }
+
 
                 if(response.photo_center_point){
                     latLng = parseCoordinates(response.photo_center_point);
@@ -715,19 +761,23 @@ $(document).ready(function () {
                     tms: 1,
                     attribution: 'SDGSAT @ LostAtNight.org',
                     opacity: 0.8,
+                    className: 'sdgsat-tiles',
                 });
+
+                // Dynamic style element for SDGSAT CSS filters
+                var sdgsatFilterStyle = document.createElement('style');
+                sdgsatFilterStyle.id = 'sdgsat-filter-style';
+                document.head.appendChild(sdgsatFilterStyle);
+                var sdgsatFilters = { brightness: 1, contrast: 1, saturate: 1 };
+                function applySdgsatFilters() {
+                    var f = sdgsatFilters;
+                    sdgsatFilterStyle.textContent = '.sdgsat-tiles { filter: brightness(' + f.brightness + ') contrast(' + f.contrast + ') saturate(' + f.saturate + '); }';
+                }
 
                 const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom: 18,
-                    attribution: '© OpenStreetMap contributors'
-                });
-
-                //const mapBox = L.tileLayer('https://api.mapbox.com/styles/v1/frasanz/cm2cdt26700t301pghdcsc7b0/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZnJhc2FueiIsImEiOiJjbTF4bHE2MHIwdzRmMmpxd3g1cGZkbjR3In0.6B49yUgKNVhYOCy7ibw5ww', {
-                //const mapBox = L.tileLayer('https://api.mapbox.com/styles/v1/germangil/cm2x26xaf00ns01qw9jooe6w/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZ2VybWFuZ2lsIiwiYSI6ImNsbXQxbDBoNTAwbjkybGxvcngxNDBhYzgifQ.kcRn3hE1wUpA1KpdxiG23g',{ 
-                const mapBox = L.tileLayer('https://api.mapbox.com/styles/v1/frasanz/cm2cctm8400u501pbb8tvgom7/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZnJhc2FueiIsImEiOiJjbTF4bHE2MHIwdzRmMmpxd3g1cGZkbjR3In0.6B49yUgKNVhYOCy7ibw5ww', {
-                    maxZoom: 18,
-                    tileSize: 256,
-                    attribution: '&copy; <a href="https://www.mapbox.com/about/maps/">Mapbox</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    attribution: '© OpenStreetMap contributors',
+                    className: 'osm-tiles'
                 });
 
                 const googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
@@ -735,27 +785,29 @@ $(document).ready(function () {
                     subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
                     transparent: true,
                 });
-                map = L.map('map', { layers: [viirs],  maxZoom: 18 }).setView(latLng, 10);
+
+                // VIIRS and SDGSAT are always on the map; visibility controlled by opacity sliders
+                map = L.map('map', { maxZoom: 18, touchZoom: false, tap: false }).setView(latLng, 10);
+                window.LAN.map = map;
                 osmLayer.addTo(map);
-                console.log("Here");
-                console.log(map.getZoom());
+                viirs.addTo(map);
+                sdgsatEuUk.addTo(map);
+
                 map.on('zoom', function() {
-                    console.log("Zoom level changed:", map.getZoom());
-                    // zoombox update
                     document.getElementById('zoombox').innerHTML = 'Zoom level: ' + map.getZoom();
                 });
-           
+                map.getContainer().addEventListener('mousedown', function() {
+                    map.scrollWheelZoom.disable();
+                });
+                document.addEventListener('mouseup', function() {
+                    setTimeout(function() { map.scrollWheelZoom.enable(); }, 300);
+                });
 
-                // Add layer control to switch between layers
+
                 baseLayers = {
                     "OpenStreetMap": osmLayer,
-                    "MapBox": mapBox,
                     "Satellite": googleSat
                 };
-                var overlaymaps = { 
-                    "VIIRS": viirs,
-                    "SDGSAT EU/UK": sdgsatEuUk
-                }
 
                 // Crear un control personalizado para mostrar "hola" debajo de los botones de zoom
                 L.Control.HelloMessage = L.Control.extend({
@@ -777,83 +829,132 @@ $(document).ready(function () {
                 
                 L.control.helloMessage({ position: 'bottomleft' }).addTo(map);
 
-                layersControl = L.control.layers(baseLayers, overlaymaps, { collapsed: false }).addTo(map);
+                // Custom control: base layer buttons + opacity sliders (no checkboxes)
+                makeSliderRow = function(label, layer, initialOpacity, rowId) {
+                    var row = document.createElement('div');
+                    if (rowId) row.id = rowId;
+                    row.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:4px;';
+                    var lbl = document.createElement('span');
+                    lbl.textContent = label;
+                    lbl.style.minWidth = '90px';
+                    var slider = document.createElement('input');
+                    slider.type = 'range';
+                    slider.min = '0';
+                    slider.max = '1';
+                    slider.step = '0.05';
+                    slider.value = String(initialOpacity);
+                    slider.style.width = '80px';
+                    slider.addEventListener('input', function() {
+                        layer.setOpacity(parseFloat(this.value));
+                    });
+                    L.DomEvent.disableClickPropagation(slider);
+                    L.DomEvent.disableScrollPropagation(slider);
+                    slider.addEventListener('mousedown', function(e) { e.stopPropagation(); });
+                    slider.addEventListener('mouseup', function(e) { e.stopPropagation(); });
+                    row.appendChild(lbl);
+                    row.appendChild(slider);
+                    return row;
+                }
 
-                // Añadir sliders de opacidad para VIIRS y SDGSAT desde el inicio
-                setTimeout(function() {
-                    // Buscar todas las etiquetas en el control de capas
-                    var layerControlElement = document.querySelector('.leaflet-control-layers');
-                    if (!layerControlElement) return;
-                    
-                    var labels = layerControlElement.querySelectorAll('.leaflet-control-layers-overlays label');
-                    
-                    // Procesar las etiquetas para añadir sliders de opacidad
-                    for (var i = 0; i < labels.length; i++) {
-                        var label = labels[i];
-                        var spanElement = label.querySelector('span');
-                        
-                        if (spanElement) {
-                            var text = spanElement.textContent.trim();
-                            if (text === 'VIIRS' || text === 'SDGSAT EU/UK') {
-                                var sliderContainer = document.createElement('div');
-                                sliderContainer.className = 'opacity-slider-inline';
-                                sliderContainer.style.display = 'inline-block';
-                                sliderContainer.style.marginLeft = '10px';
-                                sliderContainer.style.verticalAlign = 'middle';
-                                
-                                var slider = document.createElement('input');
-                                slider.type = 'range';
-                                slider.min = '0';
-                                slider.max = '1';
-                                slider.step = '0.05';
-                                slider.style.width = '80px';
-                                slider.style.verticalAlign = 'middle';
-                                
-                                // Configurar valor inicial y capa objetivo según el nombre
-                                if (text === 'VIIRS') {
-                                    slider.value = '0.8';
-                                    slider.setAttribute('data-layer', 'viirs');
-                                } else if (text === 'SDGSAT EU/UK') {
-                                    slider.value = '0.8';
-                                    slider.setAttribute('data-layer', 'sdgsat');
-                                }
-                                
-                                // Añadir el slider al contenedor
-                                sliderContainer.appendChild(slider);
-                                
-                                // Añadir el contenedor después del texto
-                                spanElement.appendChild(sliderContainer);
-                                
-                                // Configurar el evento para cambiar la opacidad
-                                slider.addEventListener('input', function() {
-                                    var layerType = this.getAttribute('data-layer');
-                                    var opacityValue = parseFloat(this.value);
-                                    
-                                    if (layerType === 'viirs') {
-                                        viirs.setOpacity(opacityValue);
-                                    } else if (layerType === 'sdgsat') {
-                                        sdgsatEuUk.setOpacity(opacityValue);
-                                    }
-                                });
-                                
-                                // Evitar que al hacer clic en el slider se active/desactive la capa
-                                slider.addEventListener('click', function(e) {
-                                    e.stopPropagation();
-                                });
-                                
-                                // Ajustar el estilo del label
-                                label.style.display = 'flex';
-                                label.style.alignItems = 'center';
-                                label.style.width = '100%';
-                            }
+                L.Control.OpacitySliders = L.Control.extend({
+                    onAdd: function() {
+                        opacitySlidersDiv = L.DomUtil.create('div', 'leaflet-control-layers leaflet-control-layers-expanded');
+                        opacitySlidersDiv.style.cssText = 'padding:6px 10px;font-size:13px;';
+                        L.DomEvent.disableClickPropagation(opacitySlidersDiv);
+                        L.DomEvent.disableScrollPropagation(opacitySlidersDiv);
+                        window.LAN.opacitySlidersDiv = opacitySlidersDiv;
+                        window.LAN.makeSliderRow = makeSliderRow;
+
+                        // Base layer toggle buttons
+                        var baseRow = document.createElement('div');
+                        baseRow.style.cssText = 'display:flex;gap:4px;margin-bottom:6px;';
+                        var activeLayer = osmLayer;
+                        var btnStyle = 'font-size:11px;padding:2px 6px;border:1px solid #aaa;border-radius:3px;cursor:pointer;background:#fff;';
+                        var btnActiveStyle = 'font-size:11px;padding:2px 6px;border:1px solid #555;border-radius:3px;cursor:pointer;background:#555;color:#fff;';
+                        var btnOsm = document.createElement('button');
+                        btnOsm.textContent = 'OSM';
+                        btnOsm.style.cssText = btnActiveStyle;
+                        var btnSat = document.createElement('button');
+                        btnSat.textContent = 'Satellite';
+                        btnSat.style.cssText = btnStyle;
+                        function switchBase(newLayer, activeBtn, inactiveBtn) {
+                            map.removeLayer(activeLayer);
+                            newLayer.addTo(map);
+                            newLayer.bringToBack();
+                            activeLayer = newLayer;
+                            activeBtn.style.cssText = btnActiveStyle;
+                            inactiveBtn.style.cssText = btnStyle;
                         }
-                    }
-                }, 100);
+                        btnOsm.addEventListener('click', function() { switchBase(osmLayer, btnOsm, btnSat); });
+                        btnSat.addEventListener('click', function() { switchBase(googleSat, btnSat, btnOsm); });
+                        L.DomEvent.disableClickPropagation(btnOsm);
+                        L.DomEvent.disableClickPropagation(btnSat);
+                        baseRow.appendChild(btnOsm);
+                        baseRow.appendChild(btnSat);
+                        opacitySlidersDiv.appendChild(baseRow);
+
+                        opacitySlidersDiv.appendChild(makeSliderRow('VIIRS', viirs, 0.8));
+                        opacitySlidersDiv.appendChild(makeSliderRow('SDGSAT EU/UK', sdgsatEuUk, 0.8));
+
+                        // SDGSAT image filters
+                        var filterSep = document.createElement('div');
+                        filterSep.style.cssText = 'border-top:1px solid #ccc;margin:4px 0 4px 0;font-size:11px;color:#666;';
+                        filterSep.textContent = 'SDGSAT filters';
+                        opacitySlidersDiv.appendChild(filterSep);
+
+                        function makeSdgsatFilterRow(label, filterKey, min, max, step, initial) {
+                            var row = document.createElement('div');
+                            row.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:4px;';
+                            var lbl = document.createElement('span');
+                            lbl.textContent = label;
+                            lbl.style.minWidth = '90px';
+                            var slider = document.createElement('input');
+                            slider.type = 'range';
+                            slider.min = String(min);
+                            slider.max = String(max);
+                            slider.step = String(step);
+                            slider.value = String(initial);
+                            slider.style.width = '80px';
+                            var val = document.createElement('span');
+                            val.textContent = String(initial);
+                            val.style.cssText = 'min-width:32px;text-align:right;';
+                            slider.addEventListener('input', function() {
+                                sdgsatFilters[filterKey] = parseFloat(this.value);
+                                val.textContent = this.value;
+                                applySdgsatFilters();
+                            });
+                            L.DomEvent.disableClickPropagation(slider);
+                            L.DomEvent.disableScrollPropagation(slider);
+                            slider.addEventListener('mousedown', function(e) { e.stopPropagation(); });
+                            slider.addEventListener('mouseup', function(e) { e.stopPropagation(); });
+                            row.appendChild(lbl);
+                            row.appendChild(slider);
+                            row.appendChild(val);
+                            return row;
+                        }
+
+                        opacitySlidersDiv.appendChild(makeSdgsatFilterRow('Brightness', 'brightness', 0, 3, 0.05, 1));
+                        opacitySlidersDiv.appendChild(makeSdgsatFilterRow('Contrast',   'contrast',   0, 3, 0.05, 1));
+                        opacitySlidersDiv.appendChild(makeSdgsatFilterRow('Saturation', 'saturate',   0, 3, 0.05, 1));
+
+                        var dynSep = document.createElement('div');
+                        dynSep.id = 'dyn-layers-sep';
+                        dynSep.style.cssText = 'border-top:1px solid #ccc;margin:6px 0 2px 0;';
+                        opacitySlidersDiv.appendChild(dynSep);
+
+                        return opacitySlidersDiv;
+                    },
+                    onRemove: function() {}
+                });
+                L.control.opacitySliders = function(opts) { return new L.Control.OpacitySliders(opts); };
+                L.control.opacitySliders({ position: 'topright' }).addTo(map);
 
                 function addIconToMap(lat, lon) {
+                    var capturedID = `Point ${iconCounter}`; // capture before increment
+
                     // Create a custom icon using Leaflet's divIcon and Font Awesome
                     var icon = L.divIcon({
-                        id: `Point ${iconCounter}`, // Unique ID for the icon
+                        id: capturedID,
                         className: 'fa-icon-marker', // Use custom class to style the icon
                         html: `<div class="map-icon"><span class="black">${iconCounter}</span><i class="fa-solid fa-location-dot"></i></div>`, // Font Awesome icon
                         iconSize: [20, 24], // Set the icon size to match the font size
@@ -861,14 +962,26 @@ $(document).ready(function () {
                         popupAnchor: [0, -20] // Optional: Position of the popup relative to the icon
                     });
 
-                    // Add the icon as a marker to the map
-                    var marker = L.marker([lat, lon], { icon: icon }).addTo(map);
-                    markerList[`Point ${iconCounter}`] = {
-                        marker,
-                        lat,
-                        lon
-                    }; // Store the marker object
-                    // Get the last icon object from the list
+                    // Add the icon as a draggable marker to the map
+                    var marker = L.marker([lat, lon], { icon: icon, draggable: true }).addTo(map);
+
+                    marker.on('dragend', function() {
+                        var ll = marker.getLatLng();
+                        var entry = iconList.find(function(i) { return i.id === capturedID; });
+                        if (entry) {
+                            entry.lat = ll.lat;
+                            entry.lon = ll.lng;
+                            entry.text.lat = ll.lat;
+                            entry.text.lon = ll.lng;
+                        }
+                        if (markerList[capturedID]) {
+                            markerList[capturedID].lat = ll.lat;
+                            markerList[capturedID].lon = ll.lng;
+                        }
+                        updateIconList();
+                    });
+
+                    markerList[capturedID] = { marker, lat, lon };
 
                     iconList[iconList.length - 1].lat = lat; // Store the icon's coordinates
                     iconList[iconList.length - 1].lon = lon;
@@ -932,7 +1045,6 @@ $(document).ready(function () {
                 
                     // Re-render the canvas
                     canvas.requestRenderAll();
-                
                     // Prevent default scrolling behavior
                     event.e.preventDefault();
                     event.e.stopPropagation();
@@ -962,15 +1074,23 @@ $(document).ready(function () {
                     // alert(event.e.button);
                     else if (event.e.button === 2) { // Right-click (button === 2)
                         isRightClickDragging = true;
-                        startX = event.e.clientX; // Store initial X position
+                        const pointer = canvas.getPointer(event.e);
+                        startAngle = Math.atan2(pointer.y - group.top, pointer.x - group.left);
                         event.e.preventDefault(); // Prevent default context menu
                     }
                 });
 
                 // Event for mouse move
                 canvas.on('mouse:move', function (event) {
-                    /* Check tha move is greatest than 5 pixels */
-                    if (Math.abs(event.e.movementX) > 5 || Math.abs(event.e.movementY) > 5) {
+                    if (isRightClickDragging) {
+                        const pointer = canvas.getPointer(event.e);
+                        const currentAngle = Math.atan2(pointer.y - group.top, pointer.x - group.left);
+                        const deltaAngle = currentAngle - startAngle;
+                        group.rotate(group.angle + deltaAngle * (180 / Math.PI));
+                        canvas.requestRenderAll();
+                        startAngle = currentAngle;
+                        canvas.hoverCursor = 'grabbing';
+                    } else if (Math.abs(event.e.movementX) > 5 || Math.abs(event.e.movementY) > 5) {
                         if (isDragging) {
                             isDragged = true;
                             const currentPosX = event.e.clientX;
@@ -990,24 +1110,8 @@ $(document).ready(function () {
                             canvas.hoverCursor = 'grabbing'; // Change the cursor style
 
                             canvas.requestRenderAll(); // Re-render the canvas with the new position
-
-                        } else if (isRightClickDragging) {
-                            const currentX = event.e.clientX; // Get current X position
-                            const deltaX = currentX - startX; // Calculate the difference in X
-
-                            // Adjust the rotation angle based on the mouse movement
-                            group.rotate(group.angle - deltaX * 0.2); // Adjust the multiplier for sensitivity
-                            canvas.requestRenderAll(); // Re-render the canvas with the new rotation
-
-                            // Update the start position for continuous rotation
-                            startX = currentX;
-                            canvas.hoverCursor = 'grabbing'; // Change the cursor style
-                        } else {
-
                         }
-
                     }
-
                 });
 
                 // Event for mouse up
@@ -1060,6 +1164,8 @@ $(document).ready(function () {
                         canvas.hoverCursor = 'default'; // Change the cursor style
                     }
                 });
+
+
             });
         },
         error: function (response) {

@@ -8,10 +8,12 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated  # Add this import
+from rest_framework.permissions import AllowAny
 from .serializers import GeoAttemptSerializer, ImageSerializer, MiniGeoAttemptSerializer
-from .models import GeoAttempt, Image, Batch, GeoAttemptsByUserByDay
+from .models import GeoAttempt, Image, Batch, GeoAttemptsByUserByDay, TutorialEvent
 from user_profile.models import UserProfile
 import os
+import shutil
 import subprocess
 import random
 from haversine import haversine
@@ -101,7 +103,69 @@ class PendingGeoAttemptView(APIView):
 
         # Serialize and return the GeoAttempt
         serializer = GeoAttemptSerializer(geoattempt)
-        return Response(serializer.data)
+        data = dict(serializer.data)
+
+        # Append personal stats for authenticated users
+        if request.user.is_authenticated:
+            from django.db.models import Count
+            user = request.user
+            all_done = GeoAttempt.objects.filter(status='DONE')
+            user_done = all_done.filter(assignedUser=user)
+
+            # --- Tasks ---
+            tasks_done = user_done.count()
+            tasks_board = list(all_done.values('assignedUser').annotate(total=Count('id')).order_by('-total'))
+            tasks_rank = next((i + 1 for i, u in enumerate(tasks_board) if u['assignedUser'] == user.id), None)
+            tasks_to_next = (tasks_board[tasks_rank - 2]['total'] - tasks_done + 1) if tasks_rank and tasks_rank > 1 else 0
+            tasks_to_first = (tasks_board[0]['total'] - tasks_done) if tasks_rank and tasks_rank > 1 else 0
+
+            # --- Control points (per user, computed in Python) ---
+            all_cp_by_user = {}
+            for a in all_done.only('assignedUser_id', 'controlPoints'):
+                uid = a.assignedUser_id
+                if uid is None:
+                    continue
+                n = len(a.controlPoints) if a.controlPoints and isinstance(a.controlPoints, list) else 0
+                all_cp_by_user[uid] = all_cp_by_user.get(uid, 0) + n
+            my_cp = all_cp_by_user.get(user.id, 0)
+            cp_board = sorted(all_cp_by_user.items(), key=lambda x: -x[1])
+            cp_rank = next((i + 1 for i, (uid, _) in enumerate(cp_board) if uid == user.id), None)
+            cp_to_next = (cp_board[cp_rank - 2][1] - my_cp + 1) if cp_rank and cp_rank > 1 else 0
+            cp_to_first = (cp_board[0][1] - my_cp) if cp_rank and cp_rank > 1 else 0
+
+            # --- Time (hours) ---
+            all_time_by_user = {}
+            for a in all_done.filter(finishedDateTime__isnull=False, assignedDateTime__isnull=False).only(
+                    'assignedUser_id', 'finishedDateTime', 'assignedDateTime'):
+                uid = a.assignedUser_id
+                if uid is None:
+                    continue
+                secs = (a.finishedDateTime - a.assignedDateTime).total_seconds()
+                if secs > 0:
+                    all_time_by_user[uid] = all_time_by_user.get(uid, 0) + secs
+            my_secs = all_time_by_user.get(user.id, 0)
+            my_hours = round(my_secs / 3600, 1)
+            time_board = sorted(all_time_by_user.items(), key=lambda x: -x[1])
+            time_rank = next((i + 1 for i, (uid, _) in enumerate(time_board) if uid == user.id), None)
+            time_to_next_h = round((time_board[time_rank - 2][1] - my_secs + 60) / 3600, 1) if time_rank and time_rank > 1 else 0
+            time_to_first_h = round((time_board[0][1] - my_secs) / 3600, 1) if time_rank and time_rank > 1 else 0
+
+            data['user_stats'] = {
+                'tasks_done': tasks_done,
+                'tasks_rank': tasks_rank,
+                'tasks_to_next': tasks_to_next,
+                'tasks_to_first': tasks_to_first,
+                'control_points': my_cp,
+                'cp_rank': cp_rank,
+                'cp_to_next': cp_to_next,
+                'cp_to_first': cp_to_first,
+                'hours': my_hours,
+                'time_rank': time_rank,
+                'time_to_next': time_to_next_h,
+                'time_to_first': time_to_first_h,
+            }
+
+        return Response(data)
 
 
 class GeoAttemptIndividualView(APIView):
@@ -216,17 +280,20 @@ class GeoAttemptIndividualView(APIView):
 
                 # Second command: gdalwarp
                 # Check the # of points before enable tps (-order n to pylynomial)
+                tif_path = 'media/georeferenced/' + geoattemp.image.name + geoattemp.hash + '.tif'
+                tif_tmp_path = 'media/georeferenced/' + geoattemp.image.name + geoattemp.hash + '_warped.tif'
                 command = 'gdalwarp -r bilinear -tps -t_srs EPSG:4326'
-                command += ' media/georeferenced/' + \
-                    geoattemp.image.name + geoattemp.hash + '.tif'
-                command += ' media/georeferenced/' + \
-                    geoattemp.image.name + geoattemp.hash + '.tif'
+                command += ' ' + tif_path
+                command += ' ' + tif_tmp_path
                 print(command)
 
                 try:
                     subprocess.run(command, shell=True, check=True,
                                    capture_output=True, text=True)
+                    os.replace(tif_tmp_path, tif_path)
                 except subprocess.CalledProcessError as e:
+                    if os.path.exists(tif_tmp_path):
+                        os.remove(tif_tmp_path)
                     return Response({"error": f"gdalwarp failed: {e.stderr}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
                 # Third command: Remove previous tiles
@@ -260,6 +327,13 @@ class GeoAttemptIndividualView(APIView):
                 return Response(serializer.data, status=status.HTTP_200_OK)
             # That means that the user is happy with the final result
             elif request.data['status'] == 'DONE':
+                # Clean up temporary tiles generated during Try
+                tile_dir = 'media/georeferenced/' + geoattemp.image.name + geoattemp.hash
+                tile_tif = tile_dir + '.tif'
+                if os.path.exists(tile_tif):
+                    os.remove(tile_tif)
+                if os.path.exists(tile_dir):
+                    shutil.rmtree(tile_dir)
                 # let's start the georeferencing process
                 # for the moment, launch a batch script
                 print('Submitting the final result')
@@ -311,6 +385,13 @@ class GeoAttemptIndividualView(APIView):
             # That means that the user click on "skip" button
             # So returning back to pending status
             elif request.data['status'] == 'PENDING':
+                # Clean up temporary tiles generated during Try
+                tile_dir = 'media/georeferenced/' + geoattemp.image.name + geoattemp.hash
+                tile_tif = tile_dir + '.tif'
+                if os.path.exists(tile_tif):
+                    os.remove(tile_tif)
+                if os.path.exists(tile_dir):
+                    shutil.rmtree(tile_dir)
                 # Come back to pending status
                 print('Come back to pending status')
                 # We are doing it mainly for control panel
@@ -506,3 +587,36 @@ class GeoAttemptsCalendarView(APIView):
         ]
         
         return Response(calendar_data)
+
+
+class TutorialEventView(APIView):
+    permission_classes = [AllowAny]
+
+    @swagger_auto_schema(
+        tags=['03. Tutorial'],
+        operation_summary="Log a tutorial event")
+    def post(self, request):
+        event = request.data.get('event')
+        valid = {'started', 'step', 'completed', 'dismissed'}
+        if event not in valid:
+            return Response({'error': 'invalid event'}, status=status.HTTP_400_BAD_REQUEST)
+
+        step = request.data.get('step')
+        if step is not None:
+            try:
+                step = int(step)
+            except (TypeError, ValueError):
+                return Response({'error': 'invalid step'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = request.user if request.user.is_authenticated else None
+        if not request.session.session_key:
+            request.session.save()
+        session_key = request.session.session_key or ''
+
+        TutorialEvent.objects.create(
+            user=user,
+            session_key=session_key,
+            event=event,
+            step=step,
+        )
+        return Response({'ok': True}, status=status.HTTP_201_CREATED)

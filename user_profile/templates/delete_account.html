@@ -1,12 +1,13 @@
 {% load static %}
 {% load bootstrap5 %}
+{% load i18n %}
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lost At Night - Eliminar Cuenta</title>
+    <title>Lost At Night - {% trans "Delete Account" %}</title>
     <!-- Añadiendo favicon -->
     <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
     <link rel="alternate icon" href="{% static 'img/LogoLostAtNight.png' %}" type="image/png">
@@ -95,27 +96,26 @@
             <div class="col-md-8">
                 <div class="card delete-card">
                     <div class="card-header">
-                        <h5 class="card-title mb-0">Eliminar cuenta</h5>
+                        <h5 class="card-title mb-0">{% trans "Delete Account" %}</h5>
                     </div>
                     <div class="card-body text-center">
                         <i class="fas fa-exclamation-triangle warning-icon"></i>
-                        
-                        <h4 class="mb-3">¿Estás seguro que quieres eliminar tu cuenta?</h4>
-                        
+
+                        <h4 class="mb-3">{% trans "Are you sure you want to delete your account?" %}</h4>
+
                         <p class="text-light mb-4">
-                            Esta acción eliminará permanentemente tu cuenta y todos tus datos asociados.
-                            No podrás recuperar esta información.
+                            {% trans "This action will permanently delete your account and all associated data. You will not be able to recover this information." %}
                         </p>
-                        
+
                         <form method="post">
                             {% csrf_token %}
-                            
+
                             <div class="d-flex justify-content-center mt-4">
                                 <a href="{% url 'user' %}" class="btn btn-cancel me-3">
-                                    <i class="fas fa-times"></i> Cancelar
+                                    <i class="fas fa-times"></i> {% trans "Cancel" %}
                                 </a>
                                 <button type="submit" class="btn btn-delete">
-                                    <i class="fas fa-trash-alt"></i> Eliminar permanentemente
+                                    <i class="fas fa-trash-alt"></i> {% trans "Delete permanently" %}
                                 </button>
                             </div>
                         </form>

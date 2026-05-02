@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 from pathlib import Path
 from decouple import config
+from django.utils.translation import gettext_lazy as _
 
 
 
@@ -74,6 +75,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -151,7 +153,21 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en'
+
+LANGUAGES = [
+    ('en', _('English')),
+    ('es', _('Spanish')),
+    ('fr', _('French')),
+    ('de', _('German')),
+    ('it', _('Italian')),
+    ('pt', _('Portuguese')),
+    ('ja', _('Japanese')),
+    ('ru', _('Russian')),
+    ('zh-hans', _('Chinese')),
+]
+
+LOCALE_PATHS = [BASE_DIR / 'locale']
 
 TIME_ZONE = 'UTC'
 
@@ -186,23 +202,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Django RQ
 RQ_QUEUES = {
-    'default': {
+    'lost_scheduler': {
         'HOST': 'localhost',
         'PORT': 6379,
         'DB': 0,
-        'DEFAULT_TIMEOUT': 360,
-    },
-    'high': {
-        'HOST': 'localhost',
-        'PORT': 6379,
-        'DB': 0,
-        'DEFAULT_TIMEOUT': 500,
-    },
-    'low': {
-        'HOST': 'localhost',
-        'PORT': 6379,
-        'DB': 0,
-        'DEFAULT_TIMEOUT': 600,
+        'DEFAULT_TIMEOUT': 1200,
     }
 }
 RQ_SHOW_ADMIN_LINK = True # Show the Django RQ admin link in the admin panel

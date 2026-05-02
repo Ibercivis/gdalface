@@ -14,7 +14,7 @@ class GeoreferencingConfig(AppConfig):
 
 
 def schedule_tasks(sender, **kwargs):
-    scheduler = get_scheduler('default')
+    scheduler = get_scheduler('lost_scheduler')
     print(sender)
 
     # First, clear the existing job for update_assigned if it exists

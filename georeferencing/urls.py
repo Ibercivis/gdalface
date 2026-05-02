@@ -5,7 +5,8 @@ from .views import (
     GeoAttemptView,
     GeoAttemptIndividualView,
     PendingGeoAttemptView,
-    GeoAttemptsCalendarView,)
+    GeoAttemptsCalendarView,
+    TutorialEventView,)
 urlpatterns = [
     # Define your app's URL patterns here
     path('geoattempt/', GeoAttemptView.as_view(), name='geoattempt'),
@@ -15,4 +16,5 @@ urlpatterns = [
     path('image/', ImageView.as_view(), name='images'),
     path('image-individual/<int:pk>/', ImageIndividualView.as_view(), name='images-individual'),
     path('geoattempts-calendar/', GeoAttemptsCalendarView.as_view(), name='calendar-geoattempt'),
+    path('tutorial-event/', TutorialEventView.as_view(), name='tutorial-event'),
 ]

@@ -10,6 +10,8 @@ from user_profile.models import UserProfile
 from user_profile.forms import UserProfileForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
+from datetime import date
+from django.utils.translation import gettext as _, ngettext
 
 User = get_user_model()
 
@@ -77,6 +79,13 @@ def user_view(request):
         }
         for item in geoattems_by_user_by_day
         ]
+
+        # Calculate contribution heatmap date range (last 12 months up to today)
+        today = date.today()
+        heatmap_end = today.strftime("%B %Y")
+        heatmap_start_month = today.month
+        heatmap_start_year = today.year - 1
+        heatmap_start = date(heatmap_start_year, heatmap_start_month, 1).strftime("%B %Y")
         
         # Obtener todos los usuarios ordenados por posición para crear un ranking unificado
         users_by_tasks = list(UserProfile.objects.order_by('-geoattempts_done'))
@@ -227,14 +236,35 @@ def user_view(request):
         user_time_percentage = min(user_time_percentage, 100)
         user_control_points_percentage = min(user_control_points_percentage, 100)
         
+        # Visited places: first control point of each completed attempt
+        visited_places = []
+        for attempt in GeoAttempt.objects.filter(assignedUser=user, status='DONE').select_related('image'):
+            try:
+                cps = attempt.controlPoints
+                if cps and isinstance(cps, list) and len(cps) > 0:
+                    first = cps[0]
+                    lat, lon = first.get('lat'), first.get('lon')
+                    if lat is not None and lon is not None:
+                        visited_places.append({
+                            'lat': lat,
+                            'lon': lon,
+                            'name': attempt.image.name if attempt.image_id else '',
+                            'small_url': attempt.image.smallImageURL if attempt.image_id else '',
+                        })
+            except Exception:
+                pass
+
         context = {
             'user': user,
             'profile': profile,
             'time': time,
             'geo': geo,
             'cp': cp,
+            'visited_places': visited_places,
             'che': che,
             'geoattems_by_user_by_day': data,
+            'heatmap_start': heatmap_start,
+            'heatmap_end': heatmap_end,
             'unified_ranking': unified_ranking,
             'user_task_position': user_task_position,
             'user_time_position': user_time_position,
@@ -279,7 +309,7 @@ def edit_profile(request):
         form = UserProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Your profile has been updated successfully!')
+            messages.success(request, _('Your profile has been updated successfully!'))
             return redirect('/user-profile/')
     else:
         form = UserProfileForm(instance=profile)
@@ -311,19 +341,19 @@ def convert_time_spent(total_seconds):
     
     # Solo agregar unidades si son mayores que 0
     if days > 0:
-        time_parts.append(f"{days} {'día' if days == 1 else 'días'}")
+        time_parts.append(ngettext("%(count)d day", "%(count)d days", days) % {'count': days})
     if hours > 0:
-        time_parts.append(f"{hours} {'hora' if hours == 1 else 'horas'}")
+        time_parts.append(ngettext("%(count)d hour", "%(count)d hours", hours) % {'count': hours})
     if minutes > 0 or (days == 0 and hours == 0):  # Siempre mostramos minutos si no hay días ni horas
-        time_parts.append(f"{minutes} {'minuto' if minutes == 1 else 'minutos'}")
-    
-    # Unir las partes con comas y "y" para la última parte
+        time_parts.append(ngettext("%(count)d minute", "%(count)d minutes", minutes) % {'count': minutes})
+
+    # Unir las partes con comas y "and" para la última parte
     if len(time_parts) > 1:
-        return ", ".join(time_parts[:-1]) + " y " + time_parts[-1]
+        return ", ".join(time_parts[:-1]) + _(" and ") + time_parts[-1]
     elif len(time_parts) == 1:
         return time_parts[0]
     else:
-        return "0 minutos"  # Caso extremo, nunca debería ocurrir si total_seconds >= 0
+        return _("0 minutes")
 
 
 @login_required
@@ -356,7 +386,7 @@ def delete_account(request):
         
         # Eliminar el usuario y toda su información relacionada
         user.delete()
-        messages.success(request, "Tu cuenta ha sido eliminada permanentemente.")
+        messages.success(request, _("Your account has been permanently deleted."))
         return redirect('index')
     
     return render(request, 'delete_account.html')

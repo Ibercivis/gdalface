@@ -11,6 +11,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.db.models import Count, Sum, Avg, F, ExpressionWrapper, fields, Q
 from django.utils import timezone
+from django.utils.translation import gettext as _
 
 # Create your views here.
 
@@ -130,10 +131,10 @@ def index(request):
                 settings.DEFAULT_TO_EMAIL,    # To email - Ahora usando la tupla de settings
                 fail_silently=False,
             )
-            messages.success(request, "¡Tu mensaje ha sido enviado correctamente!")
+            messages.success(request, _("Your message has been sent successfully!"))
             return redirect('/')  # Redirect to home page after successful submission
         except Exception as e:
-            messages.error(request, f"No se pudo enviar el mensaje: {str(e)}")
+            messages.error(request, _("Could not send the message: %(error)s") % {'error': str(e)})
     
     # Prepare context
     context = {
@@ -161,13 +162,20 @@ def gettask(request, pk=None):
     Returns:
         HttpResponse: The rendered 'gettask.html' template.
     """
+    # Server-side hint for the tutorial: anonymous users always qualify;
+    # authenticated users qualify only if they have not completed any task yet.
+    if request.user.is_authenticated:
+        try:
+            show_tutorial = request.user.userprofile.geoattempts_done == 0
+        except Exception:
+            show_tutorial = True
+    else:
+        show_tutorial = True
+
+    context = {'show_tutorial': show_tutorial}
     if pk is not None:
-        batch = Batch.objects.get(pk=pk)
-        context = {
-            'batch': batch
-        }
-        return render(request, 'gettask.html', context)
-    return render(request, 'gettask.html')
+        context['batch'] = Batch.objects.get(pk=pk)
+    return render(request, 'gettask.html', context)
 
 def batchs(request):
     """

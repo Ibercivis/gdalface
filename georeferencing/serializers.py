@@ -1,5 +1,6 @@
+import re
 from rest_framework import serializers
-from .models import GeoAttempt, Image
+from .models import GeoAttempt, Image, Expedition
 
 class GeoAttemptSerializer(serializers.ModelSerializer):
     """
@@ -26,10 +27,12 @@ class GeoAttemptSerializer(serializers.ModelSerializer):
     focal_length = serializers.SerializerMethodField()
     batch_name = serializers.CharField(source='image.batch.name', read_only=True)
     batch_id = serializers.IntegerField(source='image.batch.id', read_only=True)
+    expedition_number = serializers.SerializerMethodField()
+    crew = serializers.SerializerMethodField()
 
     class Meta:
         model = GeoAttempt
-        fields = ['id', 
+        fields = ['id',
                   'assignedUser',
                   'createdDateTime',
                   'assignedDateTime',
@@ -47,7 +50,9 @@ class GeoAttemptSerializer(serializers.ModelSerializer):
                   'photo_taken',
                   'focal_length',
                   'batch_name',
-                  'batch_id']
+                  'batch_id',
+                  'expedition_number',
+                  'crew']
         read_only_fields = ['createdDateTime', 'hash']
 
     def get_image_name(self, obj):
@@ -67,6 +72,19 @@ class GeoAttemptSerializer(serializers.ModelSerializer):
     
     def get_spacecraft_nadir_point(self, obj):
         return obj.image.spacecraftNadirPoint
+
+    def get_expedition_number(self, obj):
+        m = re.match(r'ISS(\d+)-', obj.image.name, re.IGNORECASE)
+        return int(m.group(1)) if m else None
+
+    def get_crew(self, obj):
+        m = re.match(r'ISS(\d+)-', obj.image.name, re.IGNORECASE)
+        if not m:
+            return []
+        try:
+            return Expedition.objects.get(number=int(m.group(1))).crew
+        except Expedition.DoesNotExist:
+            return []
     
 
     
