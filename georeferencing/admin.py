@@ -13,7 +13,10 @@ from django.http import JsonResponse
 from django.urls import path, reverse
 
 from .forms import PrettyJSONWidget
-from .models import Batch, Image, GeoAttempt, GeoAttemptsByUserByDay, TutorialEvent
+from .models import (
+    Batch, Image, GeoAttempt, GeoAttemptsByUserByDay, TutorialEvent,
+    Challenge, ChallengeParticipant,
+)
 from .tasks import download_image, generate_from_list
 
 
@@ -332,10 +335,116 @@ class TutorialEventAdmin(admin.ModelAdmin):
         return super().changelist_view(request, extra_context=extra_context)
 
 
+class ChallengeParticipantInline(admin.TabularInline):
+    model = ChallengeParticipant
+    extra = 0
+    readonly_fields = ('user', 'joined_at', 'left_at', 'cached_cp_count')
+    can_delete = False
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+
+class ChallengeAdmin(admin.ModelAdmin):
+    list_display = (
+        'name', 'status_badge', 'batch', 'start_at', 'end_at',
+        'target_bronze', 'target_silver', 'target_gold',
+        'participants_count', 'total_cp',
+    )
+    list_filter = ('is_paused', 'batch', 'start_at', 'end_at')
+    search_fields = ('name', 'description')
+    readonly_fields = ('created_at', 'created_by', 'paused_at', 'total_cp')
+    inlines = [ChallengeParticipantInline]
+    actions = ['pause_challenges', 'resume_challenges', 'recompute_totals']
+    fieldsets = (
+        (None, {
+            'fields': ('name', 'description', 'batch'),
+        }),
+        ('Schedule', {
+            'fields': ('start_at', 'end_at', 'is_paused', 'paused_at'),
+        }),
+        ('Targets', {
+            'fields': ('target_bronze', 'target_silver', 'target_gold'),
+        }),
+        ('Meta', {
+            'fields': ('created_at', 'created_by', 'total_cp'),
+        }),
+    )
+
+    def status_badge(self, obj):
+        from django.utils.html import format_html
+        colors = {
+            'upcoming': '#6c757d',
+            'active':   '#198754',
+            'paused':   '#fd7e14',
+            'finished': '#0d6efd',
+        }
+        s = obj.status
+        return format_html(
+            '<span style="background:{};color:#fff;padding:2px 8px;'
+            'border-radius:10px;font-size:11px;">{}</span>',
+            colors.get(s, '#6c757d'), s,
+        )
+    status_badge.short_description = 'Status'
+
+    def participants_count(self, obj):
+        return obj.participants.count()
+    participants_count.short_description = '# Participants'
+
+    def total_cp(self, obj):
+        return obj.total_cp() if obj.pk else 0
+    total_cp.short_description = 'Total CPs'
+
+    def save_model(self, request, obj, form, change):
+        if not change and not obj.created_by_id:
+            obj.created_by = request.user
+        super().save_model(request, obj, form, change)
+
+    def pause_challenges(self, request, queryset):
+        from django.utils import timezone
+        n = queryset.filter(is_paused=False).update(
+            is_paused=True, paused_at=timezone.now(),
+        )
+        self.message_user(request, f'{n} challenge(s) paused.')
+    pause_challenges.short_description = 'Pause selected challenges'
+
+    def resume_challenges(self, request, queryset):
+        n = queryset.filter(is_paused=True).update(
+            is_paused=False, paused_at=None,
+        )
+        self.message_user(request, f'{n} challenge(s) resumed.')
+    resume_challenges.short_description = 'Resume selected challenges'
+
+    def recompute_totals(self, request, queryset):
+        # Reconcile cached_cp_count from finished GeoAttempts during the
+        # window, scoped to participant + batch (or any batch when general).
+        from django.db.models import Q
+        total_updated = 0
+        for ch in queryset:
+            qs = GeoAttempt.objects.filter(
+                status='DONE',
+                finishedDateTime__gte=ch.start_at,
+                finishedDateTime__lt=ch.end_at,
+            )
+            if ch.batch_id:
+                qs = qs.filter(image__batch_id=ch.batch_id)
+            for participant in ch.participants.all():
+                user_qs = qs.filter(assignedUser=participant.user)
+                cp_total = 0
+                for ga in user_qs.only('controlPoints'):
+                    cp_total += len(ga.controlPoints) if isinstance(ga.controlPoints, list) else 0
+                participant.cached_cp_count = cp_total
+                participant.save(update_fields=['cached_cp_count'])
+                total_updated += 1
+        self.message_user(request, f'Recomputed totals for {total_updated} participant(s).')
+    recompute_totals.short_description = 'Recompute totals (slow)'
+
+
 admin.site.register(Batch, BatchAdmin)
 admin.site.register(Image, ImageAdmin)
 admin.site.register(GeoAttempt, GeoAttemptAdmin)
 admin.site.register(GeoAttemptsByUserByDay)
 admin.site.register(TutorialEvent, TutorialEventAdmin)
+admin.site.register(Challenge, ChallengeAdmin)
 
 # Register your models here.

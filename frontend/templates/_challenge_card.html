@@ -1,0 +1,67 @@
+{% load i18n %}
+{% comment %}
+Reusable challenge card.
+Required context: `ch` (Challenge instance), optional `enrolled_challenge_id`.
+{% endcomment %}
+{% with total=ch.total_cp gold=ch.target_gold %}
+<div class="challenge-card{% if ch.id == enrolled_challenge_id %} enrolled{% endif %}" id="challenge-{{ ch.id }}">
+    <div class="challenge-head">
+        <h4>{{ ch.name }}</h4>
+        <div class="head-right">
+            {% if ch.id == enrolled_challenge_id %}
+            <span class="enrolled-tag"><i class="fa-solid fa-check"></i> {% trans "You are enrolled" %}</span>
+            {% endif %}
+            <span class="challenge-status {{ ch.status }}">{{ ch.status }}</span>
+        </div>
+    </div>
+    <div class="challenge-meta">
+        {% if ch.batch_id %}
+            <span class="badge-batch">{% trans "Batch:" %} {{ ch.batch.name }}</span>
+        {% else %}
+            <span class="badge-batch">{% trans "General" %}</span>
+        {% endif %}
+        <span><i class="fa-regular fa-calendar"></i>{{ ch.start_at|date:"Y-m-d H:i" }} → {{ ch.end_at|date:"Y-m-d H:i" }}</span>
+        <span><i class="fa-solid fa-bullseye"></i><span data-cp-count>{{ total }}</span> / {{ gold }} CP</span>
+        <span><i class="fa-solid fa-users"></i>{{ ch.participants.count }} {% trans "participants" %}</span>
+    </div>
+    {% if ch.description %}
+    <p class="description-text">{{ ch.description }}</p>
+    {% endif %}
+    <div class="triple-bar"
+         data-bronze="{{ ch.target_bronze }}"
+         data-silver="{{ ch.target_silver }}"
+         data-gold="{{ gold }}"
+         data-total="{{ total }}">
+        <div class="fill" style="width:0%"></div>
+        <div class="marker" data-pos="bronze" data-label="🥉 {{ ch.target_bronze }}"></div>
+        <div class="marker" data-pos="silver" data-label="🥈 {{ ch.target_silver }}"></div>
+        <div class="marker" data-pos="gold"   data-label="🥇 {{ gold }}"></div>
+    </div>
+    <div class="triple-bar-legend">
+        <span>0</span>
+        <span>{{ gold }} CP</span>
+    </div>
+    <div class="challenge-actions">
+        {% if ch.id == enrolled_challenge_id %}
+            <button class="btn-join btn-leave" data-challenge-leave="{{ ch.id }}">
+                <i class="fa-solid fa-right-from-bracket me-1"></i>{% trans "Leave challenge" %}
+            </button>
+        {% elif ch.status == 'finished' %}
+            <span style="color: rgba(255,255,255,0.65);">{% trans "This challenge has finished." %}</span>
+        {% else %}
+            {% if user.is_authenticated %}
+                <button class="btn-join" data-challenge-join="{{ ch.id }}">
+                    <i class="fa-solid fa-trophy me-1"></i>{% if enrolled_challenge_id %}{% trans "Join (will leave current)" %}{% else %}{% trans "Join challenge" %}{% endif %}
+                </button>
+            {% else %}
+                <a class="btn-join" href="{% url 'account_login' %}?next=/%23challenge-{{ ch.id }}">
+                    <i class="fa-solid fa-right-to-bracket me-1"></i>{% trans "Log in to join" %}
+                </a>
+            {% endif %}
+        {% endif %}
+        <a href="{% url 'challenge_detail' ch.id %}" class="btn-detail">
+            {% trans "Details & leaderboard" %} <i class="fa-solid fa-arrow-right ms-1"></i>
+        </a>
+    </div>
+</div>
+{% endwith %}

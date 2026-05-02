@@ -4,7 +4,7 @@ frontend app.
 """
 
 from django.shortcuts import render, redirect
-from georeferencing.models import Batch, GeoAttempt, Image
+from georeferencing.models import Batch, GeoAttempt, Image, Challenge, ChallengeParticipant
 from django.core.mail import send_mail
 from django.contrib import messages
 from django.conf import settings
@@ -34,8 +34,9 @@ def index(request):
     batchs = Batch.objects.all()
     
     # Calculating project statistics
-    # Total users
-    total_users = User.objects.count()
+    # Total users — only those who confirmed their email (allauth verified).
+    from allauth.account.models import EmailAddress
+    total_users = EmailAddress.objects.filter(verified=True).values('user_id').distinct().count()
     
     # Total tasks and completed tasks
     total_tasks = GeoAttempt.objects.count()
@@ -136,6 +137,41 @@ def index(request):
         except Exception as e:
             messages.error(request, _("Could not send the message: %(error)s") % {'error': str(e)})
     
+    # Human-readable total time. The raw value is in minutes; convert to a
+    # compact "Xd Yh" / "Yh Zm" / "Zm" string for display.
+    def _format_minutes(mins):
+        if not mins:
+            return '0m'
+        days, rem = divmod(int(mins), 1440)
+        hours, m = divmod(rem, 60)
+        parts = []
+        if days:  parts.append(f'{days}d')
+        if hours: parts.append(f'{hours}h')
+        if m and not days: parts.append(f'{m}m')
+        return ' '.join(parts) or '<1m'
+    total_time_formatted = _format_minutes(total_minutes)
+
+    # Completion percentage (project-level), used as a headline metric.
+    completion_pct = round(
+        (completed_tasks / total_tasks) * 100, 1,
+    ) if total_tasks else 0
+
+    # Visible challenges on the home page: anything not yet finished, plus
+    # finished ones that ended in the last 30 days for transparency.
+    now = timezone.now()
+    visible_challenges = list(
+        Challenge.objects.filter(end_at__gte=now - timezone.timedelta(days=30))
+        .select_related('batch')
+        .order_by('-start_at')
+    )
+    enrolled_challenge_id = None
+    if user.is_authenticated:
+        active_enrollment = ChallengeParticipant.objects.filter(
+            user=user, left_at__isnull=True,
+        ).first()
+        if active_enrollment:
+            enrolled_challenge_id = active_enrollment.challenge_id
+
     # Prepare context
     context = {
         'user': user,
@@ -148,7 +184,11 @@ def index(request):
         'avg_tasks_per_user': avg_tasks_per_user,
         'total_images': total_images,
         'images_with_georeference': images_with_georeference,
-        'total_control_points': total_control_points
+        'total_control_points': total_control_points,
+        'total_time_formatted': total_time_formatted,
+        'completion_pct': completion_pct,
+        'visible_challenges': visible_challenges,
+        'enrolled_challenge_id': enrolled_challenge_id,
     }
     return render(request, 'index.html', context)
 
@@ -204,3 +244,93 @@ def contact(request):
         HttpResponse: The rendered 'contact.html' template.
     """
     return render(request, 'contact.html')
+
+
+def challenges_list(request):
+    """Public listing of all challenges grouped by status."""
+    qs = Challenge.objects.all().select_related('batch')
+    grouped = {'active': [], 'upcoming': [], 'paused': [], 'finished': []}
+    for ch in qs:
+        grouped.setdefault(ch.status, []).append(ch)
+    sections = [
+        (_('Active'),   grouped['active']),
+        (_('Upcoming'), grouped['upcoming']),
+        (_('Paused'),   grouped['paused']),
+        (_('Finished'), grouped['finished']),
+    ]
+    enrolled_id = None
+    if request.user.is_authenticated:
+        enrolled = ChallengeParticipant.objects.filter(
+            user=request.user, left_at__isnull=True,
+        ).first()
+        enrolled_id = enrolled.challenge_id if enrolled else None
+    return render(request, 'challenges_list.html', {
+        'sections': sections,
+        'enrolled_challenge_id': enrolled_id,
+    })
+
+
+def challenge_detail(request, pk):
+    """Public detail page with progress + leaderboard."""
+    from django.shortcuts import get_object_or_404
+    ch = get_object_or_404(Challenge.objects.select_related('batch'), pk=pk)
+    participants = list(
+        ch.participants.select_related('user')
+        .order_by('-cached_cp_count', 'joined_at')
+    )
+    my_enrollment = None
+    my_rank = None
+    if request.user.is_authenticated:
+        my_enrollment = next(
+            (p for p in participants if p.user_id == request.user.id), None,
+        )
+        if my_enrollment:
+            my_rank = next(
+                (i + 1 for i, p in enumerate(participants)
+                 if p.user_id == request.user.id),
+                None,
+            )
+
+    total_cp = ch.total_cp()
+    progress_pct = round(
+        min(100, (total_cp / ch.target_gold) * 100), 1,
+    ) if ch.target_gold else 0
+
+    # Next milestone (the closest target ahead of current total).
+    next_milestone = None
+    for tier_label, tier_value, tier_emoji in (
+        ('bronze', ch.target_bronze, '🥉'),
+        ('silver', ch.target_silver, '🥈'),
+        ('gold',   ch.target_gold,   '🥇'),
+    ):
+        if total_cp < tier_value:
+            next_milestone = {
+                'label': tier_label, 'value': tier_value,
+                'emoji': tier_emoji, 'remaining': tier_value - total_cp,
+            }
+            break
+
+    # Time remaining: days until end_at (or "ended").
+    now = timezone.now()
+    if now >= ch.end_at:
+        days_left = 0
+        time_state = 'ended'
+    elif now < ch.start_at:
+        days_left = (ch.start_at - now).days
+        time_state = 'upcoming'
+    else:
+        days_left = (ch.end_at - now).days
+        time_state = 'running'
+
+    return render(request, 'challenge_detail.html', {
+        'challenge': ch,
+        'participants': participants,
+        'participants_count': len(participants),
+        'my_enrollment': my_enrollment,
+        'my_rank': my_rank,
+        'total_cp': total_cp,
+        'progress_pct': progress_pct,
+        'next_milestone': next_milestone,
+        'days_left': days_left,
+        'time_state': time_state,
+    })

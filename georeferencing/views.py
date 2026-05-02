@@ -10,7 +10,10 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated  # Add this import
 from rest_framework.permissions import AllowAny
 from .serializers import GeoAttemptSerializer, ImageSerializer, MiniGeoAttemptSerializer
-from .models import GeoAttempt, Image, Batch, GeoAttemptsByUserByDay, TutorialEvent
+from .models import (
+    GeoAttempt, Image, Batch, GeoAttemptsByUserByDay, TutorialEvent,
+    Challenge, ChallengeParticipant,
+)
 from user_profile.models import UserProfile
 import os
 import shutil
@@ -354,7 +357,36 @@ class GeoAttemptIndividualView(APIView):
                     user_profile.controlPointsDone += len(
                         request.data['controlPoints'])
                     user_profile.save()
-                        
+
+                    # Challenge progress: if the user has an active enrollment
+                    # whose challenge applies (active status + matching batch
+                    # or general), add the submitted CPs to its cached counter.
+                    cp_added = len(request.data['controlPoints'])
+                    if cp_added:
+                        from django.db.models import F, Q
+                        now = timezone.now()
+                        image_batch_id = geoattemp.image.batch_id
+                        enrollment = (
+                            ChallengeParticipant.objects
+                            .select_related('challenge')
+                            .filter(
+                                user=geoattemp.assignedUser,
+                                left_at__isnull=True,
+                                challenge__is_paused=False,
+                                challenge__start_at__lte=now,
+                                challenge__end_at__gt=now,
+                            )
+                            .filter(
+                                Q(challenge__batch__isnull=True)
+                                | Q(challenge__batch_id=image_batch_id)
+                            )
+                            .first()
+                        )
+                        if enrollment:
+                            ChallengeParticipant.objects.filter(
+                                pk=enrollment.pk,
+                            ).update(cached_cp_count=F('cached_cp_count') + cp_added)
+
                     # Now, we can add a geoattempt to today
                     today = timezone.now().date()
                     geoattempts_today, created = GeoAttemptsByUserByDay.objects.get_or_create(
@@ -620,3 +652,198 @@ class TutorialEventView(APIView):
             step=step,
         )
         return Response({'ok': True}, status=status.HTTP_201_CREATED)
+
+
+def _serialize_challenge(ch, request_user=None):
+    enrolled = False
+    if request_user and request_user.is_authenticated:
+        enrolled = ChallengeParticipant.objects.filter(
+            challenge=ch, user=request_user, left_at__isnull=True,
+        ).exists()
+    return {
+        'id': ch.id,
+        'name': ch.name,
+        'description': ch.description,
+        'batch_id': ch.batch_id,
+        'batch_name': ch.batch.name if ch.batch_id else None,
+        'start_at': ch.start_at.isoformat(),
+        'end_at': ch.end_at.isoformat(),
+        'target_bronze': ch.target_bronze,
+        'target_silver': ch.target_silver,
+        'target_gold': ch.target_gold,
+        'is_paused': ch.is_paused,
+        'status': ch.status,
+        'total_cp': ch.total_cp(),
+        'participants_count': ch.participants.count(),
+        'is_enrolled': enrolled,
+    }
+
+
+class ChallengeListView(APIView):
+    permission_classes = [AllowAny]
+
+    @swagger_auto_schema(
+        tags=['04. Challenges'],
+        operation_summary='List challenges (active, upcoming, finished)')
+    def get(self, request):
+        qs = Challenge.objects.all().select_related('batch')
+        data = [_serialize_challenge(ch, request.user) for ch in qs]
+        # Group by status for convenience.
+        grouped = {'active': [], 'upcoming': [], 'paused': [], 'finished': []}
+        for d in data:
+            grouped.setdefault(d['status'], []).append(d)
+        return Response({'challenges': data, 'grouped': grouped})
+
+
+class ChallengeDetailView(APIView):
+    permission_classes = [AllowAny]
+
+    @swagger_auto_schema(
+        tags=['04. Challenges'],
+        operation_summary='Challenge progress and leaderboard')
+    def get(self, request, pk):
+        ch = get_object_or_404(Challenge, pk=pk)
+        data = _serialize_challenge(ch, request.user)
+
+        leaderboard_qs = (
+            ch.participants
+            .select_related('user')
+            .order_by('-cached_cp_count', 'joined_at')
+        )
+        leaderboard = []
+        my_rank = None
+        my_cp = None
+        for i, p in enumerate(leaderboard_qs[:50], start=1):
+            row = {
+                'rank': i,
+                'username': p.user.username,
+                'cp_count': p.cached_cp_count,
+                'is_active': p.left_at is None,
+            }
+            leaderboard.append(row)
+            if request.user.is_authenticated and p.user_id == request.user.id:
+                my_rank = i
+                my_cp = p.cached_cp_count
+
+        if my_rank is None and request.user.is_authenticated:
+            mine = ChallengeParticipant.objects.filter(
+                challenge=ch, user=request.user,
+            ).first()
+            if mine:
+                my_cp = mine.cached_cp_count
+                # Compute rank via count of higher scores.
+                better = ch.participants.filter(
+                    cached_cp_count__gt=mine.cached_cp_count,
+                ).count()
+                my_rank = better + 1
+
+        data['leaderboard'] = leaderboard
+        data['my_rank'] = my_rank
+        data['my_cp'] = my_cp
+        return Response(data)
+
+
+class ChallengeJoinView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        tags=['04. Challenges'],
+        operation_summary='Join a challenge (auto-leaves any other active enrollment)')
+    def post(self, request, pk):
+        from django.db import transaction
+        ch = get_object_or_404(Challenge, pk=pk)
+        if ch.status == 'finished':
+            return Response({'error': 'challenge is finished'}, status=400)
+
+        with transaction.atomic():
+            # Close any other active enrollment for this user.
+            other = ChallengeParticipant.objects.select_for_update().filter(
+                user=request.user, left_at__isnull=True,
+            ).exclude(challenge=ch).first()
+            if other:
+                other.left_at = timezone.now()
+                other.save(update_fields=['left_at'])
+
+            # Create or revive enrollment for the target challenge.
+            enrollment, created = ChallengeParticipant.objects.select_for_update().get_or_create(
+                challenge=ch, user=request.user,
+            )
+            if not created and enrollment.left_at is not None:
+                enrollment.left_at = None
+                enrollment.save(update_fields=['left_at'])
+
+        return Response({
+            'ok': True,
+            'challenge_id': ch.id,
+            'cp_count': enrollment.cached_cp_count,
+        }, status=status.HTTP_200_OK)
+
+
+class ChallengeLeaveView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        tags=['04. Challenges'],
+        operation_summary='Leave the active challenge enrollment')
+    def post(self, request, pk):
+        ch = get_object_or_404(Challenge, pk=pk)
+        n = ChallengeParticipant.objects.filter(
+            challenge=ch, user=request.user, left_at__isnull=True,
+        ).update(left_at=timezone.now())
+        return Response({'ok': True, 'left': n > 0})
+
+
+class MyChallengeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        tags=['04. Challenges'],
+        operation_summary='Current active enrollment for the requesting user, optionally filtered by batch')
+    def get(self, request):
+        batch_id = request.query_params.get('batch_id')
+        qs = ChallengeParticipant.objects.select_related('challenge', 'challenge__batch').filter(
+            user=request.user, left_at__isnull=True,
+        )
+        enrollment = qs.first()
+        if not enrollment:
+            return Response({'enrolled': False})
+
+        ch = enrollment.challenge
+        # If a batch was specified, only return when challenge applies (general or matching).
+        if batch_id:
+            try:
+                batch_id_int = int(batch_id)
+            except (TypeError, ValueError):
+                batch_id_int = None
+            if ch.batch_id and ch.batch_id != batch_id_int:
+                return Response({'enrolled': False, 'reason': 'challenge does not apply to this batch'})
+
+        # Compute rank inline.
+        better = ch.participants.filter(
+            cached_cp_count__gt=enrollment.cached_cp_count,
+        ).count()
+        my_rank = better + 1
+
+        # Top-1 (leader) for the banner — username + CP count.
+        leader = (
+            ch.participants
+            .select_related('user')
+            .order_by('-cached_cp_count', 'joined_at')
+            .first()
+        )
+        leader_payload = None
+        if leader:
+            leader_payload = {
+                'username': leader.user.username,
+                'cp_count': leader.cached_cp_count,
+                'is_you': leader.user_id == request.user.id,
+            }
+
+        return Response({
+            'enrolled': True,
+            'challenge': _serialize_challenge(ch, request.user),
+            'my_cp': enrollment.cached_cp_count,
+            'my_rank': my_rank,
+            'leader': leader_payload,
+            'participants_count': ch.participants.count(),
+        })

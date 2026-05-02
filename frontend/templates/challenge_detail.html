@@ -1,0 +1,637 @@
+{% load static %}
+{% load bootstrap5 %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lost At Night | {{ challenge.name }}</title>
+    {% include '_google_analytics.html' %}
+    {% bootstrap_css %}
+    <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
+    <link rel="alternate icon" href="{% static 'img/LogoLostAtNight.png' %}" type="image/png">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <link href="{% static 'css/main.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    {% bootstrap_javascript %}
+    <style>
+        body {
+            background-color: #4b2e83;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            line-height: 1.5;
+        }
+        .container { max-width: 1200px; padding: 24px 16px; }
+
+        .back-link {
+            color: rgba(255,255,255,0.85);
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 18px;
+            transition: color .15s ease;
+        }
+        .back-link:hover { color: #e9f990; }
+
+        /* HERO */
+        .hero {
+            background: linear-gradient(135deg, rgba(59,48,84,0.95) 0%, rgba(43,17,85,0.85) 100%);
+            border: 1px solid rgba(255,255,255,0.12);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+            border-radius: 18px;
+            padding: 28px 32px;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -60px; right: -40px;
+            width: 220px; height: 220px;
+            background: radial-gradient(circle, rgba(233,249,144,0.18) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .hero-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .hero-title {
+            font-size: 32px;
+            font-weight: 800;
+            margin: 0;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .hero-title .trophy { color: #e9f990; font-size: 28px; }
+        .hero-meta {
+            margin-top: 10px;
+            display: flex;
+            gap: 8px 18px;
+            flex-wrap: wrap;
+            font-size: 14px;
+            color: rgba(255,255,255,0.78);
+        }
+        .hero-meta i { color: #e9f990; margin-right: 6px; }
+        .badge-batch {
+            background: rgba(233,249,144,0.18);
+            color: #e9f990;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .challenge-status {
+            font-size: 11px;
+            padding: 5px 14px;
+            border-radius: 999px;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .challenge-status.upcoming { background: #6c757d; }
+        .challenge-status.active   { background: #2e7d32; }
+        .challenge-status.paused   { background: #fd7e14; }
+        .challenge-status.finished { background: #1565c0; }
+
+        .hero-description {
+            color: rgba(255,255,255,0.92);
+            font-size: 15px;
+            margin: 18px 0 0;
+            max-width: 900px;
+        }
+
+        .hero-actions {
+            margin-top: 22px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .hero-actions .push-right { margin-left: auto; }
+
+        /* Buttons */
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 22px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            text-decoration: none;
+        }
+        .btn-action.primary { background: #e9f990; color: #2c1158; }
+        .btn-action.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(233,249,144,0.35);
+            color: #2c1158;
+        }
+        .btn-action.ghost {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.4);
+            color: #ffffff;
+        }
+        .btn-action.ghost:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.6); color: #fff; }
+        .btn-action[disabled] { opacity: 0.6; cursor: not-allowed; transform: none !important; }
+        .enrolled-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(233,249,144,0.2);
+            color: #e9f990;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* PROGRESS PANEL */
+        .progress-panel {
+            background-color: rgba(43, 36, 61, 0.7);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 18px;
+            padding: 28px 32px;
+            margin-bottom: 24px;
+        }
+        .progress-label {
+            font-size: 12px;
+            color: rgba(255,255,255,0.65);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+            margin-bottom: 18px;
+        }
+        .triple-bar {
+            position: relative;
+            height: 36px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 18px;
+            overflow: hidden;
+            margin: 32px 0 8px;
+        }
+        .triple-bar .fill {
+            height: 100%;
+            background: linear-gradient(90deg,#cd7f32 0%,#c0c0c0 50%,#ffd700 100%);
+            box-shadow: 0 0 18px rgba(255,215,0,0.5);
+            transition: width 0.7s cubic-bezier(.2,.7,.1,1);
+        }
+        .triple-bar.paused .fill { filter: grayscale(0.6) opacity(0.6); box-shadow: none; }
+        .triple-bar .marker {
+            position: absolute;
+            top: 0; bottom: 0;
+            width: 2px;
+            background: rgba(255,255,255,0.6);
+        }
+        .triple-bar .marker::after {
+            content: attr(data-label);
+            position: absolute;
+            top: -26px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: #e9f990;
+            white-space: nowrap;
+            font-weight: 700;
+        }
+        .triple-bar .progress-text {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%,-50%);
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.85), 0 0 6px rgba(0,0,0,0.5);
+            white-space: nowrap;
+            pointer-events: none;
+            letter-spacing: 0.3px;
+        }
+
+        /* Stat strip below the bar */
+        .stat-strip {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-top: 22px;
+        }
+        .stat-item {
+            background: rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .stat-item .stat-icon {
+            width: 38px; height: 38px;
+            border-radius: 10px;
+            background: rgba(233,249,144,0.15);
+            color: #e9f990;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        .stat-item .stat-text { line-height: 1.2; }
+        .stat-item .stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+        .stat-item .stat-label {
+            font-size: 11px;
+            color: rgba(255,255,255,0.65);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+
+        /* PERSONAL */
+        .personal-panel {
+            background: linear-gradient(135deg, rgba(233,249,144,0.12), rgba(233,249,144,0.04));
+            border: 1px solid rgba(233,249,144,0.3);
+            border-radius: 18px;
+            padding: 22px 28px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+        .personal-panel .icon-bubble {
+            width: 56px; height: 56px;
+            border-radius: 14px;
+            background: rgba(233,249,144,0.25);
+            color: #e9f990;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        .personal-panel .label-tag {
+            font-size: 11px;
+            color: rgba(233,249,144,0.85);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .personal-panel .stats-line {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            font-size: 15px;
+        }
+        .personal-panel .stats-line b { color: #e9f990; font-size: 22px; font-weight: 800; }
+        .personal-panel .stats-line .pl-item small {
+            display: block;
+            color: rgba(255,255,255,0.7);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* LEADERBOARD */
+        .leaderboard-card {
+            background-color: rgba(59, 48, 84, 0.9);
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            border-radius: 18px;
+            overflow: hidden;
+        }
+        .leaderboard-header {
+            padding: 18px 24px;
+            background-color: rgba(43, 36, 61, 0.8);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .leaderboard-header i { color: #e9f990; }
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .leaderboard-table th,
+        .leaderboard-table td {
+            padding: 12px 24px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            color: rgba(255,255,255,0.9);
+            font-size: 14px;
+        }
+        .leaderboard-table th {
+            background-color: rgba(31, 26, 44, 0.6);
+            color: rgba(233,249,144,0.9);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 12px;
+        }
+        .leaderboard-table td.num,
+        .leaderboard-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
+        .leaderboard-table tr.you-row {
+            background: rgba(233,249,144,0.08);
+        }
+        .leaderboard-table tr.you-row td:first-child {
+            border-left: 3px solid #e9f990;
+        }
+        .rank-cell { font-weight: 700; color: rgba(255,255,255,0.9); width: 70px; }
+        .rank-cell .rank-medal { font-size: 18px; margin-right: 4px; }
+        .rank-cell.gold   { color: #ffd700; }
+        .rank-cell.silver { color: #c0c0c0; }
+        .rank-cell.bronze { color: #cd7f32; }
+        .badge-pill {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        .badge-pill.active { background: rgba(46,125,50,0.4); color: #b9f6ca; border: 1px solid rgba(46,125,50,0.5); }
+        .badge-pill.left { background: rgba(120,120,120,0.3); color: #ddd; border: 1px solid rgba(255,255,255,0.15); }
+        .empty-state {
+            padding: 40px;
+            text-align: center;
+            color: rgba(255,255,255,0.65);
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .hero { padding: 22px 20px; }
+            .hero-title { font-size: 24px; }
+            .progress-panel { padding: 22px 18px; }
+            .stat-strip { grid-template-columns: repeat(2, 1fr); }
+            .triple-bar { height: 28px; }
+            .triple-bar .marker::after { font-size: 10px; }
+            .leaderboard-table th, .leaderboard-table td { padding: 10px 14px; }
+        }
+    </style>
+</head>
+<body>
+    {% include '_topbar.html' %}
+    <div class="container">
+        <a href="{% url 'challenges_list' %}" class="back-link">
+            <i class="fa-solid fa-arrow-left"></i> {% trans "All challenges" %}
+        </a>
+
+        <!-- HERO -->
+        <div class="hero">
+            <div class="hero-head">
+                <div>
+                    <h1 class="hero-title">
+                        <span class="trophy">🏆</span>{{ challenge.name }}
+                    </h1>
+                    <div class="hero-meta">
+                        {% if challenge.batch_id %}
+                            <span class="badge-batch">{% trans "Batch:" %} {{ challenge.batch.name }}</span>
+                        {% else %}
+                            <span class="badge-batch">{% trans "General" %}</span>
+                        {% endif %}
+                        <span><i class="fa-regular fa-calendar"></i>{{ challenge.start_at|date:"Y-m-d H:i" }} → {{ challenge.end_at|date:"Y-m-d H:i" }}</span>
+                        <span><i class="fa-solid fa-users"></i>{{ participants_count }} {% trans "participants" %}</span>
+                    </div>
+                </div>
+                <span class="challenge-status {{ challenge.status }}">{{ challenge.status }}</span>
+            </div>
+
+            {% if challenge.description %}
+                <p class="hero-description">{{ challenge.description }}</p>
+            {% endif %}
+
+            <div class="hero-actions">
+                {% if user.is_authenticated %}
+                    {% if my_enrollment and my_enrollment.left_at is None %}
+                        <span class="enrolled-tag">
+                            <i class="fa-solid fa-check"></i> {% trans "You are enrolled" %}
+                        </span>
+                        {% if challenge.status != 'finished' %}
+                        <button id="leave-btn" class="btn-action ghost push-right">
+                            <i class="fa-solid fa-right-from-bracket"></i> {% trans "Leave challenge" %}
+                        </button>
+                        {% endif %}
+                    {% elif challenge.status == 'finished' %}
+                        <span style="color: rgba(255,255,255,0.65);">{% trans "This challenge has finished." %}</span>
+                    {% else %}
+                        {% if my_enrollment %}
+                            <small style="color: rgba(255,255,255,0.65);">{% trans "Re-joining preserves your previous CPs." %}</small>
+                        {% endif %}
+                        <button id="join-btn" class="btn-action primary push-right">
+                            <i class="fa-solid fa-trophy"></i> {% trans "Join challenge" %}
+                        </button>
+                    {% endif %}
+                {% else %}
+                    <a class="btn-action primary push-right" href="{% url 'account_login' %}?next={{ request.path }}">
+                        <i class="fa-solid fa-right-to-bracket"></i> {% trans "Log in to join" %}
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- PROGRESS -->
+        <div class="progress-panel">
+            <div class="progress-label">{% trans "Group progress" %}</div>
+            <div class="triple-bar {% if challenge.is_paused %}paused{% endif %}"
+                 data-bronze="{{ challenge.target_bronze }}"
+                 data-silver="{{ challenge.target_silver }}"
+                 data-gold="{{ challenge.target_gold }}"
+                 data-total="{{ total_cp }}">
+                <div class="fill" style="width:0%"></div>
+                <div class="marker" data-pos="bronze" data-label="🥉 {{ challenge.target_bronze }}"></div>
+                <div class="marker" data-pos="silver" data-label="🥈 {{ challenge.target_silver }}"></div>
+                <div class="marker" data-pos="gold"   data-label="🥇 {{ challenge.target_gold }}"></div>
+                <div class="progress-text">{{ total_cp }} / {{ challenge.target_gold }} CP · {{ progress_pct }}%</div>
+            </div>
+
+            <div class="stat-strip">
+                <div class="stat-item">
+                    <div class="stat-icon"><i class="fa-solid fa-bullseye"></i></div>
+                    <div class="stat-text">
+                        <div class="stat-value">{{ total_cp }}</div>
+                        <div class="stat-label">{% trans "Total CPs" %}</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+                    <div class="stat-text">
+                        <div class="stat-value">{{ participants_count }}</div>
+                        <div class="stat-label">{% trans "Participants" %}</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon"><i class="fa-regular fa-clock"></i></div>
+                    <div class="stat-text">
+                        <div class="stat-value">
+                            {% if time_state == 'ended' %}—
+                            {% else %}{{ days_left }}{% endif %}
+                        </div>
+                        <div class="stat-label">
+                            {% if time_state == 'ended' %}{% trans "Ended" %}
+                            {% elif time_state == 'upcoming' %}{% trans "Days to start" %}
+                            {% else %}{% trans "Days left" %}{% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        {% if next_milestone %}<span style="font-size:18px;">{{ next_milestone.emoji }}</span>
+                        {% else %}<i class="fa-solid fa-flag-checkered"></i>{% endif %}
+                    </div>
+                    <div class="stat-text">
+                        {% if next_milestone %}
+                            <div class="stat-value">{{ next_milestone.remaining }} CP</div>
+                            <div class="stat-label">{% trans "to" %} {{ next_milestone.label }}</div>
+                        {% else %}
+                            <div class="stat-value">🥇</div>
+                            <div class="stat-label">{% trans "Gold reached!" %}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PERSONAL (only if enrolled or has history) -->
+        {% if my_enrollment %}
+        <div class="personal-panel">
+            <div class="icon-bubble"><i class="fa-solid fa-user-astronaut"></i></div>
+            <div style="flex:1;">
+                <div class="label-tag">{% trans "Your performance" %}</div>
+                <div class="stats-line">
+                    <div class="pl-item">
+                        <b>#{{ my_rank|default:'—' }}</b>
+                        <small>{% trans "Your rank" %}</small>
+                    </div>
+                    <div class="pl-item">
+                        <b>{{ my_enrollment.cached_cp_count }}</b>
+                        <small>{% trans "Your CPs" %}</small>
+                    </div>
+                    {% if total_cp %}
+                    <div class="pl-item">
+                        <b>{% widthratio my_enrollment.cached_cp_count total_cp 100 %}%</b>
+                        <small>{% trans "of group total" %}</small>
+                    </div>
+                    {% endif %}
+                    {% if my_enrollment.left_at %}
+                    <div class="pl-item">
+                        <b style="font-size:14px;color:#bbb;">{% trans "Left" %}</b>
+                        <small>{{ my_enrollment.left_at|date:"Y-m-d" }}</small>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- LEADERBOARD -->
+        <div class="leaderboard-card">
+            <div class="leaderboard-header">
+                <i class="fa-solid fa-ranking-star"></i> {% trans "Leaderboard" %}
+            </div>
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>{% trans "User" %}</th>
+                        <th class="num">{% trans "Control points" %}</th>
+                        <th class="num" style="width:120px;">{% trans "Status" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in participants %}
+                    <tr {% if user.is_authenticated and p.user_id == user.id %}class="you-row"{% endif %}>
+                        {% if forloop.counter == 1 %}
+                            <td class="rank-cell gold"><span class="rank-medal">🥇</span>1</td>
+                        {% elif forloop.counter == 2 %}
+                            <td class="rank-cell silver"><span class="rank-medal">🥈</span>2</td>
+                        {% elif forloop.counter == 3 %}
+                            <td class="rank-cell bronze"><span class="rank-medal">🥉</span>3</td>
+                        {% else %}
+                            <td class="rank-cell">{{ forloop.counter }}</td>
+                        {% endif %}
+                        <td>
+                            {{ p.user.username }}
+                            {% if user.is_authenticated and p.user_id == user.id %}
+                                <small style="color: rgba(233,249,144,0.85); margin-left:4px;">({% trans "you" %})</small>
+                            {% endif %}
+                        </td>
+                        <td class="num">{{ p.cached_cp_count }}</td>
+                        <td class="num">
+                            {% if p.left_at %}
+                                <span class="badge-pill left">{% trans "left" %}</span>
+                            {% else %}
+                                <span class="badge-pill active">{% trans "active" %}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4" class="empty-state">{% trans "No participants yet — be the first one!" %}</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% include '_footer.html' %}
+    <script>
+        function getCookie(n){var c=document.cookie.split(';');for(var i=0;i<c.length;i++){var p=c[i].trim();if(p.indexOf(n+'=')===0)return decodeURIComponent(p.substring(n.length+1));}return null;}
+        function postAct(act){
+            return fetch('/api/v1/challenges/{{ challenge.id }}/'+act+'/', {
+                method:'POST', credentials:'same-origin',
+                headers:{'X-CSRFToken':getCookie('csrftoken')||'','Content-Type':'application/json'}
+            });
+        }
+        var jb = document.getElementById('join-btn');
+        if (jb) jb.addEventListener('click', function(){
+            jb.disabled=true;
+            postAct('join').then(function(r){ if(r.ok) location.reload(); else { alert('Could not join'); jb.disabled=false; }});
+        });
+        var lb = document.getElementById('leave-btn');
+        if (lb) lb.addEventListener('click', function(){
+            if(!confirm('{% trans "Leave this challenge? Your contributions are preserved." %}')) return;
+            lb.disabled=true;
+            postAct('leave').then(function(r){ if(r.ok) location.reload(); else { alert('Could not leave'); lb.disabled=false; }});
+        });
+
+        document.querySelectorAll('.triple-bar').forEach(function (bar) {
+            var bronze=+bar.dataset.bronze, silver=+bar.dataset.silver,
+                gold=+bar.dataset.gold, total=+bar.dataset.total;
+            if(!gold) return;
+            requestAnimationFrame(function(){
+                bar.querySelector('.fill').style.width = Math.min(100,(total/gold)*100) + '%';
+            });
+            bar.querySelectorAll('.marker').forEach(function (m) {
+                var v = m.dataset.pos==='bronze'?bronze:m.dataset.pos==='silver'?silver:gold;
+                m.style.left = ((v/gold)*100) + '%';
+            });
+        });
+    </script>
+</body>
+</html>

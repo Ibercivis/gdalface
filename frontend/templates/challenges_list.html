@@ -1,0 +1,112 @@
+{% load static %}
+{% load bootstrap5 %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lost At Night | {% trans "Challenges" %}</title>
+    {% include '_google_analytics.html' %}
+    {% bootstrap_css %}
+    <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
+    <link rel="alternate icon" href="{% static 'img/LogoLostAtNight.png' %}" type="image/png">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <link href="{% static 'css/main.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'css/challenges.css' %}?v=1.0" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    {% bootstrap_javascript %}
+    <style>
+        body {
+            background-color: #4b2e83;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            line-height: 1.5;
+        }
+        .container { max-width: 1280px; padding: 24px 16px; }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+        .page-title i { color: #e9f990; margin-right: 12px; }
+        .page-subtitle {
+            color: rgba(255,255,255,0.75);
+            font-size: 15px;
+            margin-bottom: 28px;
+        }
+
+        .section-heading {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 20px;
+            font-weight: 600;
+            color: #ffffff;
+            margin: 28px 0 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        .section-heading .count-pill {
+            background: rgba(233,249,144,0.18);
+            color: #e9f990;
+            font-size: 12px;
+            padding: 2px 10px;
+            border-radius: 999px;
+            font-weight: 600;
+        }
+        .section-heading.active   i { color: #b9f6ca; }
+        .section-heading.upcoming i { color: rgba(255,255,255,0.7); }
+        .section-heading.paused   i { color: #fd7e14; }
+        .section-heading.finished i { color: #90caf9; }
+
+        .empty {
+            color: rgba(255,255,255,0.6);
+            font-style: italic;
+            padding: 14px 0;
+            background: rgba(0,0,0,0.15);
+            border-radius: 10px;
+            text-align: center;
+            border: 1px dashed rgba(255,255,255,0.15);
+        }
+
+        @media (max-width: 768px) {
+            .page-title { font-size: 26px; }
+        }
+    </style>
+</head>
+<body>
+    {% include '_topbar.html' %}
+    <div class="container">
+        <h1 class="page-title"><i class="fa-solid fa-trophy"></i>{% trans "Challenges" %}</h1>
+        <p class="page-subtitle">{% trans "Active, upcoming and past challenges. Join one to contribute towards a shared goal." %}</p>
+
+        {% for label, items in sections %}
+        <div class="section-heading {% if forloop.counter == 1 %}active{% elif forloop.counter == 2 %}upcoming{% elif forloop.counter == 3 %}paused{% else %}finished{% endif %}">
+            {% if forloop.counter == 1 %}<i class="fa-solid fa-circle-play"></i>
+            {% elif forloop.counter == 2 %}<i class="fa-regular fa-clock"></i>
+            {% elif forloop.counter == 3 %}<i class="fa-solid fa-pause"></i>
+            {% else %}<i class="fa-solid fa-flag-checkered"></i>{% endif %}
+            <span>{{ label }}</span>
+            <span class="count-pill">{{ items|length }}</span>
+        </div>
+        {% if items %}
+            {% for ch in items %}
+                {% include '_challenge_card.html' %}
+            {% endfor %}
+        {% else %}
+            <div class="empty">{% trans "Nothing here." %}</div>
+        {% endif %}
+        {% endfor %}
+    </div>
+    {% include '_footer.html' %}
+    <script src="{% static 'js/challenge_card.js' %}?v=1.0" defer></script>
+</body>
+</html>

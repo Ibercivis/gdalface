@@ -103,6 +103,7 @@
                 <li class="nav-item"><a class="nav-link scroll-link" href="{% if not is_homepage %}/{% endif %}#batch-section" data-section="batch-section">{% trans "Batches" %}</a></li>
                 <li class="nav-item"><a class="nav-link scroll-link" href="{% if not is_homepage %}/{% endif %}#statistics-section" data-section="statistics-section">{% trans "Statistics" %}</a></li>
                 <li class="nav-item"><a class="nav-link {% if current_path == '/gettask' %}active{% endif %}" href="/gettask">{% trans "Participate" %}</a></li>
+                <li class="nav-item"><a class="nav-link {% if '/challenges' in current_path %}active{% endif %}" href="/challenges/">{% trans "Challenges" %}</a></li>
                 <li class="nav-item"><a class="nav-link scroll-link" href="{% if not is_homepage %}/{% endif %}#contact-section" data-section="contact-section">{% trans "Contact" %}</a></li>
                 {% if user.is_authenticated %}
                 <li class="nav-item">

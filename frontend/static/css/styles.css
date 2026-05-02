@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 #map{
     height: 100%;
 }
@@ -7,8 +9,9 @@
 body, html {
     overflow: hidden; /* Disable scrolling */
     height: 100%;
-    font-family: 'Open Sans'; /* Use Open Sans as the default font */
-
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background-color: #2c1158;
+    color: #fff;
 }
 /* Ensure the parent container has 100% width and specific height */
 .canvas-container {
@@ -32,51 +35,53 @@ body, html {
     flex: 0 0 10%;
 }
 #title {
-    margin-top: 10px;
     text-align: center;
-    background-color: #562952;
-    border-bottom-left-radius: 50px;
+    background: linear-gradient(135deg, #562952 0%, #3d1c44 100%);
+    border-bottom-left-radius: 32px;
     flex: 0 0 10%;
     padding: 0;
     margin: 0;
     position: relative;
-
 }
-#usage-info {
+
+/* Top-right cluster: help, tutorial, user — laid out as a row. */
+#usage-info,
+#tutorial-trigger,
+.user-icon-link-top {
     position: absolute !important;
     top: 12px;
-    right: 15px;
-    padding: 5px;
-    width: 28px;
-    height: 28px;
-    color: white;
-    cursor: pointer; /* Change cursor to pointer on hover */
+    padding: 4px;
+    width: 30px;
+    height: 30px;
+    bottom: auto;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background-color 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
+#usage-info        { right: 12px; }
+#tutorial-trigger  { right: 50px; }
+.user-icon-link-top { right: 88px; }
 
-.user-icon-link-top {
-    position: absolute;
-    bottom: 0px;
-    right: 10px;
-    padding: 5px;
-    cursor: pointer; /* Cambia el cursor a puntero al pasar el mouse */
+#usage-info:hover,
+#tutorial-trigger:hover,
+.user-icon-link-top:hover {
+    background-color: rgba(255, 255, 255, 0.12);
 }
 
 /* Estilos compartidos para iconos */
 .icon-help, .user-icon, .fa-user-secret, .fa-user-circle {
-    color: white;
-    font-size: 20px;
-    width: 28px;
-    height: 28px;
-    transition: transform 0.2s ease;
+    color: #fff;
+    font-size: 18px;
+    width: 22px;
+    height: 22px;
     display: inline-flex;
     justify-content: center;
     align-items: center;
 }
-
-.icon-help:hover, .user-icon:hover, .fa-user-secret:hover, .fa-user-circle:hover {
-    transform: scale(1.2);
-    cursor: pointer;
-}
+.user-icon.rounded-circle { width: 26px; height: 26px; object-fit: cover; }
 
 .anon-notice {
     font-size: 10px;
@@ -98,11 +103,21 @@ body, html {
 }
 #photo-info-content{
     margin: 1em;
-    padding: 0.5em;
-    border: 1px solid #562952;
-    border-radius: 5px;
-    color: #562952;
+    padding: 0.6em 0.8em;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 13px;
     margin-bottom: 1.5em !important;
+}
+#photo-info-content i { color: #e9f990; }
+#batch-name {
+    display: block;
+    margin-top: 4px;
+    color: #e9f990;
+    font-weight: 600;
+    font-size: 12px;
 }
 .logo {
     display: block;
@@ -125,8 +140,9 @@ body, html {
     overflow-y: auto;
 }
 .tools {
-    background-color: #fef7ff;
-    border-right: 1px solid #e9ecef;
+    background-color: #2c1158;
+    color: #fff;
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -141,31 +157,133 @@ ul {
 }
 
 li{
-    display: inline-block; /* Make it behave like an inline element */
-    padding: 10px 10px; /* Add padding to simulate button shape */
-    width: calc(100% - 2em); /* Subtracting the margins from the width */
+    display: inline-block;
+    padding: 10px 12px;
+    width: calc(100% - 2em);
     margin-left: 1em;
     margin-right: 1em;
     margin-bottom: 0.5em;
-    background-color: #aa90a9; /* Button color (Bootstrap's primary color) */
-    color: #e9f990; /* Text color */
-    border: none; /* Remove border */
-    border-radius: 5px; /* Rounded corners */
-    cursor: pointer; /* Pointer cursor to indicate it's clickable */
-    font-size: 16px;
+    background-color: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
     text-align: left;
-    transition: background-color 0.3s ease; /* Smooth transition for hover */
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+li:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(233, 249, 144, 0.3);
 }
 
 li.completed {
-    background-color: #563952; /* Darker color on hover */
+    background-color: rgba(233, 249, 144, 0.12);
+    border-color: rgba(233, 249, 144, 0.4);
+    color: #e9f990;
 }
 
 .opacity-slider-container {
-    background-color: white;
-    padding: 10px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: rgba(20, 8, 50, 0.85);
+    backdrop-filter: blur(8px);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px 12px;
+    border-radius: 8px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+/* Apply the dark glass treatment to ALL Leaflet layer-control panels —
+   the canvas filter panel on the photo column AND the opacity/filters
+   panel on the map column. */
+.leaflet-control-layers.leaflet-control-layers-expanded {
+    background-color: rgba(20, 8, 50, 0.85) !important;
+    backdrop-filter: blur(8px);
+    color: #fff !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45) !important;
+}
+.leaflet-control-layers span,
+.leaflet-control-layers label { color: #fff !important; }
+.leaflet-control-layers input[type="range"] { accent-color: #e9f990; }
+
+/* Inner section separators (rendered inline by main.js with border-top:1px solid #ccc). */
+.leaflet-control-layers > div[style*="border-top"] {
+    border-top-color: rgba(255, 255, 255, 0.15) !important;
+    color: rgba(255, 255, 255, 0.65) !important;
+}
+
+/* Inactive base-layer toggle (OSM/Satellite) — JS sets inline background:#fff. */
+.leaflet-control-layers button[style*="#fff"],
+.leaflet-control-layers button[style*="#FFF"] {
+    background: transparent !important;
+    color: #fff !important;
+    border: 1px solid rgba(255, 255, 255, 0.35) !important;
+    border-radius: 6px !important;
+}
+.leaflet-control-layers button[style*="#fff"]:hover,
+.leaflet-control-layers button[style*="#FFF"]:hover {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: #e9f990 !important;
+    color: #e9f990 !important;
+}
+/* Active base-layer toggle — JS sets inline background:#555. */
+.leaflet-control-layers button[style*="#555"] {
+    background: #e9f990 !important;
+    color: #2c1158 !important;
+    border: 1px solid #e9f990 !important;
+    border-radius: 6px !important;
+}
+
+/* Leaflet zoom control (+ / −) — match the dark glass style. */
+.leaflet-bar {
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45) !important;
+    overflow: hidden;
+}
+.leaflet-bar a,
+.leaflet-bar a:hover,
+.leaflet-bar a:focus {
+    background-color: rgba(20, 8, 50, 0.85) !important;
+    backdrop-filter: blur(8px);
+    color: #fff !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+.leaflet-bar a:last-child { border-bottom: none !important; }
+.leaflet-bar a:hover {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    color: #e9f990 !important;
+}
+.leaflet-bar a.leaflet-disabled {
+    background-color: rgba(20, 8, 50, 0.6) !important;
+    color: rgba(255, 255, 255, 0.3) !important;
+    cursor: not-allowed;
+}
+
+/* Leaflet attribution (bottom-right) — softer on dark. */
+.leaflet-control-attribution {
+    background: rgba(20, 8, 50, 0.7) !important;
+    color: rgba(255, 255, 255, 0.75) !important;
+    border-radius: 6px 0 0 0 !important;
+}
+.leaflet-control-attribution a { color: #e9f990 !important; }
+
+/* Reset-filters button on the canvas-sliders panel. */
+#reset-filters {
+    background: transparent !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    color: #fff !important;
+    border-radius: 6px !important;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+#reset-filters:hover {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: #e9f990 !important;
+    color: #e9f990 !important;
 }
 .fa-icon-marker {
     color: #e9f990; /* Customize the color of the icon */
@@ -185,59 +303,54 @@ li.completed {
     text-align: center;
 }
 
-#Try, #TryLocal {
-    border-radius: 1em;
+#Try, #TryLocal, #Submit, #Skip {
+    border-radius: 10px;
     font-size: 14px;
+    font-weight: 600;
+    padding: 9px 16px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease,
+                background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+#Try, #TryLocal {
     color: #fff;
-    background-color: #562952;
-    border: 1px solid #562952;
-    font-weight: medium;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 #Try:hover, #TryLocal:hover {
-    background-color: #fef7ff;
-    border: 1px solid #562952;
-    color: #562952;
+    background-color: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.5);
+    color: #fff;
     cursor: pointer !important;
 }
 
-#Submit.disabled{
-    border-radius: 1em;
-    font-size: 14px;
-    background-color: #fef7ff;
-    border: 1px solid #aa90a9;
-    color: #aa90a9;
-    font-weight: medium;
+#Submit.disabled {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.4);
 }
-#Submit{
-    border-radius: 1em;
-    font-size: 14px;
-    background-color: #fef7ff;
-    border: 1px solid #11ac7a;
-    color: #11ac7a;
-    font-weight: medium;
+#Submit {
+    background-color: #e9f990;
+    border: 1px solid #e9f990;
+    color: #2c1158;
 }
-#Submit:hover{
-    background-color: #11ac7a;
-    border: 1px solid #11ac7a;
-    color: #fff;
-    /* Change the pointer to a hand */
+#Submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(233, 249, 144, 0.35);
+    background-color: #e9f990;
+    color: #2c1158;
     cursor: pointer !important;
 }
 
-#Skip{
-    border-radius: 1em;
-    font-size: 14px;
-    background-color: #fef7ff;
-    border: 1px solid #f13140;
-    color: #f13140;
-    font-weight: medium;
+#Skip {
+    background-color: transparent;
+    border: 1px solid rgba(241, 49, 64, 0.6);
+    color: #ff8a93;
 }
-
-#Skip:hover{
-    background-color: #f13140;
-    border: 1px solid #f13140;
+#Skip:hover {
+    background-color: rgba(241, 49, 64, 0.15);
+    border-color: #ff8a93;
     color: #fff;
-    /* Change the pointer to a hand */
     cursor: pointer !important;
 }
 
@@ -253,14 +366,10 @@ li.completed {
     margin: 0 auto !important; /* Center the logos */
 }
 .developed {
-    color: #333;
     font-size: 10px;
     margin-top: 1em;
     margin-left: auto;
     margin-right: auto;
-}
-.developed:hover{
-    color: #000;
 }
 .black{
     background-color: #000 !important;
@@ -297,4 +406,179 @@ a.social {
     margin: auto;
 }
 
+.developed { color: rgba(255, 255, 255, 0.7); }
+.developed:hover { color: #e9f990; }
+
+/* Dark-themed modals to match the rest of the app. Scoped to gettask page
+   because styles.css is only loaded here. Bootstrap 5 uses CSS variables on
+   .modal-content; override both the variables and the resolved properties. */
+.modal-content {
+    --bs-modal-bg: rgba(43, 17, 85, 0.97);
+    --bs-modal-color: #fff;
+    --bs-modal-border-color: rgba(255, 255, 255, 0.12);
+    --bs-modal-header-border-color: rgba(255, 255, 255, 0.12);
+    --bs-modal-footer-border-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(43, 17, 85, 0.97) !important;
+    color: #fff !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
+}
+.modal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    background: linear-gradient(135deg, rgba(86, 41, 82, 0.6), rgba(43, 17, 85, 0.6));
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+}
+.modal-title { color: #fff; font-weight: 700; }
+.modal-header .btn-close {
+    filter: invert(1) grayscale(100%) brightness(180%);
+    opacity: 0.85;
+}
+.modal-body { color: rgba(255, 255, 255, 0.92); }
+.modal-body strong { color: #e9f990; }
+.modal-body a { color: #e9f990; }
+.modal-body a:hover { color: #fff; }
+.modal-body hr { border-color: rgba(255, 255, 255, 0.15); }
+.modal-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.15);
+    border-bottom-left-radius: 14px;
+    border-bottom-right-radius: 14px;
+}
+
+/* Stats table inside the new-task modal. Override Bootstrap's CSS variables
+   so the bordered grid renders subtle on dark, not bright white. */
+.modal .table {
+    --bs-table-color: rgba(255, 255, 255, 0.9);
+    --bs-table-bg: transparent;
+    --bs-table-border-color: rgba(255, 255, 255, 0.08);
+    --bs-table-striped-color: rgba(255, 255, 255, 0.9);
+    --bs-table-striped-bg: rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.9) !important;
+    background-color: transparent !important;
+}
+.modal .table-light,
+.modal .table thead th {
+    background-color: rgba(255, 255, 255, 0.06) !important;
+    color: #e9f990 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    font-weight: 600;
+}
+.modal .table-bordered,
+.modal .table-bordered > :not(caption) > *,
+.modal .table-bordered > :not(caption) > * > * {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+.modal .table th,
+.modal .table td {
+    background-color: transparent !important;
+    color: rgba(255, 255, 255, 0.92) !important;
+}
+
+/* Modal footer button overrides. */
+.modal-footer .btn-secondary {
+    background-color: #e9f990;
+    border-color: #e9f990;
+    color: #2c1158;
+    font-weight: 600;
+}
+.modal-footer .btn-secondary:hover {
+    background-color: #fff;
+    border-color: #fff;
+    color: #2c1158;
+}
+.modal-footer .btn-primary {
+    background-color: #e9f990;
+    border-color: #e9f990;
+    color: #2c1158;
+}
+.modal-footer .btn-primary:hover {
+    background-color: #fff;
+    border-color: #fff;
+    color: #2c1158;
+}
+
+/* Inline alert inside modal (anonymous notice). */
+.modal-body .alert-info {
+    background-color: rgba(126, 184, 247, 0.18);
+    color: #cfe6ff;
+    border: 1px solid rgba(126, 184, 247, 0.4);
+}
+.modal-body .alert-info a { color: #e9f990; text-decoration: underline; }
+
+/* Anon notice badge already exists; tighten contrast on dark bg. */
+.anon-notice { color: rgba(255, 255, 255, 0.85); }
+
+/* Driver.js tutorial popovers — match the dark theme. */
+.driver-popover {
+    background-color: rgba(43, 17, 85, 0.97) !important;
+    color: #fff !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55) !important;
+}
+.driver-popover-title {
+    color: #e9f990 !important;
+    font-weight: 700 !important;
+}
+.driver-popover-description {
+    color: rgba(255, 255, 255, 0.92) !important;
+}
+.driver-popover-description em { color: rgba(255, 255, 255, 0.7) !important; }
+.driver-popover-description a {
+    color: #e9f990 !important;
+    text-decoration: underline;
+}
+.driver-popover-progress-text {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Driver.js footer buttons. */
+.driver-popover-footer button.driver-popover-prev-btn,
+.driver-popover-footer button.driver-popover-next-btn {
+    text-shadow: none !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    padding: 6px 14px !important;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.driver-popover-footer button.driver-popover-prev-btn {
+    background: transparent !important;
+    color: #fff !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+}
+.driver-popover-footer button.driver-popover-prev-btn:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+.driver-popover-footer button.driver-popover-next-btn {
+    background: #e9f990 !important;
+    color: #2c1158 !important;
+    border: 1px solid #e9f990 !important;
+}
+.driver-popover-footer button.driver-popover-next-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(233, 249, 144, 0.3) !important;
+}
+
+/* Close X icon */
+.driver-popover-close-btn {
+    color: #fff !important;
+    opacity: 0.85;
+}
+.driver-popover-close-btn:hover { opacity: 1; }
+
+/* Arrow — Driver.js uses border tricks; flip the visible border to our bg. */
+.driver-popover-arrow-side-left.driver-popover-arrow {
+    border-left-color: rgba(43, 17, 85, 0.97) !important;
+}
+.driver-popover-arrow-side-right.driver-popover-arrow {
+    border-right-color: rgba(43, 17, 85, 0.97) !important;
+}
+.driver-popover-arrow-side-top.driver-popover-arrow {
+    border-top-color: rgba(43, 17, 85, 0.97) !important;
+}
+.driver-popover-arrow-side-bottom.driver-popover-arrow {
+    border-bottom-color: rgba(43, 17, 85, 0.97) !important;
+}
 

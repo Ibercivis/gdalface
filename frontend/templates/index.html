@@ -22,6 +22,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <link href="{% static 'css/main.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'css/challenges.css' %}?v=1.0" rel="stylesheet" type="text/css">
     <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
@@ -159,62 +160,108 @@
         .batch-section {
             padding: 2rem 0 4rem;
         }
-        
+
+        .section-title-icon {
+            color: #e9f990;
+            margin-right: 0.6rem;
+        }
+
         .batch-card {
             background-color: rgba(43, 17, 85, 0.6);
-            border-radius: 10px;
-            transition: all 0.3s ease;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             overflow: hidden;
             cursor: pointer;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
-        
+
         .batch-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+            border-color: rgba(233, 249, 144, 0.4);
         }
-        
+
         .batch-card .card-img-top {
-            height: 150px;
+            height: 170px;
             object-fit: cover;
         }
-        
+
         .batch-card .card-footer {
-            background-color: rgba(43, 17, 85, 0.8);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: rgba(43, 17, 85, 0.85);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
             color: #fff;
-            padding: 1rem;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
-        
+
+        .batch-card .batch-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .batch-card .batch-name {
+            font-weight: 700;
+            font-size: 15px;
+            color: #fff;
+            margin-bottom: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .batch-card .batch-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.75);
+        }
+
+        .batch-card .batch-meta i {
+            color: #e9f990;
+            margin-right: 3px;
+        }
+
         .card-img-overlay {
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(15, 17, 53, 0.7);
             opacity: 0;
-            transition: all 0.3s ease;
+            transition: opacity 0.25s ease;
         }
-        
+
         .batch-card:hover .card-img-overlay {
             opacity: 1;
         }
-        
+
         .text-participate {
-            background-color: #7639ba;
-            color: white;
+            background-color: #e9f990;
+            color: #2c1158;
             padding: 0.5rem 1.5rem;
-            border-radius: 5px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            box-shadow: 0 4px 15px rgba(118, 57, 186, 0.4);
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(233, 249, 144, 0.4);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
-        
+
+        /* Progress circle (lima accent matching the rest of the theme) */
         .progress-circle {
-            width: 40px;
-            height: 40px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
             background-clip: content-box;
+            flex-shrink: 0;
         }
         
         .progress-circle::before {
@@ -223,18 +270,20 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 37px;
-            height: 37px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
-            background-color: rgba(43, 17, 85);
+            background-color: rgba(43, 17, 85, 1);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
-        
+
         .progress-text {
             position: relative;
-            font-size: 0.7rem;
-            font-weight: 600;
-            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #e9f990;
             z-index: 1;
+            letter-spacing: 0.3px;
         }
     
 
@@ -392,16 +441,142 @@
             outline: none;
         }
 
-        /* Estilos para las tarjetas de estadísticas */
-        .stats-card {
-            background-color: rgba(33, 12, 66, 0.8) !important; /* Color más oscuro para las estadísticas */
+        /* HERO STAT (single big highlight + headline) */
+        .stats-hero {
+            background: linear-gradient(135deg, rgba(43, 17, 85, 0.85), rgba(33, 12, 66, 0.85));
+            border: 1px solid rgba(233, 249, 144, 0.25);
+            border-radius: 18px;
+            padding: 32px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 24px;
+            align-items: center;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
         }
-        
+        .stats-hero::before {
+            content: '';
+            position: absolute;
+            top: -80px; right: -60px;
+            width: 260px; height: 260px;
+            background: radial-gradient(circle, rgba(233,249,144,0.18) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .stats-hero .hero-stat {
+            text-align: center;
+        }
+        .stats-hero .hero-stat .v {
+            font-size: 4.5rem;
+            font-weight: 800;
+            color: #e9f990;
+            line-height: 1;
+            letter-spacing: -2px;
+            text-shadow: 0 4px 18px rgba(233, 249, 144, 0.3);
+        }
+        .stats-hero .hero-stat .l {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.8);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        .stats-hero .hero-side .completion-circle {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .stats-hero .hero-side .completion-ring {
+            width: 130px; height: 130px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            position: relative;
+        }
+        .stats-hero .hero-side .completion-ring::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 110px; height: 110px;
+            border-radius: 50%;
+            background: rgba(20, 8, 50, 0.95);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .stats-hero .hero-side .completion-pct {
+            position: relative;
+            font-size: 2rem;
+            font-weight: 800;
+            color: #fff;
+            z-index: 1;
+        }
+        .stats-hero .hero-side .completion-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.75);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }
+
+        /* Compact stats grid */
+        .stats-mini-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+        .stat-mini {
+            background-color: rgba(43, 17, 85, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 16px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: transform 0.25s ease, border-color 0.25s ease;
+        }
+        .stat-mini:hover {
+            transform: translateY(-3px);
+            border-color: rgba(233, 249, 144, 0.35);
+        }
+        .stat-mini .ico {
+            width: 40px; height: 40px;
+            border-radius: 10px;
+            background: rgba(233, 249, 144, 0.15);
+            color: #e9f990;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        .stat-mini .v {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1;
+        }
+        .stat-mini .l {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+        @media (max-width: 992px) {
+            .stats-hero { grid-template-columns: 1fr; text-align: center; }
+            .stats-mini-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        /* (Old stats-card class — kept for back-compat if reused elsewhere) */
+        .stats-card {
+            background-color: rgba(33, 12, 66, 0.8) !important;
+        }
+
         .stats-card i {
-            color: rgb(233, 249, 144); /* Verde brillante para los iconos */
+            color: rgb(233, 249, 144);
             margin-bottom: 0.5rem;
         }
-        
+
         .stats-card h4 {
             font-size: 2.5rem;
             font-weight: 700;
@@ -459,7 +634,7 @@
                 <div class="row justify-content-center">
                     <div class="col-lg-10">
                         <div class="info-card">
-                            <h2 class="section-title">{% trans "Our Mission" %}</h2>
+                            <h2 class="section-title"><i class="fa-solid fa-rocket section-title-icon"></i>{% trans "Our Mission" %}</h2>
                             <p class="section-description">
                                 {% blocktrans %}This application is designed to help georeference images taken by astronauts aboard the International Space Station (ISS). The goal is to create a global map of Earth's lights at night to measure and track light pollution. By accurately aligning images with geographical coordinates, the app contributes to valuable environmental data collection, which can be used for scientific research, monitoring light pollution, and understanding its impact on ecosystems and human health.{% endblocktrans %}
                             </p>
@@ -507,10 +682,25 @@
                     </div>
                 </div>
                 
+                <!-- Challenges Section -->
+                {% if visible_challenges %}
+                <div id="challenges-section" class="row batch-section">
+                    <div class="col-12 text-center mb-4">
+                        <h2 class="section-title"><i class="fa-solid fa-trophy section-title-icon"></i>{% trans "Challenges" %}</h2>
+                        <p class="text-center mb-4">{% trans "Join a challenge and help the community reach a shared goal." %}</p>
+                    </div>
+                    <div class="col-md-10 offset-md-1">
+                        {% for ch in visible_challenges %}
+                            {% include '_challenge_card.html' %}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
                 <!-- Batch Section - Con ID para navegación -->
                 <div id="batch-section" class="row batch-section">
                     <div class="col-12 text-center mb-4">
-                        <h2 class="section-title">{% trans "Available Batches" %}</h2>
+                        <h2 class="section-title"><i class="fa-solid fa-layer-group section-title-icon"></i>{% trans "Available Batches" %}</h2>
                         <p class="text-center mb-5">{% trans "Select a specific batch of images to work with" %}</p>
                     </div>
                     
@@ -520,21 +710,19 @@
                             <div class="position-relative">
                                 <img src="{{ batch.get_example_image }}" class="card-img-top" alt="{{ batch.name }}">
                                 <div class="card-img-overlay d-flex align-items-center justify-content-center">
-                                    <div class="text-center text-participate">{% trans "Participate" %}</div>
+                                    <div class="text-center text-participate"><i class="fa-solid fa-play"></i>{% trans "Participate" %}</div>
                                 </div>
                             </div>
                             <div class="card-footer">
-                                <div class="row">
-                                    <div class="col-9">
-                                        {% trans "Name:" %} <b>{{ batch.name }}</b> <br/>
-                                        {% trans "Images:" %} <b>{{ batch.get_number_images }}</b><br />
-                                        {% trans "Tasks:" %} <b>{{ batch.get_number_geoattempts }}</b> <br/>
+                                <div class="batch-info">
+                                    <div class="batch-name" title="{{ batch.name }}">{{ batch.name }}</div>
+                                    <div class="batch-meta">
+                                        <span><i class="fa-solid fa-image"></i>{{ batch.get_number_images }}</span>
+                                        <span><i class="fa-solid fa-list-check"></i>{{ batch.get_number_geoattempts }}</span>
                                     </div>
-                                    <div class="col-3">
-                                        <div class="progress-circle" style="background: conic-gradient(#999 {{ batch.get_percentage_remaining }}%, #fef7ff 0);">
-                                            <span class="progress-text">{{ batch.get_percentage_remaining }}%</span>
-                                        </div>
-                                    </div>
+                                </div>
+                                <div class="progress-circle" style="background: conic-gradient(#e9f990 {{ batch.get_percentage_remaining }}%, rgba(255,255,255,0.12) 0);" title="{% trans 'Completion' %}">
+                                    <span class="progress-text">{{ batch.get_percentage_remaining }}%</span>
                                 </div>
                             </div>
                         </div>
@@ -545,86 +733,61 @@
                 <!-- Project Statistics Section -->
                 <div id="statistics-section" class="row batch-section">
                     <div class="col-12 text-center mb-4">
-                        <h2 class="section-title">{% trans "Project Statistics" %}</h2>
+                        <h2 class="section-title"><i class="fa-solid fa-chart-line section-title-icon"></i>{% trans "Project Statistics" %}</h2>
                         <p class="text-center mb-5">{% trans "Global impact of our community's contributions" %}</p>
                     </div>
-                    
-                    <div class="row justify-content-center">
-                        <div class="col-md-10">
-                            <div class="row">
-                                <!-- Primera fila - 4 columnas -->
-                                <!-- Total Users -->
-                                <div class="col-md-3 mb-4">
-                                    <div class="info-card stats-card h-100 d-flex flex-column align-items-center justify-content-center py-4">
-                                        <i class="fas fa-users fa-3x"></i>
-                                        <h4>{{ total_users }}</h4>
-                                        <p class="text-center">{% trans "Total Users" %}</p>
-                                    </div>
-                                </div>
 
-                                <!-- Total Images -->
-                                <div class="col-md-3 mb-4">
-                                    <div class="info-card stats-card h-100 d-flex flex-column align-items-center justify-content-center py-4">
-                                        <i class="fas fa-images fa-3x"></i>
-                                        <h4>{{ total_images }}</h4>
-                                        <p class="text-center">{% trans "Total Images" %}</p>
+                    <div class="col-md-10 offset-md-1">
+                        <!-- Hero metric: Control Points + completion ring -->
+                        <div class="stats-hero">
+                            <div class="hero-stat">
+                                <div class="v">{{ total_control_points }}</div>
+                                <div class="l"><i class="fa-solid fa-map-pin me-1"></i>{% trans "Control Points placed" %}</div>
+                            </div>
+                            <div class="hero-side">
+                                <div class="completion-circle">
+                                    <div class="completion-ring" style="background: conic-gradient(#e9f990 {{ completion_pct }}%, rgba(255,255,255,0.12) 0);">
+                                        <span class="completion-pct">{{ completion_pct }}%</span>
                                     </div>
+                                    <div class="completion-label">{% trans "Tasks completed" %}</div>
+                                    <div style="font-size:12px; color:rgba(255,255,255,0.65);">{{ completed_tasks }} / {{ total_tasks }}</div>
                                 </div>
+                            </div>
+                        </div>
 
-                                <!-- Images with Georeference -->
-                                <div class="col-md-3 mb-4">
-                                    <div class="info-card stats-card h-100 d-flex flex-column align-items-center justify-content-center py-4">
-                                        <i class="fas fa-map-marked fa-3x"></i>
-                                        <h4>{{ images_with_georeference }}</h4>
-                                        <p class="text-center">{% trans "Images with Georeference" %}</p>
-                                    </div>
-                                </div>
-
-                                <!-- Total Tasks -->
-                                <div class="col-md-3 mb-4">
-                                    <div class="info-card stats-card h-100 d-flex flex-column align-items-center justify-content-center py-4">
-                                        <i class="fas fa-tasks fa-3x"></i>
-                                        <h4>{{ total_tasks }}</h4>
-                                        <p class="text-center">{% trans "Total Tasks" %}</p>
-                                    </div>
-                                </div>
-
-                                <!-- Segunda fila - 4 columnas -->
-                                <!-- Completed Tasks -->
-                                <div class="col-md-3 mb-4">
-                                    <div class="info-card stats-card h-100 d-flex flex-column align-items-center justify-content-center py-4">
-                                        <i class="fas fa-check-circle fa-3x"></i>
-                                        <h4>{{ completed_tasks }}</h4>
-                                        <p class="text-center">{% trans "Completed Tasks" %}</p>
-                                    </div>
-                                </div>
-
-                                <!-- Average Tasks per User -->
-                                <div class="col-md-3 mb-4">
-                                    <div class="info-card stats-card h-100 d-flex flex-column align-items-center justify-content-center py-4">
-                                        <i class="fas fa-user-clock fa-3x"></i>
-                                        <h4>{{ avg_tasks_per_user }}</h4>
-                                        <p class="text-center">{% trans "Average Tasks per User" %}</p>
-                                    </div>
-                                </div>
-
-                                <!-- Control Points -->
-                                <div class="col-md-3 mb-4">
-                                    <div class="info-card stats-card h-100 d-flex flex-column align-items-center justify-content-center py-4">
-                                        <i class="fas fa-map-pin fa-3x"></i>
-                                        <h4>{{ total_control_points }}</h4>
-                                        <p class="text-center">{% trans "Total Control Points" %}</p>
-                                    </div>
-                                </div>
-
-                                <!-- Total Minutes -->
-                                <div class="col-md-3 mb-4">
-                                    <div class="info-card stats-card h-100 d-flex flex-column align-items-center justify-content-center py-4">
-                                        <i class="fas fa-clock fa-3x"></i>
-                                        <h4>{{ total_minutes }}</h4>
-                                        <p class="text-center">{% trans "Total Minutes" %}</p>
-                                    </div>
-                                </div>
+                        <!-- Compact mini-grid for the rest -->
+                        <div class="stats-mini-grid">
+                            <div class="stat-mini">
+                                <div class="ico"><i class="fa-solid fa-users"></i></div>
+                                <div><div class="v">{{ total_users }}</div><div class="l">{% trans "Users" %}</div></div>
+                            </div>
+                            <div class="stat-mini">
+                                <div class="ico"><i class="fa-solid fa-images"></i></div>
+                                <div><div class="v">{{ total_images }}</div><div class="l">{% trans "Images" %}</div></div>
+                            </div>
+                            <div class="stat-mini">
+                                <div class="ico"><i class="fa-solid fa-map-location-dot"></i></div>
+                                <div><div class="v">{{ images_with_georeference }}</div><div class="l">{% trans "Georeferenced" %}</div></div>
+                            </div>
+                            <div class="stat-mini">
+                                <div class="ico"><i class="fa-solid fa-list-check"></i></div>
+                                <div><div class="v">{{ total_tasks }}</div><div class="l">{% trans "Total Tasks" %}</div></div>
+                            </div>
+                            <div class="stat-mini">
+                                <div class="ico"><i class="fa-solid fa-circle-check"></i></div>
+                                <div><div class="v">{{ completed_tasks }}</div><div class="l">{% trans "Completed" %}</div></div>
+                            </div>
+                            <div class="stat-mini">
+                                <div class="ico"><i class="fa-solid fa-user-clock"></i></div>
+                                <div><div class="v">{{ avg_tasks_per_user }}</div><div class="l">{% trans "Avg / user" %}</div></div>
+                            </div>
+                            <div class="stat-mini">
+                                <div class="ico"><i class="fa-regular fa-clock"></i></div>
+                                <div><div class="v">{{ total_time_formatted }}</div><div class="l">{% trans "Time invested" %}</div></div>
+                            </div>
+                            <div class="stat-mini">
+                                <div class="ico"><i class="fa-solid fa-trophy"></i></div>
+                                <div><div class="v">{{ visible_challenges|length }}</div><div class="l">{% trans "Challenges" %}</div></div>
                             </div>
                         </div>
                     </div>
@@ -633,7 +796,7 @@
                 <!-- Contact Section - Integrado desde la página de contacto -->
                 <div id="contact-section" class="row contact-section">
                     <div class="col-12 text-center mb-4">
-                        <h2 class="section-title">{% trans "Contact Us" %}</h2>
+                        <h2 class="section-title"><i class="fa-solid fa-envelope section-title-icon"></i>{% trans "Contact Us" %}</h2>
                         <p class="text-center mb-5">{% trans "Have questions about Lost at Night? We'd love to hear from you!" %}</p>
                     </div>
                     
@@ -744,5 +907,7 @@
             });
         });
     </script>
+
+    <script src="{% static 'js/challenge_card.js' %}?v=1.0" defer></script>
 </body>
 </html>

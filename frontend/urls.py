@@ -14,5 +14,7 @@ urlpatterns = [
     path('gettask', views.gettask, name='gettask'),
     path('gettask/<int:pk>', views.gettask, name='getttask'),
     path('batchs', views.batchs, name='batchs'),
-    path('contact', views.contact, name='contact')
+    path('contact', views.contact, name='contact'),
+    path('challenges/', views.challenges_list, name='challenges_list'),
+    path('challenges/<int:pk>/', views.challenge_detail, name='challenge_detail'),
 ]

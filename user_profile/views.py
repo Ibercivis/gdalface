@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.db.models import Sum, Count, Avg
-from georeferencing.models import GeoAttempt, GeoAttemptsByUserByDay
+from georeferencing.models import GeoAttempt, GeoAttemptsByUserByDay, ChallengeParticipant
 from user_profile.models import UserProfile
 from user_profile.forms import UserProfileForm
 from django.contrib.auth.decorators import login_required
@@ -188,8 +188,9 @@ def user_view(request):
         user_points_position = next((i + 1 for i, up in enumerate(users_by_points) if up.user.username == user.username), None)
         user_time_position = next((i + 1 for i, up in enumerate(users_by_time) if up.user.username == user.username), None)
         
-        # Estadísticas globales
-        total_users = User.objects.count()
+        # Estadísticas globales — only users with a verified email count.
+        from allauth.account.models import EmailAddress
+        total_users = EmailAddress.objects.filter(verified=True).values('user_id').distinct().count()
         
         # Contar el total de tareas en el sistema
         total_tasks = GeoAttempt.objects.count()
@@ -254,6 +255,23 @@ def user_view(request):
             except Exception:
                 pass
 
+        # Challenge enrollments for this user (current + history),
+        # ranked within each challenge by cached_cp_count.
+        my_enrollments_qs = ChallengeParticipant.objects.filter(
+            user=user,
+        ).select_related('challenge').order_by('-joined_at')
+        my_enrollments = []
+        for ep in my_enrollments_qs:
+            ch = ep.challenge
+            better = ch.participants.filter(
+                cached_cp_count__gt=ep.cached_cp_count,
+            ).count()
+            my_enrollments.append({
+                'enrollment': ep,
+                'challenge': ch,
+                'rank': better + 1,
+            })
+
         context = {
             'user': user,
             'profile': profile,
@@ -262,6 +280,7 @@ def user_view(request):
             'cp': cp,
             'visited_places': visited_places,
             'che': che,
+            'my_enrollments': my_enrollments,
             'geoattems_by_user_by_day': data,
             'heatmap_start': heatmap_start,
             'heatmap_end': heatmap_end,

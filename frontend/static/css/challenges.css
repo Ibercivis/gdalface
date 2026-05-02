@@ -1,0 +1,210 @@
+/* Lost At Night — shared styles for the Challenge card.
+   Used by /, /challenges/ and any page that includes _challenge_card.html. */
+
+.challenge-card {
+    background-color: rgba(43, 17, 85, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    padding: 22px 24px;
+    margin-bottom: 18px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    color: #fff;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+.challenge-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+.challenge-card.enrolled::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    width: 4px;
+    background: #e9f990;
+}
+
+.challenge-card .challenge-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+.challenge-card .head-right {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.challenge-card h4 {
+    margin: 0;
+    font-weight: 700;
+    font-size: 20px;
+    color: #ffffff;
+}
+
+.challenge-status {
+    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-weight: 600;
+}
+.challenge-status.upcoming { background: #6c757d; }
+.challenge-status.active   { background: #2e7d32; }
+.challenge-status.paused   { background: #fd7e14; }
+.challenge-status.finished { background: #1565c0; }
+
+.challenge-meta {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.75);
+    margin: 6px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    align-items: center;
+}
+.challenge-meta i { color: #e9f990; margin-right: 4px; }
+.challenge-meta .badge-batch {
+    background: rgba(233, 249, 144, 0.18);
+    color: #e9f990;
+    padding: 3px 10px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.challenge-meta .badge-batch i { color: inherit; margin-right: 0; }
+
+.challenge-card .description-text {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.85);
+    margin: 12px 0 0;
+}
+
+/* Triple-target progress bar */
+.triple-bar {
+    position: relative;
+    height: 18px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 9px;
+    overflow: hidden;
+    margin: 28px 0 6px;
+}
+.triple-bar .fill {
+    height: 100%;
+    background: linear-gradient(90deg, #cd7f32 0%, #c0c0c0 50%, #ffd700 100%);
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.35);
+    transition: width 0.5s ease;
+}
+.triple-bar .marker {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 2px;
+    background: rgba(255, 255, 255, 0.55);
+}
+.triple-bar .marker::after {
+    content: attr(data-label);
+    position: absolute;
+    top: -22px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.85);
+    white-space: nowrap;
+    font-weight: 500;
+}
+.triple-bar-legend {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.55);
+    margin-top: 6px;
+}
+
+/* Action buttons (Join / Leave / Details) */
+.challenge-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 16px;
+    flex-wrap: wrap;
+}
+.challenge-actions .btn-join,
+.challenge-actions .btn-detail {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: inherit;
+    padding: 9px 20px;
+    min-height: 40px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 1.2;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease,
+                background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    box-sizing: border-box;
+    margin: 0;
+    vertical-align: middle;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+.challenge-actions .btn-join {
+    background: #e9f990;
+    color: #2c1158;
+    border: 1px solid #e9f990;
+}
+.challenge-actions .btn-join:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(233, 249, 144, 0.3);
+    color: #2c1158;
+}
+.challenge-actions .btn-join[disabled] {
+    opacity: 0.6; cursor: not-allowed; transform: none !important;
+}
+.challenge-actions .btn-join.btn-leave {
+    background: transparent;
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+.challenge-actions .btn-join.btn-leave:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.6);
+    color: #ffffff;
+    box-shadow: none;
+}
+.challenge-actions .btn-detail {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: #ffffff;
+    margin-left: auto;
+}
+.challenge-actions .btn-detail:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #e9f990;
+    color: #e9f990;
+}
+
+.enrolled-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(233, 249, 144, 0.18);
+    color: #e9f990;
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+}

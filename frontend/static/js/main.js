@@ -316,6 +316,9 @@ $(document).ready(function () {
                     success: function (response) {
                         console.log(response);
                         console.log('Control points submitted successfully');
+                        if (typeof window.LAN_refreshChallenge === 'function') {
+                            window.LAN_refreshChallenge();
+                        }
                         $('.modal-title').html('Thank you for your contribution'); // Set the modal content
                         $('.modal-body').html('Your control points have been submitted successfully.'); // Set the modal body content
                         $('#modalClose').html('Try another one!');

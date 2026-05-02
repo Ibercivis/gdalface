@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lost At Night | Task</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     {% bootstrap_css %}
     <!-- Añadiendo favicon -->
     <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
@@ -24,19 +25,33 @@
     <script src="{% static 'js/main.js' %}?v=1.5"></script>
     <!-- Try local -->
     <script src="{% static 'js/trylocal.js' %}?v=1.1"></script>
-    <link href="{% static 'css/styles.css' %}?v=1.4" rel="stylesheet" type="text/css">
     <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
-    {% bootstrap_css %}
     {% bootstrap_javascript %}
     <!-- Driver.js for the first-time tutorial -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css">
     <script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js"></script>
+    <!-- Local styles last so they override Bootstrap and Driver.js -->
+    <link href="{% static 'css/styles.css' %}?v=1.10" rel="stylesheet" type="text/css">
     <script src="{% static 'js/tutorial.js' %}?v=1.2" defer></script>
+    <script src="{% static 'js/challenge_banner.js' %}?v=1.3" defer></script>
 </head>
 
 <body>
+    <!-- Challenge banner (only renders if user is enrolled in an applicable challenge) -->
+    <div id="challenge-banner"
+         data-batch-id="{% if batch %}{{ batch.id }}{% endif %}"
+         data-authenticated="{% if user.is_authenticated %}1{% else %}0{% endif %}"
+         data-i18n-rank="{% trans 'Your rank' %}"
+         data-i18n-of="{% trans 'of' %}"
+         data-i18n-paused="{% trans 'Paused — submissions are not counting right now' %}"
+         data-i18n-progress="{% trans 'Group progress' %}"
+         data-i18n-leader="{% trans 'Leader' %}"
+         data-i18n-leaderboard="{% trans 'Leaderboard' %}"
+         data-i18n-leading="{% trans 'You are leading!' %}"
+         hidden></div>
+
     <!-- Modal -->
     <!-- Task Info Modal (shown automatically on each new task) -->
     <div class="modal fade" id="taskInfoModal" tabindex="-1" aria-hidden="true">

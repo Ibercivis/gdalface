@@ -519,6 +519,48 @@
             </div>
         </div>
         
+        <!-- Your challenges -->
+        {% if my_enrollments %}
+        <div class="contribution-section mt-4">
+            <div class="section-heading personal-contrib-heading">
+                <span><i class="fas fa-trophy"></i> {% trans "Your challenges" %}</span>
+            </div>
+            <div style="overflow-x:auto;">
+                <table class="ranking-table" style="width:100%;color:#fff;">
+                    <thead>
+                        <tr>
+                            <th>{% trans "Challenge" %}</th>
+                            <th>{% trans "Status" %}</th>
+                            <th>{% trans "Your CPs" %}</th>
+                            <th>{% trans "Your rank" %}</th>
+                            <th>{% trans "Group" %}</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in my_enrollments %}
+                        <tr>
+                            <td><b>{{ row.challenge.name }}</b><br>
+                                <small style="opacity:0.7;">{{ row.challenge.start_at|date:"Y-m-d" }} → {{ row.challenge.end_at|date:"Y-m-d" }}</small></td>
+                            <td>
+                                {{ row.challenge.status }}
+                                {% if row.enrollment.left_at %}<br><small style="opacity:0.7;">{% trans "left" %} {{ row.enrollment.left_at|date:"Y-m-d" }}</small>{% endif %}
+                            </td>
+                            <td>{{ row.enrollment.cached_cp_count }}</td>
+                            <td>#{{ row.rank }}</td>
+                            <td>{{ row.challenge.total_cp }} / {{ row.challenge.target_gold }}</td>
+                            <td><a href="/challenges/{{ row.challenge.id }}/" class="text-white" style="text-decoration:underline;">{% trans "Open" %} →</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="text-end mt-2">
+                <a href="/challenges/" class="text-white" style="text-decoration:underline;">{% trans "Browse all challenges" %} →</a>
+            </div>
+        </div>
+        {% endif %}
+
         <!-- Ranking table unificada -->
         <div class="ranking-section">
             <div class="ranking-card" style="grid-column: 1 / -1;">

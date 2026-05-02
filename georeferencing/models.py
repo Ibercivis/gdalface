@@ -164,6 +164,105 @@ class GeoAttemptsByUserByDay(models.Model):
         return str(self.user) +  " - " + str(self.date) + " - " + str(self.numberGeoAttempts)
 
 
+class Challenge(models.Model):
+    name = models.CharField(max_length=120)
+    description = models.TextField(blank=True)
+    batch = models.ForeignKey(
+        'Batch', on_delete=models.SET_NULL, blank=True, null=True,
+        related_name='challenges',
+        help_text=_('Leave empty for a general challenge applicable to any batch.'),
+    )
+    start_at = models.DateTimeField()
+    end_at = models.DateTimeField()
+    target_bronze = models.PositiveIntegerField(default=1000)
+    target_silver = models.PositiveIntegerField(default=2000)
+    target_gold = models.PositiveIntegerField(default=3000)
+    is_paused = models.BooleanField(default=False)
+    paused_at = models.DateTimeField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(
+        get_user_model(), on_delete=models.SET_NULL,
+        blank=True, null=True, related_name='created_challenges',
+    )
+
+    class Meta:
+        ordering = ['-start_at']
+        constraints = [
+            models.CheckConstraint(
+                check=models.Q(start_at__lt=models.F('end_at')),
+                name='challenge_start_before_end',
+            ),
+            models.CheckConstraint(
+                check=(
+                    models.Q(target_bronze__lte=models.F('target_silver'))
+                    & models.Q(target_silver__lte=models.F('target_gold'))
+                ),
+                name='challenge_targets_ordered',
+            ),
+        ]
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def status(self):
+        from django.utils import timezone
+        now = timezone.now()
+        if self.is_paused:
+            return 'paused'
+        if now < self.start_at:
+            return 'upcoming'
+        if now >= self.end_at:
+            return 'finished'
+        return 'active'
+
+    def is_open_for_submissions(self):
+        return self.status == 'active'
+
+    def total_cp(self):
+        return self.participants.aggregate(
+            total=models.Sum('cached_cp_count'),
+        )['total'] or 0
+
+
+class ChallengeParticipant(models.Model):
+    challenge = models.ForeignKey(
+        Challenge, on_delete=models.CASCADE, related_name='participants',
+    )
+    user = models.ForeignKey(
+        get_user_model(), on_delete=models.CASCADE,
+        related_name='challenge_participations',
+    )
+    joined_at = models.DateTimeField(auto_now_add=True)
+    left_at = models.DateTimeField(blank=True, null=True)
+    cached_cp_count = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['challenge', 'user'],
+                name='unique_participant_per_challenge',
+            ),
+            # At most one active enrollment per user across all challenges.
+            models.UniqueConstraint(
+                fields=['user'],
+                condition=models.Q(left_at__isnull=True),
+                name='one_active_challenge_per_user',
+            ),
+        ]
+        indexes = [
+            models.Index(fields=['challenge', '-cached_cp_count']),
+        ]
+
+    @property
+    def is_active(self):
+        return self.left_at is None
+
+    def __str__(self):
+        state = 'left' if self.left_at else 'active'
+        return f'{self.user} -> {self.challenge} ({state}, {self.cached_cp_count} cp)'
+
+
 class TutorialEvent(models.Model):
     EVENT_CHOICES = (
         ('started', _('Started')),
