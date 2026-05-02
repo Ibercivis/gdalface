@@ -47,16 +47,21 @@
         if (!opts.videoUrl) return '';
         var href = escapeHtml(opts.videoUrl);
         if (variant === 'intro') {
-            return '<p class="mt-2 mb-0" style="font-size:90%;opacity:.85;"><em>'
-                + escapeHtml(opts.t.videoIntro) + '</em> '
-                + '<a href="' + href + '" target="_blank" rel="noopener">'
+            return '<p style="margin:10px 0 0;font-size:12px;color:var(--ink-2);">'
+                + '<em>' + escapeHtml(opts.t.videoIntro) + '</em> '
+                + '<a href="' + href + '" target="_blank" rel="noopener" '
+                + 'style="color:var(--accent);text-decoration:none;font-weight:500;'
+                + 'border-bottom:1px dashed oklch(0.95 0.13 113 / 0.5);">'
                 + escapeHtml(opts.t.videoCta) + ' ▶</a></p>';
         }
-        return '<p class="mt-3 mb-0"><a href="' + href + '" target="_blank" rel="noopener" '
-            + 'style="display:inline-block;padding:6px 12px;background:#c00;color:#fff;'
-            + 'text-decoration:none;border-radius:4px;font-weight:600;">'
+        return '<p style="margin:14px 0 0;">'
+            + '<a href="' + href + '" target="_blank" rel="noopener" '
+            + 'style="display:inline-flex;align-items:center;gap:6px;'
+            + 'padding:7px 14px;background:var(--accent);color:var(--accent-ink);'
+            + 'text-decoration:none;border-radius:8px;font-weight:600;font-size:12px;">'
             + '▶ ' + escapeHtml(opts.t.videoCta) + '</a>'
-            + '<br><small class="text-muted">' + escapeHtml(opts.t.videoOutro) + '</small></p>';
+            + '<br><small style="color:var(--ink-3);font-size:11px;">'
+            + escapeHtml(opts.t.videoOutro) + '</small></p>';
     }
 
     function buildSteps(opts) {
@@ -80,11 +85,11 @@
                 }
             },
             {
-                element: '#canvas',
+                element: '#column-photo',
                 popover: {
                     title: opts.t.s3Title,
                     description: opts.t.s3Body,
-                    side: 'right', align: 'center'
+                    side: 'over', align: 'center'
                 }
             },
             {
@@ -92,15 +97,15 @@
                 popover: {
                     title: opts.t.s4Title,
                     description: opts.t.s4Body,
-                    side: 'left', align: 'start'
+                    side: 'over', align: 'center'
                 }
             },
             {
-                element: '#canvas',
+                element: '#column-photo',
                 popover: {
                     title: opts.t.s5Title,
                     description: opts.t.s5Body,
-                    side: 'right', align: 'center'
+                    side: 'over', align: 'center'
                 }
             },
             {
@@ -131,6 +136,11 @@
         var totalSteps = steps.length;
         var completedFlag = false;
 
+        function setTutorialActive(on) {
+            document.body.classList.toggle('tutorial-active', !!on);
+            if (window.LAN) window.LAN.tutorialActive = !!on;
+        }
+
         var d = window.driver.js.driver({
             showProgress: true,
             allowClose: true,
@@ -142,6 +152,7 @@
                 logEvent('step', (ctx.state.activeIndex || 0) + 1);
             },
             onDestroyed: function (el, step, ctx) {
+                setTutorialActive(false);
                 if (completedFlag) return;
                 var idx = (ctx && ctx.state && typeof ctx.state.activeIndex === 'number')
                     ? ctx.state.activeIndex : 0;
@@ -155,6 +166,7 @@
             }
         });
 
+        setTutorialActive(true);
         logEvent('started');
         d.drive();
     }

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('design-system.css');
 
 #map{
     height: 100%;
@@ -20,8 +20,55 @@ body, html {
     position: relative;
 
 }
+/* Bootstrap tooltip — design system look (used for #ds-photo-id, #tutorial-trigger,
+   and the per-point coord tooltips on Point N). */
+.tooltip {
+    --bs-tooltip-bg: oklch(0.20 0.055 290 / 0.98);
+    --bs-tooltip-color: var(--ink-1);
+    --bs-tooltip-padding-x: 10px;
+    --bs-tooltip-padding-y: 8px;
+    --bs-tooltip-max-width: 240px;
+    font-family: var(--font-ui) !important;
+    font-size: 12px !important;
+    line-height: 1.4 !important;
+}
 .tooltip-inner {
+    background: oklch(0.20 0.055 290 / 0.98) !important;
+    color: var(--ink-1) !important;
+    border: 1px solid var(--line) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 8px 24px oklch(0 0 0 / 0.45) !important;
     text-align: left !important;
+    padding: 8px 10px !important;
+    backdrop-filter: blur(8px);
+}
+/* Arrow color match */
+.tooltip .tooltip-arrow::before {
+    border-top-color: oklch(0.20 0.055 290 / 0.98) !important;
+    border-bottom-color: oklch(0.20 0.055 290 / 0.98) !important;
+    border-left-color: oklch(0.20 0.055 290 / 0.98) !important;
+    border-right-color: oklch(0.20 0.055 290 / 0.98) !important;
+}
+
+/* Per-control-point tooltip rows: label left, value right, mono. */
+.cp-tip-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    line-height: 1.4;
+}
+.cp-tip-row span {
+    color: var(--ink-3);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-weight: 500;
+}
+.cp-tip-row b {
+    font-family: var(--font-mono);
+    color: var(--ink-0);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
 }
 
 /* Ensure the canvas fills the entire parent container */
@@ -44,16 +91,14 @@ body, html {
     position: relative;
 }
 
-/* Top-right cluster: help, tutorial, user — laid out as a row. */
-#usage-info,
-#tutorial-trigger,
-.user-icon-link-top {
+/* Tutorial trigger in the rail header — single icon, top-right. */
+#tutorial-trigger {
     position: absolute !important;
     top: 12px;
+    right: 12px;
     padding: 4px;
     width: 30px;
     height: 30px;
-    bottom: auto;
     cursor: pointer;
     border-radius: 6px;
     transition: background-color 0.15s ease;
@@ -61,15 +106,7 @@ body, html {
     align-items: center;
     justify-content: center;
 }
-#usage-info        { right: 12px; }
-#tutorial-trigger  { right: 50px; }
-.user-icon-link-top { right: 88px; }
-
-#usage-info:hover,
-#tutorial-trigger:hover,
-.user-icon-link-top:hover {
-    background-color: rgba(255, 255, 255, 0.12);
-}
+#tutorial-trigger:hover { background-color: rgba(255, 255, 255, 0.12); }
 
 /* Estilos compartidos para iconos */
 .icon-help, .user-icon, .fa-user-secret, .fa-user-circle {
@@ -121,11 +158,9 @@ body, html {
 }
 .logo {
     display: block;
-    width: 60%; /* 60% of the parent div's width */
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 1em;
-    margin-bottom: 1em;
+    width: 36%;
+    max-width: 80px;
+    margin: 0.6em auto;
 }
 #photo-info-text{
     text-align: center;
@@ -140,12 +175,174 @@ body, html {
     overflow-y: auto;
 }
 .tools {
-    background-color: #2c1158;
-    color: #fff;
-    border-left: 1px solid rgba(255, 255, 255, 0.08);
+    background-color: var(--bg-1);
+    color: var(--ink-1);
+    border-left: 1px solid var(--line);
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+    font-family: var(--font-ui);
+}
+
+/* ───────── 4-column grid: canvas | resizer | map | rail ─────────
+   Anchored to the viewport with position:fixed so anything that mutates
+   body (padding, transform, padding-right from scrollbar handlers, etc.)
+   cannot shift the participation area. */
+.ds-task-layout {
+    display: grid;
+    grid-template-columns: 1fr 6px 1fr 280px;
+    position: fixed;
+    top: 52px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+}
+.ds-task-iss, .ds-task-map, .ds-task-rail {
+    height: 100%;
+    min-width: 0;
+    position: relative;
+}
+.ds-task-iss { background-color: #1a1a1c; }
+.ds-task-rail { width: 280px; }
+
+.ds-resizer {
+    height: 100%;
+    cursor: col-resize;
+    background: var(--bg-1);
+    border-left: 1px solid var(--line);
+    border-right: 1px solid var(--line);
+    transition: background 120ms;
+    position: relative;
+    user-select: none;
+}
+.ds-resizer::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 2px;
+    height: 32px;
+    background: var(--ink-3);
+    border-radius: 1px;
+    transition: background 120ms;
+}
+.ds-resizer:hover,
+.ds-resizer.is-dragging {
+    background: oklch(0.95 0.13 113 / 0.15);
+}
+.ds-resizer:hover::before,
+.ds-resizer.is-dragging::before {
+    background: var(--accent);
+}
+
+@media (max-width: 1100px) {
+    .ds-task-layout { grid-template-columns: 1fr 6px 1fr 240px; }
+    .ds-task-rail { width: 240px; }
+}
+
+/* ───────── ISS photo ID badge (top-left of ISS panel) ───────── */
+.ds-photo-id {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    z-index: 800;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: oklch(0.18 0.05 290 / 0.86);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--ink-1);
+    font-size: 12px;
+    letter-spacing: 0.3px;
+    box-shadow: var(--shadow);
+    font-family: var(--font-mono);
+    cursor: pointer;
+    transition: background 120ms, border-color 120ms, color 120ms;
+}
+.ds-photo-id:hover {
+    background: oklch(0.24 0.06 288 / 0.92);
+    border-color: oklch(0.95 0.13 113 / 0.5);
+    color: var(--accent);
+}
+.ds-photo-id:hover .ds-icon { opacity: 1 !important; color: var(--accent); }
+.ds-photo-id .live-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--good);
+    box-shadow: 0 0 8px var(--good);
+    flex-shrink: 0;
+}
+
+/* ───────── Coordinate readout (bottom-right of map AND canvas) ───────── */
+.ds-coord-readout {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    z-index: 800;
+    background: oklch(0.18 0.05 290 / 0.86);
+    backdrop-filter: blur(14px) saturate(140%);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 11px;
+    color: var(--ink-1);
+    pointer-events: none;
+    letter-spacing: 0.3px;
+}
+.ds-coord-readout--photo {
+    /* Same look as the map readout, just lives in the canvas column. */
+}
+
+/* ───────── Image-adjustment floatcard (bottom-left of ISS panel) ───────── */
+#canvas-sliders.leaflet-control-layers {
+    /* Override the inline style on the element from the template via specificity. */
+    position: absolute !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: 16px !important;
+    left: 16px !important;
+    padding: 0 !important;
+    width: 280px;
+}
+.ds-canvas-sliders__head,
+.ds-map-adjust__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--line-soft);
+    color: var(--ink-1);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.ds-canvas-sliders__head .ds-icon,
+.ds-map-adjust__head .ds-icon { color: var(--accent); margin-right: 6px; }
+.ds-map-adjust__body { padding: 8px 10px; }
+.ds-canvas-sliders__head .toggle {
+    color: var(--ink-2);
+    cursor: pointer;
+    background: none;
+    border: 0;
+    padding: 4px;
+    border-radius: 4px;
+    line-height: 0;
+}
+.ds-canvas-sliders__head .toggle:hover { color: var(--ink-0); background: var(--bg-3); }
+#canvas-sliders.is-collapsed .ds-canvas-sliders__body { display: none; }
+#canvas-sliders.is-collapsed .toggle .down { display: inline; }
+#canvas-sliders.is-collapsed .toggle .up   { display: none; }
+.ds-canvas-sliders__body {
+    padding: 10px 12px 8px;
+}
+.ds-canvas-sliders__body input[type="range"] {
+    accent-color: var(--accent);
 }
 .column-photo {
     height: 100% !important;
@@ -157,32 +354,57 @@ ul {
 }
 
 li{
-    display: inline-block;
+    display: flex;
+    align-items: center;
+    gap: 10px;
     padding: 10px 12px;
     width: calc(100% - 2em);
     margin-left: 1em;
     margin-right: 1em;
-    margin-bottom: 0.5em;
-    background-color: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #fff;
-    border-radius: 8px;
+    margin-bottom: 8px;
+    background-color: var(--bg-2);
+    border: 1px solid var(--line);
+    color: var(--ink-1);
+    border-radius: 10px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 13px;
     text-align: left;
-    transition: background-color 0.2s ease, border-color 0.2s ease;
+    font-family: var(--font-ui);
+    transition: background-color 120ms ease, border-color 120ms ease;
 }
 
 li:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-color: rgba(233, 249, 144, 0.3);
+    background-color: var(--bg-3);
+    border-color: var(--line);
 }
 
 li.completed {
-    background-color: rgba(233, 249, 144, 0.12);
-    border-color: rgba(233, 249, 144, 0.4);
-    color: #e9f990;
+    background-color: oklch(0.95 0.13 113 / 0.08);
+    border-color: oklch(0.95 0.13 113 / 0.4);
+    color: var(--accent);
 }
+li.completed::after {
+    content: '✓';
+    margin-left: auto;
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 14px;
+}
+
+/* Rail panels — header / footer spacing */
+.tools #title {
+    padding: 12px 14px;
+    background: var(--bg-2);
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+    flex: 0 0 auto;
+}
+.tools #button-container {
+    display: flex; flex-direction: column; gap: 8px;
+    padding: 12px 14px;
+    border-top: 1px solid var(--line);
+}
+.tools #button-container > button { width: 100%; }
 
 .opacity-slider-container {
     background-color: rgba(20, 8, 50, 0.85);
@@ -192,6 +414,17 @@ li.completed {
     padding: 10px 12px;
     border-radius: 8px;
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+/* GPU promotion for the tile layers we filter. `will-change: filter`
+   tells the browser to composite these on their own GPU layer so the
+   brightness/contrast/saturate sliders are accelerated and don't trigger
+   reflows on every frame. translateZ(0) is a fallback for older engines. */
+.sdgsat-tiles,
+.viirs-tiles {
+    will-change: filter;
+    transform: translateZ(0);
+    backface-visibility: hidden;
 }
 
 /* Apply the dark glass treatment to ALL Leaflet layer-control panels —
@@ -215,26 +448,36 @@ li.completed {
     color: rgba(255, 255, 255, 0.65) !important;
 }
 
-/* Inactive base-layer toggle (OSM/Satellite) — JS sets inline background:#fff. */
-.leaflet-control-layers button[style*="#fff"],
-.leaflet-control-layers button[style*="#FFF"] {
-    background: transparent !important;
-    color: #fff !important;
-    border: 1px solid rgba(255, 255, 255, 0.35) !important;
-    border-radius: 6px !important;
+/* Base-layer toggle (OSM/Satellite) — class-based, no inline JS styles. */
+.ds-baselayer-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 8px;
 }
-.leaflet-control-layers button[style*="#fff"]:hover,
-.leaflet-control-layers button[style*="#FFF"]:hover {
-    background: rgba(255, 255, 255, 0.12) !important;
-    border-color: #e9f990 !important;
-    color: #e9f990 !important;
+.ds-baselayer-btn {
+    flex: 1;
+    height: 28px;
+    padding: 0 12px;
+    font-family: var(--font-ui);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-1);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 120ms, color 120ms, border-color 120ms;
 }
-/* Active base-layer toggle — JS sets inline background:#555. */
-.leaflet-control-layers button[style*="#555"] {
-    background: #e9f990 !important;
-    color: #2c1158 !important;
-    border: 1px solid #e9f990 !important;
-    border-radius: 6px !important;
+.ds-baselayer-btn:hover {
+    background: var(--bg-3);
+    color: var(--ink-0);
+    border-color: oklch(0.95 0.13 113 / 0.5);
+}
+.ds-baselayer-btn.is-active {
+    background: var(--accent);
+    color: var(--accent-ink);
+    border-color: var(--accent);
+    font-weight: 600;
 }
 
 /* Leaflet zoom control (+ / −) — match the dark glass style. */
@@ -272,19 +515,8 @@ li.completed {
 }
 .leaflet-control-attribution a { color: #e9f990 !important; }
 
-/* Reset-filters button on the canvas-sliders panel. */
-#reset-filters {
-    background: transparent !important;
-    border: 1px solid rgba(255, 255, 255, 0.4) !important;
-    color: #fff !important;
-    border-radius: 6px !important;
-    transition: background-color 0.15s ease, border-color 0.15s ease;
-}
-#reset-filters:hover {
-    background: rgba(255, 255, 255, 0.12) !important;
-    border-color: #e9f990 !important;
-    color: #e9f990 !important;
-}
+/* #reset-filters uses .ds-btn--ghost --sm directly — no overrides needed,
+   so it matches the map panel reset 1:1. */
 .fa-icon-marker {
     color: #e9f990; /* Customize the color of the icon */
     font-size: 16px; /* Adjust the font size to fit the icon */
@@ -304,53 +536,55 @@ li.completed {
 }
 
 #Try, #TryLocal, #Submit, #Skip {
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    padding: 9px 16px;
-    transition: transform 0.15s ease, box-shadow 0.15s ease,
-                background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 0 14px;
+    height: 36px;
+    font-family: var(--font-ui);
+    transition: transform 80ms ease, filter 120ms,
+                background-color 120ms, color 120ms, border-color 120ms;
 }
 
 #Try, #TryLocal {
-    color: #fff;
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: var(--ink-1);
+    background-color: var(--bg-3);
+    border: 1px solid var(--line);
 }
 #Try:hover, #TryLocal:hover {
-    background-color: rgba(255, 255, 255, 0.18);
-    border-color: rgba(255, 255, 255, 0.5);
-    color: #fff;
+    background-color: var(--bg-4);
+    color: var(--ink-0);
     cursor: pointer !important;
 }
 
 #Submit.disabled {
-    background-color: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: rgba(255, 255, 255, 0.4);
+    background-color: var(--bg-2) !important;
+    border: 1px solid var(--line) !important;
+    color: var(--ink-3) !important;
+    opacity: 0.6;
 }
 #Submit {
-    background-color: #e9f990;
-    border: 1px solid #e9f990;
-    color: #2c1158;
+    background-color: var(--accent);
+    border: 1px solid var(--accent);
+    color: var(--accent-ink);
+    font-weight: 600;
 }
 #Submit:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(233, 249, 144, 0.35);
-    background-color: #e9f990;
-    color: #2c1158;
+    filter: brightness(1.04);
+    background-color: var(--accent);
+    color: var(--accent-ink);
     cursor: pointer !important;
 }
+#Submit:active { transform: translateY(1px); }
 
 #Skip {
     background-color: transparent;
-    border: 1px solid rgba(241, 49, 64, 0.6);
-    color: #ff8a93;
+    border: 1px solid var(--line);
+    color: var(--ink-2);
 }
 #Skip:hover {
-    background-color: rgba(241, 49, 64, 0.15);
-    border-color: #ff8a93;
-    color: #fff;
+    background-color: var(--bg-3);
+    color: var(--ink-1);
     cursor: pointer !important;
 }
 
@@ -413,17 +647,199 @@ a.social {
    because styles.css is only loaded here. Bootstrap 5 uses CSS variables on
    .modal-content; override both the variables and the resolved properties. */
 .modal-content {
-    --bs-modal-bg: rgba(43, 17, 85, 0.97);
-    --bs-modal-color: #fff;
-    --bs-modal-border-color: rgba(255, 255, 255, 0.12);
-    --bs-modal-header-border-color: rgba(255, 255, 255, 0.12);
-    --bs-modal-footer-border-color: rgba(255, 255, 255, 0.1);
-    background-color: rgba(43, 17, 85, 0.97) !important;
-    color: #fff !important;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    border-radius: 14px !important;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
+    --bs-modal-bg: var(--bg-1);
+    --bs-modal-color: var(--ink-1);
+    --bs-modal-border-color: var(--line);
+    --bs-modal-header-border-color: var(--line);
+    --bs-modal-footer-border-color: var(--line);
+    background-color: var(--bg-1) !important;
+    color: var(--ink-1) !important;
+    border: 1px solid var(--line) !important;
+    border-radius: var(--radius-lg) !important;
+    box-shadow: var(--shadow);
 }
+
+/* Backdrop with blur — applies to ALL Bootstrap modals on this page.
+   Each modal still gets its own .modal-backdrop element (Bootstrap's default),
+   so they don't mix even when stacked.
+   Important: keep the element's opacity at 1 and put the alpha in the
+   background-color, otherwise the blur effect gets softened away. */
+.modal-backdrop,
+.modal-backdrop.show,
+.modal-backdrop.fade.show {
+    background-color: oklch(0.05 0.02 280 / 0.55) !important;
+    opacity: 1 !important;
+    backdrop-filter: blur(8px) saturate(120%) !important;
+    -webkit-backdrop-filter: blur(8px) saturate(120%) !important;
+}
+
+/* Briefing modal (#taskInfoModal) — design-system explainer. */
+#taskInfoModal .modal-dialog { max-width: 560px; }
+.ds-briefing-hero {
+    margin: -16px -16px 16px;
+    height: 140px;
+    background:
+        radial-gradient(circle at 50% 70%, oklch(0.85 0.18 80) 0%, oklch(0.55 0.18 50) 30%, oklch(0.18 0.05 280) 80%);
+    border-bottom: 1px solid var(--line);
+    position: relative;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+.ds-briefing-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+        radial-gradient(2px 2px at 30% 50%, oklch(0.95 0.05 280 / 0.6), transparent 60%),
+        radial-gradient(1.5px 1.5px at 45% 35%, oklch(0.95 0.05 280 / 0.5), transparent 60%),
+        radial-gradient(2px 2px at 60% 55%, oklch(0.95 0.05 280 / 0.5), transparent 60%),
+        radial-gradient(1.5px 1.5px at 70% 45%, oklch(0.95 0.05 280 / 0.6), transparent 60%);
+}
+.ds-step-explain {
+    display: flex; gap: 12px; align-items: flex-start;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line-soft);
+    font-size: 13px;
+}
+.ds-step-explain:last-child { border-bottom: 0; }
+.ds-step-explain__num {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--bg-3);
+    color: var(--ink-0);
+    font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+.ds-step-explain__body strong {
+    color: var(--ink-0); font-size: 14px; font-weight: 600;
+    display: block; margin-bottom: 2px;
+}
+.ds-step-explain__body { color: var(--ink-2); line-height: 1.5; }
+
+/* Modal title row with optional challenge chip */
+.ds-modal-titlebar {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px; flex-wrap: wrap;
+    margin-bottom: 14px;
+}
+.ds-modal-titlebar h5.modal-title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink-0);
+    letter-spacing: 0.2px;
+}
+.ds-modal-titlebar #ti-challenge-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: oklch(0.95 0.13 113 / 0.15);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 600;
+    border: 1px solid oklch(0.95 0.13 113 / 0.4);
+}
+.ds-modal-titlebar #ti-challenge-chip[hidden] { display: none; }
+.ds-modal-titlebar #ti-challenge-chip a { color: inherit; text-decoration: none; }
+
+/* Two-column metadata grid */
+.ds-info-grid {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: 4px 14px;
+    margin: 0 0 18px;
+    font-size: 13px;
+}
+.ds-info-grid dt {
+    color: var(--ink-3);
+    font-weight: 500;
+    font-size: 12px;
+    align-self: center;
+}
+.ds-info-grid dd {
+    margin: 0;
+    color: var(--ink-1);
+    align-self: center;
+    word-break: break-word;
+}
+.ds-info-grid .mono { font-size: 12px; }
+
+/* Reusable modal sub-section */
+.ds-modal-section {
+    border-top: 1px solid var(--line-soft);
+    padding-top: 12px;
+    margin-top: 14px;
+}
+.ds-modal-section__head {
+    display: flex; align-items: center; gap: 8px;
+    color: var(--ink-2); font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+.ds-modal-section__head .ds-icon { color: var(--accent); }
+
+.ds-crew-list {
+    display: flex; flex-wrap: wrap; gap: 6px;
+}
+.ds-crew-list > * {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 3px 10px 3px 4px;
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--ink-1);
+}
+.ds-crew-list img {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+/* Stats table */
+.ds-stats-table-wrap { overflow-x: auto; }
+.ds-stats-table {
+    width: 100%; border-collapse: collapse; font-size: 12px;
+}
+.ds-stats-table th,
+.ds-stats-table td {
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--line-soft);
+    text-align: center;
+    color: var(--ink-1);
+}
+.ds-stats-table thead th {
+    background: var(--bg-2);
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    border-bottom: 1px solid var(--line);
+}
+.ds-stats-table tbody th {
+    text-align: left;
+    color: var(--ink-2);
+    font-weight: 500;
+    background: transparent;
+}
+
+/* Anon notice */
+.ds-modal-anon {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 12px;
+    margin-top: 14px;
+    background: oklch(0.32 0.12 230 / 0.18);
+    border: 1px solid oklch(0.55 0.13 230 / 0.4);
+    color: oklch(0.88 0.13 230);
+    border-radius: 8px;
+    font-size: 12.5px;
+    line-height: 1.45;
+}
+.ds-modal-anon .ds-icon { margin-top: 1px; flex-shrink: 0; }
+.ds-modal-anon a { color: var(--accent); text-decoration: underline; }
 .modal-header {
     border-bottom: 1px solid rgba(255, 255, 255, 0.12);
     background: linear-gradient(135deg, rgba(86, 41, 82, 0.6), rgba(43, 17, 85, 0.6));
@@ -510,75 +926,193 @@ a.social {
 /* Anon notice badge already exists; tighten contrast on dark bg. */
 .anon-notice { color: rgba(255, 255, 255, 0.85); }
 
-/* Driver.js tutorial popovers — match the dark theme. */
+/* ───────── Driver.js tutorial popover — design system look ─────────
+   Card: bg-1 with subtle radial-glow accent in the top-right corner,
+   thin lima border, generous padding, mono progress pill, ghost prev,
+   primary lima next, smooth fade-in. */
 .driver-popover {
-    background-color: rgba(43, 17, 85, 0.97) !important;
-    color: #fff !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    --pop-bg: oklch(0.20 0.055 290 / 0.98);
+    background: var(--pop-bg) !important;
+    color: var(--ink-1) !important;
+    border: 1px solid var(--line) !important;
     border-radius: 14px !important;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55) !important;
+    box-shadow:
+        0 1px 0 oklch(1 0 0 / 0.05) inset,
+        0 16px 48px oklch(0 0 0 / 0.55) !important;
+    padding: 18px 18px 14px !important;
+    font-family: var(--font-ui) !important;
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+    overflow: hidden !important;
+    position: relative !important;
+    animation: driver-pop-in 220ms cubic-bezier(.2,.7,.1,1) !important;
 }
-.driver-popover-title {
-    color: #e9f990 !important;
-    font-weight: 700 !important;
+.driver-popover::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -40px;
+    width: 180px; height: 180px;
+    background: radial-gradient(circle, oklch(0.95 0.13 113 / 0.18), transparent 65%);
+    pointer-events: none;
 }
-.driver-popover-description {
-    color: rgba(255, 255, 255, 0.92) !important;
-}
-.driver-popover-description em { color: rgba(255, 255, 255, 0.7) !important; }
-.driver-popover-description a {
-    color: #e9f990 !important;
-    text-decoration: underline;
-}
-.driver-popover-progress-text {
-    color: rgba(255, 255, 255, 0.6) !important;
+@keyframes driver-pop-in {
+    from { opacity: 0; transform: translateY(4px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* Driver.js footer buttons. */
+.driver-popover-title {
+    color: var(--ink-0) !important;
+    font-family: var(--font-ui) !important;
+    font-weight: 700 !important;
+    font-size: 15px !important;
+    letter-spacing: -0.2px !important;
+    margin: 0 30px 8px 0 !important;
+    position: relative;
+    z-index: 1;
+}
+.driver-popover-description {
+    color: var(--ink-1) !important;
+    font-size: 13.5px !important;
+    line-height: 1.55 !important;
+    margin-bottom: 16px !important;
+    position: relative;
+    z-index: 1;
+}
+.driver-popover-description em {
+    color: var(--ink-2) !important;
+    font-style: italic;
+}
+.driver-popover-description a {
+    color: var(--accent) !important;
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 1px dashed oklch(0.95 0.13 113 / 0.5);
+}
+.driver-popover-description a:hover {
+    border-bottom-color: var(--accent);
+}
+
+/* Footer container */
+.driver-popover-footer {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin-top: 4px !important;
+    position: relative;
+    z-index: 1;
+}
+
+/* Progress pill (e.g. "3 of 7") */
+.driver-popover-progress-text {
+    font-family: var(--font-mono) !important;
+    font-size: 11px !important;
+    color: var(--ink-2) !important;
+    background: var(--bg-3);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 3px 10px !important;
+    letter-spacing: 0.5px;
+    margin: 0 !important;
+}
+
+/* Buttons — match .ds-btn variants */
 .driver-popover-footer button.driver-popover-prev-btn,
 .driver-popover-footer button.driver-popover-next-btn {
-    text-shadow: none !important;
-    border-radius: 8px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    height: 32px !important;
+    padding: 0 14px !important;
+    font-family: var(--font-ui) !important;
+    font-size: 12px !important;
     font-weight: 600 !important;
-    padding: 6px 14px !important;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    line-height: 1 !important;
+    border-radius: 8px !important;
+    text-shadow: none !important;
+    transition: transform 80ms ease, filter 120ms, background 120ms, color 120ms !important;
+    cursor: pointer !important;
 }
 .driver-popover-footer button.driver-popover-prev-btn {
     background: transparent !important;
-    color: #fff !important;
-    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    color: var(--ink-1) !important;
+    border: 1px solid var(--line) !important;
 }
 .driver-popover-footer button.driver-popover-prev-btn:hover {
-    background: rgba(255, 255, 255, 0.1) !important;
+    background: var(--bg-3) !important;
+    color: var(--ink-0) !important;
 }
 .driver-popover-footer button.driver-popover-next-btn {
-    background: #e9f990 !important;
-    color: #2c1158 !important;
-    border: 1px solid #e9f990 !important;
+    background: var(--accent) !important;
+    color: var(--accent-ink) !important;
+    border: 1px solid var(--accent) !important;
+    margin-left: auto !important;
 }
 .driver-popover-footer button.driver-popover-next-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(233, 249, 144, 0.3) !important;
+    filter: brightness(1.05) !important;
+}
+.driver-popover-footer button.driver-popover-next-btn:active {
+    transform: translateY(1px) !important;
 }
 
-/* Close X icon */
+/* Close X — ghost icon-button in the top-right */
 .driver-popover-close-btn {
-    color: #fff !important;
-    opacity: 0.85;
+    color: var(--ink-2) !important;
+    opacity: 1 !important;
+    width: 26px !important;
+    height: 26px !important;
+    border-radius: 6px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: background 120ms, color 120ms !important;
+    top: 10px !important;
+    right: 10px !important;
+    z-index: 2 !important;
 }
-.driver-popover-close-btn:hover { opacity: 1; }
+.driver-popover-close-btn:hover {
+    background: var(--bg-3) !important;
+    color: var(--ink-0) !important;
+}
 
 /* Arrow — Driver.js uses border tricks; flip the visible border to our bg. */
 .driver-popover-arrow-side-left.driver-popover-arrow {
-    border-left-color: rgba(43, 17, 85, 0.97) !important;
+    border-left-color: oklch(0.20 0.055 290 / 0.98) !important;
 }
 .driver-popover-arrow-side-right.driver-popover-arrow {
-    border-right-color: rgba(43, 17, 85, 0.97) !important;
+    border-right-color: oklch(0.20 0.055 290 / 0.98) !important;
 }
 .driver-popover-arrow-side-top.driver-popover-arrow {
-    border-top-color: rgba(43, 17, 85, 0.97) !important;
+    border-top-color: oklch(0.20 0.055 290 / 0.98) !important;
 }
 .driver-popover-arrow-side-bottom.driver-popover-arrow {
-    border-bottom-color: rgba(43, 17, 85, 0.97) !important;
+    border-bottom-color: oklch(0.20 0.055 290 / 0.98) !important;
+}
+
+/* When Driver.js is active, keep our chrome visible above the overlay.
+   Driver's overlay/stage live around z-index 100001-100002; raise topbar
+   and challenge banner above. */
+.ds-task-bar { z-index: 100010 !important; }
+/* Ensure no transform/filter is ever added to body — that would change
+   the containing block of position:fixed elements and make the topbar
+   "fall" into the document, which feels like content rising up. */
+body { transform: none !important; filter: none !important; }
+
+/* Highlighted target stage — use outline (no layout impact) instead of
+   box-shadow + position changes that displace absolutely-positioned panels. */
+.driver-active-element {
+    outline: 2px solid oklch(0.95 0.13 113 / 0.7) !important;
+    outline-offset: 3px !important;
+}
+/* Preserve the original positioning of floating panels Driver.js may try
+   to make relative. */
+.driver-active-element#canvas-sliders,
+.driver-active-element.leaflet-control-layers,
+.driver-active-element.ds-photo-id,
+.driver-active-element#ds-coord-readout,
+.driver-active-element#ds-photo-coord {
+    position: absolute !important;
+}
+.driver-overlay {
+    fill: oklch(0.05 0.02 280 / 0.6) !important;
 }
 

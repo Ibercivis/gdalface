@@ -1,6 +1,7 @@
-/* Lost At Night — challenge banner for the gettask page.
-   Polls /api/v1/challenges/mine/ and renders a fixed top banner with the
-   user's rank and a triple-target progress bar. */
+/* Lost At Night — challenge segment inside the in-task topbar.
+   Renders enrolled state (challenge name + status + bar + rank + leader)
+   or promo state (active challenges available — Join / Sign in) inside
+   the existing #challenge-banner slot of .ds-task-bar. JS-only. */
 (function () {
     'use strict';
 
@@ -12,76 +13,88 @@
         var s = document.createElement('style');
         s.id = 'challenge-banner-styles';
         s.textContent = [
-            '#challenge-banner.cb-active{',
-            '  position:fixed;top:0;left:0;right:0;z-index:1050;',
-            '  background:linear-gradient(90deg,#2c1158,#7639ba);',
-            '  color:#fff;padding:22px 16px 8px;font-family:Inter,system-ui,sans-serif;',
-            '  box-shadow:0 2px 8px rgba(0,0,0,0.3);',
-            '  border-bottom:1px solid rgba(233,249,144,0.2);',
-            '  display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:13px;',
+            /* The slot lives inside .ds-task-bar — flex item that grows and
+               centers its content as a tight group. */
+            '.ds-task-bar__challenge{',
+            '  flex:1;display:flex;align-items:center;justify-content:center;',
+            '  gap:10px;min-width:0;padding:0 8px;',
             '}',
-            '#challenge-banner .cb-name{',
-            '  font-weight:700;font-size:14px;display:inline-flex;align-items:center;gap:6px;',
-            '}',
-            '#challenge-banner .cb-name .cb-trophy{color:#e9f990;}',
-            '#challenge-banner .cb-status{',
-            '  font-size:10px;text-transform:uppercase;padding:2px 9px;letter-spacing:.5px;',
-            '  border-radius:999px;background:rgba(255,255,255,0.18);font-weight:600;',
-            '}',
-            '#challenge-banner .cb-status.paused{background:#fd7e14;}',
-            '#challenge-banner .cb-rank{',
-            '  display:inline-flex;align-items:center;gap:4px;',
-            '  background:rgba(255,255,255,0.12);padding:3px 10px;border-radius:6px;',
-            '}',
-            '#challenge-banner .cb-rank b{color:#e9f990;}',
-            '#challenge-banner .cb-leader{',
-            '  display:inline-flex;align-items:center;gap:4px;',
-            '  background:rgba(233,249,144,0.18);color:#e9f990;',
-            '  padding:3px 10px;border-radius:6px;font-size:12px;font-weight:600;',
-            '}',
-            '#challenge-banner .cb-leader-you{background:#e9f990;color:#2c1158;}',
-            '#challenge-banner .cb-link{',
-            '  color:#e9f990;text-decoration:none;font-size:12px;font-weight:500;',
-            '  border:1px solid rgba(233,249,144,0.4);padding:3px 10px;border-radius:6px;',
-            '  transition:background .15s ease;white-space:nowrap;',
-            '}',
-            '#challenge-banner .cb-link:hover{background:rgba(233,249,144,0.15);}',
+            '.ds-task-bar__challenge:empty{display:none;}',
 
-            /* Bar inline in the same row, taking the remaining space */
-            '#challenge-banner .cb-bar-wrap{flex:1;min-width:200px;}',
-            '#challenge-banner .cb-bar{',
-            '  position:relative;height:22px;',
-            '  background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.15);',
-            '  border-radius:11px;overflow:hidden;',
+            /* Enrolled state */
+            '.cb-name{',
+            '  display:inline-flex;align-items:center;gap:6px;',
+            '  padding:0 10px;height:26px;border-radius:999px;',
+            '  background:var(--bg-2);border:1px solid var(--line);',
+            '  color:var(--ink-1);font-weight:500;font-size:12px;',
+            '  max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:0;',
+            '  text-decoration:none;',
             '}',
-            '#challenge-banner .cb-fill{',
-            '  height:100%;',
-            '  background:linear-gradient(90deg,#cd7f32 0%,#c0c0c0 50%,#ffd700 100%);',
-            '  box-shadow:0 0 12px rgba(255,215,0,0.4);',
-            '  transition:width .5s ease;',
+            '.cb-name:hover{text-decoration:none;border-color:var(--accent);}',
+            '.cb-name .cb-trophy{color:var(--accent);flex-shrink:0;}',
+            '.cb-name__label{',
+            '  color:var(--ink-3);font-weight:500;text-transform:uppercase;',
+            '  letter-spacing:0.5px;font-size:10px;',
             '}',
-            '#challenge-banner.cb-paused .cb-fill{filter:grayscale(0.6) opacity(0.6);box-shadow:none;}',
-            '#challenge-banner .cb-marker{',
-            '  position:absolute;top:0;bottom:0;width:2px;background:rgba(255,255,255,0.7);',
+            '.cb-name__sep{color:var(--ink-3);}',
+            '.cb-name__title{color:var(--ink-0);font-weight:600;overflow:hidden;text-overflow:ellipsis;}',
+            '.cb-status{',
+            '  display:inline-flex;align-items:center;height:22px;padding:0 9px;',
+            '  font-size:10px;text-transform:uppercase;letter-spacing:0.6px;font-weight:600;',
+            '  border-radius:999px;flex-shrink:0;',
+            '  background:oklch(0.32 0.12 150 / 0.35);color:oklch(0.92 0.16 150);',
+            '  border:1px solid oklch(0.5 0.16 150 / 0.5);',
             '}',
-            '#challenge-banner .cb-marker::after{',
-            '  content:attr(data-label);position:absolute;top:-18px;left:50%;',
-            '  transform:translateX(-50%);font-size:11px;color:#e9f990;',
-            '  white-space:nowrap;font-weight:600;',
+            '.cb-status.paused{',
+            '  background:oklch(0.35 0.14 75 / 0.35);color:oklch(0.92 0.17 75);',
+            '  border-color:oklch(0.55 0.17 75 / 0.5);',
             '}',
-            '#challenge-banner .cb-progress-text{',
-            '  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);',
-            '  font-size:11px;font-weight:700;color:#fff;letter-spacing:0.3px;',
-            '  text-shadow:0 1px 3px rgba(0,0,0,0.85),0 0 4px rgba(0,0,0,0.6);',
-            '  white-space:nowrap;pointer-events:none;',
+            '.cb-bar-wrap{flex:1;min-width:140px;max-width:380px;display:flex;align-items:center;gap:8px;}',
+            '.cb-bar-label{font-family:var(--font-mono);font-size:10px;color:var(--ink-3);text-transform:uppercase;letter-spacing:0.5px;}',
+            '.cb-bar{flex:1;position:relative;height:8px;background:rgba(0,0,0,0.35);border:1px solid var(--line-soft);border-radius:4px;overflow:visible;}',
+            '.cb-fill{position:absolute;top:0;left:0;bottom:0;border-radius:inherit;transition:right .5s ease;background:linear-gradient(90deg,#cd7f32 0%,#c0c0c0 50%,var(--accent) 100%);}',
+            '.cb-paused .cb-fill{filter:grayscale(0.6) opacity(0.6);}',
+            '.cb-tick{position:absolute;top:-3px;bottom:-3px;width:2px;border-radius:1px;transform:translateX(-50%);}',
+            '.cb-tick--bronze{background:#cd7f32;box-shadow:0 0 4px rgba(205,127,50,0.5);}',
+            '.cb-tick--silver{background:#d8d8d8;box-shadow:0 0 4px rgba(216,216,216,0.4);}',
+            '.cb-tick--gold{background:var(--accent);box-shadow:0 0 4px rgba(233,249,144,0.5);}',
+            '.cb-tick.is-reached{height:14px;top:-3px;width:3px;}',
+            '.cb-bar-num{font-family:var(--font-mono);font-size:11px;color:var(--ink-1);white-space:nowrap;}',
+            '.cb-rank-mini{display:inline-flex;align-items:center;gap:4px;font-family:var(--font-mono);font-size:11px;color:var(--ink-2);white-space:nowrap;flex-shrink:0;}',
+            '.cb-rank-mini b{color:var(--ink-0);}',
+            '.cb-leader{',
+            '  display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 8px;',
+            '  background:rgba(233,249,144,0.18);color:var(--accent);',
+            '  border:1px solid rgba(233,249,144,0.4);',
+            '  border-radius:999px;font-size:11px;font-weight:600;',
+            '  max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:0;',
             '}',
+            '.cb-leaderboard-link{',
+            '  display:inline-flex;align-items:center;gap:4px;',
+            '  color:var(--ink-2);text-decoration:none;font-size:11px;font-weight:500;',
+            '  white-space:nowrap;flex-shrink:0;',
+            '  transition:color .15s ease;',
+            '}',
+            '.cb-leaderboard-link:hover{color:var(--accent);}',
 
+            /* Promo state */
+            '.cb-promo-row{display:inline-flex;align-items:center;gap:10px;}',
+            '.cb-promo-text{color:var(--ink-1);font-size:12px;}',
+            '.cb-promo-text b{color:var(--ink-0);}',
+            '.cb-promo-cta{',
+            '  display:inline-flex;align-items:center;gap:5px;',
+            '  height:26px;padding:0 12px;border-radius:999px;',
+            '  background:var(--accent);color:var(--accent-ink);',
+            '  text-decoration:none;font-size:11px;font-weight:600;',
+            '}',
+            '.cb-promo-cta:hover{filter:brightness(1.05);}',
+
+            '@media (max-width:1100px){',
+            '  .cb-bar-wrap{max-width:200px;}',
+            '  .cb-leader{display:none;}',
+            '}',
             '@media (max-width:900px){',
-            '  #challenge-banner .cb-bar-wrap{order:99;flex-basis:100%;margin-top:18px;}',
-            '}',
-            '@media (max-width:600px){',
-            '  #challenge-banner.cb-active{padding:18px 10px 6px;font-size:12px;gap:8px;}',
-            '  #challenge-banner .cb-marker::after{font-size:10px;}',
+            '  .cb-bar-wrap,.cb-rank-mini{display:none;}',
             '}',
         ].join('');
         document.head.appendChild(s);
@@ -102,114 +115,150 @@
         return v;
     }
 
-    function fmt(num) {
-        return (num || 0).toLocaleString();
-    }
-
+    function fmt(num) { return (num || 0).toLocaleString(); }
     function escapeHtml(s) {
         return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
             return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c];
         });
     }
 
-    function render(banner, payload, t) {
+    function trophySvg(size) {
+        size = size || 14;
+        return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'
+             + '<path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4z"/>'
+             + '<path d="M17 4h3v2a3 3 0 0 1-3 3M7 4H4v2a3 3 0 0 0 3 3"/>'
+             + '</svg>';
+    }
+
+    function renderEnrolled(slot, payload, t) {
         var ch = payload.challenge;
         var myRank = payload.my_rank;
-        var myCp = payload.my_cp || 0;
         var total = ch.total_cp || 0;
         var gold = ch.target_gold || 1;
         var fillPct = Math.min(100, (total / gold) * 100);
         var leader = payload.leader;
-        var participants = payload.participants_count || 0;
-
-        var bronzeLeft = Math.min(100, (ch.target_bronze / gold) * 100);
-        var silverLeft = Math.min(100, (ch.target_silver / gold) * 100);
 
         var leaderHtml = '';
-        if (leader) {
-            if (leader.is_you) {
-                leaderHtml =
-                    '<span class="cb-leader cb-leader-you" title="' + escapeHtml(t.youAreLeading) + '">'
-                    + '🥇 ' + escapeHtml(t.youAreLeading)
-                    + '</span>';
-            } else {
-                leaderHtml =
-                    '<span class="cb-leader" title="' + escapeHtml(t.leader) + '">'
-                    + '🥇 <b>' + escapeHtml(leader.username) + '</b> · ' + fmt(leader.cp_count) + ' CP'
-                    + '</span>';
-            }
+        if (leader && !leader.is_you) {
+            leaderHtml =
+                '<span class="cb-leader" title="' + escapeHtml(t.leader) + ': ' + escapeHtml(leader.username) + ' · ' + fmt(leader.cp_count) + ' CP">'
+                + '🥇 <b>' + escapeHtml(leader.username) + '</b></span>';
         }
 
-        banner.classList.toggle('cb-paused', !!ch.is_paused);
-        banner.innerHTML = ''
-            + '<span class="cb-name"><span class="cb-trophy">🏆</span>' + escapeHtml(ch.name) + '</span>'
+        slot.classList.toggle('cb-paused', !!ch.is_paused);
+        slot.innerHTML = ''
+            + '<a href="/challenges/' + ch.id + '/" class="cb-name" title="' + escapeHtml(ch.name) + '">'
+            +   '<span class="cb-trophy">' + trophySvg(13) + '</span>'
+            +   '<span class="cb-name__label">' + escapeHtml(t.challengeLabel) + '</span>'
+            +   '<span class="cb-name__sep">·</span>'
+            +   '<span class="cb-name__title">' + escapeHtml(ch.name) + '</span>'
+            + '</a>'
             + '<span class="cb-status ' + (ch.is_paused ? 'paused' : '') + '">'
             +   (ch.is_paused ? t.paused : ch.status)
             + '</span>'
-            + '<span class="cb-rank">'
-            +   escapeHtml(t.rank) + ' <b>#' + (myRank || '—') + '</b>'
-            +   (participants ? ' / ' + participants : '')
-            +   ' · ' + fmt(myCp) + ' CP'
-            + '</span>'
-            + leaderHtml
             + '<div class="cb-bar-wrap">'
+            +   '<span class="cb-bar-label">CP</span>'
             +   '<div class="cb-bar">'
-            +     '<div class="cb-fill" style="width:' + fillPct.toFixed(1) + '%"></div>'
-            +     '<div class="cb-marker" data-label="🥉 ' + fmt(ch.target_bronze) + '" style="left:' + bronzeLeft.toFixed(1) + '%"></div>'
-            +     '<div class="cb-marker" data-label="🥈 ' + fmt(ch.target_silver) + '" style="left:' + silverLeft.toFixed(1) + '%"></div>'
-            +     '<div class="cb-marker" data-label="🥇 ' + fmt(ch.target_gold)   + '" style="left:100%"></div>'
-            +     '<div class="cb-progress-text">' + fmt(total) + ' / ' + fmt(gold) + ' CP</div>'
+            +     '<div class="cb-fill" style="right:' + (100 - fillPct).toFixed(1) + '%"></div>'
+            +     '<div class="cb-tick cb-tick--bronze' + (total >= ch.target_bronze ? ' is-reached' : '') + '" '
+            +       'style="left:' + ((ch.target_bronze / gold) * 100).toFixed(1) + '%" '
+            +       'title="🥉 Bronze: ' + fmt(ch.target_bronze) + ' CP"></div>'
+            +     '<div class="cb-tick cb-tick--silver' + (total >= ch.target_silver ? ' is-reached' : '') + '" '
+            +       'style="left:' + ((ch.target_silver / gold) * 100).toFixed(1) + '%" '
+            +       'title="🥈 Silver: ' + fmt(ch.target_silver) + ' CP"></div>'
+            +     '<div class="cb-tick cb-tick--gold' + (total >= gold ? ' is-reached' : '') + '" '
+            +       'style="left:100%" '
+            +       'title="🥇 Gold: ' + fmt(gold) + ' CP"></div>'
             +   '</div>'
+            +   '<span class="cb-bar-num">' + fmt(total) + ' / ' + fmt(gold) + '</span>'
             + '</div>'
-            + '<a class="cb-link" href="/challenges/' + ch.id + '/">'
-            +   escapeHtml(t.leaderboard) + ' →'
-            + '</a>';
-
-        banner.classList.add('cb-active');
-        banner.hidden = false;
-        // Push the layout down by the banner height so the topbar tools row
-        // is not hidden underneath it.
-        document.body.style.paddingTop = banner.offsetHeight + 'px';
+            + '<span class="cb-rank-mini">'
+            +   escapeHtml(t.rank) + ' <b>#' + (myRank || '—') + '</b>'
+            + '</span>'
+            + leaderHtml;
     }
 
-    function fetchAndRender(banner) {
-        var batchId = banner.dataset.batchId;
+    function renderPromo(slot, opts) {
+        slot.classList.remove('cb-paused');
+        slot.innerHTML = ''
+            + '<div class="cb-promo-row">'
+            +   '<span class="cb-trophy" style="color:var(--accent);display:inline-flex;">' + trophySvg(14) + '</span>'
+            +   '<span class="cb-promo-text">' + opts.text + '</span>'
+            +   '<a class="cb-promo-cta" href="' + opts.href + '">'
+            +     opts.cta
+            +     ' <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>'
+            +   '</a>'
+            + '</div>';
+    }
+
+    function clearSlot(slot) {
+        slot.classList.remove('cb-paused');
+        slot.innerHTML = '';
+    }
+
+    function fetchActiveCount() {
+        return fetch('/api/v1/challenges/', {
+            credentials: 'same-origin',
+            headers: { 'X-CSRFToken': getCookie('csrftoken') || '' },
+        }).then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (data) {
+              if (!data) return 0;
+              var grouped = data.grouped || {};
+              return (grouped.active || []).length;
+          })
+          .catch(function () { return 0; });
+    }
+
+    function showPromoOrClear(slot, isAuth) {
+        return fetchActiveCount().then(function (n) {
+            if (!n) { clearSlot(slot); return; }
+            if (isAuth) {
+                renderPromo(slot, {
+                    text: '<b>' + n + '</b> active challenge' + (n === 1 ? '' : 's') + ' available',
+                    cta: 'Join one',
+                    href: '/challenges/',
+                });
+            } else {
+                renderPromo(slot, {
+                    text: '<b>' + n + '</b> active challenge' + (n === 1 ? '' : 's') + ' going on',
+                    cta: 'Sign in',
+                    href: '/accounts/login/?next=/gettask',
+                });
+            }
+        });
+    }
+
+    function fetchAndRender(slot) {
+        var isAuth = slot.dataset.authenticated === '1';
+        if (!isAuth) return showPromoOrClear(slot, false);
+
+        var batchId = slot.dataset.batchId;
         var url = '/api/v1/challenges/mine/' + (batchId ? '?batch_id=' + encodeURIComponent(batchId) : '');
         return fetch(url, {
             credentials: 'same-origin',
             headers: { 'X-CSRFToken': getCookie('csrftoken') || '' },
-        }).then(function (r) {
-            if (!r.ok) return null;
-            return r.json();
-        }).then(function (data) {
-            if (!data || !data.enrolled) {
-                banner.hidden = true;
-                banner.classList.remove('cb-active');
-                document.body.style.paddingTop = '';
-                return;
-            }
-            render(banner, data, {
-                rank: banner.dataset.i18nRank,
-                paused: banner.dataset.i18nPaused,
-                progress: banner.dataset.i18nProgress,
-                leader: banner.dataset.i18nLeader || 'Leader',
-                leaderboard: banner.dataset.i18nLeaderboard || 'Leaderboard',
-                youAreLeading: banner.dataset.i18nLeading || 'You are leading!',
-            });
-        }).catch(function () { /* best-effort */ });
+        }).then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (data) {
+              if (!data || !data.enrolled) return showPromoOrClear(slot, true);
+              renderEnrolled(slot, data, {
+                  rank: slot.dataset.i18nRank,
+                  paused: slot.dataset.i18nPaused,
+                  progress: slot.dataset.i18nProgress,
+                  leader: slot.dataset.i18nLeader || 'Leader',
+                  leaderboard: slot.dataset.i18nLeaderboard || 'Leaderboard',
+                  youAreLeading: slot.dataset.i18nLeading || 'You are leading!',
+                  challengeLabel: slot.dataset.i18nChallenge || 'Challenge',
+              });
+          }).catch(function () { /* best-effort */ });
     }
 
     function init() {
-        var banner = document.getElementById('challenge-banner');
-        if (!banner) return;
-        if (banner.dataset.authenticated !== '1') return;
-
+        var slot = document.getElementById('challenge-banner');
+        if (!slot) return;
         injectStyles();
-        fetchAndRender(banner);
-        pollTimer = setInterval(function () { fetchAndRender(banner); }, POLL_MS);
-
-        // Public hook so the submit flow in main.js can refresh us instantly.
-        window.LAN_refreshChallenge = function () { fetchAndRender(banner); };
+        fetchAndRender(slot);
+        pollTimer = setInterval(function () { fetchAndRender(slot); }, POLL_MS);
+        window.LAN_refreshChallenge = function () { fetchAndRender(slot); };
     }
 
     if (document.readyState === 'loading') {

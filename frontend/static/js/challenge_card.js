@@ -44,8 +44,47 @@
         });
     }
 
+    function fmtDuration(ms, mode) {
+        if (ms <= 0) return mode === 'starts' ? 'Soon' : 'Ended';
+        var totalMin = Math.round(ms / 60000);
+        var d = Math.floor(totalMin / (60 * 24));
+        var h = Math.floor((totalMin / 60) % 24);
+        var m = totalMin % 60;
+        var unit;
+        if (d >= 1) unit = d + 'd';
+        else if (h >= 1) unit = h + 'h';
+        else unit = m + 'm';
+        return mode === 'starts' ? 'Starts in ' + unit : unit + ' left';
+    }
+
+    function renderTimePills() {
+        var now = Date.now();
+        document.querySelectorAll('[data-time-pill]').forEach(function (el) {
+            var row = el.closest('[data-end-at]');
+            if (!row) return;
+            var mode = el.dataset.mode || 'left';
+            var iso = mode === 'starts' ? row.dataset.startAt : row.dataset.endAt;
+            if (!iso) return;
+            var t = new Date(iso).getTime();
+            el.textContent = fmtDuration(t - now, mode);
+        });
+    }
+
+    function renderProgress() {
+        document.querySelectorAll('.ds-progress__fill[data-value]').forEach(function (el) {
+            var v = +el.dataset.value, m = +el.dataset.max;
+            if (!m) return;
+            var pct = Math.min(100, Math.max(0, (v / m) * 100));
+            requestAnimationFrame(function () {
+                el.style.right = (100 - pct) + '%';
+            });
+        });
+    }
+
     function init() {
         document.querySelectorAll('.triple-bar').forEach(renderBar);
+        renderTimePills();
+        renderProgress();
 
         document.querySelectorAll('[data-challenge-join]').forEach(function (btn) {
             btn.addEventListener('click', function () {

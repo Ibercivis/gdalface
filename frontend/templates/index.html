@@ -22,7 +22,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <link href="{% static 'css/main.css' %}" rel="stylesheet" type="text/css">
-    <link href="{% static 'css/challenges.css' %}?v=1.0" rel="stylesheet" type="text/css">
+    <link href="{% static 'css/challenges.css' %}?v=2.1" rel="stylesheet" type="text/css">
     <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
@@ -87,20 +87,28 @@
         }
         
         .info-card, .feature-card {
-            background-color: rgba(43, 17, 85, 0.6);
-            border-radius: 10px;
+            background-color: var(--bg-1);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-lg);
             padding: 2rem;
             margin-bottom: 2rem;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: var(--shadow);
+            color: var(--ink-1);
         }
-        
+        .feature-card h3 { color: var(--ink-0); font-size: 16px; font-weight: 600; margin-top: 1rem; }
+        .feature-card p { color: var(--ink-2); font-size: 14px; margin: 0; }
+        .feature-card .feature-icon { color: var(--accent); font-size: 28px; }
+        .info-card .section-description { color: var(--ink-2); line-height: 1.65; }
+
         .section-title {
-            font-weight: 600;
+            font-weight: 700;
+            color: var(--ink-0);
+            font-size: 24px;
+            letter-spacing: -0.3px;
             margin-bottom: 1.5rem;
             text-align: center;
         }
+        .section-title-icon { color: var(--accent); margin-right: 0.5rem; }
         
         .action-button {
             background: #7639ba;
@@ -597,6 +605,100 @@
         .contact-info h6 {
             color: rgba(233, 249, 144, 0.8); /* Versión más suave del mismo color para los títulos */
         }
+
+        /* ───────── Design-system hero ───────── */
+        body { background: oklch(0.10 0.02 285) !important; color: var(--ink-1) !important; font-family: var(--font-ui) !important; }
+
+        /* Hide a challenge sub-section when it has no challenge cards. */
+        .ds-section:not(:has(.ds-ch-row)) { display: none; }
+        /* If all sub-sections are empty, hide the whole challenges block. */
+        .ds-challenges-block:not(:has(.ds-ch-row)) { display: none; }
+        /* Unified container width across every section on the home page. */
+        .content-wrapper .container,
+        .ds-hero__inner { max-width: 1280px !important; padding-left: 32px !important; padding-right: 32px !important; }
+
+        .ds-hero { position: relative; padding: 80px 0 100px; overflow: hidden; }
+        .ds-hero__logo {
+            display: block;
+            width: 88px;
+            height: auto;
+            margin-bottom: 24px;
+            opacity: 0.9;
+        }
+        .ds-hero__inner {
+            margin: 0 auto;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
+            align-items: center;
+            position: relative; z-index: 2;
+        }
+        .ds-hero__chip {
+            display: inline-flex; align-items: center; gap: 7px;
+            padding: 6px 12px; border-radius: 999px;
+            background: var(--bg-2); border: 1px solid var(--line);
+            font-size: 12px; color: var(--ink-1); font-weight: 500;
+            margin-bottom: 28px;
+        }
+        .ds-hero__chip .ds-icon { color: var(--accent); }
+        .ds-hero h1.ds-hero__title {
+            font-family: var(--font-ui);
+            font-size: 56px; font-weight: 700; line-height: 1.05;
+            letter-spacing: -1.5px;
+            color: var(--ink-0); margin: 0 0 20px;
+        }
+        .ds-hero__title .accent { color: var(--accent); }
+        .ds-hero__lede {
+            font-size: 17px; line-height: 1.55;
+            color: var(--ink-2); max-width: 540px; margin: 0 0 32px;
+        }
+        .ds-hero__ctas { display: flex; gap: 12px; margin-bottom: 56px; flex-wrap: wrap; }
+
+        .ds-kpi-row { display: grid; grid-template-columns: repeat(3, max-content); gap: 48px; }
+        .ds-kpi { line-height: 1.1; }
+        .ds-kpi__value {
+            font-family: var(--font-mono); font-size: 28px; font-weight: 600;
+            color: var(--ink-0); letter-spacing: -0.5px;
+        }
+        .ds-kpi__label { font-size: 12px; color: var(--ink-3); margin-top: 4px; }
+
+        /* Earth visual (radial gradient sphere with city-light specks) */
+        .ds-earth {
+            position: relative;
+            aspect-ratio: 1;
+            max-width: 460px;
+            margin: 0 auto;
+            border-radius: 50%;
+            background:
+                radial-gradient(circle at 35% 35%, oklch(0.32 0.08 240) 0%, oklch(0.18 0.06 280) 50%, oklch(0.10 0.04 280) 80%);
+            box-shadow:
+                inset 0 0 60px oklch(0 0 0 / 0.4),
+                0 0 80px oklch(0.4 0.1 240 / 0.35);
+        }
+        .ds-earth__lights {
+            position: absolute; inset: 0;
+            border-radius: 50%;
+            background:
+                radial-gradient(2px 2px at 30% 35%, var(--accent), transparent 60%),
+                radial-gradient(2px 2px at 36% 38%, var(--accent), transparent 60%),
+                radial-gradient(2px 2px at 42% 36%, var(--accent), transparent 60%),
+                radial-gradient(1.5px 1.5px at 47% 41%, var(--accent), transparent 60%),
+                radial-gradient(2px 2px at 55% 39%, var(--accent), transparent 60%),
+                radial-gradient(1.5px 1.5px at 60% 45%, var(--accent), transparent 60%),
+                radial-gradient(1.5px 1.5px at 66% 50%, var(--accent), transparent 60%),
+                radial-gradient(1.5px 1.5px at 50% 50%, var(--accent), transparent 60%),
+                radial-gradient(2px 2px at 58% 54%, var(--accent), transparent 60%),
+                radial-gradient(1.5px 1.5px at 47% 60%, var(--accent), transparent 60%),
+                radial-gradient(1.5px 1.5px at 40% 64%, var(--accent), transparent 60%),
+                radial-gradient(1.5px 1.5px at 53% 67%, var(--accent), transparent 60%);
+            opacity: 0.85;
+            filter: drop-shadow(0 0 4px var(--accent));
+        }
+
+        @media (max-width: 900px) {
+            .ds-hero__inner { grid-template-columns: 1fr; gap: 40px; }
+            .ds-hero h1.ds-hero__title { font-size: 40px; }
+            .ds-kpi-row { gap: 28px; grid-template-columns: repeat(3, 1fr); }
+            .ds-earth { max-width: 320px; }
+        }
     </style>
 </head>
 <body>
@@ -607,32 +709,56 @@
         <!-- Mensajes del sistema -->
         {% include '_message.html' %}
         
-        <!-- Hero Section -->
-        <section class="hero-section">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-8 hero-content">
-                        <div class="logo-container">
-                            <img src="{% static 'img/LogoLostAtNight.png' %}" alt="Lost at Night Logo" class="hero-logo" />
+        <!-- Hero Section — design-system layout -->
+        <section class="ds-hero">
+            <div class="ds-stars"></div>
+            <div class="ds-hero__inner">
+                <div>
+                    <img src="{% static 'img/LogoLostAtNight.png' %}" alt="Lost at Night" class="ds-hero__logo">
+                    <h1 class="ds-hero__title">
+                        {% if user.is_authenticated %}
+                            {% blocktrans with name=user.username %}Welcome back, <span class="accent">{{ name }}</span>.{% endblocktrans %}
+                        {% else %}
+                            {% blocktrans %}Help us locate the night from <span class="accent">orbit</span>.{% endblocktrans %}
+                        {% endif %}
+                    </h1>
+                    <p class="ds-hero__lede">
+                        {% trans "Help map Earth's lights from space and combat light pollution" %}
+                    </p>
+                    <div class="ds-hero__ctas">
+                        <a href="/gettask" class="ds-btn ds-btn--primary ds-btn--lg">
+                            {% trans "Contribute now" %}
+                            <svg class="ds-icon"><use href="#ds-icon-chevron-right"/></svg>
+                        </a>
+                        <a href="https://youtu.be/kY5j1wxKZYc" target="_blank" rel="noopener" class="ds-btn ds-btn--ghost ds-btn--lg">
+                            <svg class="ds-icon"><use href="#ds-icon-play"/></svg>
+                            {% trans "Watch how it works" %}
+                        </a>
+                    </div>
+                    <div class="ds-kpi-row">
+                        <div class="ds-kpi">
+                            <div class="ds-kpi__value">{{ total_control_points|default:'—' }}</div>
+                            <div class="ds-kpi__label">{% trans "Control points placed" %}</div>
                         </div>
-                        <h1 class="hero-title">{% if user.is_authenticated %}{{ user | upper }}, {% trans "WELCOME BACK" %}<br>{% trans "TO" %} <span class="highlight-text">{% trans "LOST AT NIGHT" %}</span>{% else %}{% trans "WELCOME TO" %} <span class="highlight-text">{% trans "LOST AT NIGHT" %}</span>{% endif %}</h1>
-                        <p class="hero-description">
-                            {% trans "Help map Earth's lights from space and combat light pollution" %}
-                        </p>
-                        <div class="hero-buttons">
-                            <a href="/gettask" class="btn btn-lg action-button">{% trans "Participate Now" %}</a>
-                            <a href="#batch-section" class="btn btn-lg secondary-button">{% trans "Select Batches" %}</a>
+                        <div class="ds-kpi">
+                            <div class="ds-kpi__value">{{ total_users|default:'—' }}</div>
+                            <div class="ds-kpi__label">{% trans "Active citizens" %}</div>
+                        </div>
+                        <div class="ds-kpi">
+                            <div class="ds-kpi__value">{{ images_with_georeference|default:'—' }}</div>
+                            <div class="ds-kpi__label">{% trans "Photos located" %}</div>
                         </div>
                     </div>
                 </div>
+                <div class="ds-earth"><div class="ds-earth__lights"></div></div>
             </div>
         </section>
         
         <!-- Information Section -->
         <section class="info-section">
             <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-lg-10">
+                <div class="row">
+                    <div class="col-12">
                         <div class="info-card">
                             <h2 class="section-title"><i class="fa-solid fa-rocket section-title-icon"></i>{% trans "Our Mission" %}</h2>
                             <p class="section-description">
@@ -673,37 +799,54 @@
                     </div>
                 </div>
                 
-                <div class="row cta-row">
-                    <div class="col-12 text-center">
-                        <a href="/gettask" class="btn btn-lg action-button">{% trans "Start Contributing" %}</a>
-                        <a href="https://youtu.be/kY5j1wxKZYc" target="_blank" rel="noopener" class="btn btn-lg action-button-secondary ms-2">
-                            <i class="fa-brands fa-youtube me-1"></i> {% trans "Watch the video tutorial" %}
-                        </a>
-                    </div>
-                </div>
-                
                 <!-- Challenges Section -->
                 {% if visible_challenges %}
-                <div id="challenges-section" class="row batch-section">
+                <div id="challenges-section" class="row batch-section ds-challenges-block">
                     <div class="col-12 text-center mb-4">
                         <h2 class="section-title"><i class="fa-solid fa-trophy section-title-icon"></i>{% trans "Challenges" %}</h2>
                         <p class="text-center mb-4">{% trans "Join a challenge and help the community reach a shared goal." %}</p>
                     </div>
-                    <div class="col-md-10 offset-md-1">
-                        {% for ch in visible_challenges %}
-                            {% include '_challenge_card.html' %}
-                        {% endfor %}
+                    <div class="col-12">
+                        <section class="ds-section">
+                            <div class="ds-section-heading active">
+                                <svg class="ds-icon"><use href="#ds-icon-play"/></svg>
+                                <span class="ds-section-heading__label">{% trans "Active" %}</span>
+                            </div>
+                            {% for ch in visible_challenges %}{% if ch.status == 'active' %}{% include '_challenge_card.html' %}{% endif %}{% endfor %}
+                        </section>
+                        <section class="ds-section">
+                            <div class="ds-section-heading upcoming">
+                                <svg class="ds-icon"><use href="#ds-icon-target"/></svg>
+                                <span class="ds-section-heading__label">{% trans "Upcoming" %}</span>
+                            </div>
+                            {% for ch in visible_challenges %}{% if ch.status == 'upcoming' %}{% include '_challenge_card.html' %}{% endif %}{% endfor %}
+                        </section>
+                        <section class="ds-section">
+                            <div class="ds-section-heading paused">
+                                <svg class="ds-icon"><use href="#ds-icon-minus"/></svg>
+                                <span class="ds-section-heading__label">{% trans "Paused" %}</span>
+                            </div>
+                            {% for ch in visible_challenges %}{% if ch.status == 'paused' %}{% include '_challenge_card.html' %}{% endif %}{% endfor %}
+                        </section>
+                        <section class="ds-section">
+                            <div class="ds-section-heading finished">
+                                <svg class="ds-icon"><use href="#ds-icon-check"/></svg>
+                                <span class="ds-section-heading__label">{% trans "Finished" %}</span>
+                            </div>
+                            {% for ch in visible_challenges %}{% if ch.status == 'finished' %}{% include '_challenge_card.html' %}{% endif %}{% endfor %}
+                        </section>
                     </div>
                 </div>
                 {% endif %}
 
                 <!-- Batch Section - Con ID para navegación -->
+                {% if batchs %}
                 <div id="batch-section" class="row batch-section">
                     <div class="col-12 text-center mb-4">
                         <h2 class="section-title"><i class="fa-solid fa-layer-group section-title-icon"></i>{% trans "Available Batches" %}</h2>
                         <p class="text-center mb-5">{% trans "Select a specific batch of images to work with" %}</p>
                     </div>
-                    
+
                     {% for batch in batchs %}
                     <div class="col-md-3 col-sm-6 mb-4">
                         <div class="card batch-card" onClick="window.location.href='/gettask/{{ batch.id }}'">
@@ -729,7 +872,8 @@
                     </div>
                     {% endfor %}
                 </div>
-                
+                {% endif %}
+
                 <!-- Project Statistics Section -->
                 <div id="statistics-section" class="row batch-section">
                     <div class="col-12 text-center mb-4">
@@ -737,7 +881,7 @@
                         <p class="text-center mb-5">{% trans "Global impact of our community's contributions" %}</p>
                     </div>
 
-                    <div class="col-md-10 offset-md-1">
+                    <div class="col-12">
                         <!-- Hero metric: Control Points + completion ring -->
                         <div class="stats-hero">
                             <div class="hero-stat">
@@ -908,6 +1052,6 @@
         });
     </script>
 
-    <script src="{% static 'js/challenge_card.js' %}?v=1.0" defer></script>
+    <script src="{% static 'js/challenge_card.js' %}?v=2.1" defer></script>
 </body>
 </html>

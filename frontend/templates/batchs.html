@@ -1,61 +1,132 @@
 {% load static %}
-{% load bootstrap5 %}
 {% load i18n %}
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lost At Night</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+    <title>Lost At Night | {% trans "Batches" %}</title>
     {% include '_google_analytics.html' %}
-    {% bootstrap_css %}
-    <!-- Include jQuery from a CDN -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
     <link href="{% static 'css/main.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
-    {% bootstrap_css %}
-    {% bootstrap_javascript %}
+    <style>
+        body { background: oklch(0.10 0.02 285); color: var(--ink-1); font-family: var(--font-ui); margin: 0; }
+
+        .ds-batches {
+            max-width: 1280px; margin: 0 auto; padding: 32px;
+        }
+        .ds-batches__breadcrumb {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 12px; color: var(--ink-3);
+            margin-bottom: 8px;
+        }
+        .ds-batches__breadcrumb a { color: var(--ink-3); text-decoration: none; }
+        .ds-batches__breadcrumb a:hover { color: var(--ink-1); }
+
+        .ds-batches__head {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            gap: 16px; flex-wrap: wrap; margin-bottom: 24px;
+        }
+        .ds-batches__title {
+            font-family: var(--font-mono); font-size: 26px; font-weight: 600;
+            color: var(--ink-0); letter-spacing: -0.5px; margin: 0 0 6px;
+        }
+        .ds-batches__meta {
+            font-size: 13px; color: var(--ink-2); margin: 0;
+        }
+        .ds-batches__head-right {
+            display: flex; align-items: center; gap: 12px;
+        }
+
+        /* Photo tile grid */
+        .ds-tile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 16px;
+        }
+        .ds-tile {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 10px;
+            overflow: hidden;
+            background:
+                radial-gradient(circle at 50% 60%, oklch(0.85 0.18 80) 0%, oklch(0.55 0.18 50) 30%, oklch(0.20 0.05 280) 80%);
+            border: 1px solid var(--line);
+            cursor: pointer;
+            transition: transform 120ms, border-color 120ms;
+            display: block;
+            text-decoration: none;
+        }
+        .ds-tile:hover { transform: translateY(-3px); border-color: var(--bg-4); }
+        .ds-tile.is-mine { border-color: var(--accent); }
+        .ds-tile img {
+            width: 100%; height: 100%; object-fit: cover; display: block;
+        }
+        .ds-tile__check {
+            position: absolute; top: 8px; left: 8px;
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            background: var(--good);
+            color: oklch(0.16 0.06 150);
+            display: inline-flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 6px oklch(0 0 0 / 0.4);
+        }
+        .ds-tile__plus {
+            position: absolute; top: 8px; right: 8px;
+            background: var(--accent); color: var(--accent-ink);
+            font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+            padding: 3px 8px; border-radius: 999px;
+        }
+        .ds-tile__id {
+            position: absolute; left: 0; right: 0; bottom: 0;
+            padding: 28px 12px 10px;
+            background: linear-gradient(to top, oklch(0 0 0 / 0.85), transparent);
+            font-family: var(--font-mono); font-size: 12px;
+            color: var(--ink-0);
+        }
+    </style>
 </head>
-<body>
+<body class="ds-app">
     {% include '_topbar.html' %}
-    <div class="container">
-        <div class="row">
-        {% for batch in batchs %}
-            <div class="col-3 p-0" >
-                <div class="card batch-card m-3" onClick="window.location.href='/gettask/{{ batch.id }}'">
-                    <div class="position-relative">
-                        <img src="{{ batch.get_example_image }}" class="card-img-top" alt="...">
-                        <div class="card-img-overlay d-flex align-items-center justify-content-center">
-                            <div class="text-center text-participate">{% trans "Participate" %}</div>
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <div class="row">
-                            <div class="col-9">
-                                {% trans "Name:" %} <b>{{ batch.name }}</b> <br/>
-                                {% trans "Images:" %} <b>{{ batch.get_number_images }}</b>
-                            </div>
-                            <div class="col-3">
-                                <div class="progress-circle" style="background: conic-gradient(#000 {{ batch.get_percentage_remaining }}%, #fef7ff 0);">
-                                    <span class="progress-text">{{ batch.get_percentage_remaining }}%</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
+    <div class="ds-batches">
+        <div class="ds-batches__breadcrumb">
+            <a href="/#challenges-section">{% trans "Challenges" %}</a>
+            <svg class="ds-icon ds-icon--sm"><use href="#ds-icon-chevron-right"/></svg>
+            <span>{% trans "All batches" %}</span>
+        </div>
+        <div class="ds-batches__head">
+            <div>
+                <h1 class="ds-batches__title">{% trans "Available batches" %}</h1>
+                <p class="ds-batches__meta">
+                    {{ batchs|length }} {% trans "campaigns" %}
+                </p>
             </div>
-        {% endfor %}
+            <div class="ds-batches__head-right">
+                <a href="/gettask" class="ds-btn ds-btn--primary">
+                    <svg class="ds-icon"><use href="#ds-icon-play"/></svg>
+                    {% trans "Start unlocated" %}
+                </a>
+            </div>
+        </div>
+
+        <div class="ds-tile-grid">
+            {% for batch in batchs %}
+            <a href="/gettask/{{ batch.id }}" class="ds-tile" title="{{ batch.name }}">
+                <img src="{{ batch.get_example_image }}" alt="{{ batch.name }}" onerror="this.style.display='none'">
+                {% if batch.get_percentage_remaining and batch.get_percentage_remaining > 80 %}
+                <span class="ds-tile__check"><svg class="ds-icon ds-icon--sm" style="stroke-width:2.5"><use href="#ds-icon-check"/></svg></span>
+                {% endif %}
+                {% if batch.get_number_geoattempts %}
+                <span class="ds-tile__plus">+{{ batch.get_number_geoattempts }}</span>
+                {% endif %}
+                <div class="ds-tile__id">{{ batch.name }}</div>
+            </a>
+            {% endfor %}
         </div>
     </div>
-    {% include '_footer.html' %}
 </body>
 </html>

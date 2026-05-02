@@ -60,8 +60,10 @@ $(document).ready(function () {
     georeferencingModal = new bootstrap.Modal(document.getElementById('georeferencingModal'), {
     });
 
-    // Public namespace for trylocal.js
-    window.LAN = {
+    // Public namespace for trylocal.js — merge with anything already defined
+    // (e.g. refreshPhotoTitle wired up by the inline template script that runs
+    // before $(document).ready).
+    window.LAN = Object.assign(window.LAN || {}, {
         get iconList() { return iconList; },
         get map()      { return map; },
         infoModal: infoModal,
@@ -76,7 +78,7 @@ $(document).ready(function () {
             if (tl && tl._image) tl._image.style.filter = f;
             if (gl && gl._container) gl._container.style.filter = f;
         },
-    };
+    });
     $('#usage-info').on('click', function () {
         georeferencingModal.hide();
         infoModal.show();
@@ -99,6 +101,10 @@ $(document).ready(function () {
         dataType: 'json',
         success: function (response) {
             image_name = response.image_name;
+            if (window.LAN) {
+                window.LAN.imageName = image_name.replace(/\.(jpe?g|png|tiff?)$/i, '');
+                window.LAN.imageCaption = '';
+            }
             geoatempt_id = response.id;
             geoattempt_hash = response.hash;
             var opacitySlidersDiv = null;
@@ -203,7 +209,14 @@ $(document).ready(function () {
                             const addr = geo.address || {};
                             const city = addr.city || addr.town || addr.village || addr.county || '';
                             const country = addr.country || '';
-                            $('#ti-location').text([city, country].filter(Boolean).join(', ') || 'Open ocean / unknown');
+                            const label = [city, country].filter(Boolean).join(', ') || 'Open ocean / unknown';
+                            $('#ti-location').text(label);
+                            if (window.LAN) {
+                                window.LAN.imageCaption = label;
+                                if (typeof window.LAN.refreshPhotoTitle === 'function') {
+                                    window.LAN.refreshPhotoTitle();
+                                }
+                            }
                         })
                         .catch(() => $('#ti-location').text('Could not determine'));
                     } else {
@@ -319,15 +332,19 @@ $(document).ready(function () {
                         if (typeof window.LAN_refreshChallenge === 'function') {
                             window.LAN_refreshChallenge();
                         }
-                        $('.modal-title').html('Thank you for your contribution'); // Set the modal content
-                        $('.modal-body').html('Your control points have been submitted successfully.'); // Set the modal body content
-                        $('#modalClose').html('Try another one!');
-                        $('#modalClose').on('click', function () {
-                            location.reload();
-                            $('#modalClose').html('Close');
-                        });
-                        infoModal.show(); // Show the modal
-
+                        if (typeof window.LAN_showResult === 'function') {
+                            window.LAN_showResult({
+                                cpCount: (iconList && iconList.length) || 0,
+                                imageName: window.LAN && window.LAN.imageName,
+                            });
+                        } else {
+                            // Fallback to the old modal if the result UI failed to load.
+                            $('.modal-title').html('Thank you for your contribution');
+                            $('.modal-body').html('Your control points have been submitted successfully.');
+                            $('#modalClose').html('Try another one!');
+                            $('#modalClose').on('click', function () { location.reload(); });
+                            infoModal.show();
+                        }
                     },
                     error: function (response) {
                         $('.modal-title').html('Error!'); // Set the modal content
@@ -669,19 +686,29 @@ $(document).ready(function () {
                         if (icon.complete) {
                             listItem.classList.add('completed');
                         }
-                        // Set the text content with the ID, X, and Y values
+                        // Set the text content with the ID, X, and Y values.
+                        // Tooltip lives on the label itself (hover Point N to see coords).
                         const span = document.createElement('span');
                         span.textContent = `${icon.id}`;
+                        span.setAttribute('data-bs-toggle', 'tooltip');
+                        span.setAttribute('data-bs-placement', 'right');
+                        var latStr = (typeof icon.text.lat === 'number') ? icon.text.lat.toFixed(4) : '—';
+                        var lonStr = (typeof icon.text.lon === 'number') ? icon.text.lon.toFixed(4) : '—';
+                        span.setAttribute('title',
+                            '<div class="cp-tip-row"><span>px</span><b>' + Math.round(icon.text.px) + '</b></div>' +
+                            '<div class="cp-tip-row"><span>py</span><b>' + Math.round(icon.text.py) + '</b></div>' +
+                            '<div class="cp-tip-row"><span>lat</span><b>' + latStr + '</b></div>' +
+                            '<div class="cp-tip-row"><span>lon</span><b>' + lonStr + '</b></div>'
+                        );
+                        span.style.cursor = 'help';
+                        span.style.flex = '1';
+
                         const spanRight = document.createElement('span');
                         spanRight.className = 'float-end d-block';
-                        const info = document.createElement('span');
-                        info.className = 'fa-solid fa-info-circle pe-3 white';
-                        info.setAttribute('data-bs-toggle', 'tooltip');
-                        info.setAttribute('data-bs-placement', 'right');
-                        info.setAttribute('title', `px: ${icon.text.px.toFixed(2)} <br /> py: ${icon.text.py.toFixed(2)} <br> lat: ${icon.text.lat} <br> lon: ${icon.text.lon}`); // Set the tooltip text
 
                         const garbage = document.createElement('i');
-                        garbage.className = 'fa-solid fa-trash-alt pe-2 white'
+                        garbage.className = 'fa-solid fa-trash-alt pe-2 white';
+                        garbage.style.cursor = 'pointer';
 
                         // If garbage icon is clicked, remove the icon
                         garbage.addEventListener('click', function () {
@@ -692,7 +719,6 @@ $(document).ready(function () {
                         listItem.appendChild(iconElement);
                         listItem.appendChild(span);
                         listItem.appendChild(spanRight);
-                        spanRight.appendChild(info);
                         spanRight.appendChild(garbage);
 
                         // Append the list item to the container
@@ -733,6 +759,22 @@ $(document).ready(function () {
                     return { px: transformedPoint.x + img.width / 2, py: transformedPoint.y + img.height / 2 };
                 }
 
+                // Live photo coord readout (bottom-right of the canvas column).
+                var photoCoordReadout = document.getElementById('ds-photo-coord');
+                if (photoCoordReadout) {
+                    canvas.on('mouse:move', function (event) {
+                        try {
+                            var c = getImageCoordinates(event);
+                            if (c.px >= 0 && c.py >= 0 && c.px <= img.width && c.py <= img.height) {
+                                photoCoordReadout.textContent = Math.round(c.px) + ', ' + Math.round(c.py) + ' px';
+                            } else {
+                                photoCoordReadout.textContent = '—';
+                            }
+                        } catch (e) { /* before img is ready */ }
+                    });
+                    canvas.on('mouse:out', function () { photoCoordReadout.textContent = '—'; });
+                }
+
 
                 if(response.photo_center_point){
                     latLng = parseCoordinates(response.photo_center_point);
@@ -745,15 +787,13 @@ $(document).ready(function () {
 
 
                 viirs = L.tileLayer('https://lostatnight.org/viirs_tiles/{z}/{x}/{y}.png', {
-                    //viirs = L.tileLayer('https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_Black_Marble/default/2016-01-01/GoogleMapsCompatible_Level8/{z}/{x}/{y}.png', {   
-                    //viirs = L.tileLayer('https://earthengine.googleapis.com/v1/projects/ee-pmisson/maps/7f05e1c56c7139d418df9f275abae720-880cdb032adeb5dabd4855934e8d1764/tiles/{z}/{x}/{y}', { 
-                    //viirs = L.tileLayer('https://earthengine.googleapis.com/v1/projects/ee-pmisson/maps/7f05e1c56c7139d418df9f275abae720-880cdb032adeb5dabd4855934e8d1764/tiles/{z}/{x}/{y}', {
                     maxZoom: 18,
                     maxNativeZoom: 12,
                     transparent: true,
                     tms: 1,
                     attribution: 'The Earth Observation Group (EOG)',
                     opacity: 0.8,
+                    className: 'viirs-tiles',
                 });
 
                 // Añadir la nueva capa SDGSAT_EU_UK
@@ -767,14 +807,18 @@ $(document).ready(function () {
                     className: 'sdgsat-tiles',
                 });
 
-                // Dynamic style element for SDGSAT CSS filters
+                // Dynamic style element for SDGSAT + VIIRS CSS filters
                 var sdgsatFilterStyle = document.createElement('style');
                 sdgsatFilterStyle.id = 'sdgsat-filter-style';
                 document.head.appendChild(sdgsatFilterStyle);
-                var sdgsatFilters = { brightness: 1, contrast: 1, saturate: 1 };
+                // Slider scale 0..1 (consistent with the layer opacity sliders).
+                // 0 = full attenuation, 0.5 = no effect (identity), 1 = max boost.
+                // CSS filter intensity = slider * 2.
+                var sdgsatFilters = { brightness: 0.5, contrast: 0.5, saturate: 0.5 };
                 function applySdgsatFilters() {
                     var f = sdgsatFilters;
-                    sdgsatFilterStyle.textContent = '.sdgsat-tiles { filter: brightness(' + f.brightness + ') contrast(' + f.contrast + ') saturate(' + f.saturate + '); }';
+                    var rule = 'filter: brightness(' + (f.brightness * 2) + ') contrast(' + (f.contrast * 2) + ') saturate(' + (f.saturate * 2) + ');';
+                    sdgsatFilterStyle.textContent = '.sdgsat-tiles, .viirs-tiles { ' + rule + ' }';
                 }
 
                 const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -790,15 +834,22 @@ $(document).ready(function () {
                 });
 
                 // VIIRS and SDGSAT are always on the map; visibility controlled by opacity sliders
-                map = L.map('map', { maxZoom: 18, touchZoom: false, tap: false }).setView(latLng, 10);
+                map = L.map('map', { maxZoom: 18, touchZoom: false, tap: false, zoomControl: false }).setView(latLng, 10);
                 window.LAN.map = map;
+                window.LAN.fabric = canvas;
                 osmLayer.addTo(map);
                 viirs.addTo(map);
                 sdgsatEuUk.addTo(map);
 
-                map.on('zoom', function() {
-                    document.getElementById('zoombox').innerHTML = 'Zoom level: ' + map.getZoom();
-                });
+                // Coord readout (design system, bottom-right of the map).
+                var coordReadout = document.getElementById('ds-coord-readout');
+                if (coordReadout) {
+                    map.on('mousemove', function (e) {
+                        coordReadout.textContent =
+                            e.latlng.lat.toFixed(4) + ', ' + e.latlng.lng.toFixed(4);
+                    });
+                    map.on('mouseout', function () { coordReadout.textContent = '—'; });
+                }
                 map.getContainer().addEventListener('mousedown', function() {
                     map.scrollWheelZoom.disable();
                 });
@@ -812,26 +863,6 @@ $(document).ready(function () {
                     "Satellite": googleSat
                 };
 
-                // Crear un control personalizado para mostrar "hola" debajo de los botones de zoom
-                L.Control.HelloMessage = L.Control.extend({
-                    onAdd: function(map) {
-                        var div = L.DomUtil.create('div', 'hello-message-control');
-                        div.innerHTML = '<div id="zoombox" style="background-color: white; padding: 5px; border-radius: 4px; box-shadow: 0 1px 5px rgba(0,0,0,0.4); margin: 15px; text-align: center;"></div>';
-                        return div;
-                    },
-                    
-                    onRemove: function(map) {
-                        // Nada que hacer aquí
-                    }
-                });
-                
-                // Añadir el control personalizado al mapa, en la misma posición que los controles de zoom
-                L.control.helloMessage = function(opts) {
-                    return new L.Control.HelloMessage(opts);
-                }
-                
-                L.control.helloMessage({ position: 'bottomleft' }).addTo(map);
-
                 // Custom control: base layer buttons + opacity sliders (no checkboxes)
                 makeSliderRow = function(label, layer, initialOpacity, rowId) {
                     var row = document.createElement('div');
@@ -839,16 +870,22 @@ $(document).ready(function () {
                     row.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:4px;';
                     var lbl = document.createElement('span');
                     lbl.textContent = label;
-                    lbl.style.minWidth = '90px';
+                    lbl.style.minWidth = '110px';
                     var slider = document.createElement('input');
                     slider.type = 'range';
                     slider.min = '0';
                     slider.max = '1';
                     slider.step = '0.05';
                     slider.value = String(initialOpacity);
-                    slider.style.width = '80px';
+                    slider.style.flex = '1';
+                    var val = document.createElement('span');
+                    val.className = 'mono';
+                    val.textContent = parseFloat(initialOpacity).toFixed(2);
+                    val.style.cssText = 'min-width:32px;text-align:right;font-size:12px;';
                     slider.addEventListener('input', function() {
-                        layer.setOpacity(parseFloat(this.value));
+                        var v = parseFloat(this.value);
+                        layer.setOpacity(v);
+                        val.textContent = v.toFixed(2);
                     });
                     L.DomEvent.disableClickPropagation(slider);
                     L.DomEvent.disableScrollPropagation(slider);
@@ -856,37 +893,53 @@ $(document).ready(function () {
                     slider.addEventListener('mouseup', function(e) { e.stopPropagation(); });
                     row.appendChild(lbl);
                     row.appendChild(slider);
+                    row.appendChild(val);
                     return row;
                 }
 
                 L.Control.OpacitySliders = L.Control.extend({
                     onAdd: function() {
-                        opacitySlidersDiv = L.DomUtil.create('div', 'leaflet-control-layers leaflet-control-layers-expanded');
-                        opacitySlidersDiv.style.cssText = 'padding:6px 10px;font-size:13px;';
-                        L.DomEvent.disableClickPropagation(opacitySlidersDiv);
-                        L.DomEvent.disableScrollPropagation(opacitySlidersDiv);
+                        var outer = L.DomUtil.create('div', 'leaflet-control-layers leaflet-control-layers-expanded ds-map-adjust');
+                        outer.style.cssText = 'font-size:13px;';
+                        L.DomEvent.disableClickPropagation(outer);
+                        L.DomEvent.disableScrollPropagation(outer);
+
+                        // Header
+                        var header = document.createElement('div');
+                        header.className = 'ds-map-adjust__head';
+                        header.innerHTML =
+                            '<span><svg class="ds-icon ds-icon--sm" viewBox="0 0 24 24" fill="none" ' +
+                            'stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' +
+                            '<path d="M9 4l-6 2v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v16M15 6v16"/>' +
+                            '</svg>Map adjustments</span>';
+                        outer.appendChild(header);
+
+                        // Body wrapper — subsequent appends use opacitySlidersDiv = body.
+                        opacitySlidersDiv = document.createElement('div');
+                        opacitySlidersDiv.className = 'ds-map-adjust__body';
+                        outer.appendChild(opacitySlidersDiv);
                         window.LAN.opacitySlidersDiv = opacitySlidersDiv;
                         window.LAN.makeSliderRow = makeSliderRow;
 
                         // Base layer toggle buttons
                         var baseRow = document.createElement('div');
-                        baseRow.style.cssText = 'display:flex;gap:4px;margin-bottom:6px;';
+                        baseRow.className = 'ds-baselayer-row';
                         var activeLayer = osmLayer;
-                        var btnStyle = 'font-size:11px;padding:2px 6px;border:1px solid #aaa;border-radius:3px;cursor:pointer;background:#fff;';
-                        var btnActiveStyle = 'font-size:11px;padding:2px 6px;border:1px solid #555;border-radius:3px;cursor:pointer;background:#555;color:#fff;';
                         var btnOsm = document.createElement('button');
+                        btnOsm.type = 'button';
                         btnOsm.textContent = 'OSM';
-                        btnOsm.style.cssText = btnActiveStyle;
+                        btnOsm.className = 'ds-baselayer-btn is-active';
                         var btnSat = document.createElement('button');
+                        btnSat.type = 'button';
                         btnSat.textContent = 'Satellite';
-                        btnSat.style.cssText = btnStyle;
+                        btnSat.className = 'ds-baselayer-btn';
                         function switchBase(newLayer, activeBtn, inactiveBtn) {
                             map.removeLayer(activeLayer);
                             newLayer.addTo(map);
                             newLayer.bringToBack();
                             activeLayer = newLayer;
-                            activeBtn.style.cssText = btnActiveStyle;
-                            inactiveBtn.style.cssText = btnStyle;
+                            activeBtn.classList.add('is-active');
+                            inactiveBtn.classList.remove('is-active');
                         }
                         btnOsm.addEventListener('click', function() { switchBase(osmLayer, btnOsm, btnSat); });
                         btnSat.addEventListener('click', function() { switchBase(googleSat, btnSat, btnOsm); });
@@ -901,29 +954,32 @@ $(document).ready(function () {
 
                         // SDGSAT image filters
                         var filterSep = document.createElement('div');
-                        filterSep.style.cssText = 'border-top:1px solid #ccc;margin:4px 0 4px 0;font-size:11px;color:#666;';
-                        filterSep.textContent = 'SDGSAT filters';
+                        filterSep.style.cssText = 'margin:10px 0 6px;font-size:10px;color:var(--ink-3);text-transform:uppercase;letter-spacing:1px;font-weight:600;';
+                        filterSep.textContent = 'SDGSAT & VIIRS filters';
                         opacitySlidersDiv.appendChild(filterSep);
 
+                        var sdgsatFilterRefs = [];  // [{slider, val, key, initial}]
                         function makeSdgsatFilterRow(label, filterKey, min, max, step, initial) {
                             var row = document.createElement('div');
                             row.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:4px;';
                             var lbl = document.createElement('span');
                             lbl.textContent = label;
-                            lbl.style.minWidth = '90px';
+                            lbl.style.minWidth = '110px';
                             var slider = document.createElement('input');
                             slider.type = 'range';
                             slider.min = String(min);
                             slider.max = String(max);
                             slider.step = String(step);
                             slider.value = String(initial);
-                            slider.style.width = '80px';
+                            slider.style.flex = '1';
                             var val = document.createElement('span');
-                            val.textContent = String(initial);
-                            val.style.cssText = 'min-width:32px;text-align:right;';
+                            val.className = 'mono';
+                            val.textContent = parseFloat(initial).toFixed(2);
+                            val.style.cssText = 'min-width:32px;text-align:right;font-size:12px;';
                             slider.addEventListener('input', function() {
-                                sdgsatFilters[filterKey] = parseFloat(this.value);
-                                val.textContent = this.value;
+                                var v = parseFloat(this.value);
+                                sdgsatFilters[filterKey] = v;
+                                val.textContent = v.toFixed(2);
                                 applySdgsatFilters();
                             });
                             L.DomEvent.disableClickPropagation(slider);
@@ -933,24 +989,48 @@ $(document).ready(function () {
                             row.appendChild(lbl);
                             row.appendChild(slider);
                             row.appendChild(val);
+                            sdgsatFilterRefs.push({ slider: slider, val: val, key: filterKey, initial: initial });
                             return row;
                         }
 
-                        opacitySlidersDiv.appendChild(makeSdgsatFilterRow('Brightness', 'brightness', 0, 3, 0.05, 1));
-                        opacitySlidersDiv.appendChild(makeSdgsatFilterRow('Contrast',   'contrast',   0, 3, 0.05, 1));
-                        opacitySlidersDiv.appendChild(makeSdgsatFilterRow('Saturation', 'saturate',   0, 3, 0.05, 1));
+                        opacitySlidersDiv.appendChild(makeSdgsatFilterRow('Brightness', 'brightness', 0, 1, 0.05, 0.5));
+                        opacitySlidersDiv.appendChild(makeSdgsatFilterRow('Contrast',   'contrast',   0, 1, 0.05, 0.5));
+                        opacitySlidersDiv.appendChild(makeSdgsatFilterRow('Saturation', 'saturate',   0, 1, 0.05, 0.5));
 
+                        // Reset button for the SDGSAT + VIIRS filters.
+                        var sdgsatResetWrap = document.createElement('div');
+                        sdgsatResetWrap.style.cssText = 'text-align:right;margin-top:6px;';
+                        var sdgsatResetBtn = document.createElement('button');
+                        sdgsatResetBtn.type = 'button';
+                        sdgsatResetBtn.className = 'ds-btn ds-btn--ghost ds-btn--sm';
+                        sdgsatResetBtn.innerHTML =
+                            '<svg class="ds-icon ds-icon--sm" viewBox="0 0 24 24" fill="none" ' +
+                            'stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' +
+                            '<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg> Reset';
+                        sdgsatResetBtn.addEventListener('click', function () {
+                            sdgsatFilterRefs.forEach(function (r) {
+                                r.slider.value = String(r.initial);
+                                r.val.textContent = parseFloat(r.initial).toFixed(2);
+                                sdgsatFilters[r.key] = r.initial;
+                            });
+                            applySdgsatFilters();
+                        });
+                        L.DomEvent.disableClickPropagation(sdgsatResetBtn);
+                        sdgsatResetWrap.appendChild(sdgsatResetBtn);
+                        opacitySlidersDiv.appendChild(sdgsatResetWrap);
+
+                        // Hidden anchor for dynamic layers (e.g. Georeferenced) that get
+                        // appended later. No visual separator.
                         var dynSep = document.createElement('div');
                         dynSep.id = 'dyn-layers-sep';
-                        dynSep.style.cssText = 'border-top:1px solid #ccc;margin:6px 0 2px 0;';
                         opacitySlidersDiv.appendChild(dynSep);
 
-                        return opacitySlidersDiv;
+                        return outer;
                     },
                     onRemove: function() {}
                 });
                 L.control.opacitySliders = function(opts) { return new L.Control.OpacitySliders(opts); };
-                L.control.opacitySliders({ position: 'topright' }).addTo(map);
+                L.control.opacitySliders({ position: 'bottomleft' }).addTo(map);
 
                 function addIconToMap(lat, lon) {
                     var capturedID = `Point ${iconCounter}`; // capture before increment
@@ -1000,6 +1080,8 @@ $(document).ready(function () {
 
 
                 map.on('click', function (e) {
+                    // Don't accept clicks while the tutorial is showing.
+                    if (window.LAN && window.LAN.tutorialActive) return;
                     if (isTurn === 'image') {
 
                         $('.modal-title').html('Wrong place!'); // Set the modal content
@@ -1125,8 +1207,10 @@ $(document).ready(function () {
                         canvas.hoverCursor = 'default'; // Change the cursor style
                       
 
-                        // If we don't drag the image, add an icon
-                        if (!isDragged) {
+                        // If we don't drag the image, add an icon (unless the
+                        // tutorial overlay is active — clicks during the tour
+                        // shouldn't create control points).
+                        if (!isDragged && !(window.LAN && window.LAN.tutorialActive)) {
                             console.log(isTurn);
                             console.log(isDragging);
                             console.log(isDragged);

@@ -1,67 +1,79 @@
 {% load i18n %}
 {% comment %}
-Reusable challenge card.
-Required context: `ch` (Challenge instance), optional `enrolled_challenge_id`.
+Reusable challenge card. Shared by index.html and challenges_list.html.
+Required context: `ch` (Challenge instance). Optional: `enrolled_challenge_id`, `user`.
 {% endcomment %}
 {% with total=ch.total_cp gold=ch.target_gold %}
-<div class="challenge-card{% if ch.id == enrolled_challenge_id %} enrolled{% endif %}" id="challenge-{{ ch.id }}">
-    <div class="challenge-head">
-        <h4>{{ ch.name }}</h4>
-        <div class="head-right">
+<article class="ds-ch-row{% if ch.id == enrolled_challenge_id %} is-enrolled{% endif %}"
+         id="challenge-{{ ch.id }}"
+         data-status="{{ ch.status }}"
+         data-end-at="{{ ch.end_at|date:'c' }}"
+         data-start-at="{{ ch.start_at|date:'c' }}">
+    <div class="ds-ch-row__content">
+        <h3 class="ds-ch-row__title">
+            <a href="{% url 'challenge_detail' ch.id %}">{{ ch.name }}</a>
             {% if ch.id == enrolled_challenge_id %}
-            <span class="enrolled-tag"><i class="fa-solid fa-check"></i> {% trans "You are enrolled" %}</span>
+            <span class="ds-pill ds-pill--accent" style="height:20px;font-size:10px;padding:0 8px;margin-left:6px;">
+                <svg class="ds-icon" style="width:10px;height:10px;"><use href="#ds-icon-check"/></svg>
+                {% trans "Enrolled" %}
+            </span>
             {% endif %}
-            <span class="challenge-status {{ ch.status }}">{{ ch.status }}</span>
+        </h3>
+        <div class="ds-ch-row__meta">
+            {% if ch.batch_id %}
+                <span class="mono ds-text-2">{{ ch.batch.name }}</span>
+                <span class="ds-text-3">·</span>
+            {% else %}
+                <span class="ds-text-2">{% trans "General" %}</span>
+                <span class="ds-text-3">·</span>
+            {% endif %}
+            <span class="mono ds-text-2">{{ total }}/{{ gold }} CP</span>
+            <span class="ds-text-3">·</span>
+            <span class="ds-text-2">{{ ch.participants.count }} {% trans "participants" %}</span>
+        </div>
+        <div class="ds-ch-row__progress">
+            <div class="ds-progress" style="min-width:0;flex:1;">
+                <div class="ds-progress__track">
+                    <div class="ds-progress__fill" data-value="{{ total }}" data-max="{{ gold }}" style="right:100%;"></div>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="challenge-meta">
-        {% if ch.batch_id %}
-            <span class="badge-batch">{% trans "Batch:" %} {{ ch.batch.name }}</span>
-        {% else %}
-            <span class="badge-batch">{% trans "General" %}</span>
-        {% endif %}
-        <span><i class="fa-regular fa-calendar"></i>{{ ch.start_at|date:"Y-m-d H:i" }} → {{ ch.end_at|date:"Y-m-d H:i" }}</span>
-        <span><i class="fa-solid fa-bullseye"></i><span data-cp-count>{{ total }}</span> / {{ gold }} CP</span>
-        <span><i class="fa-solid fa-users"></i>{{ ch.participants.count }} {% trans "participants" %}</span>
-    </div>
-    {% if ch.description %}
-    <p class="description-text">{{ ch.description }}</p>
-    {% endif %}
-    <div class="triple-bar"
-         data-bronze="{{ ch.target_bronze }}"
-         data-silver="{{ ch.target_silver }}"
-         data-gold="{{ gold }}"
-         data-total="{{ total }}">
-        <div class="fill" style="width:0%"></div>
-        <div class="marker" data-pos="bronze" data-label="🥉 {{ ch.target_bronze }}"></div>
-        <div class="marker" data-pos="silver" data-label="🥈 {{ ch.target_silver }}"></div>
-        <div class="marker" data-pos="gold"   data-label="🥇 {{ gold }}"></div>
-    </div>
-    <div class="triple-bar-legend">
-        <span>0</span>
-        <span>{{ gold }} CP</span>
-    </div>
-    <div class="challenge-actions">
-        {% if ch.id == enrolled_challenge_id %}
-            <button class="btn-join btn-leave" data-challenge-leave="{{ ch.id }}">
-                <i class="fa-solid fa-right-from-bracket me-1"></i>{% trans "Leave challenge" %}
-            </button>
+
+    <div class="ds-ch-row__side">
+        {% if ch.status == 'active' %}
+            <span class="ds-pill ds-pill--live" data-time-pill data-mode="left"></span>
+        {% elif ch.status == 'upcoming' %}
+            <span class="ds-pill ds-pill--info" data-time-pill data-mode="starts"></span>
+        {% elif ch.status == 'paused' %}
+            <span class="ds-pill ds-pill--warn">{% trans "Paused" %}</span>
         {% elif ch.status == 'finished' %}
-            <span style="color: rgba(255,255,255,0.65);">{% trans "This challenge has finished." %}</span>
+            <span class="ds-pill ds-pill--neutral">{% trans "Complete" %}</span>
+        {% endif %}
+
+        {% if ch.id == enrolled_challenge_id %}
+            <a href="/gettask{% if ch.batch_id %}/{{ ch.batch_id }}{% endif %}" class="ds-btn ds-btn--primary ds-btn--sm">
+                {% trans "Continue" %}
+                <svg class="ds-icon ds-icon--sm"><use href="#ds-icon-chevron-right"/></svg>
+            </a>
+        {% elif ch.status == 'finished' %}
+            <a href="{% url 'challenge_detail' ch.id %}" class="ds-btn ds-btn--secondary ds-btn--sm">
+                {% trans "Review" %}
+                <svg class="ds-icon ds-icon--sm"><use href="#ds-icon-chevron-right"/></svg>
+            </a>
         {% else %}
             {% if user.is_authenticated %}
-                <button class="btn-join" data-challenge-join="{{ ch.id }}">
-                    <i class="fa-solid fa-trophy me-1"></i>{% if enrolled_challenge_id %}{% trans "Join (will leave current)" %}{% else %}{% trans "Join challenge" %}{% endif %}
-                </button>
+            <button class="ds-btn ds-btn--primary ds-btn--sm" data-challenge-join="{{ ch.id }}">
+                {% trans "Join" %}
+                <svg class="ds-icon ds-icon--sm"><use href="#ds-icon-chevron-right"/></svg>
+            </button>
             {% else %}
-                <a class="btn-join" href="{% url 'account_login' %}?next=/%23challenge-{{ ch.id }}">
-                    <i class="fa-solid fa-right-to-bracket me-1"></i>{% trans "Log in to join" %}
-                </a>
+            <a class="ds-btn ds-btn--primary ds-btn--sm" href="{% url 'account_login' %}?next=/#challenges-section">
+                {% trans "Join" %}
+                <svg class="ds-icon ds-icon--sm"><use href="#ds-icon-chevron-right"/></svg>
+            </a>
             {% endif %}
         {% endif %}
-        <a href="{% url 'challenge_detail' ch.id %}" class="btn-detail">
-            {% trans "Details & leaderboard" %} <i class="fa-solid fa-arrow-right ms-1"></i>
-        </a>
     </div>
-</div>
+</article>
 {% endwith %}

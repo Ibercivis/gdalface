@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.db.models import Sum, Count, Avg
+from django.http import JsonResponse
 from georeferencing.models import GeoAttempt, GeoAttemptsByUserByDay, ChallengeParticipant
 from user_profile.models import UserProfile
 from user_profile.forms import UserProfileForm
@@ -12,6 +13,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from datetime import date
 from django.utils.translation import gettext as _, ngettext
+
+
+def _wants_json(request):
+    """True if the client asked for JSON (AJAX from the profile modal)."""
+    accept = request.META.get('HTTP_ACCEPT', '')
+    return 'application/json' in accept or request.headers.get('X-Requested-With') == 'XMLHttpRequest'
 
 User = get_user_model()
 
@@ -297,6 +304,7 @@ def user_view(request):
             'user_tasks_percentage': round(user_tasks_percentage, 2),
             'user_time_percentage': round(user_time_percentage, 2),
             'user_control_points_percentage': round(user_control_points_percentage, 2),
+            'profile_form': UserProfileForm(instance=profile),
         }
         return render(request, 'user.html', context)
     return redirect('/accounts/')
@@ -327,12 +335,23 @@ def edit_profile(request):
     if request.method == 'POST':
         form = UserProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
-            form.save()
+            obj = form.save(commit=False)
+            # Optional explicit clear of the profile picture from the modal.
+            if request.POST.get('clear_pic') == '1':
+                if obj.profile_pic:
+                    obj.profile_pic.delete(save=False)
+                obj.profile_pic = None
+            obj.save()
+            if _wants_json(request):
+                return JsonResponse({'ok': True})
             messages.success(request, _('Your profile has been updated successfully!'))
             return redirect('/user-profile/')
+        else:
+            if _wants_json(request):
+                return JsonResponse({'ok': False, 'errors': form.errors}, status=400)
     else:
         form = UserProfileForm(instance=profile)
-    
+
     return render(request, 'edit_profile.html', {
         'form': form,
         'user': request.user

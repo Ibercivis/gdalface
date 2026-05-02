@@ -40,11 +40,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 subDomain: { type: 'day', radius: 2 },
                 date: { start: startDate },
                 range: 13,
-                scale: { 
-                    color: { 
+                scale: {
+                    color: {
                         type: 'threshold',
-                        range: ['#ffffff', '#fff', '#40c463', '#30a14e', '#216e39'],
-                        domain: [0, 1, 4, 6, 8]
+                        // Buckets:
+                        //   x < 1  (i.e. 0)  → neutral gray
+                        //   1 ≤ x < 4         → muted lima
+                        //   4 ≤ x < 6         → mid lima
+                        //   6 ≤ x < 8         → bright lima
+                        //   x ≥ 8             → full accent
+                        range: [
+                            'oklch(0.28 0 0)',
+                            'oklch(0.5 0.10 113)',
+                            'oklch(0.7 0.13 113)',
+                            'oklch(0.85 0.15 113)',
+                            'oklch(0.95 0.13 113)'
+                        ],
+                        domain: [1, 4, 6, 8]
                     }
                 }
             });

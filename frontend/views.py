@@ -246,36 +246,12 @@ def contact(request):
     return render(request, 'contact.html')
 
 
-def challenges_list(request):
-    """Public listing of all challenges grouped by status."""
-    qs = Challenge.objects.all().select_related('batch')
-    grouped = {'active': [], 'upcoming': [], 'paused': [], 'finished': []}
-    for ch in qs:
-        grouped.setdefault(ch.status, []).append(ch)
-    sections = [
-        (_('Active'),   grouped['active']),
-        (_('Upcoming'), grouped['upcoming']),
-        (_('Paused'),   grouped['paused']),
-        (_('Finished'), grouped['finished']),
-    ]
-    enrolled_id = None
-    if request.user.is_authenticated:
-        enrolled = ChallengeParticipant.objects.filter(
-            user=request.user, left_at__isnull=True,
-        ).first()
-        enrolled_id = enrolled.challenge_id if enrolled else None
-    return render(request, 'challenges_list.html', {
-        'sections': sections,
-        'enrolled_challenge_id': enrolled_id,
-    })
-
-
 def challenge_detail(request, pk):
     """Public detail page with progress + leaderboard."""
     from django.shortcuts import get_object_or_404
     ch = get_object_or_404(Challenge.objects.select_related('batch'), pk=pk)
     participants = list(
-        ch.participants.select_related('user')
+        ch.participants.select_related('user', 'user__userprofile')
         .order_by('-cached_cp_count', 'joined_at')
     )
     my_enrollment = None

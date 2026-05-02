@@ -311,7 +311,7 @@
                         var ex = document.getElementById('trylocal-slider-row');
                         if (ex) ex.remove();
                         LAN.opacitySlidersDiv.appendChild(
-                            LAN.makeSliderRow('Try local', tryLocalLayer, 0.8, 'trylocal-slider-row')
+                            LAN.makeSliderRow('Georeferenced', tryLocalLayer, 0.8, 'trylocal-slider-row')
                         );
                     }
 

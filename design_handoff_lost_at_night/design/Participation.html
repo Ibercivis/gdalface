@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<title>Lost at Night — Participación</title>
+<meta name="viewport" content="width=1440" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    /* night palette — refined */
+    --bg-0: oklch(0.16 0.045 290);   /* deepest */
+    --bg-1: oklch(0.20 0.055 290);   /* base */
+    --bg-2: oklch(0.245 0.06 288);   /* surface */
+    --bg-3: oklch(0.295 0.065 286);  /* elevated */
+    --bg-4: oklch(0.36 0.07 284);    /* hover */
+    --line: oklch(0.36 0.05 286 / 0.55);
+    --line-soft: oklch(0.5 0.04 286 / 0.22);
+
+    --ink-0: oklch(0.98 0.01 280);
+    --ink-1: oklch(0.88 0.02 285);
+    --ink-2: oklch(0.72 0.03 285);
+    --ink-3: oklch(0.58 0.04 285);
+
+    --accent: oklch(0.92 0.18 105);   /* lime/yellow — leading */
+    --accent-ink: oklch(0.22 0.05 100);
+    --info:   oklch(0.78 0.13 230);
+    --good:   oklch(0.78 0.16 150);
+    --warn:   oklch(0.82 0.17 75);
+
+    --radius: 10px;
+    --radius-lg: 14px;
+    --shadow: 0 1px 0 oklch(1 0 0 / 0.04) inset, 0 8px 24px oklch(0 0 0 / 0.35);
+
+    --gap: 12px;
+    --topbar-h: 52px;
+    --rail-w: 320px;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: oklch(0.10 0.02 285); }
+  body {
+    font: 14px/1.4 "Inter Tight", system-ui, sans-serif;
+    color: var(--ink-1);
+    -webkit-font-smoothing: antialiased;
+  }
+  .mono { font-family: "JetBrains Mono", ui-monospace, monospace; font-feature-settings: "tnum" 1, "ss01" 1; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+
+  #root { width: 100%; }
+</style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+  <script type="text/babel" src="components.jsx"></script>
+  <script type="text/babel" src="map-mock.jsx"></script>
+  <script type="text/babel" src="iss-mock.jsx"></script>
+  <script type="text/babel" src="screens-home.jsx"></script>
+  <script type="text/babel" src="screens-login.jsx"></script>
+  <script type="text/babel" src="screens-other.jsx"></script>
+  <script type="text/babel" src="app.jsx"></script>
+</body>
+</html>

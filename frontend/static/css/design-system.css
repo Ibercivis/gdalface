@@ -1,0 +1,358 @@
+/* ──────────────────────────────────────────────────────────────
+   Lost at Night — design system (tokens + primitives)
+   Imported by main.css and styles.css.
+   ────────────────────────────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+    /* Night palette */
+    --bg-0: oklch(0.16 0.045 290);
+    --bg-1: oklch(0.20 0.055 290);
+    --bg-2: oklch(0.245 0.06 288);
+    --bg-3: oklch(0.295 0.065 286);
+    --bg-4: oklch(0.36 0.07 284);
+
+    --line: oklch(0.36 0.05 286 / 0.55);
+    --line-soft: oklch(0.5 0.04 286 / 0.22);
+
+    --ink-0: oklch(0.98 0.01 280);
+    --ink-1: oklch(0.88 0.02 285);
+    --ink-2: oklch(0.72 0.03 285);
+    --ink-3: oklch(0.58 0.04 285);
+
+    --accent: oklch(0.95 0.13 113);
+    --accent-ink: oklch(0.22 0.05 100);
+    --info: oklch(0.78 0.13 230);
+    --good: oklch(0.78 0.16 150);
+    --warn: oklch(0.82 0.17 75);
+    --danger: oklch(0.72 0.18 25);
+
+    /* Shape & spacing */
+    --radius: 10px;
+    --radius-lg: 14px;
+    --shadow: 0 1px 0 oklch(1 0 0 / 0.04) inset, 0 8px 24px oklch(0 0 0 / 0.35);
+    --gap: 12px;
+    --topbar-h: 56px;
+    --rail-w: 320px;
+
+    /* Typography */
+    --font-ui: 'Inter Tight', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* Mono helper — used for IDs, ranks, point counts, timers, coords. */
+.mono {
+    font-family: var(--font-mono);
+    font-feature-settings: "tnum" 1, "ss01" 1;
+}
+
+/* ──────────── BUTTONS ──────────── */
+.ds-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    height: 36px;
+    padding: 0 14px;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--ink-1);
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 80ms ease, filter 120ms, background 120ms, border-color 120ms, color 120ms;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    appearance: none;
+    white-space: nowrap;
+}
+.ds-btn:hover { background: var(--bg-3); color: var(--ink-0); }
+.ds-btn:active { transform: translateY(1px); }
+.ds-btn:disabled,
+.ds-btn[disabled],
+.ds-btn.disabled { opacity: 0.45; cursor: not-allowed; transform: none !important; }
+
+.ds-btn--sm { height: 28px; padding: 0 10px; font-size: 12px; border-radius: 6px; }
+.ds-btn--md { height: 36px; padding: 0 14px; font-size: 13px; border-radius: 8px; }
+.ds-btn--lg { height: 44px; padding: 0 18px; font-size: 14px; border-radius: 10px; }
+
+.ds-btn--primary {
+    background: var(--accent);
+    color: var(--accent-ink);
+    border-color: transparent;
+    font-weight: 600;
+}
+.ds-btn--primary:hover { background: var(--accent); color: var(--accent-ink); filter: brightness(1.04); }
+
+.ds-btn--secondary {
+    background: var(--bg-3);
+    color: var(--ink-0);
+    border-color: var(--line);
+    font-weight: 500;
+}
+.ds-btn--secondary:hover { background: var(--bg-4); color: var(--ink-0); }
+
+.ds-btn--ghost {
+    background: transparent;
+    color: var(--ink-1);
+    border-color: var(--line);
+}
+.ds-btn--ghost:hover { background: var(--bg-3); color: var(--ink-0); }
+
+.ds-btn--danger {
+    background: transparent;
+    color: var(--ink-2);
+    border-color: var(--line);
+}
+.ds-btn--danger:hover { background: oklch(0.32 0.12 25 / 0.2); color: oklch(0.85 0.13 25); border-color: oklch(0.5 0.16 25 / 0.5); }
+
+/* ──────────── PILLS ──────────── */
+.ds-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 9px;
+    height: 26px;
+    font-family: var(--font-ui);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1;
+    border-radius: 999px;
+    background: var(--bg-3);
+    color: var(--ink-1);
+    border: 1px solid var(--line);
+    white-space: nowrap;
+}
+.ds-pill.mono { font-family: var(--font-mono); }
+.ds-pill--accent  { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.ds-pill--ghost   { background: transparent; color: var(--ink-2); border-color: var(--line); }
+.ds-pill--neutral { background: var(--bg-3); color: var(--ink-1); border-color: var(--line); }
+.ds-pill--live    { background: oklch(0.32 0.12 150 / 0.35); color: oklch(0.92 0.16 150); border-color: oklch(0.5 0.16 150 / 0.5); }
+.ds-pill--good    { background: oklch(0.32 0.12 150 / 0.35); color: oklch(0.92 0.16 150); border-color: oklch(0.5 0.16 150 / 0.5); }
+.ds-pill--warn    { background: oklch(0.35 0.14 75 / 0.35); color: oklch(0.92 0.17 75); border-color: oklch(0.55 0.17 75 / 0.5); }
+.ds-pill--info    { background: oklch(0.32 0.12 230 / 0.35); color: oklch(0.88 0.13 230); border-color: oklch(0.55 0.13 230 / 0.5); }
+
+/* ──────────── SEGMENTED CONTROL ──────────── */
+.ds-segmented {
+    display: inline-flex;
+    padding: 2px;
+    gap: 2px;
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    height: 30px;
+}
+.ds-segmented__btn {
+    padding: 0 10px;
+    height: 24px;
+    font-family: var(--font-ui);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-2);
+    background: transparent;
+    border: 0;
+    border-radius: 6px;
+    transition: background 120ms, color 120ms;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+.ds-segmented__btn:hover { color: var(--ink-1); }
+.ds-segmented__btn.is-active,
+.ds-segmented__btn[aria-selected="true"] {
+    background: var(--bg-3);
+    color: var(--ink-0);
+}
+
+/* ──────────── PROGRESS BAR ──────────── */
+.ds-progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 140px;
+}
+.ds-progress__track {
+    flex: 1;
+    height: 6px;
+    border-radius: 6px;
+    background: var(--bg-1);
+    border: 1px solid var(--line-soft);
+    overflow: hidden;
+    position: relative;
+}
+.ds-progress__fill {
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    border-radius: inherit;
+    transition: right 0.5s ease;
+}
+.ds-progress--gradient .ds-progress__fill {
+    background: linear-gradient(90deg, oklch(0.7 0.15 290), oklch(0.85 0.16 280));
+}
+.ds-progress--good .ds-progress__fill { background: var(--good); }
+.ds-progress__label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-2);
+    white-space: nowrap;
+}
+
+/* ──────────── CARDS / FLOATING SURFACES ──────────── */
+.ds-card {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    color: var(--ink-1);
+}
+.ds-floatcard {
+    background: oklch(0.18 0.05 290 / 0.86);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    color: var(--ink-1);
+    min-width: 240px;
+}
+.ds-floatcard__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--line-soft);
+    color: var(--ink-1);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+}
+.ds-floatcard__header-left { display: flex; align-items: center; gap: 7px; }
+.ds-floatcard__body { padding: 12px; }
+
+/* ──────────── ICONS (thin-stroke SVG vocabulary) ────────────
+   Usage: <svg class="ds-icon" viewBox="0 0 24 24"><use href="#icon-name"/></svg>
+   Icons are rendered inline in templates — see _ds_icons.html for the sprite. */
+.ds-icon {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+}
+.ds-icon--sm { width: 12px; height: 12px; }
+.ds-icon--lg { width: 20px; height: 20px; }
+
+/* ──────────── DARK SLIDER (range input) ──────────── */
+.ds-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 22px;
+    background: transparent;
+    cursor: pointer;
+    accent-color: var(--accent);
+}
+.ds-slider::-webkit-slider-runnable-track {
+    height: 3px; border-radius: 2px;
+    background: var(--bg-4);
+}
+.ds-slider::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 14px; height: 14px; margin-top: -5.5px;
+    border-radius: 50%; background: var(--ink-0); border: 0;
+    box-shadow: 0 0 0 1px oklch(0 0 0 / 0.3), 0 1px 3px oklch(0 0 0 / 0.4);
+    cursor: pointer;
+}
+.ds-slider::-moz-range-track { height: 3px; border-radius: 2px; background: var(--bg-4); }
+.ds-slider::-moz-range-thumb {
+    width: 14px; height: 14px; border-radius: 50%; background: var(--ink-0); border: 0;
+    box-shadow: 0 0 0 1px oklch(0 0 0 / 0.3), 0 1px 3px oklch(0 0 0 / 0.4);
+    cursor: pointer;
+}
+
+/* ──────────── STATIC SCREEN BACKGROUND ──────────── */
+body.ds-app {
+    background: oklch(0.10 0.02 285);
+    color: var(--ink-1);
+    font: 14px/1.4 var(--font-ui);
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+}
+
+/* Decorative star background (used by Home + Login). */
+.ds-stars {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+}
+.ds-stars::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(2px 2px at 12% 18%, oklch(0.95 0.05 280 / 0.4), transparent 50%),
+      radial-gradient(1.5px 1.5px at 22% 78%, oklch(0.95 0.05 280 / 0.3), transparent 50%),
+      radial-gradient(1.5px 1.5px at 38% 30%, oklch(0.95 0.05 280 / 0.45), transparent 50%),
+      radial-gradient(2px 2px at 56% 64%, oklch(0.95 0.05 280 / 0.3), transparent 50%),
+      radial-gradient(1.5px 1.5px at 71% 24%, oklch(0.95 0.05 280 / 0.4), transparent 50%),
+      radial-gradient(1.5px 1.5px at 84% 56%, oklch(0.95 0.05 280 / 0.35), transparent 50%),
+      radial-gradient(1px 1px at 94% 80%, oklch(0.95 0.05 280 / 0.4), transparent 50%);
+}
+
+/* Helper text colors */
+.ds-text-0 { color: var(--ink-0); }
+.ds-text-1 { color: var(--ink-1); }
+.ds-text-2 { color: var(--ink-2); }
+.ds-text-3 { color: var(--ink-3); }
+.ds-text-accent { color: var(--accent); }
+.ds-text-good { color: var(--good); }
+.ds-text-warn { color: var(--warn); }
+
+/* ──────────── LEAFLET CONTROLS — DS skin ────────────
+   Applies wherever a Leaflet map is mounted (gettask, visited-map on
+   user-profile, etc.) so the +/- and attribution match the dark theme. */
+.leaflet-bar {
+    border: 1px solid var(--line) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 6px 16px oklch(0 0 0 / 0.45) !important;
+    overflow: hidden;
+}
+.leaflet-bar a,
+.leaflet-bar a:hover,
+.leaflet-bar a:focus {
+    background-color: oklch(0.20 0.055 290 / 0.92) !important;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    color: var(--ink-1) !important;
+    border-bottom: 1px solid var(--line-soft) !important;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+.leaflet-bar a:last-child { border-bottom: none !important; }
+.leaflet-bar a:hover {
+    background-color: var(--bg-3) !important;
+    color: var(--accent) !important;
+}
+.leaflet-bar a.leaflet-disabled {
+    background-color: oklch(0.18 0.05 290 / 0.6) !important;
+    color: var(--ink-3) !important;
+    cursor: not-allowed;
+}
+.leaflet-control-attribution {
+    background: oklch(0.20 0.055 290 / 0.7) !important;
+    color: var(--ink-2) !important;
+    border-radius: 6px 0 0 0 !important;
+    font-size: 10px !important;
+}
+.leaflet-control-attribution a { color: var(--accent) !important; }

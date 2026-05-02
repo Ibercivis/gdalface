@@ -22,9 +22,9 @@
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script src="{% static 'js/main.js' %}?v=1.5"></script>
+    <script src="{% static 'js/main.js' %}?v=3.0"></script>
     <!-- Try local -->
-    <script src="{% static 'js/trylocal.js' %}?v=1.1"></script>
+    <script src="{% static 'js/trylocal.js' %}?v=1.2"></script>
     <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
@@ -33,60 +33,339 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css">
     <script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js"></script>
     <!-- Local styles last so they override Bootstrap and Driver.js -->
-    <link href="{% static 'css/styles.css' %}?v=1.10" rel="stylesheet" type="text/css">
-    <script src="{% static 'js/tutorial.js' %}?v=1.2" defer></script>
-    <script src="{% static 'js/challenge_banner.js' %}?v=1.3" defer></script>
+    <link href="{% static 'css/styles.css' %}?v=4.1" rel="stylesheet" type="text/css">
+    <script src="{% static 'js/tutorial.js' %}?v=1.5" defer></script>
+    <script src="{% static 'js/challenge_banner.js' %}?v=2.7" defer></script>
+    <script src="{% static 'js/result_overlay.js' %}?v=1.1" defer></script>
+    <script src="{% static 'js/modal_challenge_chip.js' %}?v=1.0" defer></script>
 </head>
 
 <body>
-    <!-- Challenge banner (only renders if user is enrolled in an applicable challenge) -->
-    <div id="challenge-banner"
-         data-batch-id="{% if batch %}{{ batch.id }}{% endif %}"
-         data-authenticated="{% if user.is_authenticated %}1{% else %}0{% endif %}"
-         data-i18n-rank="{% trans 'Your rank' %}"
-         data-i18n-of="{% trans 'of' %}"
-         data-i18n-paused="{% trans 'Paused — submissions are not counting right now' %}"
-         data-i18n-progress="{% trans 'Group progress' %}"
-         data-i18n-leader="{% trans 'Leader' %}"
-         data-i18n-leaderboard="{% trans 'Leaderboard' %}"
-         data-i18n-leading="{% trans 'You are leading!' %}"
-         hidden></div>
+    {% include '_ds_icons.html' %}
+
+    <!-- ───────── Design-system in-task topbar ───────── -->
+    <style>
+        .ds-task-bar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1040;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 0 16px;
+            background: oklch(0.18 0.05 290 / 0.92);
+            backdrop-filter: blur(14px) saturate(140%);
+            border-bottom: 1px solid var(--line);
+            color: var(--ink-1);
+            font-family: var(--font-ui);
+            font-size: 13px;
+        }
+        body { padding-top: 52px; }
+        .ds-task-bar__brand-pill {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 4px 10px; height: 30px;
+            background: var(--bg-2);
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            color: var(--ink-1);
+            text-decoration: none;
+        }
+        .ds-task-bar__brand-pill .ds-icon { color: var(--accent); }
+        .ds-task-bar__brand-pill:hover { color: var(--ink-0); }
+
+        .ds-task-bar__id {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 4px 10px; height: 30px;
+            background: var(--bg-2);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--ink-1);
+        }
+        .ds-task-bar__id .live-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: var(--good);
+            box-shadow: 0 0 8px var(--good);
+        }
+
+        .ds-task-bar__steps {
+            display: inline-flex; align-items: center; gap: 6px;
+            margin: 0 auto;
+        }
+        .ds-step {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 5px 10px; height: 28px;
+            background: var(--bg-2);
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            color: var(--ink-2);
+            font-size: 12px;
+        }
+        .ds-step__num {
+            width: 18px; height: 18px;
+            border-radius: 50%;
+            background: var(--bg-3);
+            color: var(--ink-1);
+            font-family: var(--font-mono); font-size: 10px;
+            display: inline-flex; align-items: center; justify-content: center;
+        }
+        .ds-step.is-active {
+            color: var(--accent-ink);
+            background: var(--accent);
+            border-color: transparent;
+            font-weight: 600;
+        }
+        .ds-step.is-active .ds-step__num { background: oklch(0 0 0 / 0.15); color: var(--accent-ink); }
+        .ds-step.is-done { color: var(--good); }
+        .ds-step.is-done .ds-step__num { background: oklch(0.32 0.12 150 / 0.4); color: var(--good); }
+
+        .ds-task-bar__right { display: inline-flex; align-items: center; gap: 10px; }
+        .ds-task-bar__rank {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 4px 10px 4px 4px; height: 28px;
+            background: var(--bg-2); border: 1px solid var(--line);
+            border-radius: 999px; font-family: var(--font-mono); font-size: 12px;
+            color: var(--ink-1); text-decoration: none;
+        }
+        .ds-task-bar__rank:hover { color: var(--ink-0); }
+        .ds-task-bar__rank .ds-icon { color: var(--accent); }
+        .ds-task-bar__rank-avatar {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            background: var(--bg-3); color: var(--ink-1);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .ds-task-bar__rank-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .ds-task-bar__rank-avatar i { font-size: 12px; }
+        .ds-task-bar__rank:hover .ds-task-bar__rank-avatar { color: var(--accent); }
+        .ds-task-bar__cp-pill {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 4px 10px; height: 28px;
+            background: var(--accent); color: var(--accent-ink);
+            border-radius: 999px; font-family: var(--font-mono); font-size: 12px;
+            font-weight: 600;
+        }
+        .ds-task-bar__leaderboard {
+            color: var(--ink-2); text-decoration: none; font-size: 12px;
+            display: inline-flex; align-items: center; gap: 4px;
+        }
+        .ds-task-bar__leaderboard:hover { color: var(--accent); }
+        .ds-task-bar__icon-btn {
+            width: 30px; height: 30px;
+            border-radius: 8px;
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--ink-2);
+            display: inline-flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            transition: background 120ms, color 120ms, border-color 120ms;
+        }
+        .ds-task-bar__icon-btn i { font-size: 14px; }
+        .ds-task-bar__icon-btn:hover {
+            background: var(--bg-2);
+            color: var(--accent);
+            border-color: var(--line);
+        }
+
+        @media (max-width: 900px) {
+            .ds-task-bar__steps { display: none; }
+        }
+    </style>
+
+    <header class="ds-task-bar">
+        <a class="ds-task-bar__brand-pill" href="/" title="Home">
+            <img src="{% static 'img/LogoLostAtNight.svg' %}" alt="" style="width:18px;height:18px;display:block;">
+            <span style="font-weight:600;">Lost at Night</span>
+        </a>
+
+        <!-- Challenge slot: filled by challenge_banner.js (or empty if no challenge state). -->
+        <div id="challenge-banner" class="ds-task-bar__challenge"
+             data-batch-id="{% if batch %}{{ batch.id }}{% endif %}"
+             data-authenticated="{% if user.is_authenticated %}1{% else %}0{% endif %}"
+             data-i18n-rank="{% trans 'Your rank' %}"
+             data-i18n-of="{% trans 'of' %}"
+             data-i18n-paused="{% trans 'Paused' %}"
+             data-i18n-progress="{% trans 'Group progress' %}"
+             data-i18n-leader="{% trans 'Leader' %}"
+             data-i18n-leaderboard="{% trans 'Leaderboard' %}"
+             data-i18n-leading="{% trans 'You are leading!' %}"
+             data-i18n-challenge="{% trans 'Challenge' %}">
+        </div>
+        <div class="ds-task-bar__right">
+            {% if user.is_authenticated %}
+            <a class="ds-task-bar__rank" href="/user-profile" title="{% trans 'Your area' %}">
+                <span class="ds-task-bar__rank-avatar">
+                    {% if user.userprofile.profile_pic %}
+                        <img src="{{ user.userprofile.profile_pic.url }}" alt="">
+                    {% else %}
+                        <i class="fa-solid fa-user-astronaut"></i>
+                    {% endif %}
+                </span>
+                {{ user.userprofile.controlPointsDone|default:0 }} CP
+            </a>
+            {% endif %}
+            <button type="button" id="tutorial-trigger-top" class="ds-task-bar__icon-btn"
+                    data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="{% trans 'Replay tutorial' %}">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </button>
+        </div>
+
+        <script>
+            // Forward the topbar tutorial click to the (now hidden) trigger that
+            // tutorial.js wires up.
+            document.addEventListener('DOMContentLoaded', function () {
+                var top = document.getElementById('tutorial-trigger-top');
+                var orig = document.getElementById('tutorial-trigger');
+                if (top && orig) top.addEventListener('click', function () { orig.click(); });
+
+                // Draggable splitter between canvas (ISS photo) and map.
+                var resizer = document.getElementById('ds-resizer');
+                var layout = document.querySelector('.ds-task-layout');
+                if (!resizer || !layout) return;
+                var isDragging = false;
+                var startX = 0;
+                var startCanvasW = 0;
+                var startMapW = 0;
+                var rafId = null;
+
+                // Lightweight: nudge Leaflet (tiles already cached) and refresh
+                // Fabric's cached pointer offset so live px/py readings stay
+                // accurate. We do NOT setDimensions/requestRenderAll here —
+                // those run only on mouseup.
+                function notifyResizeLight() {
+                    if (window.LAN && window.LAN.map) window.LAN.map.invalidateSize();
+                    if (window.LAN && window.LAN.fabric) window.LAN.fabric.calcOffset();
+                }
+                // Heavy: also resize Fabric's backing-store and repaint. Run
+                // once when the user releases the mouse.
+                function notifyResizeFull() {
+                    notifyResizeLight();
+                    if (window.LAN && window.LAN.fabric) {
+                        var col = document.getElementById('column-photo');
+                        if (col) {
+                            window.LAN.fabric.setDimensions({
+                                width: col.clientWidth,
+                                height: col.clientHeight,
+                            });
+                            window.LAN.fabric.calcOffset();
+                            window.LAN.fabric.requestRenderAll();
+                        }
+                    }
+                }
+
+                // Window resize (browser zoom, devtools, etc.) — full recompute.
+                window.addEventListener('resize', notifyResizeFull);
+
+                resizer.addEventListener('mousedown', function (e) {
+                    isDragging = true;
+                    startX = e.clientX;
+                    var canvasEl = document.querySelector('.ds-task-iss');
+                    var mapEl = document.querySelector('.ds-task-map');
+                    startCanvasW = canvasEl.getBoundingClientRect().width;
+                    startMapW = mapEl.getBoundingClientRect().width;
+                    resizer.classList.add('is-dragging');
+                    document.body.style.cursor = 'col-resize';
+                    document.body.style.userSelect = 'none';
+                    e.preventDefault();
+                });
+
+                document.addEventListener('mousemove', function (e) {
+                    if (!isDragging) return;
+                    var dx = e.clientX - startX;
+                    var newCanvasW = Math.max(220, startCanvasW + dx);
+                    var newMapW = Math.max(220, startMapW - dx);
+                    var rail = document.querySelector('.ds-task-rail');
+                    var railW = rail ? rail.getBoundingClientRect().width : 280;
+                    layout.style.gridTemplateColumns =
+                        newCanvasW + 'px 6px ' + newMapW + 'px ' + railW + 'px';
+                    if (rafId) cancelAnimationFrame(rafId);
+                    rafId = requestAnimationFrame(notifyResizeLight);
+                });
+
+                document.addEventListener('mouseup', function () {
+                    if (!isDragging) return;
+                    isDragging = false;
+                    resizer.classList.remove('is-dragging');
+                    document.body.style.cursor = '';
+                    document.body.style.userSelect = '';
+                    notifyResizeFull();
+                });
+            });
+        </script>
+    </header>
+
+    <script>
+        // Update the photo ID pill + modal title once main.js loads the geoattempt.
+        // The caption (city/country) arrives later from a Nominatim reverse
+        // geocode, so we expose `refreshPhotoTitle` for main.js to call.
+        (function () {
+            var unknownLabel = "{% trans 'Unknown' %}";
+            window.LAN = window.LAN || {};
+            window.LAN.refreshPhotoTitle = function () {
+                if (!window.LAN.imageName) return;
+                var caption = window.LAN.imageCaption || unknownLabel;
+                var text = window.LAN.imageName + ' | ' + caption;
+                var pill = document.getElementById('task-id-text');
+                var modalTitle = document.getElementById('taskInfoTitle');
+                if (pill) pill.textContent = text;
+                if (modalTitle) modalTitle.textContent = text;
+            };
+            var iv = setInterval(function () {
+                if (!window.LAN.imageName) return;
+                window.LAN.refreshPhotoTitle();
+                clearInterval(iv);
+            }, 200);
+            setTimeout(function () { clearInterval(iv); }, 15000);
+        })();
+    </script>
 
     <!-- Modal -->
     <!-- Task Info Modal (shown automatically on each new task) -->
     <div class="modal fade" id="taskInfoModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered" style="max-width:560px;">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="taskInfoTitle">{% trans "New Task" %}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row g-3">
-                        <!-- Left: image info -->
-                        <div class="col-md-6">
-                            <h6 class="fw-bold mb-2">{% trans "Photo info" %}</h6>
-                            <p class="mb-1"><strong>{% trans "Image:" %}</strong> <span id="ti-image"></span></p>
-                            <p class="mb-1"><strong>{% trans "Date:" %}</strong> <span id="ti-date"></span></p>
-                            <p class="mb-1"><strong>{% trans "Focal length:" %}</strong> <span id="ti-focal"></span> mm</p>
-                            <p class="mb-1"><strong>{% trans "Location:" %}</strong> <span id="ti-location"><em>{% trans "looking up…" %}</em></span></p>
-                            <p class="mb-1"><strong>{% trans "Nadir point:" %}</strong> <span id="ti-nadir">—</span></p>
-                            <p class="mb-1"><strong>{% trans "Photo center:" %}</strong> <span id="ti-photo-center">—</span></p>
-                            <p class="mb-1" id="ti-ml-row"><strong>{% trans "Photo center (ML):" %}</strong> <span id="ti-ml-center">—</span></p>
-                        </div>
-                        <!-- Right: crew -->
-                        <div class="col-md-6" id="ti-crew-col">
-                            <h6 class="fw-bold mb-2">{% trans "ISS Expedition" %} <span id="ti-exp-number"></span> {% trans "crew" %}</h6>
-                            <div id="ti-crew-list" class="d-flex flex-wrap gap-2"></div>
-                        </div>
+                <div class="modal-header" style="border-bottom:1px solid var(--line-soft);padding:14px 24px;">
+                    <div class="ds-modal-titlebar" style="margin-bottom:0;width:100%;">
+                        <h5 class="modal-title mono" id="taskInfoTitle">—</h5>
+                        <span id="ti-challenge-chip" hidden></span>
                     </div>
+                </div>
+                <div class="modal-body" style="padding:18px 24px 8px;">
+                    <dl class="ds-info-grid">
+                        <dt>{% trans "Date" %}</dt>           <dd class="mono" id="ti-date">—</dd>
+                        <dt>{% trans "Focal length" %}</dt>   <dd class="mono"><span id="ti-focal">—</span> mm</dd>
+                        <dt>{% trans "Location" %}</dt>       <dd id="ti-location"><em class="ds-text-3">{% trans "looking up…" %}</em></dd>
+                        <dt>{% trans "Nadir point" %}</dt>    <dd class="mono ds-text-2" id="ti-nadir">—</dd>
+                        <dt>{% trans "Photo center" %}</dt>   <dd class="mono ds-text-2" id="ti-photo-center">—</dd>
+                        <dt id="ti-ml-row-dt">{% trans "Photo center (ML)" %}</dt>
+                        <dd class="mono ds-text-2" id="ti-ml-row"><span id="ti-ml-center">—</span></dd>
+                    </dl>
+
+                    <div class="ds-modal-section" id="ti-crew-col">
+                        <div class="ds-modal-section__head">
+                            <span><svg class="ds-icon ds-icon--sm"><use href="#ds-icon-spark"/></svg> {% trans "ISS Expedition" %} <span class="mono ds-text-accent" id="ti-exp-number"></span></span>
+                        </div>
+                        <div id="ti-crew-list" class="ds-crew-list"></div>
+                    </div>
+
                     <!-- Personal stats (filled by JS for authenticated users) -->
-                    <div id="ti-stats-section" class="mt-3 d-none">
-                        <hr>
-                        <h6 class="fw-bold mb-2">{% trans "Your stats" %}</h6>
-                        <div class="table-responsive">
-                            <table class="table table-sm table-bordered text-center mb-0">
-                                <thead class="table-light">
+                    <div id="ti-stats-section" class="ds-modal-section d-none">
+                        <div class="ds-modal-section__head">
+                            <span>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4z"/>
+                                    <path d="M17 4h3v2a3 3 0 0 1-3 3M7 4H4v2a3 3 0 0 0 3 3"/>
+                                </svg>
+                                {% trans "Your stats" %}
+                            </span>
+                        </div>
+                        <div class="ds-stats-table-wrap">
+                            <table class="ds-stats-table">
+                                <thead>
                                     <tr>
                                         <th></th>
                                         <th>{% trans "Total" %}</th>
@@ -97,25 +376,25 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <th class="text-start">{% trans "Tasks" %}</th>
-                                        <td id="ti-stat-tasks">—</td>
-                                        <td id="ti-stat-tasks-rank">—</td>
-                                        <td id="ti-stat-tasks-next">—</td>
-                                        <td id="ti-stat-tasks-first">—</td>
+                                        <th>{% trans "Tasks" %}</th>
+                                        <td class="mono" id="ti-stat-tasks">—</td>
+                                        <td class="mono" id="ti-stat-tasks-rank">—</td>
+                                        <td class="mono" id="ti-stat-tasks-next">—</td>
+                                        <td class="mono" id="ti-stat-tasks-first">—</td>
                                     </tr>
                                     <tr>
-                                        <th class="text-start">{% trans "Control pts" %}</th>
-                                        <td id="ti-stat-cp">—</td>
-                                        <td id="ti-stat-cp-rank">—</td>
-                                        <td id="ti-stat-cp-next">—</td>
-                                        <td id="ti-stat-cp-first">—</td>
+                                        <th>{% trans "Control pts" %}</th>
+                                        <td class="mono" id="ti-stat-cp">—</td>
+                                        <td class="mono" id="ti-stat-cp-rank">—</td>
+                                        <td class="mono" id="ti-stat-cp-next">—</td>
+                                        <td class="mono" id="ti-stat-cp-first">—</td>
                                     </tr>
                                     <tr>
-                                        <th class="text-start">{% trans "Hours" %}</th>
-                                        <td id="ti-stat-hours">—</td>
-                                        <td id="ti-stat-hours-rank">—</td>
-                                        <td id="ti-stat-hours-next">—</td>
-                                        <td id="ti-stat-hours-first">—</td>
+                                        <th>{% trans "Hours" %}</th>
+                                        <td class="mono" id="ti-stat-hours">—</td>
+                                        <td class="mono" id="ti-stat-hours-rank">—</td>
+                                        <td class="mono" id="ti-stat-hours-next">—</td>
+                                        <td class="mono" id="ti-stat-hours-first">—</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -124,13 +403,18 @@
                     <!-- Anon notice -->
                     {% if not user.is_authenticated %}
                     {% url 'account_signup' as signup_url %}
-                    <div class="mt-3 alert alert-info py-2 mb-0" role="alert">
-                        {% blocktrans with url=signup_url %}You're participating anonymously — <a href="{{ url }}">create an account</a> to save your progress and appear on the leaderboard!{% endblocktrans %}
+                    <div class="ds-modal-anon">
+                        <span><svg class="ds-icon ds-icon--sm"><use href="#ds-icon-info"/></svg></span>
+                        <span>{% blocktrans with url=signup_url %}You're participating anonymously — <a href="{{ url }}">create an account</a> to save your progress and appear on the leaderboard.{% endblocktrans %}</span>
                     </div>
                     {% endif %}
                 </div>
-                <div class="modal-footer">
-                    <button type="button" id="modalClose" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Let's go!" %}</button>
+                <div class="modal-footer" style="border-top:1px solid var(--line-soft);padding:14px 20px;">
+                    <button type="button" class="ds-btn ds-btn--ghost" data-bs-dismiss="modal">{% trans "Dismiss" %}</button>
+                    <button type="button" id="modalClose" class="ds-btn ds-btn--primary" data-bs-dismiss="modal">
+                        {% trans "Start locating" %}
+                        <svg class="ds-icon"><use href="#ds-icon-chevron-right"/></svg>
+                    </button>
                 </div>
             </div>
         </div>
@@ -149,81 +433,71 @@
         </div>
     </div>
 
-    <div class="container-fluid h-100">
-        <div class="row h-100 d-flex">
-            <div id="column-photo" class="col-md-5 p-0 m-0 h-100" style="position:relative;">
+    <div class="ds-task-layout">
+            <div id="column-photo" class="ds-task-iss" style="position:relative;">
 
                 <canvas id="canvas"></canvas>
 
+                <button type="button" class="ds-photo-id mono" id="task-id-display"
+                        data-bs-toggle="modal" data-bs-target="#taskInfoModal"
+                        title="{% trans 'Show photo metadata' %}">
+                    <span class="live-dot"></span>
+                    <span id="task-id-text">—</span>
+                    <svg class="ds-icon ds-icon--sm" style="opacity:0.7;"><use href="#ds-icon-info"/></svg>
+                </button>
+                <div class="ds-coord-readout ds-coord-readout--photo mono" id="ds-photo-coord">—</div>
+
                 <div id="canvas-sliders" class="leaflet-control-layers leaflet-control-layers-expanded"
-                     style="position:absolute;top:10px;right:10px;padding:6px 10px;font-size:13px;z-index:1000;">
-                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-                        <span style="min-width:90px;">{% trans "Brightness" %}</span>
-                        <input type="range" id="brightness-slider" min="-1" max="1" step="0.05" value="0" style="width:80px;">
-                        <span id="brightness-val" style="min-width:32px;text-align:right;">0</span>
+                     style="font-size:13px;z-index:1000;">
+                    <div class="ds-canvas-sliders__head">
+                        <span><svg class="ds-icon ds-icon--sm"><use href="#ds-icon-sliders"/></svg>{% trans "Image adjustments" %}</span>
                     </div>
-                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-                        <span style="min-width:90px;">{% trans "Contrast" %}</span>
-                        <input type="range" id="contrast-slider" min="-1" max="1" step="0.05" value="0" style="width:80px;">
-                        <span id="contrast-val" style="min-width:32px;text-align:right;">0</span>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-                        <span style="min-width:90px;">{% trans "Gamma" %}</span>
-                        <input type="range" id="gamma-slider" min="0.1" max="3" step="0.05" value="1" style="width:80px;">
-                        <span id="gamma-val" style="min-width:32px;text-align:right;">1</span>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-                        <span style="min-width:90px;">{% trans "Saturation" %}</span>
-                        <input type="range" id="saturation-slider" min="-1" max="1" step="0.05" value="0" style="width:80px;">
-                        <span id="saturation-val" style="min-width:32px;text-align:right;">0</span>
-                    </div>
-                    <div style="text-align:right;margin-top:2px;">
-                        <button id="reset-filters" style="font-size:11px;padding:2px 8px;border:1px solid #aaa;border-radius:3px;cursor:pointer;background:#fff;">{% trans "Reset" %}</button>
+                    <div class="ds-canvas-sliders__body">
+                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                            <span style="min-width:78px;font-size:12px;color:var(--ink-2);">{% trans "Brightness" %}</span>
+                            <input type="range" id="brightness-slider" min="-1" max="1" step="0.05" value="0" style="flex:1;">
+                            <span class="mono" id="brightness-val" style="min-width:32px;text-align:right;font-size:12px;">0</span>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                            <span style="min-width:78px;font-size:12px;color:var(--ink-2);">{% trans "Contrast" %}</span>
+                            <input type="range" id="contrast-slider" min="-1" max="1" step="0.05" value="0" style="flex:1;">
+                            <span class="mono" id="contrast-val" style="min-width:32px;text-align:right;font-size:12px;">0</span>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                            <span style="min-width:78px;font-size:12px;color:var(--ink-2);">{% trans "Gamma" %}</span>
+                            <input type="range" id="gamma-slider" min="0.1" max="3" step="0.05" value="1" style="flex:1;">
+                            <span class="mono" id="gamma-val" style="min-width:32px;text-align:right;font-size:12px;">1</span>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                            <span style="min-width:78px;font-size:12px;color:var(--ink-2);">{% trans "Saturation" %}</span>
+                            <input type="range" id="saturation-slider" min="-1" max="1" step="0.05" value="0" style="flex:1;">
+                            <span class="mono" id="saturation-val" style="min-width:32px;text-align:right;font-size:12px;">0</span>
+                        </div>
+                        <div style="text-align:right;">
+                            <button type="button" id="reset-filters" class="ds-btn ds-btn--ghost ds-btn--sm">
+                                <svg class="ds-icon ds-icon--sm"><use href="#ds-icon-reset"/></svg>
+                                {% trans "Reset" %}
+                            </button>
+                        </div>
                     </div>
                 </div>
 
             </div>
-            <div class="col-md-5 column-left p-0 mb-0 h-100">
+            <div class="ds-resizer" id="ds-resizer" aria-label="Resize photo / map" title="Drag to resize"></div>
+            <div class="ds-task-map">
                 <div id="map" class="h-100"></div>
+                <div class="ds-coord-readout mono" id="ds-coord-readout">—</div>
                 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
                     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
             </div>
-            <div class="col-md-2 h-100 tools d-flex flex-column p-0">
-                <div id="title" class="flex-shrink-0">
-                    <a href="/"><img src="{% static 'img/LogoLostAtNight.svg' %}" alt="logo" class="logo"></a>
-                    <i id="usage-info" class="fa-solid fa-circle-question icon-help" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="{% trans 'Help' %}"></i>
-                    <i id="tutorial-trigger" class="fa-solid fa-graduation-cap icon-help" role="button" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="{% trans 'Replay tutorial' %}"></i>
+            <div class="ds-task-rail tools d-flex flex-column">
+                <i id="tutorial-trigger" class="fa-solid fa-graduation-cap" role="button" tabindex="0" hidden></i>
                 
                 
-                <!-- Icono de usuario con tooltips de Bootstrap movido debajo del botón de ayuda -->
-              
-                    {% if user.is_authenticated %}
-                        <a href="{% url 'user' %}" class="user-icon-link-top" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="{% trans 'Go to your profile' %}">
-                            {% if user.userprofile.profile_pic %}
-                                <img src="{{ user.userprofile.profile_pic.url }}" alt="{{ user.username }}" class="user-icon rounded-circle">
-                            {% else %}
-                                <i class="fa-solid fa-user-circle user-icon"></i>
-                            {% endif %}
-                        </a>
-                    {% else %}
-                        <a href="{% url 'account_login' %}" class="user-icon-link-top" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="{% trans 'You are participating as anonymous' %}">
-                            <i class="fa-solid fa-user-secret user-icon"></i>
-                        </a>
-                    {% endif %}
-                </div>
-                
-                
-                <div id="photo-info">
-                    <div id="photo-info-content">
-                        <i id="photo-info" class="fa-solid fa-circle-info pe-1"></i>
-                        <span id="photo-info-text"></span>
-                        {% if batch %}
-                        <span id="batch-name">{% trans "Batch:" %} {{ batch.name }}</span>
-                        <input type="hidden" id="batch-id" value="{{ batch.id }}">
-                        {% endif %}
-                    </div>
-                </div>
-                
+                {% if batch %}
+                <input type="hidden" id="batch-id" value="{{ batch.id }}">
+                {% endif %}
+
                 <div id="coordinates" class="flex-grow-1">
                     <ul id="icon-list-items"></ul>
                 </div>
@@ -244,11 +518,9 @@
                 </div>
 
             </div>
-            
-        </div>
 
-    <div>
-    
+    </div>
+
     <!-- Tutorial config (read by tutorial.js) -->
     <div id="tutorial-root"
          data-show-tutorial="{% if show_tutorial %}1{% else %}0{% endif %}"
@@ -264,7 +536,7 @@
          data-s5-title="{% trans 'Pick a recognisable point on the photo' %}"
          data-s5-body="{% trans 'Click a clearly identifiable feature on the photo — a coastline, a city, an island.' %}"
          data-s6-title="{% trans 'Match it on the map' %}"
-         data-s6-body="{% trans 'Now click the same place on the map. That pair is one control point. You need at least 3 control points to validate the task.' %}"
+         data-s6-body="{% trans 'Now click the same place on the map. That pair is one control point.' %}"
          data-s7-title="{% trans 'Submit and earn points!' %}"
          data-s7-body="{% trans 'Once you have at least 3 control points hit Submit — but 7 or more is recommended for better accuracy. Every control point counts towards your ranking.' %}"
          data-anon-cta="{% trans 'Tip: create an account to save your progress and appear on the leaderboard.' %}"

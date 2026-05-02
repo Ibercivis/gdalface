@@ -1,141 +1,211 @@
 {% load i18n %}
-<!-- Topbar -->
+{% load static %}
+{% comment %}Lost at Night — top navigation. Design system look.{% endcomment %}
 <style>
-    /* Estilos para hacer el navbar semitransparente */
-    .navbar.navbar-dark.bg-dark {
-        background-color: rgba(33, 37, 41, 0.7) !important; /* Color oscuro semitransparente */
-        backdrop-filter: blur(10px); /* Efecto de desenfoque */
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Sombra sutil */
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* Borde inferior sutil */
-        position: fixed; /* Mantiene la barra fija durante el scroll */
-        top: 0; /* Pegada a la parte superior */
-        width: 100%; /* Ocupa todo el ancho */
-        z-index: 1030; /* Asegura que esté por encima de otros elementos */
-    }
-
-    /* Añadimos un espaciador para evitar que el contenido se oculte debajo del navbar */
-    body {
-        padding-top: 56px; /* Ajustar según la altura de tu navbar */
-    }
-
-    /* Añadir comportamiento de scroll suave para toda la página */
-    html {
-        scroll-behavior: smooth;
-    }
-
-    .navbar-brand {
-        color: rgba(255, 255, 255, 0.9) !important; /* Texto más visible */
-        font-size: 1.25rem !important; /* Tamaño específico para garantizar consistencia */
-        font-weight: 600; /* Peso de fuente para mejor legibilidad */
-    }
-
-    .navbar-nav .nav-link {
-        color: rgba(255, 255, 255, 0.9) !important; /* Texto más visible */
-        font-size: 1rem !important; /* Tamaño específico para garantizar consistencia */
-    }
-
-    .navbar-nav .nav-link:hover {
-        color: #ffffff !important;
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-    }
-
-    .navbar-nav .nav-link.active {
-        color: #e9f990 !important; /* Color accent-color similar al usado en otros lugares */
-        font-weight: 600;
-    }
-
-    /* Estilos para el avatar del usuario */
-    .user-avatar {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid rgba(255, 255, 255, 0.5);
-        vertical-align: middle;
-    }
-    
-    .avatar-link {
+    .ds-topbar {
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        z-index: 1030;
+        height: var(--topbar-h);
         display: flex;
+        align-items: center;
+        gap: 24px;
+        padding: 0 32px;
+        background: oklch(0.18 0.05 290 / 0.85);
+        backdrop-filter: blur(14px) saturate(140%);
+        -webkit-backdrop-filter: blur(14px) saturate(140%);
+        border-bottom: 1px solid var(--line);
+        font-family: var(--font-ui);
+        color: var(--ink-1);
+    }
+    body { padding-top: var(--topbar-h); }
+
+    .ds-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+        color: var(--ink-0);
+        font-weight: 700;
+        font-size: 14px;
+        line-height: 1.1;
+    }
+    .ds-brand:hover { color: var(--ink-0); }
+    .ds-brand__bubble {
+        width: 36px; height: 36px;
+        border-radius: 8px;
+        background: var(--bg-3);
+        border: 1px solid var(--line);
+        display: inline-flex;
         align-items: center;
         justify-content: center;
-        padding-top: 0.5rem;
-        padding-bottom: 0.5rem;
-        height: 100%;
+        padding: 4px;
     }
-    
-    .avatar-link.active .user-avatar {
-        border-color: #e9f990;
-        box-shadow: 0 0 0 2px rgba(233, 249, 144, 0.5);
-    }
+    .ds-brand__bubble img { display: block; max-width: 100%; max-height: 100%; }
 
-    /* Para mantener consistencia en la altura del elemento de navegación con el avatar */
-    .navbar-nav .nav-item {
+    .ds-nav {
         display: flex;
         align-items: center;
+        gap: 4px;
+    }
+    .ds-nav__link {
+        display: inline-flex;
+        align-items: center;
+        height: 32px;
+        padding: 0 12px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--ink-2);
+        text-decoration: none;
+        border-radius: 8px;
+        transition: background 120ms, color 120ms;
+    }
+    .ds-nav__link:hover { color: var(--ink-0); background: var(--bg-2); }
+    .ds-nav__link.is-active {
+        color: var(--ink-0);
+        background: var(--bg-3);
+        border: 1px solid var(--line);
     }
 
-    /* Ajuste para móviles */
-    @media (max-width: 992px) {
-        .navbar-collapse {
-            background-color: rgba(33, 37, 41, 0.95);
-            backdrop-filter: blur(15px);
-            padding: 10px;
-            border-radius: 8px;
-            margin-top: 10px;
-        }
+    .ds-topbar__spacer { flex: 1; }
+
+    .ds-topbar__right {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .ds-rank-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        height: 28px;
+        font-size: 12px;
+        font-family: var(--font-mono);
+        color: var(--ink-1);
+        background: var(--bg-2);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        text-decoration: none;
+    }
+    .ds-rank-pill:hover { color: var(--ink-0); }
+    .ds-rank-pill__avatar {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 22px; height: 22px;
+        border-radius: 50%;
+        overflow: hidden;
+        background: var(--bg-3);
+        color: var(--ink-1);
+        flex-shrink: 0;
+    }
+    .ds-rank-pill__avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .ds-rank-pill__avatar svg { width: 14px; height: 14px; display: block; }
+    .ds-rank-pill:hover .ds-rank-pill__avatar { color: var(--accent); }
+
+    .ds-avatar-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px; height: 32px;
+        border-radius: 999px;
+        background: var(--bg-2);
+        border: 1px solid var(--line);
+        color: var(--ink-1);
+        text-decoration: none;
+        overflow: hidden;
+        flex-shrink: 0;
+        transition: border-color 120ms, color 120ms;
+    }
+    .ds-avatar-btn:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+    }
+    .ds-avatar-btn img {
+        width: 100%; height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    .ds-avatar-btn svg {
+        width: 18px; height: 18px;
+        display: block;
+    }
+
+    .ds-avatar {
+        width: 32px; height: 32px;
+        border-radius: 999px;
+        background: radial-gradient(circle at 30% 30%, oklch(0.7 0.08 200), oklch(0.4 0.1 280));
+        border: 1px solid var(--line);
+        object-fit: cover;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--ink-0);
+    }
+
+    .ds-lang select {
+        height: 28px;
+        background: var(--bg-2);
+        color: var(--ink-1);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 0 8px;
+        font-size: 12px;
+        font-family: var(--font-ui);
+    }
+    .ds-lang select option { background: var(--bg-1); color: var(--ink-0); }
+
+    @media (max-width: 768px) {
+        .ds-topbar { padding: 0 16px; gap: 12px; }
+        .ds-nav { display: none; }
     }
 </style>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-        <!-- Brand -->
-        <a class="navbar-brand" href="/">LostAtNight</a>
+{% include '_ds_icons.html' %}
 
-        <!-- Mobile Toggle Button -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="{% trans 'Toggle navigation' %}">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+<header class="ds-topbar">
+    <a class="ds-brand" href="/">
+        <span class="ds-brand__bubble"><img src="{% static 'img/LogoLostAtNight.svg' %}" alt=""></span>
+        <span>Lost at<br>Night</span>
+    </a>
 
-        <!-- Navbar Links -->
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link {% if current_path == '/' %}active{% endif %}" href="/">{% trans "Home" %}</a></li>
-                <li class="nav-item"><a class="nav-link scroll-link" href="{% if not is_homepage %}/{% endif %}#batch-section" data-section="batch-section">{% trans "Batches" %}</a></li>
-                <li class="nav-item"><a class="nav-link scroll-link" href="{% if not is_homepage %}/{% endif %}#statistics-section" data-section="statistics-section">{% trans "Statistics" %}</a></li>
-                <li class="nav-item"><a class="nav-link {% if current_path == '/gettask' %}active{% endif %}" href="/gettask">{% trans "Participate" %}</a></li>
-                <li class="nav-item"><a class="nav-link {% if '/challenges' in current_path %}active{% endif %}" href="/challenges/">{% trans "Challenges" %}</a></li>
-                <li class="nav-item"><a class="nav-link scroll-link" href="{% if not is_homepage %}/{% endif %}#contact-section" data-section="contact-section">{% trans "Contact" %}</a></li>
-                {% if user.is_authenticated %}
-                <li class="nav-item">
-                    <a class="nav-link avatar-link {% if current_path == '/user-profile' %}active{% endif %}" href="/user-profile" title="{% trans 'Your personal area' %}">
-                        {% if user.userprofile.profile_pic %}
-                            <img src="{{ user.userprofile.profile_pic.url }}" alt="{% trans 'Profile picture' %}" class="user-avatar">
-                        {% else %}
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-person-circle user-avatar" viewBox="0 0 16 16" style="background-color: rgba(255,255,255,0.2); padding: 2px;">
-                                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
-                                <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
-                            </svg>
-                        {% endif %}
-                    </a>
-                </li>
-                {% else %}
-                <li class="nav-item"><a class="nav-link {% if current_path == '/accounts/login' %}active{% endif %}" href="/accounts/login">{% trans "Login" %}</a></li>
-                {% endif %}
-                <!-- Language selector -->
-                <li class="nav-item ms-2">
-                    {% get_current_language as LANGUAGE_CODE %}
-                    {% get_available_languages as LANGUAGES %}
-                    <form action="{% url 'set_language' %}" method="post" class="d-inline">
-                        {% csrf_token %}
-                        <input name="next" type="hidden" value="{{ request.path }}">
-                        <select name="language" onchange="this.form.submit()" class="form-select form-select-sm bg-transparent text-white border-secondary" style="width:auto;">
-                            {% for lang_code, lang_name in LANGUAGES %}
-                            <option value="{{ lang_code }}" {% if lang_code == LANGUAGE_CODE %}selected{% endif %} style="color:#000;">{{ lang_name }}</option>
-                            {% endfor %}
-                        </select>
-                    </form>
-                </li>
-            </ul>
-        </div>
+    <nav class="ds-nav">
+        <a class="ds-nav__link {% if current_path == '/' %}is-active{% endif %}" href="/">{% trans "Home" %}</a>
+        <a class="ds-nav__link" href="/#challenges-section">{% trans "Challenges" %}</a>
+        <a class="ds-nav__link" href="/#batch-section">{% trans "Batches" %}</a>
+        <a class="ds-nav__link" href="/#statistics-section">{% trans "Statistics" %}</a>
+        <a class="ds-nav__link {% if '/gettask' in current_path %}is-active{% endif %}" href="/gettask">{% trans "Participate" %}</a>
+    </nav>
+    <style>html { scroll-behavior: smooth; }</style>
+
+    <span class="ds-topbar__spacer"></span>
+
+    <div class="ds-topbar__right">
+        {% if user.is_authenticated %}
+            <a class="ds-rank-pill" href="/user-profile" title="{% trans 'Your area' %}">
+                <span class="ds-rank-pill__avatar">
+                    {% if user.userprofile.profile_pic %}
+                        <img src="{{ user.userprofile.profile_pic.url }}" alt="">
+                    {% else %}
+                        <i class="fa-solid fa-user-astronaut" style="font-size:13px;"></i>
+                    {% endif %}
+                </span>
+                {{ user.userprofile.controlPointsDone|default:0 }} CP
+            </a>
+        {% else %}
+            <a class="ds-btn ds-btn--primary ds-btn--sm" href="/accounts/login">{% trans "Sign in" %}</a>
+        {% endif %}
+        <form action="{% url 'set_language' %}" method="post" class="ds-lang">
+            {% csrf_token %}
+            <input name="next" type="hidden" value="{{ request.path }}">
+            <select name="language" onchange="this.form.submit()">
+                {% get_current_language as LANGUAGE_CODE %}
+                {% get_available_languages as LANGUAGES %}
+                {% for lang_code, lang_name in LANGUAGES %}
+                <option value="{{ lang_code }}" {% if lang_code == LANGUAGE_CODE %}selected{% endif %}>{{ lang_name }}</option>
+                {% endfor %}
+            </select>
+        </form>
     </div>
-</nav>
+</header>
