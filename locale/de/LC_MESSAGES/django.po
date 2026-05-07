@@ -19,12 +19,12 @@ msgstr ""
 
 #: frontend/templates/_challenge_card.html:22
 msgid "Enrolled"
-msgstr ""
+msgstr "Eingeschrieben"
 
 #: frontend/templates/_challenge_card.html:31
 #: frontend/templates/challenge_detail.html:460
 msgid "General"
-msgstr ""
+msgstr "Allgemein"
 
 #: frontend/templates/_challenge_card.html:36
 #: frontend/templates/challenge_detail.html:463
@@ -34,7 +34,7 @@ msgstr "Teilnehmer"
 #: frontend/templates/_challenge_card.html:53
 #: frontend/templates/gettask.html:221 frontend/templates/index.html:827
 msgid "Paused"
-msgstr ""
+msgstr "Pausiert"
 
 #: frontend/templates/_challenge_card.html:55
 msgid "Complete"
@@ -42,16 +42,16 @@ msgstr "Abgeschlossen"
 
 #: frontend/templates/_challenge_card.html:60
 msgid "Continue"
-msgstr ""
+msgstr "Weiter"
 
 #: frontend/templates/_challenge_card.html:65
 msgid "Review"
-msgstr ""
+msgstr "Überprüfen"
 
 #: frontend/templates/_challenge_card.html:71
 #: frontend/templates/_challenge_card.html:76
 msgid "Join"
-msgstr ""
+msgstr "Beitreten"
 
 #: frontend/templates/_cookie_banner.html:204
 msgid "Your cookie preferences"
@@ -133,7 +133,7 @@ msgstr ""
 
 #: frontend/templates/_footer.html:175
 msgid "Flag of the European Union"
-msgstr ""
+msgstr "Flagge der Europäischen Union"
 
 #: frontend/templates/_footer.html:177
 msgid ""
@@ -169,7 +169,7 @@ msgstr "Challenges"
 
 #: frontend/templates/_footer.html:189
 msgid "Video tutorial"
-msgstr ""
+msgstr "Video-Tutorial"
 
 #: frontend/templates/_footer.html:190 frontend/templates/_footer.html:196
 #: templates/account/login.html:280 templates/account/logout.html:161
@@ -232,18 +232,18 @@ msgstr "Dein vorheriger aktiver Challenge wurde automatisch verlassen."
 #: frontend/templates/_topbar.html:211
 #: frontend/templates/challenge_detail.html:511
 msgid "Bronze"
-msgstr ""
+msgstr "Bronze"
 
 #: frontend/templates/_topbar.html:212
 #: frontend/templates/challenge_detail.html:512
 msgid "Silver"
-msgstr ""
+msgstr "Silber"
 
 #: frontend/templates/_topbar.html:213
 #: frontend/templates/challenge_detail.html:513
 #: frontend/templates/challenge_detail.html:555
 msgid "Gold"
-msgstr ""
+msgstr "Gold"
 
 #: frontend/templates/_topbar.html:214
 msgid "Batch"
@@ -307,7 +307,7 @@ msgstr "Anmelden"
 
 #: frontend/templates/challenge_detail.html:441
 msgid "All challenges"
-msgstr ""
+msgstr "Alle Challenges"
 
 #: frontend/templates/challenge_detail.html:458
 msgid "Batch:"
@@ -315,7 +315,7 @@ msgstr "Stapel"
 
 #: frontend/templates/challenge_detail.html:477
 msgid "You are enrolled"
-msgstr ""
+msgstr "Du bist angemeldet"
 
 #: frontend/templates/challenge_detail.html:481
 msgid "Leave challenge"
@@ -323,24 +323,24 @@ msgstr "Challenge verlassen"
 
 #: frontend/templates/challenge_detail.html:485
 msgid "This challenge has finished."
-msgstr ""
+msgstr "Diese Challenge ist beendet."
 
 #: frontend/templates/challenge_detail.html:488
 msgid "Re-joining preserves your previous CPs."
-msgstr ""
+msgstr "Beim erneuten Beitritt bleiben deine bisherigen Kontrollpunkte erhalten."
 
 #: frontend/templates/challenge_detail.html:491
 msgid "Join challenge"
-msgstr ""
+msgstr "Challenge beitreten"
 
 #: frontend/templates/challenge_detail.html:496
 msgid "Log in to join"
-msgstr ""
+msgstr "Anmelden zum Beitreten"
 
 #: frontend/templates/challenge_detail.html:504
 #: frontend/templates/gettask.html:222
 msgid "Group progress"
-msgstr ""
+msgstr "Gruppenfortschritt"
 
 #: frontend/templates/challenge_detail.html:522
 msgid "Total CPs"
@@ -352,23 +352,23 @@ msgstr "Teilnehmer"
 
 #: frontend/templates/challenge_detail.html:540
 msgid "Ended"
-msgstr ""
+msgstr "Beendet"
 
 #: frontend/templates/challenge_detail.html:541
 msgid "Days to start"
-msgstr ""
+msgstr "Tage bis zum Start"
 
 #: frontend/templates/challenge_detail.html:542
 msgid "Days left"
-msgstr ""
+msgstr "Tage übrig"
 
 #: frontend/templates/challenge_detail.html:553
 msgid "to"
-msgstr ""
+msgstr "bis"
 
 #: frontend/templates/challenge_detail.html:556
 msgid "Gold reached!"
-msgstr ""
+msgstr "Gold erreicht!"
 
 #: frontend/templates/challenge_detail.html:568
 msgid "Your performance"
@@ -386,12 +386,12 @@ msgstr "Deine KP"
 
 #: frontend/templates/challenge_detail.html:581
 msgid "of group total"
-msgstr ""
+msgstr "des Gruppentotals"
 
 #: frontend/templates/challenge_detail.html:598
 #: frontend/templates/gettask.html:224
 msgid "Leaderboard"
-msgstr ""
+msgstr "Rangliste"
 
 #: frontend/templates/challenge_detail.html:601
 #: frontend/templates/challenge_detail.html:651
@@ -427,7 +427,7 @@ msgstr "Seite {p} von {t}"
 
 #: frontend/templates/challenge_detail.html:653
 msgid "No participants yet — be the first one!"
-msgstr ""
+msgstr "Noch keine Teilnehmer — sei der Erste!"
 
 #: frontend/templates/challenge_detail.html:654
 msgid "Could not load leaderboard."
@@ -435,7 +435,7 @@ msgstr "Ranking konnte nicht geladen werden."
 
 #: frontend/templates/challenge_detail.html:655
 msgid "you"
-msgstr ""
+msgstr "du"
 
 #: frontend/templates/challenge_detail.html:656
 #: user_profile/templates/user.html:992
@@ -444,16 +444,16 @@ msgstr "Unsichtbarer Benutzer"
 
 #: frontend/templates/challenge_detail.html:657
 msgid "active"
-msgstr ""
+msgstr "aktiv"
 
 #: frontend/templates/challenge_detail.html:658
 #: user_profile/templates/user.html:892
 msgid "left"
-msgstr ""
+msgstr "übrig"
 
 #: frontend/templates/challenge_detail.html:780
 msgid "Leave this challenge? Your contributions are preserved."
-msgstr ""
+msgstr "Diese Challenge verlassen? Deine Beiträge bleiben erhalten."
 
 #: frontend/templates/contact.html:35 frontend/templates/index.html:943
 msgid "Contact Us"
@@ -590,24 +590,24 @@ msgstr "Zu den Stapeln"
 #: frontend/templates/gettask.html:220 user_profile/templates/user.html:802
 #: user_profile/templates/user.html:807 user_profile/templates/user.html:812
 msgid "of"
-msgstr ""
+msgstr "von"
 
 #: frontend/templates/gettask.html:223
 msgid "Leader"
-msgstr ""
+msgstr "Spitzenreiter"
 
 #: frontend/templates/gettask.html:225
 msgid "You are leading!"
-msgstr ""
+msgstr "Du führst!"
 
 #: frontend/templates/gettask.html:242
 msgid "Replay tutorial"
-msgstr ""
+msgstr "Tutorial wiederholen"
 
 #: frontend/templates/gettask.html:336
 #: venv/lib/python3.12/site-packages/django/forms/widgets.py:794
 msgid "Unknown"
-msgstr ""
+msgstr "Unbekannt"
 
 #: frontend/templates/gettask.html:369
 msgid "Date"
@@ -688,7 +688,7 @@ msgstr ""
 
 #: frontend/templates/gettask.html:443
 msgid "Dismiss"
-msgstr ""
+msgstr "Schließen"
 
 #: frontend/templates/gettask.html:445
 msgid "Start locating"
@@ -700,15 +700,15 @@ msgstr "Georeferenzierung!"
 
 #: frontend/templates/gettask.html:478
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: frontend/templates/gettask.html:491
 msgid "Show photo metadata"
-msgstr ""
+msgstr "Foto-Metadaten anzeigen"
 
 #: frontend/templates/gettask.html:501
 msgid "Image adjustments"
-msgstr ""
+msgstr "Bildanpassungen"
 
 #: frontend/templates/gettask.html:505
 msgid "Brightness"
@@ -732,7 +732,7 @@ msgstr "Zurücksetzen"
 
 #: frontend/templates/gettask.html:555
 msgid "Try Server"
-msgstr ""
+msgstr "Test-Server"
 
 #: frontend/templates/gettask.html:556
 msgid "Submit"
@@ -744,75 +744,75 @@ msgstr "Überspringen"
 
 #: frontend/templates/gettask.html:576
 msgid "Welcome to Lost At Night!"
-msgstr ""
+msgstr "Willkommen bei Lost At Night!"
 
 #: frontend/templates/gettask.html:577
 msgid ""
 "This is a real photo taken from the International Space Station. Your job is "
 "to figure out where on Earth it was taken — and we will guide you through it "
 "step by step."
-msgstr ""
+msgstr "Dies ist ein echtes Foto, das von der Internationalen Raumstation aufgenommen wurde. Deine Aufgabe ist es herauszufinden, wo auf der Erde es entstanden ist — und wir leiten dich Schritt für Schritt an."
 
 #: frontend/templates/gettask.html:578
 msgid "Find the area on the map"
-msgstr ""
+msgstr "Region auf der Karte finden"
 
 #: frontend/templates/gettask.html:579
 msgid ""
 "Pan and zoom this map to the region you think the photo shows. The crew "
 "metadata gives you a hint about where to look."
-msgstr ""
+msgstr "Verschiebe und zoome diese Karte zu der Region, die das Foto deiner Meinung nach zeigt. Die Crew-Metadaten geben dir einen Hinweis, wo du suchen solltest."
 
 #: frontend/templates/gettask.html:580
 msgid "Explore the photo"
-msgstr ""
+msgstr "Foto erkunden"
 
 #: frontend/templates/gettask.html:581
 msgid ""
 "Drag with the left mouse button to pan, use the wheel to zoom in and out, "
 "and hold the right mouse button to rotate. Take your time exploring the "
 "image."
-msgstr ""
+msgstr "Mit der linken Maustaste ziehen, um zu schwenken, mit dem Mausrad zoomen und mit gedrückter rechter Maustaste drehen. Nimm dir Zeit, das Bild zu erkunden."
 
 #: frontend/templates/gettask.html:582
 msgid "Adjust brightness and filters"
-msgstr ""
+msgstr "Helligkeit und Filter anpassen"
 
 #: frontend/templates/gettask.html:583
 msgid ""
 "Night photos can be hard to read. Use these sliders to tweak brightness, "
 "contrast, gamma and saturation — perfect for revealing faint coastlines or "
 "city lights. Hit Reset to start over."
-msgstr ""
+msgstr "Nachtfotos sind manchmal schwer zu lesen. Mit diesen Reglern kannst du Helligkeit, Kontrast, Gamma und Sättigung anpassen — ideal, um schwache Küstenlinien oder Stadtlichter sichtbar zu machen. Mit Zurücksetzen fängst du neu an."
 
 #: frontend/templates/gettask.html:584
 msgid "Pick a recognisable point on the photo"
-msgstr ""
+msgstr "Erkennbaren Punkt auf dem Foto auswählen"
 
 #: frontend/templates/gettask.html:585
 msgid ""
 "Click a clearly identifiable feature on the photo — a coastline, a city, an "
 "island."
-msgstr ""
+msgstr "Klicke auf ein klar erkennbares Merkmal auf dem Foto — eine Küstenlinie, eine Stadt, eine Insel."
 
 #: frontend/templates/gettask.html:586
 msgid "Match it on the map"
-msgstr ""
+msgstr "Auf der Karte zuordnen"
 
 #: frontend/templates/gettask.html:587
 msgid "Now click the same place on the map. That pair is one control point."
-msgstr ""
+msgstr "Klicke nun auf denselben Ort auf der Karte. Dieses Paar ist ein Kontrollpunkt."
 
 #: frontend/templates/gettask.html:588
 msgid "Submit and earn points!"
-msgstr ""
+msgstr "Absenden und Punkte verdienen!"
 
 #: frontend/templates/gettask.html:589
 msgid ""
 "Once you have at least 3 control points hit Submit — but 7 or more is "
 "recommended for better accuracy. Every control point counts towards your "
 "ranking."
-msgstr ""
+msgstr "Sobald du mindestens 3 Kontrollpunkte hast, klicke auf Abschicken — empfohlen sind jedoch 7 oder mehr für bessere Genauigkeit. Jeder Kontrollpunkt zählt für deine Platzierung."
 
 #: frontend/templates/gettask.html:590
 msgid ""
@@ -821,36 +821,36 @@ msgstr "Tipp: Erstelle ein Konto, um deinen Fortschritt zu speichern und in der 
 
 #: frontend/templates/gettask.html:592
 msgid "Prefer to watch a video instead?"
-msgstr ""
+msgstr "Möchtest du lieber ein Video sehen?"
 
 #: frontend/templates/gettask.html:593
 msgid "Want a deeper walkthrough? Watch the full video tutorial."
-msgstr ""
+msgstr "Möchtest du eine ausführlichere Anleitung? Sieh dir das vollständige Video-Tutorial an."
 
 #: frontend/templates/gettask.html:594
 msgid "Watch the video tutorial"
-msgstr ""
+msgstr "Video-Tutorial ansehen"
 
 #: frontend/templates/gettask.html:595
 msgid "Next"
-msgstr ""
+msgstr "Weiter"
 
 #: frontend/templates/gettask.html:596
 msgid "Back"
-msgstr ""
+msgstr "Zurück"
 
 #: frontend/templates/gettask.html:597
 msgid "Got it!"
-msgstr ""
+msgstr "Verstanden!"
 
 #: frontend/templates/index.html:720
 #, python-format
 msgid "Welcome back, <span class=\"accent\">%(name)s</span>."
-msgstr ""
+msgstr "Willkommen zurück, <span class=\"accent\">%(name)s</span>."
 
 #: frontend/templates/index.html:722
 msgid "Help us locate the night from <span class=\"accent\">orbit</span>."
-msgstr ""
+msgstr "Hilf uns, die Nacht aus dem <span class=\"accent\">Orbit</span> zu lokalisieren."
 
 #: frontend/templates/index.html:726
 msgid "Help map Earth's lights from space and combat light pollution"
@@ -864,7 +864,7 @@ msgstr "Mit dem Beitragen beginnen"
 
 #: frontend/templates/index.html:735
 msgid "Watch how it works"
-msgstr ""
+msgstr "Sieh, wie es funktioniert"
 
 #: frontend/templates/index.html:741
 msgid "Control points placed"
@@ -872,7 +872,7 @@ msgstr "Kontrollpunkte"
 
 #: frontend/templates/index.html:745
 msgid "Active citizens"
-msgstr ""
+msgstr "Aktive Bürger"
 
 #: frontend/templates/index.html:749
 msgid "Photos located"
@@ -937,15 +937,15 @@ msgstr ""
 
 #: frontend/templates/index.html:813
 msgid "Active"
-msgstr ""
+msgstr "Aktiv"
 
 #: frontend/templates/index.html:820
 msgid "Upcoming"
-msgstr ""
+msgstr "Demnächst"
 
 #: frontend/templates/index.html:834
 msgid "Finished"
-msgstr ""
+msgstr "Beendet"
 
 #: frontend/templates/index.html:846
 msgid "Available Batches"
@@ -998,7 +998,7 @@ msgstr "Abgeschlossen"
 
 #: frontend/templates/index.html:926
 msgid "Avg / user"
-msgstr ""
+msgstr "Ø / Nutzer"
 
 #: frontend/templates/index.html:930 user_profile/templates/user.html:786
 #: user_profile/templates/user.html:833
@@ -1295,7 +1295,7 @@ msgid ""
 "<strong>Data controller:</strong> Fundación Ibercivis (NIF G-99409492), C/ "
 "Mariano Esquillor s/n, 50018 Zaragoza, Spain. Contact: <a href=\"mailto:"
 "ethics@ibercivis.es\">ethics@ibercivis.es</a>."
-msgstr ""
+msgstr "<strong>Verantwortlicher:</strong> Fundación Ibercivis (NIF G-99409492), C/ Mariano Esquillor s/n, 50018 Zaragoza, Spanien. Kontakt: <a href=\"mailto:ethics@ibercivis.es\">ethics@ibercivis.es</a>."
 
 #: frontend/templates/legal/privacy.html:16
 msgid "2. What data we process"
@@ -1436,7 +1436,7 @@ msgstr ""
 msgid ""
 "OpenStreetMap Nominatim (reverse geocoding of ISS image coordinates) — your "
 "IP address is shared only when the map widget is loaded."
-msgstr ""
+msgstr "OpenStreetMap Nominatim (Reverse Geocoding der ISS-Bildkoordinaten) — deine IP-Adresse wird nur geteilt, wenn das Karten-Widget geladen wird."
 
 #: frontend/templates/legal/privacy.html:51
 msgid "6. International transfers"
@@ -1547,7 +1547,7 @@ msgstr "Nutzungsbedingungen"
 msgid ""
 "Lost at Night — citizen-science platform for measuring light pollution from "
 "the International Space Station."
-msgstr ""
+msgstr "Lost at Night — Bürgerwissenschaftsplattform zur Messung von Lichtverschmutzung von der Internationalen Raumstation aus."
 
 #: frontend/templates/legal/terms.html:10
 msgid "1. Acceptance"
@@ -1647,7 +1647,7 @@ msgid ""
 "The service is provided “as is”, without warranty of any kind. To the "
 "maximum extent permitted by law, the operator is not liable for incidental "
 "or consequential damages arising from use of the platform."
-msgstr ""
+msgstr "Der Dienst wird „wie besehen\" und ohne jegliche Gewährleistung bereitgestellt. Im gesetzlich zulässigen Höchstmaß haftet der Betreiber nicht für beiläufige oder Folgeschäden, die aus der Nutzung der Plattform entstehen."
 
 #: frontend/templates/legal/terms.html:34
 msgid "7. Termination"

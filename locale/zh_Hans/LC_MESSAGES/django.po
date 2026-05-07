@@ -19,12 +19,12 @@ msgstr ""
 
 #: frontend/templates/_challenge_card.html:22
 msgid "Enrolled"
-msgstr ""
+msgstr "已加入"
 
 #: frontend/templates/_challenge_card.html:31
 #: frontend/templates/challenge_detail.html:460
 msgid "General"
-msgstr ""
+msgstr "通用"
 
 #: frontend/templates/_challenge_card.html:36
 #: frontend/templates/challenge_detail.html:463
@@ -34,7 +34,7 @@ msgstr "参与者"
 #: frontend/templates/_challenge_card.html:53
 #: frontend/templates/gettask.html:221 frontend/templates/index.html:827
 msgid "Paused"
-msgstr ""
+msgstr "已暂停"
 
 #: frontend/templates/_challenge_card.html:55
 msgid "Complete"
@@ -42,16 +42,16 @@ msgstr "已完成"
 
 #: frontend/templates/_challenge_card.html:60
 msgid "Continue"
-msgstr ""
+msgstr "继续"
 
 #: frontend/templates/_challenge_card.html:65
 msgid "Review"
-msgstr ""
+msgstr "查看"
 
 #: frontend/templates/_challenge_card.html:71
 #: frontend/templates/_challenge_card.html:76
 msgid "Join"
-msgstr ""
+msgstr "加入"
 
 #: frontend/templates/_cookie_banner.html:204
 msgid "Your cookie preferences"
@@ -130,7 +130,7 @@ msgstr "此应用程序旨在帮助对国际空间站（ISS）宇航员拍摄的
 
 #: frontend/templates/_footer.html:175
 msgid "Flag of the European Union"
-msgstr ""
+msgstr "欧盟旗帜"
 
 #: frontend/templates/_footer.html:177
 msgid ""
@@ -165,7 +165,7 @@ msgstr "挑战"
 
 #: frontend/templates/_footer.html:189
 msgid "Video tutorial"
-msgstr ""
+msgstr "视频教程"
 
 #: frontend/templates/_footer.html:190 frontend/templates/_footer.html:196
 #: templates/account/login.html:280 templates/account/logout.html:161
@@ -228,18 +228,18 @@ msgstr "您之前的活动挑战已自动退出。"
 #: frontend/templates/_topbar.html:211
 #: frontend/templates/challenge_detail.html:511
 msgid "Bronze"
-msgstr ""
+msgstr "铜级"
 
 #: frontend/templates/_topbar.html:212
 #: frontend/templates/challenge_detail.html:512
 msgid "Silver"
-msgstr ""
+msgstr "银级"
 
 #: frontend/templates/_topbar.html:213
 #: frontend/templates/challenge_detail.html:513
 #: frontend/templates/challenge_detail.html:555
 msgid "Gold"
-msgstr ""
+msgstr "金级"
 
 #: frontend/templates/_topbar.html:214
 msgid "Batch"
@@ -303,7 +303,7 @@ msgstr "登录"
 
 #: frontend/templates/challenge_detail.html:441
 msgid "All challenges"
-msgstr ""
+msgstr "所有挑战"
 
 #: frontend/templates/challenge_detail.html:458
 msgid "Batch:"
@@ -311,7 +311,7 @@ msgstr "批次："
 
 #: frontend/templates/challenge_detail.html:477
 msgid "You are enrolled"
-msgstr ""
+msgstr "您已加入"
 
 #: frontend/templates/challenge_detail.html:481
 msgid "Leave challenge"
@@ -319,28 +319,28 @@ msgstr "离开挑战"
 
 #: frontend/templates/challenge_detail.html:485
 msgid "This challenge has finished."
-msgstr ""
+msgstr "本挑战已结束。"
 
 #: frontend/templates/challenge_detail.html:488
 msgid "Re-joining preserves your previous CPs."
-msgstr ""
+msgstr "重新加入会保留您之前的控制点。"
 
 #: frontend/templates/challenge_detail.html:491
 msgid "Join challenge"
-msgstr ""
+msgstr "加入挑战"
 
 #: frontend/templates/challenge_detail.html:496
 msgid "Log in to join"
-msgstr ""
+msgstr "登录以加入"
 
 #: frontend/templates/challenge_detail.html:504
 #: frontend/templates/gettask.html:222
 msgid "Group progress"
-msgstr ""
+msgstr "团队进度"
 
 #: frontend/templates/challenge_detail.html:522
 msgid "Total CPs"
-msgstr ""
+msgstr "总CP"
 
 #: frontend/templates/challenge_detail.html:529
 msgid "Participants"
@@ -348,23 +348,23 @@ msgstr "参与者"
 
 #: frontend/templates/challenge_detail.html:540
 msgid "Ended"
-msgstr ""
+msgstr "已结束"
 
 #: frontend/templates/challenge_detail.html:541
 msgid "Days to start"
-msgstr ""
+msgstr "距开始天数"
 
 #: frontend/templates/challenge_detail.html:542
 msgid "Days left"
-msgstr ""
+msgstr "剩余天数"
 
 #: frontend/templates/challenge_detail.html:553
 msgid "to"
-msgstr ""
+msgstr "至"
 
 #: frontend/templates/challenge_detail.html:556
 msgid "Gold reached!"
-msgstr ""
+msgstr "已达金级！"
 
 #: frontend/templates/challenge_detail.html:568
 msgid "Your performance"
@@ -378,16 +378,16 @@ msgstr "您的排名"
 #: frontend/templates/challenge_detail.html:576
 #: user_profile/templates/user.html:879
 msgid "Your CPs"
-msgstr ""
+msgstr "您的CP"
 
 #: frontend/templates/challenge_detail.html:581
 msgid "of group total"
-msgstr ""
+msgstr "团队总数中"
 
 #: frontend/templates/challenge_detail.html:598
 #: frontend/templates/gettask.html:224
 msgid "Leaderboard"
-msgstr ""
+msgstr "排行榜"
 
 #: frontend/templates/challenge_detail.html:601
 #: frontend/templates/challenge_detail.html:651
@@ -423,7 +423,7 @@ msgstr "第 {p} 页，共 {t} 页"
 
 #: frontend/templates/challenge_detail.html:653
 msgid "No participants yet — be the first one!"
-msgstr ""
+msgstr "暂无参与者 — 成为第一人！"
 
 #: frontend/templates/challenge_detail.html:654
 msgid "Could not load leaderboard."
@@ -431,7 +431,7 @@ msgstr "无法加载排行榜。"
 
 #: frontend/templates/challenge_detail.html:655
 msgid "you"
-msgstr ""
+msgstr "您"
 
 #: frontend/templates/challenge_detail.html:656
 #: user_profile/templates/user.html:992
@@ -440,16 +440,16 @@ msgstr "隐藏用户"
 
 #: frontend/templates/challenge_detail.html:657
 msgid "active"
-msgstr ""
+msgstr "进行中"
 
 #: frontend/templates/challenge_detail.html:658
 #: user_profile/templates/user.html:892
 msgid "left"
-msgstr ""
+msgstr "剩余"
 
 #: frontend/templates/challenge_detail.html:780
 msgid "Leave this challenge? Your contributions are preserved."
-msgstr ""
+msgstr "离开此挑战？您的贡献会被保留。"
 
 #: frontend/templates/contact.html:35 frontend/templates/index.html:943
 msgid "Contact Us"
@@ -582,24 +582,24 @@ msgstr "前往批次"
 #: frontend/templates/gettask.html:220 user_profile/templates/user.html:802
 #: user_profile/templates/user.html:807 user_profile/templates/user.html:812
 msgid "of"
-msgstr ""
+msgstr "/"
 
 #: frontend/templates/gettask.html:223
 msgid "Leader"
-msgstr ""
+msgstr "领先者"
 
 #: frontend/templates/gettask.html:225
 msgid "You are leading!"
-msgstr ""
+msgstr "您正领先！"
 
 #: frontend/templates/gettask.html:242
 msgid "Replay tutorial"
-msgstr ""
+msgstr "重播教程"
 
 #: frontend/templates/gettask.html:336
 #: venv/lib/python3.12/site-packages/django/forms/widgets.py:794
 msgid "Unknown"
-msgstr ""
+msgstr "未知"
 
 #: frontend/templates/gettask.html:369
 msgid "Date"
@@ -671,11 +671,11 @@ msgstr "小时"
 msgid ""
 "You're participating anonymously — <a href=\"%(url)s\">create an account</a> "
 "to save your progress and appear on the leaderboard."
-msgstr ""
+msgstr "您正在匿名参与 — <a href=\"%(url)s\">创建账户</a>以保存进度并出现在排行榜上。"
 
 #: frontend/templates/gettask.html:443
 msgid "Dismiss"
-msgstr ""
+msgstr "关闭"
 
 #: frontend/templates/gettask.html:445
 msgid "Start locating"
@@ -687,15 +687,15 @@ msgstr "地理配准！"
 
 #: frontend/templates/gettask.html:478
 msgid "OK"
-msgstr ""
+msgstr "好"
 
 #: frontend/templates/gettask.html:491
 msgid "Show photo metadata"
-msgstr ""
+msgstr "显示照片元数据"
 
 #: frontend/templates/gettask.html:501
 msgid "Image adjustments"
-msgstr ""
+msgstr "图像调整"
 
 #: frontend/templates/gettask.html:505
 msgid "Brightness"
@@ -719,7 +719,7 @@ msgstr "重置"
 
 #: frontend/templates/gettask.html:555
 msgid "Try Server"
-msgstr ""
+msgstr "测试服务器"
 
 #: frontend/templates/gettask.html:556
 msgid "Submit"
@@ -731,75 +731,75 @@ msgstr "跳过"
 
 #: frontend/templates/gettask.html:576
 msgid "Welcome to Lost At Night!"
-msgstr ""
+msgstr "欢迎来到 Lost At Night！"
 
 #: frontend/templates/gettask.html:577
 msgid ""
 "This is a real photo taken from the International Space Station. Your job is "
 "to figure out where on Earth it was taken — and we will guide you through it "
 "step by step."
-msgstr ""
+msgstr "这是从国际空间站拍摄的真实照片。您的任务是确定它是在地球上的哪个位置拍摄的 — 我们将一步步引导您完成。"
 
 #: frontend/templates/gettask.html:578
 msgid "Find the area on the map"
-msgstr ""
+msgstr "在地图上找到区域"
 
 #: frontend/templates/gettask.html:579
 msgid ""
 "Pan and zoom this map to the region you think the photo shows. The crew "
 "metadata gives you a hint about where to look."
-msgstr ""
+msgstr "平移并缩放此地图到您认为照片显示的区域。机组元数据为您提供查找位置的线索。"
 
 #: frontend/templates/gettask.html:580
 msgid "Explore the photo"
-msgstr ""
+msgstr "探索照片"
 
 #: frontend/templates/gettask.html:581
 msgid ""
 "Drag with the left mouse button to pan, use the wheel to zoom in and out, "
 "and hold the right mouse button to rotate. Take your time exploring the "
 "image."
-msgstr ""
+msgstr "按住鼠标左键拖动平移，使用滚轮缩放，按住右键旋转。慢慢探索这张图像。"
 
 #: frontend/templates/gettask.html:582
 msgid "Adjust brightness and filters"
-msgstr ""
+msgstr "调整亮度和滤镜"
 
 #: frontend/templates/gettask.html:583
 msgid ""
 "Night photos can be hard to read. Use these sliders to tweak brightness, "
 "contrast, gamma and saturation — perfect for revealing faint coastlines or "
 "city lights. Hit Reset to start over."
-msgstr ""
+msgstr "夜间照片可能不易识别。使用这些滑块调整亮度、对比度、伽马和饱和度 — 非常适合显示模糊的海岸线或城市灯光。点击重置可重新开始。"
 
 #: frontend/templates/gettask.html:584
 msgid "Pick a recognisable point on the photo"
-msgstr ""
+msgstr "在照片上选择一个明显的点"
 
 #: frontend/templates/gettask.html:585
 msgid ""
 "Click a clearly identifiable feature on the photo — a coastline, a city, an "
 "island."
-msgstr ""
+msgstr "在照片上点击一个明显可识别的特征 — 海岸线、城市或岛屿。"
 
 #: frontend/templates/gettask.html:586
 msgid "Match it on the map"
-msgstr ""
+msgstr "在地图上匹配"
 
 #: frontend/templates/gettask.html:587
 msgid "Now click the same place on the map. That pair is one control point."
-msgstr ""
+msgstr "现在在地图上点击相同位置。这一对就是一个控制点。"
 
 #: frontend/templates/gettask.html:588
 msgid "Submit and earn points!"
-msgstr ""
+msgstr "提交并赢取积分！"
 
 #: frontend/templates/gettask.html:589
 msgid ""
 "Once you have at least 3 control points hit Submit — but 7 or more is "
 "recommended for better accuracy. Every control point counts towards your "
 "ranking."
-msgstr ""
+msgstr "当您有至少 3 个控制点时点击提交 — 但建议 7 个或更多以获得更高精度。每个控制点都会计入您的排名。"
 
 #: frontend/templates/gettask.html:590
 msgid ""
@@ -808,36 +808,36 @@ msgstr "提示：创建账户以保存您的进度并出现在排行榜上。"
 
 #: frontend/templates/gettask.html:592
 msgid "Prefer to watch a video instead?"
-msgstr ""
+msgstr "想看视频代替？"
 
 #: frontend/templates/gettask.html:593
 msgid "Want a deeper walkthrough? Watch the full video tutorial."
-msgstr ""
+msgstr "想要更深入的演示？观看完整的视频教程。"
 
 #: frontend/templates/gettask.html:594
 msgid "Watch the video tutorial"
-msgstr ""
+msgstr "观看视频教程"
 
 #: frontend/templates/gettask.html:595
 msgid "Next"
-msgstr ""
+msgstr "下一步"
 
 #: frontend/templates/gettask.html:596
 msgid "Back"
-msgstr ""
+msgstr "返回"
 
 #: frontend/templates/gettask.html:597
 msgid "Got it!"
-msgstr ""
+msgstr "明白了！"
 
 #: frontend/templates/index.html:720
 #, python-format
 msgid "Welcome back, <span class=\"accent\">%(name)s</span>."
-msgstr ""
+msgstr "欢迎回来，<span class=\"accent\">%(name)s</span>。"
 
 #: frontend/templates/index.html:722
 msgid "Help us locate the night from <span class=\"accent\">orbit</span>."
-msgstr ""
+msgstr "帮助我们从<span class=\"accent\">轨道</span>定位夜晚。"
 
 #: frontend/templates/index.html:726
 msgid "Help map Earth's lights from space and combat light pollution"
@@ -849,7 +849,7 @@ msgstr "开始贡献"
 
 #: frontend/templates/index.html:735
 msgid "Watch how it works"
-msgstr ""
+msgstr "了解工作原理"
 
 #: frontend/templates/index.html:741
 msgid "Control points placed"
@@ -857,7 +857,7 @@ msgstr "控制点"
 
 #: frontend/templates/index.html:745
 msgid "Active citizens"
-msgstr ""
+msgstr "活跃公民"
 
 #: frontend/templates/index.html:749
 msgid "Photos located"
@@ -912,15 +912,15 @@ msgstr "加入一项挑战，与社区一起达成共同目标。"
 
 #: frontend/templates/index.html:813
 msgid "Active"
-msgstr ""
+msgstr "进行中"
 
 #: frontend/templates/index.html:820
 msgid "Upcoming"
-msgstr ""
+msgstr "即将开始"
 
 #: frontend/templates/index.html:834
 msgid "Finished"
-msgstr ""
+msgstr "已结束"
 
 #: frontend/templates/index.html:846
 msgid "Available Batches"
@@ -973,7 +973,7 @@ msgstr "已完成"
 
 #: frontend/templates/index.html:926
 msgid "Avg / user"
-msgstr ""
+msgstr "平均 / 用户"
 
 #: frontend/templates/index.html:930 user_profile/templates/user.html:786
 #: user_profile/templates/user.html:833
@@ -1254,7 +1254,7 @@ msgid ""
 "<strong>Data controller:</strong> Fundación Ibercivis (NIF G-99409492), C/ "
 "Mariano Esquillor s/n, 50018 Zaragoza, Spain. Contact: <a href=\"mailto:"
 "ethics@ibercivis.es\">ethics@ibercivis.es</a>."
-msgstr ""
+msgstr "<strong>数据控制者：</strong> Fundación Ibercivis (NIF G-99409492), C/ Mariano Esquillor s/n, 50018 萨拉戈萨, 西班牙。联系方式：<a href=\"mailto:ethics@ibercivis.es\">ethics@ibercivis.es</a>。"
 
 #: frontend/templates/legal/privacy.html:16
 msgid "2. What data we process"
@@ -1386,7 +1386,7 @@ msgstr "事务邮件（验证、密码重置）及可选通讯邮件的发送服
 msgid ""
 "OpenStreetMap Nominatim (reverse geocoding of ISS image coordinates) — your "
 "IP address is shared only when the map widget is loaded."
-msgstr ""
+msgstr "OpenStreetMap Nominatim（ISS 图像坐标的反向地理编码） — 仅在加载地图小部件时分享您的 IP 地址。"
 
 #: frontend/templates/legal/privacy.html:51
 msgid "6. International transfers"
@@ -1486,7 +1486,7 @@ msgstr "使用条款"
 msgid ""
 "Lost at Night — citizen-science platform for measuring light pollution from "
 "the International Space Station."
-msgstr ""
+msgstr "Lost at Night — 一个公民科学平台，从国际空间站测量光污染。"
 
 #: frontend/templates/legal/terms.html:10
 msgid "1. Acceptance"
@@ -1575,7 +1575,7 @@ msgid ""
 "The service is provided “as is”, without warranty of any kind. To the "
 "maximum extent permitted by law, the operator is not liable for incidental "
 "or consequential damages arising from use of the platform."
-msgstr ""
+msgstr "本服务按\"原样\"提供，不附带任何形式的保证。在法律允许的最大范围内，运营方不对因使用平台而产生的附带或间接损害承担责任。"
 
 #: frontend/templates/legal/terms.html:34
 msgid "7. Termination"
