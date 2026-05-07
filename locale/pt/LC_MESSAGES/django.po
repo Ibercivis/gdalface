@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-24 16:47+0000\n"
+"POT-Creation-Date: 2026-05-03 08:48+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Portuguese <pt@li.org>\n"
@@ -17,7 +17,116 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: frontend/templates/_footer.html:10
+#: frontend/templates/_challenge_card.html:22
+msgid "Enrolled"
+msgstr ""
+
+#: frontend/templates/_challenge_card.html:31
+#: frontend/templates/challenge_detail.html:460
+msgid "General"
+msgstr ""
+
+#: frontend/templates/_challenge_card.html:36
+#: frontend/templates/challenge_detail.html:463
+msgid "participants"
+msgstr "participantes"
+
+#: frontend/templates/_challenge_card.html:53
+#: frontend/templates/gettask.html:221 frontend/templates/index.html:827
+msgid "Paused"
+msgstr ""
+
+#: frontend/templates/_challenge_card.html:55
+msgid "Complete"
+msgstr "Concluído"
+
+#: frontend/templates/_challenge_card.html:60
+msgid "Continue"
+msgstr ""
+
+#: frontend/templates/_challenge_card.html:65
+msgid "Review"
+msgstr ""
+
+#: frontend/templates/_challenge_card.html:71
+#: frontend/templates/_challenge_card.html:76
+msgid "Join"
+msgstr ""
+
+#: frontend/templates/_cookie_banner.html:204
+msgid "Your cookie preferences"
+msgstr "As suas preferências de cookies"
+
+#: frontend/templates/_cookie_banner.html:208
+msgid ""
+"We use strictly-necessary cookies to keep the site working. With your "
+"consent we may also store functional preferences (language, banner state) "
+"and, in the future, anonymous analytics. Read the <a href=\"/cookies/"
+"\">cookies policy</a>."
+msgstr ""
+"Usamos cookies estritamente necessários para o funcionamento do site. Com o "
+"seu consentimento, podemos também guardar preferências funcionais (idioma, "
+"estado do banner) e, no futuro, estatísticas anónimas. Leia a <a href=\"/"
+"cookies/\">política de cookies</a>."
+
+#: frontend/templates/_cookie_banner.html:213
+msgid "Essentials only"
+msgstr "Apenas essenciais"
+
+#: frontend/templates/_cookie_banner.html:216
+msgid "Customise"
+msgstr "Personalizar"
+
+#: frontend/templates/_cookie_banner.html:219
+msgid "Accept all"
+msgstr "Aceitar todas"
+
+#: frontend/templates/_cookie_banner.html:226
+msgid "Strictly necessary"
+msgstr "Estritamente necessários"
+
+#: frontend/templates/_cookie_banner.html:227
+msgid "Required for sign-in, security and basic functionality. Always on."
+msgstr ""
+"Necessários para iniciar sessão, segurança e funcionalidades básicas. Sempre "
+"ativos.Necessários para iniciar sessão, segurança e funcionalidades básicas. "
+"Sempre ativos."
+
+#: frontend/templates/_cookie_banner.html:229
+msgid "Always on"
+msgstr "Sempre ativos"
+
+#: frontend/templates/_cookie_banner.html:234
+msgid "Functional"
+msgstr "Funcionais"
+
+#: frontend/templates/_cookie_banner.html:235
+msgid "Remembers your language and your cookie banner choice."
+msgstr "Memoriza o seu idioma e a sua escolha no banner de cookies."
+
+#: frontend/templates/_cookie_banner.html:245
+msgid "Analytics"
+msgstr "Análise"
+
+#: frontend/templates/_cookie_banner.html:246
+msgid "Aggregated, anonymous statistics. Currently disabled."
+msgstr "Estatísticas agregadas e anónimas. Atualmente desativadas."
+
+#: frontend/templates/_cookie_banner.html:256
+msgid "Save my choices"
+msgstr "Guardar as minhas escolhas"
+
+#: frontend/templates/_cookie_banner.html:262
+msgid "Cookie preferences"
+msgstr "Preferências de cookies"
+
+#: frontend/templates/_footer.html:168 templates/account/login.html:279
+#: templates/account/logout.html:160 templates/account/password_reset.html:207
+#: templates/account/signup.html:325
+msgid "About"
+msgstr ""
+
+#: frontend/templates/_footer.html:171
 msgid ""
 "This application is designed to help georeference images taken by astronauts "
 "aboard the International Space Station (ISS)."
@@ -25,7 +134,11 @@ msgstr ""
 "Esta aplicação foi concebida para ajudar a georreferenciar imagens tiradas "
 "por astronautas a bordo da Estação Espacial Internacional (ISS)."
 
-#: frontend/templates/_footer.html:17
+#: frontend/templates/_footer.html:175
+msgid "Flag of the European Union"
+msgstr ""
+
+#: frontend/templates/_footer.html:177
 msgid ""
 "Funded by the European Union under the Horizon Europe Programme, Grant "
 "Agreement No. 101135308 (PLAN-B). Research and Innovation Action | HORIZON-"
@@ -35,291 +148,744 @@ msgstr ""
 "Acordo de Subvenção n.º 101135308 (PLAN-B). Ação de Investigação e Inovação "
 "| HORIZON-CL6-2023-BIODIV-01."
 
-#: frontend/templates/_footer.html:24
+#: frontend/templates/_footer.html:183
 msgid "Quick Links"
 msgstr "Links rápidos"
 
-#: frontend/templates/_footer.html:26 frontend/templates/_topbar.html:102
+#: frontend/templates/_footer.html:185 frontend/templates/_topbar.html:240
 msgid "Home"
 msgstr "Início"
 
-#: frontend/templates/_footer.html:27 frontend/templates/_topbar.html:103
+#: frontend/templates/_footer.html:186 frontend/templates/_topbar.html:242
 msgid "Batches"
 msgstr "Lotes"
 
-#: frontend/templates/_footer.html:28 frontend/templates/_topbar.html:105
-#: frontend/templates/batchs.html:38 frontend/templates/index.html:496
+#: frontend/templates/_footer.html:187 frontend/templates/_topbar.html:244
+#: frontend/templates/index.html:856
 msgid "Participate"
 msgstr "Participar"
 
-#: frontend/templates/_footer.html:29 frontend/templates/_footer.html:35
-#: frontend/templates/_topbar.html:106
+#: frontend/templates/_footer.html:188 frontend/templates/_topbar.html:241
+#: frontend/templates/index.html:806 frontend/templates/index.html:934
+msgid "Challenges"
+msgstr "Desafios"
+
+#: frontend/templates/_footer.html:189
+msgid "Video tutorial"
+msgstr ""
+
+#: frontend/templates/_footer.html:190 frontend/templates/_footer.html:196
+#: templates/account/login.html:280 templates/account/logout.html:161
+#: templates/account/password_reset.html:208 templates/account/signup.html:326
 msgid "Contact"
 msgstr "Contacto"
 
-#: frontend/templates/_footer.html:81 frontend/templates/gettask.html:221
-#: frontend/templates/index.html:687
+#: frontend/templates/_footer.html:216 frontend/templates/gettask.html:563
+#: frontend/templates/index.html:1021
 msgid "Developed by <b>Ibercivis</b>"
 msgstr "Desenvolvido por <b>Ibercivis</b>"
 
-#: frontend/templates/_footer.html:91
+#: frontend/templates/_footer.html:224
+msgid "Legal"
+msgstr "Legal"
+
+#: frontend/templates/_footer.html:225
+msgid "Privacy"
+msgstr "Privacidade"
+
+#: frontend/templates/_footer.html:226
+msgid "Terms"
+msgstr "Termos"
+
+#: frontend/templates/_footer.html:227
+msgid "Cookies"
+msgstr "Cookies"
+
+#: frontend/templates/_footer.html:228 frontend/templates/legal/legal.html:4
+#: frontend/templates/legal/legal.html:7
+msgid "Legal notice"
+msgstr "Aviso legal"
+
+#: frontend/templates/_footer.html:230
 msgid "© 2025 Lost at Night. All rights reserved."
 msgstr "© 2025 Lost at Night. Todos os direitos reservados."
 
-#: frontend/templates/_topbar.html:95
-msgid "Toggle navigation"
-msgstr "Alternar navegação"
+#: frontend/templates/_topbar.html:205 frontend/templates/_topbar.html:254
+#: frontend/templates/gettask.html:226 user_profile/templates/user.html:877
+msgid "Challenge"
+msgstr "Desafio"
 
-#: frontend/templates/_topbar.html:104
+#: frontend/templates/_topbar.html:207
+msgid "Joined"
+msgstr "Inscrito"
+
+#: frontend/templates/_topbar.html:208
+msgid "You’re in!"
+msgstr "Está inscrito!"
+
+#: frontend/templates/_topbar.html:209
+#, python-brace-format
+msgid "You’re in {name}"
+msgstr "Está em {name}"
+
+#: frontend/templates/_topbar.html:210
+msgid "Your previous active challenge was automatically left."
+msgstr "O seu challenge ativo anterior foi automaticamente encerrado."
+
+#: frontend/templates/_topbar.html:211
+#: frontend/templates/challenge_detail.html:511
+msgid "Bronze"
+msgstr ""
+
+#: frontend/templates/_topbar.html:212
+#: frontend/templates/challenge_detail.html:512
+msgid "Silver"
+msgstr ""
+
+#: frontend/templates/_topbar.html:213
+#: frontend/templates/challenge_detail.html:513
+#: frontend/templates/challenge_detail.html:555
+msgid "Gold"
+msgstr ""
+
+#: frontend/templates/_topbar.html:214
+msgid "Batch"
+msgstr "Lote:"
+
+#: frontend/templates/_topbar.html:215
+msgid "Region defined"
+msgstr "Região definida"
+
+#: frontend/templates/_topbar.html:216
+msgid "images"
+msgstr "Imagens:"
+
+#: frontend/templates/_topbar.html:217 user_profile/templates/user.html:983
+msgid "tasks"
+msgstr "tarefas"
+
+#: frontend/templates/_topbar.html:218
+msgid "View challenge"
+msgstr "Ver desafio"
+
+#: frontend/templates/_topbar.html:219
+msgid "Start contributing"
+msgstr "Começar a Contribuir"
+
+#: frontend/templates/_topbar.html:221
+#: frontend/templates/challenge_detail.html:586
+msgid "Left"
+msgstr "Saiu"
+
+#: frontend/templates/_topbar.html:222
+msgid "You’ve left the challenge"
+msgstr "Saiu do challenge"
+
+#: frontend/templates/_topbar.html:223
+#, python-brace-format
+msgid "Your {n} CPs are kept; you can rejoin any time."
+msgstr ""
+"Os seus {n} CPs ficam guardados; pode voltar a inscrever-se a qualquer "
+"momento."
+
+#: frontend/templates/_topbar.html:224
+msgid "Browse challenges"
+msgstr "Explorar desafios"
+
+#: frontend/templates/_topbar.html:225 frontend/templates/gettask.html:67
+msgid "Go home"
+msgstr "Voltar ao início"
+
+#: frontend/templates/_topbar.html:243
 msgid "Statistics"
 msgstr "Estatísticas"
 
-#: frontend/templates/_topbar.html:109
-msgid "Your personal area"
-msgstr "A sua área pessoal"
+#: frontend/templates/_topbar.html:262 frontend/templates/gettask.html:230
+msgid "Your area"
+msgstr "A sua área"
 
-#: frontend/templates/_topbar.html:111
-msgid "Profile picture"
-msgstr "Foto de perfil"
-
-#: frontend/templates/_topbar.html:121
-msgid "Login"
+#: frontend/templates/_topbar.html:273 templates/account/login.html:10
+#: templates/account/login.html:340 templates/account/logout.html:203
+#: templates/account/password_reset.html:260 templates/account/signup.html:471
+msgid "Sign in"
 msgstr "Entrar"
 
-#: frontend/templates/batchs.html:44 frontend/templates/index.html:502
-msgid "Name:"
-msgstr "Nome:"
+#: frontend/templates/challenge_detail.html:441
+msgid "All challenges"
+msgstr ""
 
-#: frontend/templates/batchs.html:45 frontend/templates/index.html:503
-msgid "Images:"
-msgstr "Imagens:"
+#: frontend/templates/challenge_detail.html:458
+msgid "Batch:"
+msgstr "Lote:"
 
-#: frontend/templates/contact.html:35 frontend/templates/index.html:609
+#: frontend/templates/challenge_detail.html:477
+msgid "You are enrolled"
+msgstr ""
+
+#: frontend/templates/challenge_detail.html:481
+msgid "Leave challenge"
+msgstr "Sair do desafio"
+
+#: frontend/templates/challenge_detail.html:485
+msgid "This challenge has finished."
+msgstr ""
+
+#: frontend/templates/challenge_detail.html:488
+msgid "Re-joining preserves your previous CPs."
+msgstr ""
+
+#: frontend/templates/challenge_detail.html:491
+msgid "Join challenge"
+msgstr ""
+
+#: frontend/templates/challenge_detail.html:496
+msgid "Log in to join"
+msgstr ""
+
+#: frontend/templates/challenge_detail.html:504
+#: frontend/templates/gettask.html:222
+msgid "Group progress"
+msgstr ""
+
+#: frontend/templates/challenge_detail.html:522
+msgid "Total CPs"
+msgstr "Total de PC"
+
+#: frontend/templates/challenge_detail.html:529
+msgid "Participants"
+msgstr "Participantes"
+
+#: frontend/templates/challenge_detail.html:540
+msgid "Ended"
+msgstr ""
+
+#: frontend/templates/challenge_detail.html:541
+msgid "Days to start"
+msgstr ""
+
+#: frontend/templates/challenge_detail.html:542
+msgid "Days left"
+msgstr ""
+
+#: frontend/templates/challenge_detail.html:553
+msgid "to"
+msgstr ""
+
+#: frontend/templates/challenge_detail.html:556
+msgid "Gold reached!"
+msgstr ""
+
+#: frontend/templates/challenge_detail.html:568
+msgid "Your performance"
+msgstr "A sua área pessoal"
+
+#: frontend/templates/challenge_detail.html:572
+#: frontend/templates/gettask.html:219 user_profile/templates/user.html:880
+msgid "Your rank"
+msgstr "A sua posição"
+
+#: frontend/templates/challenge_detail.html:576
+#: user_profile/templates/user.html:879
+msgid "Your CPs"
+msgstr "Os seus PC"
+
+#: frontend/templates/challenge_detail.html:581
+msgid "of group total"
+msgstr ""
+
+#: frontend/templates/challenge_detail.html:598
+#: frontend/templates/gettask.html:224
+msgid "Leaderboard"
+msgstr ""
+
+#: frontend/templates/challenge_detail.html:601
+#: frontend/templates/challenge_detail.html:651
+#: user_profile/templates/user.html:915 user_profile/templates/user.html:988
+msgid "Jump to me"
+msgstr "Saltar para mim"
+
+#: frontend/templates/challenge_detail.html:610
+#: user_profile/templates/user.html:925
+msgid "User"
+msgstr "Utilizador"
+
+#: frontend/templates/challenge_detail.html:611
+#: user_profile/templates/user.html:781 user_profile/templates/user.html:826
+msgid "Control points"
+msgstr "Pontos de Controlo"
+
+#: frontend/templates/challenge_detail.html:612
+#: user_profile/templates/user.html:878
+msgid "Status"
+msgstr "Estado"
+
+#: frontend/templates/challenge_detail.html:617
+#: user_profile/templates/user.html:934
+msgid "Loading…"
+msgstr "A carregar…"
+
+#: frontend/templates/challenge_detail.html:652
+#: user_profile/templates/user.html:989
+#, python-brace-format
+msgid "Page {p} of {t}"
+msgstr "Página {p} de {t}"
+
+#: frontend/templates/challenge_detail.html:653
+msgid "No participants yet — be the first one!"
+msgstr ""
+
+#: frontend/templates/challenge_detail.html:654
+msgid "Could not load leaderboard."
+msgstr "Não foi possível carregar o ranking."
+
+#: frontend/templates/challenge_detail.html:655
+msgid "you"
+msgstr ""
+
+#: frontend/templates/challenge_detail.html:656
+#: user_profile/templates/user.html:992
+msgid "Invisible user"
+msgstr "Utilizador invisível"
+
+#: frontend/templates/challenge_detail.html:657
+msgid "active"
+msgstr ""
+
+#: frontend/templates/challenge_detail.html:658
+#: user_profile/templates/user.html:892
+msgid "left"
+msgstr ""
+
+#: frontend/templates/challenge_detail.html:780
+msgid "Leave this challenge? Your contributions are preserved."
+msgstr ""
+
+#: frontend/templates/contact.html:35 frontend/templates/index.html:943
 msgid "Contact Us"
 msgstr "Contacte-nos"
 
-#: frontend/templates/contact.html:36 frontend/templates/index.html:610
+#: frontend/templates/contact.html:36 frontend/templates/index.html:944
 msgid "Have questions about Lost at Night? We'd love to hear from you!"
 msgstr "Tem perguntas sobre o Lost at Night? Adoraríamos ouvir a sua opinião!"
 
-#: frontend/templates/contact.html:47 frontend/templates/index.html:619
+#: frontend/templates/contact.html:64 frontend/templates/index.html:953
 msgid "Your Name"
 msgstr "O seu nome"
 
-#: frontend/templates/contact.html:51 frontend/templates/index.html:623
+#: frontend/templates/contact.html:69 frontend/templates/index.html:957
 msgid "Email Address"
 msgstr "Endereço de e-mail"
 
-#: frontend/templates/contact.html:55 frontend/templates/index.html:627
+#: frontend/templates/contact.html:74 frontend/templates/index.html:961
 msgid "Subject"
 msgstr "Assunto"
 
-#: frontend/templates/contact.html:59 frontend/templates/index.html:631
+#: frontend/templates/contact.html:79 frontend/templates/index.html:965
 msgid "Message"
 msgstr "Mensagem"
 
-#: frontend/templates/contact.html:62 frontend/templates/index.html:634
+#: frontend/templates/contact.html:82 frontend/templates/index.html:968
 msgid "Send Message"
 msgstr "Enviar mensagem"
 
-#: frontend/templates/contact.html:70
+#: frontend/templates/contact.html:102
 msgid "Find Us"
 msgstr "Encontre-nos"
 
-#: frontend/templates/contact.html:71
+#: frontend/templates/contact.html:103
 msgid "Cities at Night Project"
 msgstr "Projeto Cities at Night"
 
-#: frontend/templates/contact.html:71
+#: frontend/templates/contact.html:103
 msgid "International Space Station Imagery Analysis"
 msgstr "Análise de Imagens da Estação Espacial Internacional"
 
-#: frontend/templates/contact.html:73
+#: frontend/templates/contact.html:105
 msgid "Email Us"
 msgstr "Envie-nos um e-mail"
 
-#: frontend/templates/contact.html:76
+#: frontend/templates/contact.html:108
 msgid "Social Media"
 msgstr "Redes Sociais"
 
-#: frontend/templates/gettask.html:42
-msgid "New Task"
-msgstr "Nova Tarefa"
+#: frontend/templates/gettask.html:47
+msgid "Few control points!"
+msgstr "Pontos de Controlo"
+
+#: frontend/templates/gettask.html:48
+msgid "Please add at least three control points."
+msgstr "Adicione pelo menos três pontos de controlo."
 
 #: frontend/templates/gettask.html:49
-msgid "Photo info"
-msgstr "Informações da foto"
+msgid "Wrong place!"
+msgstr "Sítio incorrecto!"
 
 #: frontend/templates/gettask.html:50
-msgid "Image:"
-msgstr "Imagem:"
+msgid "Please add the control point on the image first."
+msgstr "Adicione primeiro o ponto de controlo na imagem."
 
 #: frontend/templates/gettask.html:51
-msgid "Date:"
-msgstr "Data:"
+msgid "Please add a point in the map (related to the last control point)."
+msgstr "Adicione um ponto no mapa (associado ao último ponto de controlo)."
 
 #: frontend/templates/gettask.html:52
-msgid "Focal length:"
+msgid "Error"
+msgstr "Erro"
+
+#: frontend/templates/gettask.html:53
+msgid "An error occurred."
+msgstr "Ocorreu um erro."
+
+#: frontend/templates/gettask.html:54
+msgid "Thank you for your contribution"
+msgstr "Obrigado pela sua contribuição"
+
+#: frontend/templates/gettask.html:55
+msgid "Your control points have been submitted successfully."
+msgstr "Os seus pontos de controlo foram enviados com sucesso."
+
+#: frontend/templates/gettask.html:57
+msgid "All done here"
+msgstr "Aqui está tudo feito"
+
+#: frontend/templates/gettask.html:58
+msgid "No more tasks available here"
+msgstr "Já não há mais tarefas disponíveis aqui"
+
+#: frontend/templates/gettask.html:59
+msgid ""
+"Either every image in this batch has been georeferenced enough times, or "
+"there are no pending tasks at the moment. Thank you for contributing!"
+msgstr ""
+"Ou todas as imagens deste batch já foram georreferenciadas o suficiente, ou "
+"não há tarefas pendentes neste momento. Obrigado pela sua contribuição!Ou "
+"todas as imagens deste batch já foram georreferenciadas o suficiente, ou não "
+"há tarefas pendentes neste momento. Obrigado pela sua contribuição!"
+
+#: frontend/templates/gettask.html:60
+msgid "Challenge filter active"
+msgstr "Filtro de challenge ativo"
+
+#: frontend/templates/gettask.html:61
+msgid "No tasks match the constraints of your active challenge"
+msgstr "Nenhuma tarefa cumpre as condições do seu challenge ativo"
+
+#: frontend/templates/gettask.html:62
+msgid "No tasks match the constraints of your active challenges"
+msgstr "Nenhuma tarefa cumpre as condições dos seus challenges ativos"
+
+#: frontend/templates/gettask.html:63
+msgid "in this batch."
+msgstr "neste batch."
+
+#: frontend/templates/gettask.html:64
+msgid "You can leave the challenge from its page if you want different tasks."
+msgstr "Pode sair do challenge na sua página se quiser tarefas diferentes."
+
+#: frontend/templates/gettask.html:66
+msgid "Pick another batch"
+msgstr "Escolher outro batch"
+
+#: frontend/templates/gettask.html:68
+msgid "Go to batches"
+msgstr "Ir para lotes"
+
+#: frontend/templates/gettask.html:220 user_profile/templates/user.html:802
+#: user_profile/templates/user.html:807 user_profile/templates/user.html:812
+msgid "of"
+msgstr ""
+
+#: frontend/templates/gettask.html:223
+msgid "Leader"
+msgstr ""
+
+#: frontend/templates/gettask.html:225
+msgid "You are leading!"
+msgstr ""
+
+#: frontend/templates/gettask.html:242
+msgid "Replay tutorial"
+msgstr ""
+
+#: frontend/templates/gettask.html:336
+#: venv/lib/python3.12/site-packages/django/forms/widgets.py:794
+msgid "Unknown"
+msgstr ""
+
+#: frontend/templates/gettask.html:369
+msgid "Date"
+msgstr "Data:"
+
+#: frontend/templates/gettask.html:370
+msgid "Focal length"
 msgstr "Distância focal:"
 
-#: frontend/templates/gettask.html:53
-msgid "Location:"
+#: frontend/templates/gettask.html:371
+msgid "Location"
 msgstr "Localização:"
 
-#: frontend/templates/gettask.html:53
+#: frontend/templates/gettask.html:371
 msgid "looking up…"
 msgstr "a procurar…"
 
-#: frontend/templates/gettask.html:54
-msgid "Nadir point:"
+#: frontend/templates/gettask.html:372
+msgid "Nadir point"
 msgstr "Ponto nadir:"
 
-#: frontend/templates/gettask.html:55
-msgid "Photo center:"
+#: frontend/templates/gettask.html:373
+msgid "Photo center"
 msgstr "Centro da foto:"
 
-#: frontend/templates/gettask.html:56
-msgid "Photo center (ML):"
+#: frontend/templates/gettask.html:374
+msgid "Photo center (ML)"
 msgstr "Centro da foto (ML):"
 
-#: frontend/templates/gettask.html:60
+#: frontend/templates/gettask.html:380
 msgid "ISS Expedition"
 msgstr "Expedição ISS"
 
-#: frontend/templates/gettask.html:60
-msgid "crew"
-msgstr "tripulação"
-
-#: frontend/templates/gettask.html:67
+#: frontend/templates/gettask.html:393
 msgid "Your stats"
 msgstr "As suas estatísticas"
 
-#: frontend/templates/gettask.html:73
+#: frontend/templates/gettask.html:401
 msgid "Total"
 msgstr "Total"
 
-#: frontend/templates/gettask.html:74
+#: frontend/templates/gettask.html:402
 msgid "Rank"
 msgstr "Posição"
 
-#: frontend/templates/gettask.html:75
+#: frontend/templates/gettask.html:403
 msgid "To next"
 msgstr "Para o próximo"
 
-#: frontend/templates/gettask.html:76
+#: frontend/templates/gettask.html:404
 msgid "To #1"
 msgstr "Para o #1"
 
-#: frontend/templates/gettask.html:81 user_profile/templates/user.html:535
+#: frontend/templates/gettask.html:409 user_profile/templates/user.html:819
+#: user_profile/templates/user.html:927
 msgid "Tasks"
 msgstr "Tarefas"
 
-#: frontend/templates/gettask.html:88
+#: frontend/templates/gettask.html:416
 msgid "Control pts"
 msgstr "Pts de controlo"
 
-#: frontend/templates/gettask.html:95
+#: frontend/templates/gettask.html:423
 msgid "Hours"
 msgstr "Horas"
 
-#: frontend/templates/gettask.html:109
-#, python-format
+#: frontend/templates/gettask.html:438
+#, fuzzy, python-format
+#| msgid ""
+#| "You're participating anonymously — <a href=\"%(url)s\">create an account</"
+#| "a> to save your progress and appear on the leaderboard!"
 msgid ""
 "You're participating anonymously — <a href=\"%(url)s\">create an account</a> "
-"to save your progress and appear on the leaderboard!"
+"to save your progress and appear on the leaderboard."
 msgstr ""
 "Está a participar anonimamente — <a href=\"%(url)s\">crie uma conta</a> para "
 "guardar o seu progresso e aparecer na tabela de classificação!"
 
-#: frontend/templates/gettask.html:114
-msgid "Let's go!"
-msgstr "Vamos lá!"
+#: frontend/templates/gettask.html:443
+msgid "Dismiss"
+msgstr ""
 
-#: frontend/templates/gettask.html:125
+#: frontend/templates/gettask.html:445
+msgid "Start locating"
+msgstr "Começar a localizar"
+
+#: frontend/templates/gettask.html:458
 msgid "Georeferencing!"
-msgstr "Georreferenciação!"
+msgstr "A georreferenciar!"
 
-#: frontend/templates/gettask.html:142
+#: frontend/templates/gettask.html:478
+msgid "OK"
+msgstr ""
+
+#: frontend/templates/gettask.html:491
+msgid "Show photo metadata"
+msgstr ""
+
+#: frontend/templates/gettask.html:501
+msgid "Image adjustments"
+msgstr ""
+
+#: frontend/templates/gettask.html:505
 msgid "Brightness"
 msgstr "Brilho"
 
-#: frontend/templates/gettask.html:147
+#: frontend/templates/gettask.html:510
 msgid "Contrast"
 msgstr "Contraste"
 
-#: frontend/templates/gettask.html:152
+#: frontend/templates/gettask.html:515
 msgid "Gamma"
 msgstr "Gama"
 
-#: frontend/templates/gettask.html:157
+#: frontend/templates/gettask.html:520
 msgid "Saturation"
 msgstr "Saturação"
 
-#: frontend/templates/gettask.html:162
+#: frontend/templates/gettask.html:527
 msgid "Reset"
 msgstr "Repor"
 
-#: frontend/templates/gettask.html:175
-msgid "Help"
-msgstr "Ajuda"
+#: frontend/templates/gettask.html:555
+msgid "Try Server"
+msgstr ""
 
-#: frontend/templates/gettask.html:181
-msgid "Go to your profile"
-msgstr "Ir ao seu perfil"
-
-#: frontend/templates/gettask.html:189
-msgid "You are participating as anonymous"
-msgstr "Está a participar como anónimo"
-
-#: frontend/templates/gettask.html:201
-msgid "Batch:"
-msgstr "Lote:"
-
-#: frontend/templates/gettask.html:213
-msgid "Try"
-msgstr "Tentar"
-
-#: frontend/templates/gettask.html:214
+#: frontend/templates/gettask.html:556
 msgid "Submit"
 msgstr "Enviar"
 
-#: frontend/templates/gettask.html:215
+#: frontend/templates/gettask.html:557
 msgid "Skip"
 msgstr "Saltar"
 
-#: frontend/templates/index.html:419
-msgid "WELCOME BACK"
-msgstr "BEM-VINDO DE VOLTA"
+#: frontend/templates/gettask.html:576
+msgid "Welcome to Lost At Night!"
+msgstr ""
 
-#: frontend/templates/index.html:419
-msgid "TO"
-msgstr "AO"
+#: frontend/templates/gettask.html:577
+msgid ""
+"This is a real photo taken from the International Space Station. Your job is "
+"to figure out where on Earth it was taken — and we will guide you through it "
+"step by step."
+msgstr ""
 
-#: frontend/templates/index.html:419
-msgid "LOST AT NIGHT"
-msgstr "LOST AT NIGHT"
+#: frontend/templates/gettask.html:578
+msgid "Find the area on the map"
+msgstr ""
 
-#: frontend/templates/index.html:419
-msgid "WELCOME TO"
-msgstr "BEM-VINDO AO"
+#: frontend/templates/gettask.html:579
+msgid ""
+"Pan and zoom this map to the region you think the photo shows. The crew "
+"metadata gives you a hint about where to look."
+msgstr ""
 
-#: frontend/templates/index.html:421
+#: frontend/templates/gettask.html:580
+msgid "Explore the photo"
+msgstr ""
+
+#: frontend/templates/gettask.html:581
+msgid ""
+"Drag with the left mouse button to pan, use the wheel to zoom in and out, "
+"and hold the right mouse button to rotate. Take your time exploring the "
+"image."
+msgstr ""
+
+#: frontend/templates/gettask.html:582
+msgid "Adjust brightness and filters"
+msgstr ""
+
+#: frontend/templates/gettask.html:583
+msgid ""
+"Night photos can be hard to read. Use these sliders to tweak brightness, "
+"contrast, gamma and saturation — perfect for revealing faint coastlines or "
+"city lights. Hit Reset to start over."
+msgstr ""
+
+#: frontend/templates/gettask.html:584
+msgid "Pick a recognisable point on the photo"
+msgstr ""
+
+#: frontend/templates/gettask.html:585
+msgid ""
+"Click a clearly identifiable feature on the photo — a coastline, a city, an "
+"island."
+msgstr ""
+
+#: frontend/templates/gettask.html:586
+msgid "Match it on the map"
+msgstr ""
+
+#: frontend/templates/gettask.html:587
+msgid "Now click the same place on the map. That pair is one control point."
+msgstr ""
+
+#: frontend/templates/gettask.html:588
+msgid "Submit and earn points!"
+msgstr ""
+
+#: frontend/templates/gettask.html:589
+msgid ""
+"Once you have at least 3 control points hit Submit — but 7 or more is "
+"recommended for better accuracy. Every control point counts towards your "
+"ranking."
+msgstr ""
+
+#: frontend/templates/gettask.html:590
+msgid ""
+"Tip: create an account to save your progress and appear on the leaderboard."
+msgstr "Dica: cria uma conta para guardares o teu progresso e apareceres no ranking."
+
+#: frontend/templates/gettask.html:592
+msgid "Prefer to watch a video instead?"
+msgstr ""
+
+#: frontend/templates/gettask.html:593
+msgid "Want a deeper walkthrough? Watch the full video tutorial."
+msgstr ""
+
+#: frontend/templates/gettask.html:594
+msgid "Watch the video tutorial"
+msgstr ""
+
+#: frontend/templates/gettask.html:595
+msgid "Next"
+msgstr ""
+
+#: frontend/templates/gettask.html:596
+msgid "Back"
+msgstr ""
+
+#: frontend/templates/gettask.html:597
+msgid "Got it!"
+msgstr ""
+
+#: frontend/templates/index.html:720
+#, python-format
+msgid "Welcome back, <span class=\"accent\">%(name)s</span>."
+msgstr ""
+
+#: frontend/templates/index.html:722
+msgid "Help us locate the night from <span class=\"accent\">orbit</span>."
+msgstr ""
+
+#: frontend/templates/index.html:726
 msgid "Help map Earth's lights from space and combat light pollution"
-msgstr "Ajude a mapear as luzes da Terra a partir do espaço e a combater a poluição luminosa"
+msgstr ""
+"Ajude a mapear as luzes da Terra a partir do espaço e a combater a poluição "
+"luminosa"
 
-#: frontend/templates/index.html:424
-msgid "Participate Now"
-msgstr "Participar Agora"
+#: frontend/templates/index.html:730
+msgid "Contribute now"
+msgstr "Começar a Contribuir"
 
-#: frontend/templates/index.html:425
-msgid "Select Batches"
-msgstr "Selecionar Lotes"
+#: frontend/templates/index.html:735
+msgid "Watch how it works"
+msgstr ""
 
-#: frontend/templates/index.html:438
+#: frontend/templates/index.html:741
+msgid "Control points placed"
+msgstr "Pontos de Controlo"
+
+#: frontend/templates/index.html:745
+msgid "Active citizens"
+msgstr ""
+
+#: frontend/templates/index.html:749
+msgid "Photos located"
+msgstr "Fotos localizadas"
+
+#: frontend/templates/index.html:763
 msgid "Our Mission"
 msgstr "A Nossa Missão"
 
-#: frontend/templates/index.html:440
+#: frontend/templates/index.html:765
 msgid ""
 "This application is designed to help georeference images taken by astronauts "
 "aboard the International Space Station (ISS). The goal is to create a global "
@@ -331,105 +897,798 @@ msgid ""
 msgstr ""
 "Esta aplicação foi concebida para ajudar a georreferenciar imagens tiradas "
 "por astronautas a bordo da Estação Espacial Internacional (ISS). O objetivo "
-"é criar um mapa global das luzes da Terra à noite para medir e monitorizar "
-"a poluição luminosa. Ao alinhar com precisão as imagens com coordenadas "
+"é criar um mapa global das luzes da Terra à noite para medir e monitorizar a "
+"poluição luminosa. Ao alinhar com precisão as imagens com coordenadas "
 "geográficas, a aplicação contribui para uma valiosa recolha de dados "
 "ambientais, que podem ser utilizados para investigação científica, "
 "monitorização da poluição luminosa e compreensão do seu impacto nos "
 "ecossistemas e na saúde humana."
 
-#: frontend/templates/index.html:453
+#: frontend/templates/index.html:778
 msgid "Georeference Images"
 msgstr "Georreferenciar imagens"
 
-#: frontend/templates/index.html:454
+#: frontend/templates/index.html:779
 msgid "Help align ISS night images with precise geographic coordinates"
-msgstr "Ajude a alinhar imagens noturnas da ISS com coordenadas geográficas precisas"
+msgstr ""
+"Ajude a alinhar imagens noturnas da ISS com coordenadas geográficas precisas"
 
-#: frontend/templates/index.html:462
+#: frontend/templates/index.html:787
 msgid "Map Light Pollution"
 msgstr "Mapear a poluição luminosa"
 
-#: frontend/templates/index.html:463
+#: frontend/templates/index.html:788
 msgid "Contribute to a global database of nighttime light patterns"
 msgstr "Contribuir para uma base de dados global de padrões de luz noturna"
 
-#: frontend/templates/index.html:471
+#: frontend/templates/index.html:796
 msgid "Support Research"
 msgstr "Apoiar a Investigação"
 
-#: frontend/templates/index.html:472
+#: frontend/templates/index.html:797
 msgid "Enable scientific studies on light pollution's environmental impact"
-msgstr "Contribuir para estudos científicos sobre o impacto ambiental da poluição luminosa"
+msgstr ""
+"Contribuir para estudos científicos sobre o impacto ambiental da poluição "
+"luminosa"
 
-#: frontend/templates/index.html:479
-msgid "Start Contributing"
-msgstr "Começar a Contribuir"
+#: frontend/templates/index.html:807
+msgid "Join a challenge and help the community reach a shared goal."
+msgstr ""
+"Junte-se a um challenge e ajude a comunidade a alcançar um objetivo comum."
 
-#: frontend/templates/index.html:486
+#: frontend/templates/index.html:813
+msgid "Active"
+msgstr ""
+
+#: frontend/templates/index.html:820
+msgid "Upcoming"
+msgstr ""
+
+#: frontend/templates/index.html:834
+msgid "Finished"
+msgstr ""
+
+#: frontend/templates/index.html:846
 msgid "Available Batches"
 msgstr "Lotes Disponíveis"
 
-#: frontend/templates/index.html:487
+#: frontend/templates/index.html:847
 msgid "Select a specific batch of images to work with"
 msgstr "Selecione um lote específico de imagens para trabalhar"
 
-#: frontend/templates/index.html:504
-msgid "Tasks:"
-msgstr "Tarefas:"
+#: frontend/templates/index.html:867
+msgid "Completion"
+msgstr "Concluído"
 
-#: frontend/templates/index.html:521
+#: frontend/templates/index.html:880
 msgid "Project Statistics"
 msgstr "Estatísticas do Projeto"
 
-#: frontend/templates/index.html:522
+#: frontend/templates/index.html:881
 msgid "Global impact of our community's contributions"
 msgstr "Impacto global das contribuições da nossa comunidade"
 
-#: frontend/templates/index.html:534
-msgid "Total Users"
-msgstr "Total de Utilizadores"
+#: frontend/templates/index.html:889
+msgid "Control Points placed"
+msgstr "Pontos de Controlo"
 
-#: frontend/templates/index.html:543
-msgid "Total Images"
-msgstr "Total de Imagens"
+#: frontend/templates/index.html:896 user_profile/templates/user.html:776
+msgid "Tasks completed"
+msgstr "Concluído"
 
-#: frontend/templates/index.html:552
-msgid "Images with Georeference"
-msgstr "Imagens com Georreferência"
+#: frontend/templates/index.html:906
+msgid "Users"
+msgstr "Utilizador"
 
-#: frontend/templates/index.html:561
+#: frontend/templates/index.html:910
+msgid "Images"
+msgstr "Imagens:"
+
+#: frontend/templates/index.html:914
+msgid "Georeferenced"
+msgstr "Georreferenciada"
+
+#: frontend/templates/index.html:918
 msgid "Total Tasks"
 msgstr "Total de Tarefas"
 
-#: frontend/templates/index.html:571 user_profile/templates/user.html:446
-msgid "Completed Tasks"
-msgstr "Tarefas Concluídas"
+#: frontend/templates/index.html:922 georeferencing/models.py:139
+#: georeferencing/models.py:397
+msgid "Completed"
+msgstr "Concluído"
 
-#: frontend/templates/index.html:580
-msgid "Average Tasks per User"
-msgstr "Média de Tarefas por Utilizador"
+#: frontend/templates/index.html:926
+msgid "Avg / user"
+msgstr ""
 
-#: frontend/templates/index.html:589
-msgid "Total Control Points"
-msgstr "Total de Pontos de Controlo"
+#: frontend/templates/index.html:930 user_profile/templates/user.html:786
+#: user_profile/templates/user.html:833
+msgid "Time invested"
+msgstr "Tempo Investido"
 
-#: frontend/templates/index.html:598
-msgid "Total Minutes"
-msgstr "Total de Minutos"
-
-#: frontend/templates/index.html:641
+#: frontend/templates/index.html:975
 msgid "Our Social Media"
 msgstr "As Nossas Redes Sociais"
 
-#: frontend/views.py:134
+#: frontend/templates/legal/_legal_base.html:75
+#: templates/account/logout.html:210
+#: user_profile/templates/newsletter_unsubscribe.html:68
+msgid "Back to home"
+msgstr "Voltar ao início"
+
+#: frontend/templates/legal/cookies.html:4
+#: frontend/templates/legal/cookies.html:7
+msgid "Cookies policy"
+msgstr "Política de cookies"
+
+#: frontend/templates/legal/cookies.html:8
+msgid ""
+"Information about the cookies and similar technologies used by Lost at Night."
+msgstr ""
+"Informações sobre os cookies e tecnologias semelhantes utilizadas pelo Lost "
+"at Night."
+
+#: frontend/templates/legal/cookies.html:10
+msgid "What is a cookie?"
+msgstr "O que é um cookie?"
+
+#: frontend/templates/legal/cookies.html:11
+msgid ""
+"A cookie is a small text file stored by your browser. We use cookies to keep "
+"your session active, remember your preferences, and — only if you opt in — "
+"to measure aggregate usage of the site."
+msgstr ""
+"Um cookie é um pequeno ficheiro de texto guardado pelo seu navegador. Usamos "
+"cookies para manter a sua sessão ativa, recordar as suas preferências e — "
+"apenas com o seu consentimento — medir a utilização agregada do site."
+
+#: frontend/templates/legal/cookies.html:13
+msgid "Categories"
+msgstr "Categorias"
+
+#: frontend/templates/legal/cookies.html:14
+msgid "Strictly necessary (always active)"
+msgstr "Estritamente necessários (sempre ativos)"
+
+#: frontend/templates/legal/cookies.html:16
+#: frontend/templates/legal/cookies.html:24
+msgid "Cookie"
+msgstr "Cookie"
+
+#: frontend/templates/legal/cookies.html:16
+#: frontend/templates/legal/cookies.html:24
+msgid "Origin"
+msgstr "Origem"
+
+#: frontend/templates/legal/cookies.html:16
+#: frontend/templates/legal/cookies.html:24
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1793
+msgid "Duration"
+msgstr "Duração"
+
+#: frontend/templates/legal/cookies.html:16
+#: frontend/templates/legal/cookies.html:24
+#: frontend/templates/legal/privacy.html:27
+msgid "Purpose"
+msgstr "Finalidade"
+
+#: frontend/templates/legal/cookies.html:17
+#: frontend/templates/legal/cookies.html:18
+#: frontend/templates/legal/cookies.html:19
+#: frontend/templates/legal/cookies.html:25
+#: frontend/templates/legal/cookies.html:26
+msgid "Lost at Night"
+msgstr "Lost at Night"
+
+#: frontend/templates/legal/cookies.html:17
+#: frontend/templates/legal/cookies.html:19
+msgid "Session"
+msgstr "Sessão"
+
+#: frontend/templates/legal/cookies.html:17
+msgid "Keeps you signed in."
+msgstr "Mantém-no autenticado."
+
+#: frontend/templates/legal/cookies.html:18
+#: frontend/templates/legal/cookies.html:25
+#: frontend/templates/legal/cookies.html:26
+msgid "year"
+msgstr "ano"
+
+#: frontend/templates/legal/cookies.html:18
+msgid "Cross-site request forgery protection."
+msgstr "Proteção contra falsificação de pedidos entre sites (CSRF)."
+
+#: frontend/templates/legal/cookies.html:19
+msgid "Flash messages (errors, confirmations)."
+msgstr "Mensagens flash (erros, confirmações)."
+
+#: frontend/templates/legal/cookies.html:22
+msgid "Functional (consent required)"
+msgstr "Funcionais (requerem consentimento)"
+
+#: frontend/templates/legal/cookies.html:25
+msgid "Remembers the language you selected."
+msgstr "Memoriza o idioma selecionado."
+
+#: frontend/templates/legal/cookies.html:26
+msgid "Stores your cookie banner preferences so we don't ask again."
+msgstr ""
+"Guarda as suas preferências do banner de cookies para não voltarmos a "
+"perguntar."
+
+#: frontend/templates/legal/cookies.html:29
+msgid "Analytics (consent required)"
+msgstr "Análise (requer consentimento)"
+
+#: frontend/templates/legal/cookies.html:30
+msgid ""
+"Currently disabled. If we add aggregated analytics in the future, the "
+"provider and its purpose will appear here and require your explicit opt-in "
+"via the cookie banner."
+msgstr ""
+"Atualmente desativadas. Se no futuro adicionarmos estatísticas agregadas, o "
+"fornecedor e a finalidade aparecerão aqui e exigirão o seu consentimento "
+"explícito no banner."
+
+#: frontend/templates/legal/cookies.html:32
+msgid "Managing your preferences"
+msgstr "Gerir as suas preferências"
+
+#: frontend/templates/legal/cookies.html:33
+msgid ""
+"You can change your cookie preferences at any time by clicking the cookie "
+"button at the bottom-right of any page, or by clearing the cookies for this "
+"site in your browser settings."
+msgstr ""
+"Pode alterar as suas preferências a qualquer momento clicando no botão de "
+"cookies no canto inferior direito, ou limpando os cookies deste site nas "
+"definições do navegador."
+
+#: frontend/templates/legal/cookies.html:35
+msgid "Third-party services"
+msgstr "Serviços de terceiros"
+
+#: frontend/templates/legal/cookies.html:36
+msgid ""
+"When you load a task page, your browser fetches map tiles from OpenStreetMap "
+"and reverse-geocodes coordinates via Nominatim. Those providers may receive "
+"your IP address. Lost at Night has no commercial relationship with them; "
+"refer to their respective policies for details."
+msgstr ""
+"Ao carregar uma página de tarefa, o navegador obtém tiles de mapa do "
+"OpenStreetMap e geocodifica coordenadas via Nominatim. Esses fornecedores "
+"podem receber o seu endereço IP. O Lost at Night não tem relação comercial "
+"com eles; consulte as respetivas políticas."
+
+#: frontend/templates/legal/legal.html:8
+msgid ""
+"Required information under Spanish Law 34/2002 on services of the "
+"information society (LSSI-CE)."
+msgstr ""
+"Informações exigidas pela Lei espanhola 34/2002 sobre serviços da sociedade "
+"da informação (LSSI-CE)."
+
+#: frontend/templates/legal/legal.html:10
+msgid "Operator"
+msgstr "Operador"
+
+#: frontend/templates/legal/legal.html:12
+msgid "Name:"
+msgstr "Nome:"
+
+#: frontend/templates/legal/legal.html:13
+msgid "Address:"
+msgstr "Morada:"
+
+#: frontend/templates/legal/legal.html:13
+msgid "Spain"
+msgstr "Espanha"
+
+#: frontend/templates/legal/legal.html:14
+#: user_profile/templates/edit_profile.html:243
+msgid "Email:"
+msgstr "E-mail:"
+
+#: frontend/templates/legal/legal.html:15
+msgid "Privacy queries:"
+msgstr "Questões de privacidade:"
+
+#: frontend/templates/legal/legal.html:18
+msgid "Scientific partners"
+msgstr "Parceiros científicos"
+
+#: frontend/templates/legal/legal.html:19
+msgid ""
+"Lost at Night is developed by Fundación Ibercivis within the framework of "
+"the Plan-B project. The principal investigator is Alejandro Sánchez de "
+"Miguel (CSIC)."
+msgstr ""
+"O Lost at Night é desenvolvido pela Fundación Ibercivis no âmbito do projeto "
+"Plan-B. O investigador principal é Alejandro Sánchez de Miguel (CSIC)."
+
+#: frontend/templates/legal/legal.html:21
+msgid "Funding"
+msgstr "Financiamento"
+
+#: frontend/templates/legal/legal.html:22
+msgid ""
+"This project has received funding from the European Union under the Horizon "
+"Europe Programme, Grant Agreement No. 101135308 (PLAN-B). Research and "
+"Innovation Action | HORIZON-CL6-2023-BIODIV-01."
+msgstr ""
+"Este projeto recebeu financiamento da União Europeia ao abrigo do Programa "
+"Horizon Europe, Acordo de Subvenção n.º 101135308 (PLAN-B). Ação de "
+"Investigação e Inovação | HORIZON-CL6-2023-BIODIV-01.Financiado pela União "
+"Europeia no âmbito do Programa Horizonte Europa, Acordo de Subvenção n.º "
+"101135308 (PLAN-B). Ação de Investigação e Inovação | HORIZON-CL6-2023-"
+"BIODIV-01."
+
+#: frontend/templates/legal/legal.html:24
+msgid "Source code"
+msgstr "Código-fonte"
+
+#: frontend/templates/legal/legal.html:25
+msgid ""
+"The Lost at Night software is open source. Source repository: <a "
+"href=\"https://github.com/Ibercivis/gdalface\" target=\"_blank\" "
+"rel=\"noopener\">github.com/Ibercivis/gdalface</a>."
+msgstr ""
+"O software do Lost at Night é open source. Repositório: <a href=\"https://"
+"github.com/Ibercivis/gdalface\" target=\"_blank\" rel=\"noopener\">github."
+"com/Ibercivis/gdalface</a>."
+
+#: frontend/templates/legal/legal.html:27
+msgid "Image rights"
+msgstr "Direitos de imagem"
+
+#: frontend/templates/legal/legal.html:28
+msgid ""
+"Astronaut photography of Earth used on this platform is provided by NASA and "
+"is in the public domain (Astronaut Photography of Earth Database — eol.jsc."
+"nasa.gov)."
+msgstr ""
+"As fotografias da Terra tiradas por astronautas usadas nesta plataforma são "
+"fornecidas pela NASA e são de domínio público (Astronaut Photography of "
+"Earth Database — eol.jsc.nasa.gov)."
+
+#: frontend/templates/legal/legal.html:30
+msgid "Applicable law and jurisdiction"
+msgstr "Lei aplicável e jurisdição"
+
+#: frontend/templates/legal/legal.html:31
+msgid ""
+"Use of this site is governed by Spanish law. Any disputes that cannot be "
+"amicably resolved shall be submitted to the courts of Zaragoza, Spain, "
+"without prejudice to mandatory consumer protection rules."
+msgstr ""
+"A utilização deste site rege-se pela lei espanhola. Qualquer litígio que não "
+"possa ser resolvido amigavelmente será submetido aos tribunais de Saragoça, "
+"Espanha, sem prejuízo das regras imperativas de proteção do consumidor."
+
+#: frontend/templates/legal/privacy.html:4
+#: frontend/templates/legal/privacy.html:7
+msgid "Privacy policy"
+msgstr "Política de privacidade"
+
+#: frontend/templates/legal/privacy.html:9
+#, python-format
+msgid "Version %(v)s."
+msgstr "Versão %(v)s."
+
+#: frontend/templates/legal/privacy.html:10
+msgid ""
+"Lost at Night is a citizen-science project developed by Fundación Ibercivis "
+"within the framework of the Plan-B project. The principal investigator is "
+"Alejandro Sánchez de Miguel (CSIC)."
+msgstr ""
+"O Lost at Night é um projeto de ciência cidadã desenvolvido pela Fundación "
+"Ibercivis no âmbito do projeto Plan-B. O investigador principal é Alejandro "
+"Sánchez de Miguel (CSIC)."
+
+#: frontend/templates/legal/privacy.html:13
+msgid "1. Who we are"
+msgstr "1. Quem somos"
+
+#: frontend/templates/legal/privacy.html:14
+msgid ""
+"<strong>Data controller:</strong> Fundación Ibercivis (NIF G-99409492), C/ "
+"Mariano Esquillor s/n, 50018 Zaragoza, Spain. Contact: <a href=\"mailto:"
+"ethics@ibercivis.es\">ethics@ibercivis.es</a>."
+msgstr ""
+
+#: frontend/templates/legal/privacy.html:16
+msgid "2. What data we process"
+msgstr "2. Dados que tratamos"
+
+#: frontend/templates/legal/privacy.html:18
+msgid "Account data: email address, username, hashed password."
+msgstr "Dados de conta: e-mail, nome de utilizador, password (hash)."
+
+#: frontend/templates/legal/privacy.html:19
+msgid "Profile data (optional): country, city, biography, profile picture."
+msgstr "Dados de perfil (opcionais): país, cidade, biografia, foto de perfil."
+
+#: frontend/templates/legal/privacy.html:20
+msgid ""
+"Activity data: control points contributed, time spent, batches and "
+"challenges joined."
+msgstr ""
+"Dados de atividade: pontos de controlo contribuídos, tempo gasto, lotes e "
+"desafios em que participou."
+
+#: frontend/templates/legal/privacy.html:21
+msgid ""
+"Consent records: timestamps for privacy policy acceptance, newsletter "
+"subscription, and cookie preferences."
+msgstr ""
+"Registos de consentimento: marcas temporais de aceitação da política, "
+"inscrição na newsletter e preferências de cookies."
+
+#: frontend/templates/legal/privacy.html:22
+msgid ""
+"Technical logs: IP address (truncated), browser metadata, retained for at "
+"most 30 days."
+msgstr ""
+"Registos técnicos: endereço IP (truncado), metadados do navegador, "
+"conservados no máximo 30 dias."
+
+#: frontend/templates/legal/privacy.html:25
+msgid "3. Purpose and legal basis"
+msgstr "3. Finalidade e base legal"
+
+#: frontend/templates/legal/privacy.html:27
+msgid "Legal basis (GDPR Art. 6)"
+msgstr "Base legal (RGPD Art. 6)"
+
+#: frontend/templates/legal/privacy.html:28
+msgid "Account management and authentication"
+msgstr "Gestão de conta e autenticação"
+
+#: frontend/templates/legal/privacy.html:28
+msgid "Performance of contract (6.1.b)"
+msgstr "Execução do contrato (6.1.b)"
+
+#: frontend/templates/legal/privacy.html:29
+msgid "Storing your scientific contributions"
+msgstr "Armazenamento das suas contribuições científicas"
+
+#: frontend/templates/legal/privacy.html:29
+msgid "Public interest research / consent (6.1.e / 6.1.a)"
+msgstr "Investigação de interesse público / consentimento (6.1.e / 6.1.a)"
+
+#: frontend/templates/legal/privacy.html:30
+msgid "Newsletter and project updates"
+msgstr "Newsletter e novidades do projeto"
+
+#: frontend/templates/legal/privacy.html:30
+#: frontend/templates/legal/privacy.html:31
+msgid "Consent (6.1.a) — opt-in only"
+msgstr "Consentimento (6.1.a) — apenas opt-in"
+
+#: frontend/templates/legal/privacy.html:31
+msgid "Analytics cookies"
+msgstr "Cookies analíticos"
+
+#: frontend/templates/legal/privacy.html:32
+msgid "Security and abuse prevention"
+msgstr "Segurança e prevenção de abusos"
+
+#: frontend/templates/legal/privacy.html:32
+msgid "Legitimate interest (6.1.f)"
+msgstr "Interesse legítimo (6.1.f)"
+
+#: frontend/templates/legal/privacy.html:35
+msgid "4. Retention"
+msgstr "4. Conservação"
+
+#: frontend/templates/legal/privacy.html:37
+msgid "Account data: until you request deletion."
+msgstr "Dados de conta: até solicitar a eliminação."
+
+#: frontend/templates/legal/privacy.html:38
+msgid ""
+"Scientific contributions (control points): pseudonymised and retained "
+"indefinitely after account deletion, since they cannot be reasonably "
+"attributed to you once disassociated."
+msgstr ""
+"Contribuições científicas (pontos de controlo): pseudonimizadas e "
+"conservadas indefinidamente após a eliminação, pois deixam de ser "
+"razoavelmente atribuíveis a si."
+
+#: frontend/templates/legal/privacy.html:39
+msgid "Server logs: 30 days maximum."
+msgstr "Registos do servidor: máximo 30 dias."
+
+#: frontend/templates/legal/privacy.html:40
+msgid ""
+"Consent records: kept while your account is active and for 3 additional "
+"years for accountability (GDPR Art. 5.2)."
+msgstr ""
+"Registos de consentimento: conservados enquanto a conta estiver ativa e por "
+"mais 3 anos para fins de responsabilização (RGPD art. 5.2)."
+
+#: frontend/templates/legal/privacy.html:43
+msgid "5. Recipients and processors"
+msgstr "5. Destinatários e subcontratantes"
+
+#: frontend/templates/legal/privacy.html:44
+msgid ""
+"We share your personal data only with the following service providers, all "
+"of which act as data processors under written agreements:"
+msgstr ""
+"Partilhamos os seus dados pessoais apenas com os seguintes prestadores, "
+"todos atuando como subcontratantes ao abrigo de acordos escritos:"
+
+#: frontend/templates/legal/privacy.html:46
+msgid "Hosting provider (server infrastructure, EU)."
+msgstr "Fornecedor de hosting (infraestrutura de servidores, UE)."
+
+#: frontend/templates/legal/privacy.html:47
+msgid ""
+"Email delivery service for transactional emails (verification, password "
+"reset) and the optional newsletter."
+msgstr ""
+"Serviço de envio de e-mails transacionais (verificação, reposição de "
+"password) e da newsletter opcional."
+
+#: frontend/templates/legal/privacy.html:48
+msgid ""
+"OpenStreetMap Nominatim (reverse geocoding of ISS image coordinates) — your "
+"IP address is shared only when the map widget is loaded."
+msgstr ""
+
+#: frontend/templates/legal/privacy.html:51
+msgid "6. International transfers"
+msgstr "6. Transferências internacionais"
+
+#: frontend/templates/legal/privacy.html:52
+msgid ""
+"All processors are based within the European Economic Area (EEA). If a "
+"transfer outside the EEA becomes necessary, we will rely on Standard "
+"Contractual Clauses or other safeguards under GDPR Art. 46."
+msgstr ""
+"Todos os subcontratantes estão estabelecidos no Espaço Económico Europeu "
+"(EEE). Caso seja necessária uma transferência para fora do EEE, recorreremos "
+"a Cláusulas Contratuais-Tipo ou outras garantias previstas no art. 46 RGPD."
+
+#: frontend/templates/legal/privacy.html:54
+msgid "7. Your rights"
+msgstr "7. Os seus direitos"
+
+#: frontend/templates/legal/privacy.html:55
+msgid "Under GDPR Articles 15–22 you may:"
+msgstr "Ao abrigo dos artigos 15.º a 22.º do RGPD, pode:"
+
+#: frontend/templates/legal/privacy.html:57
+msgid "Access the personal data we hold about you."
+msgstr "Aceder aos dados pessoais que detemos sobre si."
+
+#: frontend/templates/legal/privacy.html:58
+msgid "Rectify inaccurate or incomplete data."
+msgstr "Retificar dados inexatos ou incompletos."
+
+#: frontend/templates/legal/privacy.html:59
+msgid "Request deletion of your account and associated personal data."
+msgstr "Solicitar a eliminação da sua conta e dos dados pessoais associados."
+
+#: frontend/templates/legal/privacy.html:60
+msgid "Restrict or object to processing."
+msgstr "Limitar ou opor-se ao tratamento."
+
+#: frontend/templates/legal/privacy.html:61
+msgid "Port your data in a machine-readable format."
+msgstr "Receber os seus dados num formato legível por máquina."
+
+#: frontend/templates/legal/privacy.html:62
+msgid ""
+"Withdraw consent at any time (effective from withdrawal, without affecting "
+"prior processing)."
+msgstr ""
+"Retirar o consentimento a qualquer momento (com efeito a partir da retirada, "
+"sem afetar tratamentos anteriores)."
+
+#: frontend/templates/legal/privacy.html:63
+msgid "Lodge a complaint with the Spanish Data Protection Agency (AEPD)."
+msgstr ""
+"Apresentar reclamação junto da Agência Espanhola de Proteção de Dados (AEPD)."
+
+#: frontend/templates/legal/privacy.html:65
+msgid ""
+"You can exercise most rights directly from your profile page or by writing "
+"to <a href=\"mailto:ethics@ibercivis.es\">ethics@ibercivis.es</a>."
+msgstr ""
+"Pode exercer a maioria dos direitos diretamente a partir do seu perfil ou "
+"escrevendo para <a href=\"mailto:ethics@ibercivis.es\">ethics@ibercivis.es</"
+"a>."
+
+#: frontend/templates/legal/privacy.html:67
+msgid "8. Automated decisions"
+msgstr "8. Decisões automatizadas"
+
+#: frontend/templates/legal/privacy.html:68
+msgid ""
+"We do not take any decisions about you based solely on automated processing."
+msgstr ""
+"Não tomamos decisões sobre si baseadas exclusivamente em tratamento "
+"automatizado."
+
+#: frontend/templates/legal/privacy.html:70
+msgid "9. Minors"
+msgstr "9. Menores"
+
+#: frontend/templates/legal/privacy.html:71
+msgid ""
+"Lost at Night is open to volunteers aged 14 and over. If you are under 14, "
+"please ask a parent or guardian to register on your behalf."
+msgstr ""
+"O Lost at Night está aberto a voluntários com 14 anos ou mais. Se tem menos "
+"de 14 anos, peça a um(a) responsável que se registe em seu nome."
+
+#: frontend/templates/legal/privacy.html:73
+msgid "10. Updates to this policy"
+msgstr "10. Atualizações desta política"
+
+#: frontend/templates/legal/privacy.html:74
+msgid ""
+"When we make substantive changes we will update the version number above and "
+"ask you to re-confirm your consent."
+msgstr ""
+"Em caso de alterações substanciais, atualizaremos o número de versão e "
+"pediremos a sua reconfirmação."
+
+#: frontend/templates/legal/terms.html:4 frontend/templates/legal/terms.html:7
+msgid "Terms of use"
+msgstr "Termos de uso"
+
+#: frontend/templates/legal/terms.html:8
+msgid ""
+"Lost at Night — citizen-science platform for measuring light pollution from "
+"the International Space Station."
+msgstr ""
+
+#: frontend/templates/legal/terms.html:10
+msgid "1. Acceptance"
+msgstr "1. Aceitação"
+
+#: frontend/templates/legal/terms.html:11
+msgid ""
+"By creating an account or contributing to Lost at Night you accept these "
+"terms. If you do not agree, please do not use the service."
+msgstr ""
+"Ao criar uma conta ou contribuir para o Lost at Night aceita estes termos. "
+"Se não concorda, não utilize o serviço."
+
+#: frontend/templates/legal/terms.html:13
+msgid "2. Nature of the service"
+msgstr "2. Natureza do serviço"
+
+#: frontend/templates/legal/terms.html:14
+msgid ""
+"Lost at Night is a non-profit research platform. Volunteers help locate and "
+"georeference astronaut photographs of Earth taken at night, in order to "
+"study artificial light pollution. The service is provided free of charge, on "
+"a best-effort basis, with no service-level guarantees."
+msgstr ""
+"O Lost at Night é uma plataforma de investigação sem fins lucrativos. Os "
+"voluntários ajudam a localizar e georreferenciar fotografias noturnas da "
+"Terra tiradas por astronautas, para estudar a poluição luminosa artificial. "
+"O serviço é gratuito, na base do melhor esforço, sem garantias de nível de "
+"serviço."
+
+#: frontend/templates/legal/terms.html:16
+msgid "3. Your contributions"
+msgstr "3. As suas contribuições"
+
+#: frontend/templates/legal/terms.html:17
+msgid ""
+"When you submit control points, georeference an image, or otherwise "
+"contribute, you grant us a perpetual, worldwide, royalty-free, non-exclusive "
+"licence to use those contributions for scientific research, education, and "
+"dissemination purposes. Your contributions remain attributable to your "
+"username unless you have disabled public visibility."
+msgstr ""
+"Ao submeter pontos de controlo, georreferenciar uma imagem ou contribuir de "
+"qualquer outra forma, concede-nos uma licença perpétua, mundial, gratuita e "
+"não exclusiva para usar essas contribuições para fins de investigação "
+"científica, educação e divulgação. As suas contribuições permanecem "
+"atribuídas ao seu nome de utilizador, salvo se tiver desativado a "
+"visibilidade pública."
+
+#: frontend/templates/legal/terms.html:19
+msgid "4. Acceptable use"
+msgstr "4. Utilização aceitável"
+
+#: frontend/templates/legal/terms.html:21
+msgid "Do not submit deliberately incorrect georeferences."
+msgstr "Não submeta georreferenciações deliberadamente incorretas."
+
+#: frontend/templates/legal/terms.html:22
+msgid "Do not impersonate other users or scrape personal data."
+msgstr "Não se faça passar por outros utilizadores nem recolha dados pessoais."
+
+#: frontend/templates/legal/terms.html:23
+msgid "Do not abuse the API beyond reasonable limits."
+msgstr "Não abuse da API além de limites razoáveis."
+
+#: frontend/templates/legal/terms.html:24
+msgid "Do not upload illegal content as your profile picture or biography."
+msgstr "Não carregue conteúdo ilegal como foto de perfil ou biografia."
+
+#: frontend/templates/legal/terms.html:26
+msgid "We may suspend or delete accounts that breach these rules."
+msgstr "Podemos suspender ou eliminar contas que violem estas regras."
+
+#: frontend/templates/legal/terms.html:28
+msgid "5. Intellectual property"
+msgstr "5. Propriedade intelectual"
+
+#: frontend/templates/legal/terms.html:29
+msgid ""
+"ISS imagery is provided by NASA and is in the public domain. The Lost at "
+"Night software is open source (GPLv3). Aggregated and derived datasets "
+"produced by the project may be released under open licences such as CC BY-SA."
+msgstr ""
+"As imagens da ISS são fornecidas pela NASA e estão em domínio público. O "
+"software do Lost at Night é open source (GPLv3). Os conjuntos de dados "
+"agregados e derivados podem ser publicados sob licenças abertas como CC BY-"
+"SA."
+
+#: frontend/templates/legal/terms.html:31
+msgid "6. Liability"
+msgstr "6. Responsabilidade"
+
+#: frontend/templates/legal/terms.html:32
+msgid ""
+"The service is provided “as is”, without warranty of any kind. To the "
+"maximum extent permitted by law, the operator is not liable for incidental "
+"or consequential damages arising from use of the platform."
+msgstr ""
+
+#: frontend/templates/legal/terms.html:34
+msgid "7. Termination"
+msgstr "7. Cessação"
+
+#: frontend/templates/legal/terms.html:35
+msgid ""
+"You may delete your account at any time from the user profile page. "
+"Pseudonymised scientific contributions will be retained for research "
+"purposes."
+msgstr ""
+"Pode eliminar a sua conta a qualquer momento na página de perfil. As "
+"contribuições científicas pseudonimizadas serão mantidas para fins de "
+"investigação."
+
+#: frontend/templates/legal/terms.html:37
+msgid "8. Governing law"
+msgstr "8. Lei aplicável"
+
+#: frontend/templates/legal/terms.html:38
+msgid ""
+"These terms are governed by Spanish law. Disputes shall be submitted to the "
+"courts of Zaragoza, Spain, without prejudice to mandatory consumer "
+"protection laws."
+msgstr ""
+"Estes termos regem-se pela lei espanhola. Os litígios serão submetidos aos "
+"tribunais de Saragoça, Espanha, sem prejuízo das leis imperativas de "
+"proteção do consumidor."
+
+#: frontend/views.py:135 frontend/views.py:294
 msgid "Your message has been sent successfully!"
 msgstr "A sua mensagem foi enviada com sucesso!"
 
-#: frontend/views.py:137
+#: frontend/views.py:138 frontend/views.py:285
 #, python-format
 msgid "Could not send the message: %(error)s"
 msgstr "Não foi possível enviar a mensagem: %(error)s"
+
+#: frontend/views.py:254
+msgid "Your message has been sent. We'll be in touch soon."
+msgstr "A sua mensagem foi enviada. Entraremos em contacto em breve."
+
+#: frontend/views.py:263
+msgid "Please fill all required fields."
+msgstr "Preencha todos os campos obrigatórios."
 
 #: gdalface/settings.py:159
 msgid "English"
@@ -495,70 +1754,203 @@ msgstr "Download falhado"
 msgid "Downloaded & Generated"
 msgstr "Descarregado e gerado"
 
-#: georeferencing/models.py:92
+#: georeferencing/models.py:132
 msgid "Search"
 msgstr "Pesquisa"
 
-#: georeferencing/models.py:93
+#: georeferencing/models.py:133
 msgid "List"
 msgstr "Lista"
 
-#: georeferencing/models.py:97
+#: georeferencing/models.py:137
 msgid "Not Started"
 msgstr "Não iniciado"
 
-#: georeferencing/models.py:98
+#: georeferencing/models.py:138
 msgid "Processing"
 msgstr "A processar"
 
-#: georeferencing/models.py:99
-msgid "Completed"
-msgstr "Concluído"
-
-#: georeferencing/models.py:100
+#: georeferencing/models.py:140
 msgid "Failed"
 msgstr "Falhado"
 
-#: georeferencing/models.py:112
+#: georeferencing/models.py:152
 msgid "Focal length <="
 msgstr "Distância focal <="
 
-#: georeferencing/models.py:113
+#: georeferencing/models.py:153
 msgid "Focal length >="
 msgstr "Distância focal >="
 
-#: georeferencing/models.py:114
+#: georeferencing/models.py:154
 msgid "Original images"
 msgstr "Imagens originais"
 
-#: georeferencing/models.py:125
+#: georeferencing/models.py:165
 msgid "Processing Status"
 msgstr "Estado de processamento"
 
-#: templates/account/login.html:5 templates/account/login.html:9
-msgid "Welcome back!"
+#: georeferencing/models.py:213
+msgid "Leave empty for a general challenge applicable to any batch."
+msgstr ""
+
+#: georeferencing/models.py:395
+msgid "Started"
+msgstr "Iniciado"
+
+#: georeferencing/models.py:396
+msgid "Step"
+msgstr ""
+
+#: georeferencing/models.py:398
+msgid "Dismissed"
+msgstr ""
+
+#: templates/account/login.html:274 templates/account/logout.html:155
+#: templates/account/password_reset.html:202 templates/account/signup.html:320
+msgid ""
+"“Every match you submit helps measure light pollution where satellites "
+"cannot reach.”"
+msgstr ""
+
+#: templates/account/login.html:287
+msgid "Welcome back"
 msgstr "Bem-vindo de volta!"
 
-#: templates/account/login.html:19
-#, python-format
-msgid ""
-"If you have not created an account yet, then please %(link)ssign "
-"up%(end_link)s first."
+#: templates/account/login.html:288
+msgid "Sign in to continue locating the night."
 msgstr ""
-"Se ainda não criou uma conta, por favor %(link)sregiste-se%(end_link)s "
-"primeiro."
 
-#: templates/account/login.html:31
-msgid "Sign In"
-msgstr "Entrar"
+#: templates/account/login.html:300 templates/account/password_reset.html:234
+#: templates/account/signup.html:347 user_profile/templates/user.html:1236
+msgid "Email"
+msgstr "E-mail:"
 
-#: templates/account/login.html:42
-msgid "Sign in with a passkey"
-msgstr "Entrar com uma chave de acesso"
+#: templates/account/login.html:316 templates/account/signup.html:382
+msgid "Password"
+msgstr ""
 
-#: templates/account/login.html:47
-msgid "Mail me a sign-in code"
-msgstr "Envie-me um código de acesso"
+#: templates/account/login.html:317
+msgid "Forgot password?"
+msgstr ""
+
+#: templates/account/login.html:327 templates/account/signup.html:392
+#: templates/account/signup.html:414
+msgid "Show password"
+msgstr ""
+
+#: templates/account/login.html:347 templates/account/signup.html:457
+msgid "or continue with"
+msgstr ""
+
+#: templates/account/login.html:360
+msgid "New here?"
+msgstr ""
+
+#: templates/account/login.html:361 templates/account/signup.html:10
+#: templates/account/signup.html:333
+msgid "Create an account"
+msgstr "Criar uma conta"
+
+#: templates/account/logout.html:9 templates/account/logout.html:192
+msgid "Sign out"
+msgstr "Terminar sessão"
+
+#: templates/account/logout.html:176
+msgid "Ready to leave?"
+msgstr "Pronto para sair?"
+
+#: templates/account/logout.html:179
+#, python-format
+msgid "You’re signed in as <b>%(u)s</b>. Sign out and we’ll see you next time."
+msgstr ""
+"Iniciou sessão como <b>%(u)s</b>. Termine a sessão e vemo-nos da próxima."
+
+#: templates/account/logout.html:181
+msgid "You are not signed in."
+msgstr "Não tem sessão iniciada."
+
+#: templates/account/logout.html:196
+#: user_profile/templates/delete_account.html:115
+#: user_profile/templates/edit_profile.html:280
+#: user_profile/templates/user.html:1307
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: templates/account/logout.html:210
+msgid "Changed your mind?"
+msgstr "Mudou de ideias?"
+
+#: templates/account/password_reset.html:9
+msgid "Reset password"
+msgstr ""
+
+#: templates/account/password_reset.html:215
+msgid "Reset your password"
+msgstr ""
+
+#: templates/account/password_reset.html:217
+msgid ""
+"Enter the email address you signed up with and we'll send you a link to "
+"choose a new password."
+msgstr ""
+
+#: templates/account/password_reset.html:249
+msgid "Trouble resetting your password?"
+msgstr ""
+
+#: templates/account/password_reset.html:249
+msgid "Contact us"
+msgstr "Contacte-nos"
+
+#: templates/account/password_reset.html:253
+msgid "Send reset link"
+msgstr ""
+
+#: templates/account/password_reset.html:259
+msgid "Remembered your password?"
+msgstr ""
+
+#: templates/account/signup.html:334
+msgid "Join the project and start locating the night."
+msgstr ""
+
+#: templates/account/signup.html:365 user_profile/templates/user.html:1232
+msgid "Username"
+msgstr "Nome de utilizador"
+
+#: templates/account/signup.html:404
+msgid "Confirm password"
+msgstr ""
+
+#: templates/account/signup.html:428
+msgid ""
+"I have read and accept the <a href=\"/privacy/\" target=\"_blank\" "
+"rel=\"noopener\">privacy policy</a> and the <a href=\"/terms/\" "
+"target=\"_blank\" rel=\"noopener\">terms of use</a>."
+msgstr ""
+"Li e aceito a <a href=\"/privacy/\" target=\"_blank\" "
+"rel=\"noopener\">política de privacidade</a> e os <a href=\"/terms/\" "
+"target=\"_blank\" rel=\"noopener\">termos de uso</a>."
+
+#: templates/account/signup.html:438 user_profile/forms.py:54
+msgid ""
+"Send me updates about Lost at Night and citizen-science campaigns (optional)."
+msgstr ""
+
+#: templates/account/signup.html:444
+msgid ""
+"By creating an account, you agree to our use of your contributions for "
+"scientific research on light pollution."
+msgstr ""
+
+#: templates/account/signup.html:450
+msgid "Create account"
+msgstr "Criar conta"
+
+#: templates/account/signup.html:470
+msgid "Already have an account?"
+msgstr ""
 
 #: templates/socialaccount/snippets/login.html:10
 msgid "Or use a third-party"
@@ -568,22 +1960,90 @@ msgstr "Ou use um serviço externo"
 msgid "Sign in with Google"
 msgstr "Entrar com o Google"
 
-#: user_profile/models.py:45 user_profile/templates/edit_profile.html:215
-#: user_profile/templates/user.html:534
-msgid "Country"
-msgstr "País"
-
-#: user_profile/models.py:46 user_profile/templates/edit_profile.html:210
+#: user_profile/forms.py:24 user_profile/forms.py:32 user_profile/models.py:46
+#: user_profile/templates/edit_profile.html:248
+#: user_profile/templates/user.html:1240
 msgid "City"
 msgstr "Cidade"
 
-#: user_profile/models.py:47
+#: user_profile/forms.py:29 user_profile/templates/edit_profile.html:258
+#: user_profile/templates/user.html:1250
+msgid "Biography"
+msgstr "Biografia"
+
+#: user_profile/forms.py:30 user_profile/templates/edit_profile.html:269
+msgid "Profile Picture"
+msgstr "Foto de perfil"
+
+#: user_profile/forms.py:31 user_profile/models.py:45
+#: user_profile/templates/edit_profile.html:253
+#: user_profile/templates/user.html:926 user_profile/templates/user.html:1245
+msgid "Country"
+msgstr "País"
+
+#: user_profile/forms.py:33 user_profile/models.py:47
 msgid "Visible in rankings"
 msgstr "Visível nas classificações"
 
-#: user_profile/models.py:47
+#: user_profile/forms.py:34
+msgid "Receive newsletters and project updates"
+msgstr "Receber a newsletter e novidades do projeto"
+
+#: user_profile/forms.py:37 user_profile/models.py:47
 msgid "If disabled, your profile will not appear in public rankings"
 msgstr "Se desativado, o seu perfil não aparecerá nas classificações públicas"
+
+#: user_profile/forms.py:38
+msgid ""
+"Occasional emails about new campaigns, features and citizen-science news. "
+"You can opt out at any time."
+msgstr ""
+"E-mails ocasionais sobre novas campanhas, funcionalidades e notícias de "
+"ciência cidadã. Pode cancelar a inscrição a qualquer momento."
+
+#: user_profile/forms.py:47
+msgid "I have read and accept the privacy policy and terms of use."
+msgstr "Li e aceito a política de privacidade e os termos de uso."
+
+#: user_profile/forms.py:49
+msgid "You must accept the privacy policy to create an account."
+msgstr "Tem de aceitar a política de privacidade para criar uma conta."
+
+#: user_profile/models.py:50
+msgid "Privacy policy accepted at"
+msgstr "Política de privacidade aceite em"
+
+#: user_profile/models.py:51
+msgid "Privacy policy version"
+msgstr "Versão da política de privacidade"
+
+#: user_profile/models.py:53
+msgid "Subscribed to newsletter"
+msgstr "Inscrito na newsletter"
+
+#: user_profile/models.py:54
+msgid "Newsletter subscribed at"
+msgstr "Inscrição na newsletter em"
+
+#: user_profile/models.py:55
+msgid "Newsletter unsubscribed at"
+msgstr "Cancelamento da newsletter em"
+
+#: user_profile/models.py:56
+msgid "Newsletter unsubscribe token"
+msgstr "Token de cancelamento"
+
+#: user_profile/models.py:58
+msgid "Analytics cookies consent"
+msgstr "Consentimento de cookies analíticos"
+
+#: user_profile/models.py:59
+msgid "Functional cookies consent"
+msgstr "Consentimento de cookies funcionais"
+
+#: user_profile/models.py:60
+msgid "Cookies consent given at"
+msgstr "Consentimento de cookies dado em"
 
 #: user_profile/templates/delete_account.html:10
 #: user_profile/templates/delete_account.html:99
@@ -602,178 +2062,2128 @@ msgstr ""
 "Esta ação eliminará permanentemente a sua conta e todos os dados associados. "
 "Não poderá recuperar esta informação."
 
-#: user_profile/templates/delete_account.html:115
-#: user_profile/templates/edit_profile.html:242
-msgid "Cancel"
-msgstr "Cancelar"
-
 #: user_profile/templates/delete_account.html:118
 msgid "Delete permanently"
 msgstr "Eliminar permanentemente"
 
-#: user_profile/templates/edit_profile.html:185
+#: user_profile/templates/edit_profile.html:223
 msgid "Profile Information"
 msgstr "Informações do perfil"
 
-#: user_profile/templates/edit_profile.html:200
+#: user_profile/templates/edit_profile.html:238
 msgid "Username:"
 msgstr "Nome de utilizador:"
 
-#: user_profile/templates/edit_profile.html:205
-msgid "Email:"
-msgstr "E-mail:"
-
-#: user_profile/templates/edit_profile.html:220
-msgid "Biography"
-msgstr "Biografia"
-
-#: user_profile/templates/edit_profile.html:221
+#: user_profile/templates/edit_profile.html:259
 msgid "Tell us about yourself"
 msgstr "Fale-nos sobre si"
 
-#: user_profile/templates/edit_profile.html:231
-msgid "Profile Picture"
-msgstr "Foto de perfil"
-
-#: user_profile/templates/edit_profile.html:232
+#: user_profile/templates/edit_profile.html:270
 msgid "Preview: New image selected"
 msgstr "Pré-visualização: nova imagem selecionada"
 
-#: user_profile/templates/edit_profile.html:241
+#: user_profile/templates/edit_profile.html:279
 msgid "Save Changes"
 msgstr "Guardar alterações"
 
-#: user_profile/templates/user.html:373
+#: user_profile/templates/newsletter_unsubscribe.html:7
+msgid "Unsubscribe"
+msgstr "Cancelar inscrição"
+
+#: user_profile/templates/newsletter_unsubscribe.html:62
+msgid "Link not recognised"
+msgstr "Link não reconhecido"
+
+#: user_profile/templates/newsletter_unsubscribe.html:63
+msgid ""
+"This unsubscribe link is no longer valid. You may already be unsubscribed, "
+"or the link expired after use."
+msgstr ""
+"Este link de cancelamento já não é válido. Pode já estar cancelado ou o link "
+"expirou após o uso."
+
+#: user_profile/templates/newsletter_unsubscribe.html:65
+msgid "You've been unsubscribed"
+msgstr "A inscrição foi cancelada"
+
+#: user_profile/templates/newsletter_unsubscribe.html:66
+msgid ""
+"You won't receive newsletters from Lost at Night anymore. You can re-"
+"subscribe at any time from your profile page."
+msgstr ""
+"Já não vai receber newsletters do Lost at Night. Pode voltar a inscrever-se "
+"a qualquer momento na sua página de perfil."
+
+#: user_profile/templates/user.html:607 user_profile/templates/user.html:1224
 msgid "Edit profile"
 msgstr "Editar perfil"
 
-#: user_profile/templates/user.html:377
+#: user_profile/templates/user.html:611
 msgid "Log out"
 msgstr "Terminar sessão"
 
-#: user_profile/templates/user.html:381
+#: user_profile/templates/user.html:615
 msgid "Delete account"
 msgstr "Eliminar conta"
 
-#: user_profile/templates/user.html:399
+#: user_profile/templates/user.html:633
 msgid "Visible"
 msgstr "Visível"
 
-#: user_profile/templates/user.html:402
+#: user_profile/templates/user.html:636
 msgid "Invisible"
 msgstr "Invisível"
 
-#: user_profile/templates/user.html:428
-msgid "My Visited Places"
-msgstr "Os Meus Lugares Visitados"
+#: user_profile/templates/user.html:771
+msgid "Your statistics"
+msgstr "As suas estatísticas"
 
-#: user_profile/templates/user.html:439
-msgid "Your Personal Statistics"
-msgstr "As Suas Estatísticas Pessoais"
+#: user_profile/templates/user.html:773
+msgid "Activity"
+msgstr ""
 
-#: user_profile/templates/user.html:452 user_profile/templates/user.html:536
-msgid "Control Points"
+#: user_profile/templates/user.html:778
+msgid "Lifetime"
+msgstr ""
+
+#: user_profile/templates/user.html:783
+msgid "Total placed"
+msgstr "Total de Imagens"
+
+#: user_profile/templates/user.html:791
+msgid "Cheating flag"
+msgstr ""
+
+#: user_profile/templates/user.html:797 user_profile/templates/user.html:913
+msgid "Global ranking"
+msgstr "Ranking global"
+
+#: user_profile/templates/user.html:800
+msgid "Tasks rank"
+msgstr "Classificação por tarefas"
+
+#: user_profile/templates/user.html:805
+msgid "Control points rank"
 msgstr "Pontos de Controlo"
 
-#: user_profile/templates/user.html:458
-msgid "Time Invested"
-msgstr "Tempo Investido"
+#: user_profile/templates/user.html:810
+msgid "Time rank"
+msgstr ""
 
-#: user_profile/templates/user.html:465
-msgid "Your Position in Tasks"
-msgstr "A Sua Posição em Tarefas"
+#: user_profile/templates/user.html:816
+msgid "Your share of the project"
+msgstr ""
 
-#: user_profile/templates/user.html:471
-msgid "Your Position in Control Points"
-msgstr "A Sua Posição em Pontos de Controlo"
-
-#: user_profile/templates/user.html:477
-msgid "Your Position in Time"
-msgstr "A Sua Posição em Tempo"
-
-#: user_profile/templates/user.html:484
-#, python-format
-msgid "Your %% Contribution in Tasks"
-msgstr "A Sua %% Contribuição em Tarefas"
-
-#: user_profile/templates/user.html:490
-#, python-format
-msgid "Your %% Contribution in Control Points"
-msgstr "A Sua %% Contribuição em Pontos de Controlo"
-
-#: user_profile/templates/user.html:496
-#, python-format
-msgid "Your %% Contribution in Time"
-msgstr "A Sua %% Contribuição em Tempo"
-
-#: user_profile/templates/user.html:503
-#, python-format
-msgid "Your Daily Contributions (%(start)s - %(end)s)"
+#: user_profile/templates/user.html:841
+#, fuzzy, python-format
+#| msgid "Your Daily Contributions (%(start)s - %(end)s)"
+msgid "Daily contributions (%(start)s - %(end)s)"
 msgstr "As suas contribuições diárias (%(start)s - %(end)s)"
 
-#: user_profile/templates/user.html:510
+#: user_profile/templates/user.html:845
 msgid "Less"
 msgstr "Menos"
 
-#: user_profile/templates/user.html:516
+#: user_profile/templates/user.html:851
 msgid "More"
 msgstr "Mais"
 
-#: user_profile/templates/user.html:526
-#, python-format
-msgid "Ranking (Your position: #%(pos)s in tasks)"
-msgstr "Classificação (A sua posição: #%(pos)s em tarefas)"
+#: user_profile/templates/user.html:859
+msgid "My Visited Places"
+msgstr "Os Meus Lugares Visitados"
 
-#: user_profile/templates/user.html:533
-msgid "User"
-msgstr "Utilizador"
+#: user_profile/templates/user.html:871
+msgid "Your challenges"
+msgstr ""
 
-#: user_profile/templates/user.html:535 user_profile/templates/user.html:536
-#: user_profile/templates/user.html:537
-msgid "Pos"
-msgstr "Pos"
+#: user_profile/templates/user.html:881
+msgid "Group"
+msgstr ""
 
-#: user_profile/templates/user.html:562
-msgid "Invisible user"
-msgstr "Utilizador invisível"
+#: user_profile/templates/user.html:897
+msgid "Open"
+msgstr ""
 
-#: user_profile/templates/user.html:637
+#: user_profile/templates/user.html:904
+msgid "Browse all challenges"
+msgstr ""
+
+#: user_profile/templates/user.html:928
+msgid "Control Points"
+msgstr "Pontos de Controlo"
+
+#: user_profile/templates/user.html:929
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2456
+msgid "Time"
+msgstr ""
+
+#: user_profile/templates/user.html:982
+msgid "control points"
+msgstr "pontos de controlo"
+
+#: user_profile/templates/user.html:984
+msgid "time"
+msgstr "tempo"
+
+#: user_profile/templates/user.html:987
+msgid "Your position"
+msgstr "A Sua Posição em Tempo"
+
+#: user_profile/templates/user.html:990
+msgid "No users yet"
+msgstr "Ainda sem utilizadores"
+
+#: user_profile/templates/user.html:991
+msgid "Could not load ranking."
+msgstr "Não foi possível carregar o ranking."
+
+#: user_profile/templates/user.html:1165
 msgid "No completed tasks yet"
 msgstr "Ainda não há tarefas concluídas"
 
-#: user_profile/views.py:312
+#: user_profile/templates/user.html:1273
+#, python-format
+msgid "Subscribed on %(d)s."
+msgstr "Inscrito em %(d)s."
+
+#: user_profile/templates/user.html:1277
+#, python-format
+msgid "You unsubscribed on %(d)s."
+msgstr "Cancelou a subscrição em %(d)s."
+
+#: user_profile/templates/user.html:1282
+msgid "Profile picture"
+msgstr "Foto de perfil"
+
+#: user_profile/templates/user.html:1298
+msgid "Remove"
+msgstr ""
+
+#: user_profile/templates/user.html:1308
+msgid "Save changes"
+msgstr "Guardar alterações"
+
+#: user_profile/templates/user.html:1359
+msgid "Search country…"
+msgstr ""
+
+#: user_profile/templates/user.html:1383
+msgid "No matches"
+msgstr "Sem resultados"
+
+#: user_profile/templates/user.html:1442
+msgid "Saving…"
+msgstr ""
+
+#: user_profile/templates/user.html:1459
+msgid "Could not save. Please try again."
+msgstr ""
+
+#: user_profile/templates/user.html:1463
+msgid "Network error — please try again."
+msgstr ""
+
+#: user_profile/views.py:360
 msgid "Your profile has been updated successfully!"
 msgstr "O seu perfil foi atualizado com sucesso!"
 
-#: user_profile/views.py:344
+#: user_profile/views.py:395
 #, python-format
 msgid "%(count)d day"
 msgid_plural "%(count)d days"
 msgstr[0] "%(count)d dia"
 msgstr[1] "%(count)d dias"
 
-#: user_profile/views.py:346
+#: user_profile/views.py:397
 #, python-format
 msgid "%(count)d hour"
 msgid_plural "%(count)d hours"
 msgstr[0] "%(count)d hora"
 msgstr[1] "%(count)d horas"
 
-#: user_profile/views.py:348
+#: user_profile/views.py:399
 #, python-format
 msgid "%(count)d minute"
 msgid_plural "%(count)d minutes"
 msgstr[0] "%(count)d minuto"
 msgstr[1] "%(count)d minutos"
 
-#: user_profile/views.py:352
+#: user_profile/views.py:403
 msgid " and "
 msgstr " e "
 
-#: user_profile/views.py:356
+#: user_profile/views.py:407
 msgid "0 minutes"
 msgstr "0 minutos"
 
-#: user_profile/views.py:389
+#: user_profile/views.py:597
 msgid "Your account has been permanently deleted."
 msgstr "A sua conta foi eliminada permanentemente."
+
+#: venv/lib/python3.12/site-packages/bootstrap5/components.py:17
+#: venv/lib/python3.12/site-packages/bootstrap5/templates/bootstrap5/form_errors.html:3
+#: venv/lib/python3.12/site-packages/bootstrap5/templates/bootstrap5/messages.html:4
+msgid "close"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/_termui_impl.py:518
+#, python-brace-format
+msgid "{editor}: Editing failed"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/_termui_impl.py:522
+#, python-brace-format
+msgid "{editor}: Editing failed: {e}"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/core.py:1120
+msgid "Aborted!"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/core.py:1309
+#: venv/lib/python3.12/site-packages/click/decorators.py:559
+msgid "Show this message and exit."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/core.py:1340
+#: venv/lib/python3.12/site-packages/click/core.py:1370
+#, python-brace-format
+msgid "(Deprecated) {text}"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/core.py:1387
+msgid "Options"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/core.py:1413
+#, python-brace-format
+msgid "Got unexpected extra argument ({args})"
+msgid_plural "Got unexpected extra arguments ({args})"
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/click/core.py:1429
+msgid "DeprecationWarning: The command {name!r} is deprecated."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/core.py:1636
+msgid "Commands"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/core.py:1668
+msgid "Missing command."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/core.py:1746
+msgid "No such command {name!r}."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/core.py:2310
+msgid "Value must be an iterable."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/core.py:2331
+#, python-brace-format
+msgid "Takes {nargs} values but 1 was given."
+msgid_plural "Takes {nargs} values but {len} were given."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/click/core.py:2778
+#, python-brace-format
+msgid "env var: {var}"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/core.py:2808
+msgid "(dynamic)"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/core.py:2821
+#, python-brace-format
+msgid "default: {default}"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/core.py:2834
+msgid "required"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/decorators.py:465
+#, python-format
+msgid "%(prog)s, version %(version)s"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/decorators.py:528
+msgid "Show the version and exit."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/exceptions.py:44
+#: venv/lib/python3.12/site-packages/click/exceptions.py:80
+#, python-brace-format
+msgid "Error: {message}"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/exceptions.py:72
+#, python-brace-format
+msgid "Try '{command} {option}' for help."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/exceptions.py:121
+#, python-brace-format
+msgid "Invalid value: {message}"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/exceptions.py:123
+#, python-brace-format
+msgid "Invalid value for {param_hint}: {message}"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/exceptions.py:179
+msgid "Missing argument"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/exceptions.py:181
+msgid "Missing option"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/exceptions.py:183
+msgid "Missing parameter"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/exceptions.py:185
+#, python-brace-format
+msgid "Missing {param_type}"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/exceptions.py:192
+#, python-brace-format
+msgid "Missing parameter: {param_name}"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/exceptions.py:212
+#, python-brace-format
+msgid "No such option: {name}"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/exceptions.py:224
+#, python-brace-format
+msgid "Did you mean {possibility}?"
+msgid_plural "(Possible options: {possibilities})"
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/click/exceptions.py:262
+msgid "unknown error"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/exceptions.py:269
+msgid "Could not open file {filename!r}: {message}"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/parser.py:231
+msgid "Argument {name!r} takes {nargs} values."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/parser.py:413
+msgid "Option {name!r} does not take a value."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/parser.py:474
+msgid "Option {name!r} requires an argument."
+msgid_plural "Option {name!r} requires {nargs} arguments."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/click/shell_completion.py:319
+msgid "Shell completion is not supported for Bash versions older than 4.4."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/shell_completion.py:326
+msgid "Couldn't detect Bash version, shell completion is not supported."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/termui.py:158
+msgid "Repeat for confirmation"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/termui.py:174
+msgid "Error: The value you entered was invalid."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/termui.py:176
+#, python-brace-format
+msgid "Error: {e.message}"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/termui.py:187
+msgid "Error: The two entered values do not match."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/termui.py:243
+msgid "Error: invalid input"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/termui.py:773
+msgid "Press any key to continue..."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/types.py:266
+#, python-brace-format
+msgid ""
+"Choose from:\n"
+"\t{choices}"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/types.py:298
+msgid "{value!r} is not {choice}."
+msgid_plural "{value!r} is not one of {choices}."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/click/types.py:392
+msgid "{value!r} does not match the format {format}."
+msgid_plural "{value!r} does not match the formats {formats}."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/click/types.py:414
+msgid "{value!r} is not a valid {number_type}."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/types.py:470
+#, python-brace-format
+msgid "{value} is not in the range {range}."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/types.py:611
+msgid "{value!r} is not a valid boolean."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/types.py:635
+msgid "{value!r} is not a valid UUID."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/types.py:822
+msgid "file"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/types.py:824
+msgid "directory"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/types.py:826
+msgid "path"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/types.py:877
+msgid "{name} {filename!r} does not exist."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/types.py:886
+msgid "{name} {filename!r} is a file."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/types.py:894
+#, python-brace-format
+msgid "{name} '{filename}' is a directory."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/types.py:903
+msgid "{name} {filename!r} is not readable."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/types.py:912
+msgid "{name} {filename!r} is not writable."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/types.py:921
+msgid "{name} {filename!r} is not executable."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/click/types.py:988
+#, python-brace-format
+msgid "{len_type} values are required, but {len_value} was given."
+msgid_plural "{len_type} values are required, but {len_value} were given."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/contrib/messages/apps.py:15
+msgid "Messages"
+msgstr "Mensagem"
+
+#: venv/lib/python3.12/site-packages/django/contrib/sitemaps/apps.py:8
+msgid "Site Maps"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/contrib/staticfiles/apps.py:9
+msgid "Static Files"
+msgstr "Ficheiros estáticos"
+
+#: venv/lib/python3.12/site-packages/django/contrib/syndication/apps.py:7
+msgid "Syndication"
+msgstr "Sindicação"
+
+#. Translators: String used to replace omitted page numbers in elided page
+#. range generated by paginators, e.g. [1, 2, '…', 5, 6, 7, '…', 9, 10].
+#: venv/lib/python3.12/site-packages/django/core/paginator.py:30
+msgid "…"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/paginator.py:50
+msgid "That page number is not an integer"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/paginator.py:52
+msgid "That page number is less than 1"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/paginator.py:54
+msgid "That page contains no results"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:22
+msgid "Enter a valid value."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:104
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:752
+msgid "Enter a valid URL."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:165
+msgid "Enter a valid integer."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:176
+msgid "Enter a valid email address."
+msgstr ""
+
+#. Translators: "letters" means latin letters: a-z and A-Z.
+#: venv/lib/python3.12/site-packages/django/core/validators.py:259
+msgid ""
+"Enter a valid “slug” consisting of letters, numbers, underscores or hyphens."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:267
+msgid ""
+"Enter a valid “slug” consisting of Unicode letters, numbers, underscores, or "
+"hyphens."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:279
+#: venv/lib/python3.12/site-packages/django/core/validators.py:287
+#: venv/lib/python3.12/site-packages/django/core/validators.py:316
+msgid "Enter a valid IPv4 address."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:296
+#: venv/lib/python3.12/site-packages/django/core/validators.py:317
+msgid "Enter a valid IPv6 address."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:308
+#: venv/lib/python3.12/site-packages/django/core/validators.py:315
+msgid "Enter a valid IPv4 or IPv6 address."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:351
+msgid "Enter only digits separated by commas."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:357
+#, python-format
+msgid "Ensure this value is %(limit_value)s (it is %(show_value)s)."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:392
+#, python-format
+msgid "Ensure this value is less than or equal to %(limit_value)s."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:401
+#, python-format
+msgid "Ensure this value is greater than or equal to %(limit_value)s."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:410
+#, python-format
+msgid "Ensure this value is a multiple of step size %(limit_value)s."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:420
+#, python-format
+msgid ""
+"Ensure this value has at least %(limit_value)d character (it has "
+"%(show_value)d)."
+msgid_plural ""
+"Ensure this value has at least %(limit_value)d characters (it has "
+"%(show_value)d)."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:438
+#, python-format
+msgid ""
+"Ensure this value has at most %(limit_value)d character (it has "
+"%(show_value)d)."
+msgid_plural ""
+"Ensure this value has at most %(limit_value)d characters (it has "
+"%(show_value)d)."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:461
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:347
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:386
+msgid "Enter a number."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:463
+#, python-format
+msgid "Ensure that there are no more than %(max)s digit in total."
+msgid_plural "Ensure that there are no more than %(max)s digits in total."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:468
+#, python-format
+msgid "Ensure that there are no more than %(max)s decimal place."
+msgid_plural "Ensure that there are no more than %(max)s decimal places."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:473
+#, python-format
+msgid ""
+"Ensure that there are no more than %(max)s digit before the decimal point."
+msgid_plural ""
+"Ensure that there are no more than %(max)s digits before the decimal point."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:544
+#, python-format
+msgid ""
+"File extension “%(extension)s” is not allowed. Allowed extensions are: "
+"%(allowed_extensions)s."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/core/validators.py:605
+msgid "Null characters are not allowed."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/base.py:1423
+#: venv/lib/python3.12/site-packages/django/forms/models.py:893
+msgid "and"
+msgstr " e "
+
+#: venv/lib/python3.12/site-packages/django/db/models/base.py:1425
+#, python-format
+msgid "%(model_name)s with this %(field_labels)s already exists."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/constraints.py:17
+#, python-format
+msgid "Constraint “%(name)s” is violated."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:128
+#, python-format
+msgid "Value %(value)r is not a valid choice."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:129
+msgid "This field cannot be null."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:130
+msgid "This field cannot be blank."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:131
+#, python-format
+msgid "%(model_name)s with this %(field_label)s already exists."
+msgstr ""
+
+#. Translators: The 'lookup_type' is one of 'date', 'year' or
+#. 'month'. Eg: "Title must be unique for pub_date year"
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:135
+#, python-format
+msgid ""
+"%(field_label)s must be unique for %(date_field_label)s %(lookup_type)s."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:173
+#, python-format
+msgid "Field of type: %(field_type)s"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1094
+#, python-format
+msgid "“%(value)s” value must be either True or False."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1095
+#, python-format
+msgid "“%(value)s” value must be either True, False, or None."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1097
+msgid "Boolean (Either True or False)"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1147
+#, python-format
+msgid "String (up to %(max_length)s)"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1149
+msgid "String (unlimited)"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1253
+msgid "Comma-separated integers"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1354
+#, python-format
+msgid ""
+"“%(value)s” value has an invalid date format. It must be in YYYY-MM-DD "
+"format."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1358
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1493
+#, python-format
+msgid ""
+"“%(value)s” value has the correct format (YYYY-MM-DD) but it is an invalid "
+"date."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1362
+msgid "Date (without time)"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1489
+#, python-format
+msgid ""
+"“%(value)s” value has an invalid format. It must be in YYYY-MM-DD HH:MM[:ss[."
+"uuuuuu]][TZ] format."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1497
+#, python-format
+msgid ""
+"“%(value)s” value has the correct format (YYYY-MM-DD HH:MM[:ss[.uuuuuu]]"
+"[TZ]) but it is an invalid date/time."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1502
+msgid "Date (with time)"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1626
+#, python-format
+msgid "“%(value)s” value must be a decimal number."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1628
+msgid "Decimal number"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1789
+#, python-format
+msgid ""
+"“%(value)s” value has an invalid format. It must be in [DD] [[HH:]MM:]ss[."
+"uuuuuu] format."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1845
+msgid "Email address"
+msgstr "Endereço de e-mail"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1870
+msgid "File path"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1948
+#, python-format
+msgid "“%(value)s” value must be a float."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1950
+msgid "Floating point number"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1990
+#, python-format
+msgid "“%(value)s” value must be an integer."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1992
+msgid "Integer"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2088
+msgid "Big (8 byte) integer"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2105
+msgid "Small integer"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2113
+msgid "IPv4 address"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2144
+msgid "IP address"
+msgstr "Endereço IP"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2237
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2238
+#, python-format
+msgid "“%(value)s” value must be either None, True or False."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2240
+msgid "Boolean (Either True, False or None)"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2291
+msgid "Positive big integer"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2306
+msgid "Positive integer"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2321
+msgid "Positive small integer"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2337
+#, python-format
+msgid "Slug (up to %(max_length)s)"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2373
+msgid "Text"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2448
+#, python-format
+msgid ""
+"“%(value)s” value has an invalid format. It must be in HH:MM[:ss[.uuuuuu]] "
+"format."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2452
+#, python-format
+msgid ""
+"“%(value)s” value has the correct format (HH:MM[:ss[.uuuuuu]]) but it is an "
+"invalid time."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2564
+msgid "URL"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2588
+msgid "Raw binary data"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2653
+#, python-format
+msgid "“%(value)s” is not a valid UUID."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2655
+msgid "Universally unique identifier"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/files.py:232
+msgid "File"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/files.py:393
+msgid "Image"
+msgstr "Imagem:"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/json.py:26
+msgid "A JSON object"
+msgstr "Um objeto JSON"
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/json.py:28
+msgid "Value must be valid JSON."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:919
+#, python-format
+msgid "%(model)s instance with %(field)s %(value)r does not exist."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:921
+msgid "Foreign Key (type determined by related field)"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:1212
+msgid "One-to-one relationship"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:1269
+#, python-format
+msgid "%(from)s-%(to)s relationship"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:1271
+#, python-format
+msgid "%(from)s-%(to)s relationships"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:1319
+msgid "Many-to-many relationship"
+msgstr ""
+
+#. Translators: If found as last label character, these punctuation
+#. characters will prevent the default label_suffix to be appended to the label
+#: venv/lib/python3.12/site-packages/django/forms/boundfield.py:184
+msgid ":?.!"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:91
+msgid "This field is required."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:298
+msgid "Enter a whole number."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:467
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:1241
+msgid "Enter a valid date."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:490
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:1242
+msgid "Enter a valid time."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:517
+msgid "Enter a valid date/time."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:551
+msgid "Enter a valid duration."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:552
+#, python-brace-format
+msgid "The number of days must be between {min_days} and {max_days}."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:621
+msgid "No file was submitted. Check the encoding type on the form."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:622
+msgid "No file was submitted."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:623
+msgid "The submitted file is empty."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:625
+#, python-format
+msgid "Ensure this filename has at most %(max)d character (it has %(length)d)."
+msgid_plural ""
+"Ensure this filename has at most %(max)d characters (it has %(length)d)."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:630
+msgid "Please either submit a file or check the clear checkbox, not both."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:694
+msgid ""
+"Upload a valid image. The file you uploaded was either not an image or a "
+"corrupted image."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:857
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:949
+#: venv/lib/python3.12/site-packages/django/forms/models.py:1566
+#, python-format
+msgid "Select a valid choice. %(value)s is not one of the available choices."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:951
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:1070
+#: venv/lib/python3.12/site-packages/django/forms/models.py:1564
+msgid "Enter a list of values."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:1071
+msgid "Enter a complete value."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:1310
+msgid "Enter a valid UUID."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/fields.py:1340
+msgid "Enter a valid JSON."
+msgstr ""
+
+#. Translators: This is the default suffix added to form field labels
+#: venv/lib/python3.12/site-packages/django/forms/forms.py:98
+msgid ":"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/forms.py:244
+#: venv/lib/python3.12/site-packages/django/forms/forms.py:328
+#, python-format
+msgid "(Hidden field %(name)s) %(error)s"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/formsets.py:63
+#, python-format
+msgid ""
+"ManagementForm data is missing or has been tampered with. Missing fields: "
+"%(field_names)s. You may need to file a bug report if the issue persists."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/formsets.py:67
+#, python-format
+msgid "Please submit at most %(num)d form."
+msgid_plural "Please submit at most %(num)d forms."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/forms/formsets.py:72
+#, python-format
+msgid "Please submit at least %(num)d form."
+msgid_plural "Please submit at least %(num)d forms."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/forms/formsets.py:484
+#: venv/lib/python3.12/site-packages/django/forms/formsets.py:491
+msgid "Order"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/formsets.py:499
+msgid "Delete"
+msgstr "Eliminar"
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:886
+#, python-format
+msgid "Please correct the duplicate data for %(field)s."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:891
+#, python-format
+msgid "Please correct the duplicate data for %(field)s, which must be unique."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:898
+#, python-format
+msgid ""
+"Please correct the duplicate data for %(field_name)s which must be unique "
+"for the %(lookup)s in %(date_field)s."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:907
+msgid "Please correct the duplicate values below."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:1338
+msgid "The inline value did not match the parent instance."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:1429
+msgid "Select a valid choice. That choice is not one of the available choices."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/models.py:1568
+#, python-format
+msgid "“%(pk)s” is not a valid value."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/utils.py:226
+#, python-format
+msgid ""
+"%(datetime)s couldn’t be interpreted in time zone %(current_timezone)s; it "
+"may be ambiguous or it may not exist."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/widgets.py:463
+msgid "Clear"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/widgets.py:464
+msgid "Currently"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/widgets.py:465
+msgid "Change"
+msgstr "Alterar"
+
+#: venv/lib/python3.12/site-packages/django/forms/widgets.py:795
+msgid "Yes"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/forms/widgets.py:796
+msgid "No"
+msgstr ""
+
+#. Translators: Please do not add spaces around commas.
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:874
+msgid "yes,no,maybe"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:904
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:921
+#, python-format
+msgid "%(size)d byte"
+msgid_plural "%(size)d bytes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:923
+#, python-format
+msgid "%s KB"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:925
+#, python-format
+msgid "%s MB"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:927
+#, python-format
+msgid "%s GB"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:929
+#, python-format
+msgid "%s TB"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:931
+#, python-format
+msgid "%s PB"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:73
+msgid "p.m."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:74
+msgid "a.m."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:79
+msgid "PM"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:80
+msgid "AM"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:152
+msgid "midnight"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:154
+msgid "noon"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:7
+msgid "Monday"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:8
+msgid "Tuesday"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:9
+msgid "Wednesday"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:10
+msgid "Thursday"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:11
+msgid "Friday"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:12
+msgid "Saturday"
+msgstr "Sábado"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:13
+msgid "Sunday"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:16
+msgid "Mon"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:17
+msgid "Tue"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:18
+msgid "Wed"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:19
+msgid "Thu"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:20
+msgid "Fri"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:21
+msgid "Sat"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:22
+msgid "Sun"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:25
+msgid "January"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:26
+msgid "February"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:27
+msgid "March"
+msgstr "Março"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:28
+msgid "April"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:29
+msgid "May"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:30
+msgid "June"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:31
+msgid "July"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:32
+msgid "August"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:33
+msgid "September"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:34
+msgid "October"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:35
+msgid "November"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:36
+msgid "December"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:39
+msgid "jan"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:40
+msgid "feb"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:41
+msgid "mar"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:42
+msgid "apr"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:43
+msgid "may"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:44
+msgid "jun"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:45
+msgid "jul"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:46
+msgid "aug"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:47
+msgid "sep"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:48
+msgid "oct"
+msgstr "out"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:49
+msgid "nov"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:50
+msgid "dec"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:53
+msgctxt "abbrev. month"
+msgid "Jan."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:54
+msgctxt "abbrev. month"
+msgid "Feb."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:55
+msgctxt "abbrev. month"
+msgid "March"
+msgstr "Março"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:56
+msgctxt "abbrev. month"
+msgid "April"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:57
+msgctxt "abbrev. month"
+msgid "May"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:58
+msgctxt "abbrev. month"
+msgid "June"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:59
+msgctxt "abbrev. month"
+msgid "July"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:60
+msgctxt "abbrev. month"
+msgid "Aug."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:61
+msgctxt "abbrev. month"
+msgid "Sept."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:62
+msgctxt "abbrev. month"
+msgid "Oct."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:63
+msgctxt "abbrev. month"
+msgid "Nov."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:64
+msgctxt "abbrev. month"
+msgid "Dec."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:67
+msgctxt "alt. month"
+msgid "January"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:68
+msgctxt "alt. month"
+msgid "February"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:69
+msgctxt "alt. month"
+msgid "March"
+msgstr "Março"
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:70
+msgctxt "alt. month"
+msgid "April"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:71
+msgctxt "alt. month"
+msgid "May"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:72
+msgctxt "alt. month"
+msgid "June"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:73
+msgctxt "alt. month"
+msgid "July"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:74
+msgctxt "alt. month"
+msgid "August"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:75
+msgctxt "alt. month"
+msgid "September"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:76
+msgctxt "alt. month"
+msgid "October"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:77
+msgctxt "alt. month"
+msgid "November"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/dates.py:78
+msgctxt "alt. month"
+msgid "December"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/ipv6.py:8
+msgid "This is not a valid IPv6 address."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/text.py:137
+#, python-format
+msgctxt "String to return when truncating text"
+msgid "%(truncated_text)s…"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/text.py:322
+msgid "or"
+msgstr "ou"
+
+#. Translators: This string is used as a separator between list elements
+#: venv/lib/python3.12/site-packages/django/utils/text.py:341
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:135
+msgid ", "
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:8
+#, python-format
+msgid "%(num)d year"
+msgid_plural "%(num)d years"
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:9
+#, fuzzy, python-format
+#| msgid "%(count)d minute"
+#| msgid_plural "%(count)d minutes"
+msgid "%(num)d month"
+msgid_plural "%(num)d months"
+msgstr[0] "%(count)d minuto"
+msgstr[1] "%(count)d minutos"
+
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:10
+#, python-format
+msgid "%(num)d week"
+msgid_plural "%(num)d weeks"
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:11
+#, fuzzy, python-format
+#| msgid "%(count)d day"
+#| msgid_plural "%(count)d days"
+msgid "%(num)d day"
+msgid_plural "%(num)d days"
+msgstr[0] "%(count)d dia"
+msgstr[1] "%(count)d dias"
+
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:12
+#, fuzzy, python-format
+#| msgid "%(count)d hour"
+#| msgid_plural "%(count)d hours"
+msgid "%(num)d hour"
+msgid_plural "%(num)d hours"
+msgstr[0] "%(count)d hora"
+msgstr[1] "%(count)d horas"
+
+#: venv/lib/python3.12/site-packages/django/utils/timesince.py:13
+#, fuzzy, python-format
+#| msgid "%(count)d minute"
+#| msgid_plural "%(count)d minutes"
+msgid "%(num)d minute"
+msgid_plural "%(num)d minutes"
+msgstr[0] "%(count)d minuto"
+msgstr[1] "%(count)d minutos"
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:111
+msgid "Forbidden"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:112
+msgid "CSRF verification failed. Request aborted."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:116
+msgid ""
+"You are seeing this message because this HTTPS site requires a “Referer "
+"header” to be sent by your web browser, but none was sent. This header is "
+"required for security reasons, to ensure that your browser is not being "
+"hijacked by third parties."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:122
+msgid ""
+"If you have configured your browser to disable “Referer” headers, please re-"
+"enable them, at least for this site, or for HTTPS connections, or for “same-"
+"origin” requests."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:127
+msgid ""
+"If you are using the <meta name=\"referrer\" content=\"no-referrer\"> tag or "
+"including the “Referrer-Policy: no-referrer” header, please remove them. The "
+"CSRF protection requires the “Referer” header to do strict referer checking. "
+"If you’re concerned about privacy, use alternatives like <a "
+"rel=\"noreferrer\" …> for links to third-party sites."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:136
+msgid ""
+"You are seeing this message because this site requires a CSRF cookie when "
+"submitting forms. This cookie is required for security reasons, to ensure "
+"that your browser is not being hijacked by third parties."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:142
+msgid ""
+"If you have configured your browser to disable cookies, please re-enable "
+"them, at least for this site, or for “same-origin” requests."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/csrf.py:148
+msgid "More information is available with DEBUG=True."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:44
+msgid "No year specified"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:64
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:115
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:214
+msgid "Date out of range"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:94
+msgid "No month specified"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:147
+msgid "No day specified"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:194
+msgid "No week specified"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:349
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:380
+#, python-format
+msgid "No %(verbose_name_plural)s available"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:652
+#, python-format
+msgid ""
+"Future %(verbose_name_plural)s not available because %(class_name)s."
+"allow_future is False."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:692
+#, python-format
+msgid "Invalid date string “%(datestr)s” given format “%(format)s”"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/detail.py:56
+#, python-format
+msgid "No %(verbose_name)s found matching the query"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/list.py:70
+msgid "Page is not “last”, nor can it be converted to an int."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/list.py:77
+#, python-format
+msgid "Invalid page (%(page_number)s): %(message)s"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/generic/list.py:169
+#, python-format
+msgid "Empty list and “%(class_name)s.allow_empty” is False."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/static.py:38
+msgid "Directory indexes are not allowed here."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/static.py:40
+#, python-format
+msgid "“%(path)s” does not exist"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/static.py:79
+#, python-format
+msgid "Index of %(directory)s"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:7
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:220
+msgid "The install worked successfully! Congratulations!"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:206
+#, python-format
+msgid ""
+"View <a href=\"https://docs.djangoproject.com/en/%(version)s/releases/\" "
+"target=\"_blank\" rel=\"noopener\">release notes</a> for Django %(version)s"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:221
+#, python-format
+msgid ""
+"You are seeing this page because <a href=\"https://docs.djangoproject.com/en/"
+"%(version)s/ref/settings/#debug\" target=\"_blank\" "
+"rel=\"noopener\">DEBUG=True</a> is in your settings file and you have not "
+"configured any URLs."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:229
+msgid "Django Documentation"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:230
+msgid "Topics, references, &amp; how-to’s"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:238
+msgid "Tutorial: A Polling App"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:239
+msgid "Get started with Django"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:247
+msgid "Django Community"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:248
+msgid "Connect, get help, or contribute"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/isort/main.py:158
+msgid "show this help message and exit"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/admin/job.py:62
+msgid "RQ Settings"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/admin/job.py:75
+msgid "Scheduling"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/admin/job.py:115
+#, python-format
+msgid "Disable selected %(verbose_name_plural)s"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/admin/job.py:128
+#, python-format
+msgid "Enable selected %(verbose_name_plural)s"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/apps.py:8
+msgid "Django RQ Scheduler"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/args.py:23
+msgid "string"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/args.py:24
+msgid "int"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/args.py:25
+msgid "boolean"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/args.py:26
+msgid "datetime"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/args.py:27
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:46
+msgid "callable"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/args.py:30
+msgid "Argument Type"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/args.py:32
+msgid "Argument Value"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/args.py:41
+msgid ""
+"Could not parse {self.arg_type}, options are: {ARG_TYPE_TYPES_DICT.keys()}"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/args.py:56
+#, python-brace-format
+msgid "Could not parse {self.val} as {self.arg_type}"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:44
+msgid "name"
+msgstr "nome"
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:50
+msgid "enabled"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:51
+msgid ""
+"Should job be scheduled? This field is useful to keep past jobs that should "
+"no longer be scheduled"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:55
+msgid "queue"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:56
+msgid "Queue name"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:58
+msgid "job id"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:59
+msgid "Current job_id on queue"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:61
+msgid "repeat"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:62
+msgid ""
+"Number of times to run the job. Leaving this blank means it will run forever."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:64
+msgid "At front"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:65
+msgid "When queuing the job, add it in the front of the queue"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:67
+msgid "timeout"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:68
+msgid ""
+"Timeout specifies the maximum runtime, in seconds, for the job before it'll "
+"be considered 'lost'. Blank uses the default timeout."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:72
+msgid "result ttl"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:83
+msgid "is scheduled?"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:268
+msgid "Invalid callable, must be importable"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:276
+msgid "Invalid queue, must be one of: {}"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:289
+msgid "scheduled time"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:305
+msgid "Scheduled Job"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:306
+msgid "Scheduled Jobs"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:312
+msgid "seconds"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:313
+msgid "minutes"
+msgstr "0 minutos"
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:314
+msgid "hours"
+msgstr "Horas"
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:315
+msgid "days"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:316
+msgid "weeks"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:318
+msgid "interval"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:320
+msgid "interval unit"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:332
+msgid ""
+"Job interval is set lower than %(queue)r queue's interval. minimum interval "
+"is %(interval)"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:338
+#, python-format
+msgid ""
+"Job interval is not a multiple of rq_scheduler's interval frequency: "
+"%(interval)ss"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:349
+#, python-format
+msgid ""
+"Job result_ttl must be either indefinite (-1) or longer than the interval, "
+"%(interval)s seconds, to ensure rescheduling."
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:380
+msgid "Repeatable Job"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:381
+msgid "Repeatable Jobs"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:389
+msgid "cron string"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:409
+msgid "Cron Job"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/models/scheduled_job.py:410
+msgid "Cron Jobs"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/scheduler/templates/admin/scheduler/jobs-list.partial.html:63
+msgid ""
+"entry\n"
+"                "
+msgid_plural "entries"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+#~ msgid "Ranking (Your position: #%(pos)s in tasks)"
+#~ msgstr "Classificação (A sua posição: #%(pos)s em tarefas)"
+
+#~ msgid "Pos"
+#~ msgstr "Pos"
+
+#~ msgid ""
+#~ "You can continue contributing — but the tasks you do here won’t count for "
+#~ "the challenge."
+#~ msgstr ""
+#~ "Pode continuar a contribuir, mas as tarefas que fizer aqui não contarão "
+#~ "para o challenge."
+
+#~ msgid "Continue without counting"
+#~ msgstr "Continuar sem contar"
+
+#~ msgid "Work globally"
+#~ msgstr "Trabalhar globalmente"
+
+#~ msgid "Show all"
+#~ msgstr "Mostrar tudo"
+
+#~ msgid "Challenge filter bypassed for this session — your tasks won’t count."
+#~ msgstr ""
+#~ "Filtro de challenge desactivado nesta sessão — as suas tarefas não "
+#~ "contarão."
+
+#~ msgid "Re-enable"
+#~ msgstr "Reativar"
+
+#~ msgid "All batches"
+#~ msgstr "Lotes Disponíveis"
+
+#~ msgid "Available batches"
+#~ msgstr "Lotes Disponíveis"
+
+#~ msgid ""
+#~ "This project has received funding from the European Space Agency (ESA) "
+#~ "and other public research bodies. Funding details are listed on the home "
+#~ "page."
+#~ msgstr ""
+#~ "Este projeto recebeu financiamento da Agência Espacial Europeia (ESA) e "
+#~ "de outros organismos públicos de investigação. Os detalhes de "
+#~ "financiamento são apresentados na página inicial."
+
+#~ msgid ""
+#~ "Lost at Night is a citizen-science project operated by Ibercivis "
+#~ "Foundation in collaboration with IAA-CSIC."
+#~ msgstr ""
+#~ "O Lost at Night é um projeto de ciência cidadã operado pela Fundación "
+#~ "Ibercivis em colaboração com o IAA-CSIC."
+
+#~ msgid "Toggle navigation"
+#~ msgstr "Alternar navegação"
+
+#~ msgid "Login"
+#~ msgstr "Entrar"
+
+#~ msgid "New Task"
+#~ msgstr "Nova Tarefa"
+
+#~ msgid "Photo info"
+#~ msgstr "Informações da foto"
+
+#~ msgid "crew"
+#~ msgstr "tripulação"
+
+#~ msgid "Let's go!"
+#~ msgstr "Vamos lá!"
+
+#~ msgid "Help"
+#~ msgstr "Ajuda"
+
+#~ msgid "Go to your profile"
+#~ msgstr "Ir ao seu perfil"
+
+#~ msgid "You are participating as anonymous"
+#~ msgstr "Está a participar como anónimo"
+
+#~ msgid "Try"
+#~ msgstr "Tentar"
+
+#~ msgid "WELCOME BACK"
+#~ msgstr "BEM-VINDO DE VOLTA"
+
+#~ msgid "TO"
+#~ msgstr "AO"
+
+#~ msgid "LOST AT NIGHT"
+#~ msgstr "LOST AT NIGHT"
+
+#~ msgid "WELCOME TO"
+#~ msgstr "BEM-VINDO AO"
+
+#~ msgid "Participate Now"
+#~ msgstr "Participar Agora"
+
+#~ msgid "Select Batches"
+#~ msgstr "Selecionar Lotes"
+
+#~ msgid "Tasks:"
+#~ msgstr "Tarefas:"
+
+#~ msgid "Total Users"
+#~ msgstr "Total de Utilizadores"
+
+#~ msgid "Images with Georeference"
+#~ msgstr "Imagens com Georreferência"
+
+#~ msgid "Completed Tasks"
+#~ msgstr "Tarefas Concluídas"
+
+#~ msgid "Average Tasks per User"
+#~ msgstr "Média de Tarefas por Utilizador"
+
+#~ msgid "Total Control Points"
+#~ msgstr "Total de Pontos de Controlo"
+
+#~ msgid "Total Minutes"
+#~ msgstr "Total de Minutos"
+
+#, python-format
+#~ msgid ""
+#~ "If you have not created an account yet, then please %(link)ssign "
+#~ "up%(end_link)s first."
+#~ msgstr ""
+#~ "Se ainda não criou uma conta, por favor %(link)sregiste-se%(end_link)s "
+#~ "primeiro."
+
+#~ msgid "Sign in with a passkey"
+#~ msgstr "Entrar com uma chave de acesso"
+
+#~ msgid "Mail me a sign-in code"
+#~ msgstr "Envie-me um código de acesso"
+
+#~ msgid "Your Personal Statistics"
+#~ msgstr "As Suas Estatísticas Pessoais"
+
+#~ msgid "Your Position in Tasks"
+#~ msgstr "A Sua Posição em Tarefas"
+
+#~ msgid "Your Position in Control Points"
+#~ msgstr "A Sua Posição em Pontos de Controlo"
+
+#, python-format
+#~ msgid "Your %% Contribution in Control Points"
+#~ msgstr "A Sua %% Contribuição em Pontos de Controlo"
+
+#, python-format
+#~ msgid "Your %% Contribution in Time"
+#~ msgstr "A Sua %% Contribuição em Tempo"
