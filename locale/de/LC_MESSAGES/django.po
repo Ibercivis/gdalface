@@ -121,7 +121,7 @@ msgstr "Cookie-Einstellungen"
 #: templates/account/logout.html:160 templates/account/password_reset.html:207
 #: templates/account/signup.html:325
 msgid "About"
-msgstr ""
+msgstr "Über"
 
 #: frontend/templates/_footer.html:171
 msgid ""
@@ -1815,7 +1815,7 @@ msgstr ""
 msgid ""
 "“Every match you submit helps measure light pollution where satellites "
 "cannot reach.”"
-msgstr ""
+msgstr "„Jede Übereinstimmung, die du einreichst, hilft, Lichtverschmutzung dort zu messen, wo Satelliten nicht hinkommen.\""
 
 #: templates/account/login.html:287
 msgid "Welcome back"
@@ -1823,7 +1823,7 @@ msgstr "Willkommen zurück!"
 
 #: templates/account/login.html:288
 msgid "Sign in to continue locating the night."
-msgstr ""
+msgstr "Melde dich an, um die Nacht weiter zu lokalisieren."
 
 #: templates/account/login.html:300 templates/account/password_reset.html:234
 #: templates/account/signup.html:347 user_profile/templates/user.html:1236
@@ -1832,24 +1832,24 @@ msgstr "E-Mail:"
 
 #: templates/account/login.html:316 templates/account/signup.html:382
 msgid "Password"
-msgstr ""
+msgstr "Passwort"
 
 #: templates/account/login.html:317
 msgid "Forgot password?"
-msgstr ""
+msgstr "Passwort vergessen?"
 
 #: templates/account/login.html:327 templates/account/signup.html:392
 #: templates/account/signup.html:414
 msgid "Show password"
-msgstr ""
+msgstr "Passwort anzeigen"
 
 #: templates/account/login.html:347 templates/account/signup.html:457
 msgid "or continue with"
-msgstr ""
+msgstr "oder weiter mit"
 
 #: templates/account/login.html:360
 msgid "New here?"
-msgstr ""
+msgstr "Neu hier?"
 
 #: templates/account/login.html:361 templates/account/signup.html:10
 #: templates/account/signup.html:333
@@ -1887,21 +1887,21 @@ msgstr "Anders überlegt?"
 
 #: templates/account/password_reset.html:9
 msgid "Reset password"
-msgstr ""
+msgstr "Passwort zurücksetzen"
 
 #: templates/account/password_reset.html:215
 msgid "Reset your password"
-msgstr ""
+msgstr "Setze dein Passwort zurück"
 
 #: templates/account/password_reset.html:217
 msgid ""
 "Enter the email address you signed up with and we'll send you a link to "
 "choose a new password."
-msgstr ""
+msgstr "Gib die E-Mail-Adresse ein, mit der du dich registriert hast — wir senden dir einen Link, um ein neues Passwort zu wählen."
 
 #: templates/account/password_reset.html:249
 msgid "Trouble resetting your password?"
-msgstr ""
+msgstr "Probleme beim Zurücksetzen deines Passworts?"
 
 #: templates/account/password_reset.html:249
 msgid "Contact us"
@@ -1909,15 +1909,15 @@ msgstr "Kontaktieren Sie uns"
 
 #: templates/account/password_reset.html:253
 msgid "Send reset link"
-msgstr ""
+msgstr "Link senden"
 
 #: templates/account/password_reset.html:259
 msgid "Remembered your password?"
-msgstr ""
+msgstr "Passwort wieder eingefallen?"
 
 #: templates/account/signup.html:334
 msgid "Join the project and start locating the night."
-msgstr ""
+msgstr "Tritt dem Projekt bei und beginne, die Nacht zu lokalisieren."
 
 #: templates/account/signup.html:365 user_profile/templates/user.html:1232
 msgid "Username"
@@ -1925,7 +1925,7 @@ msgstr "Benutzername"
 
 #: templates/account/signup.html:404
 msgid "Confirm password"
-msgstr ""
+msgstr "Passwort bestätigen"
 
 #: templates/account/signup.html:428
 msgid ""
@@ -1941,13 +1941,13 @@ msgstr ""
 #: templates/account/signup.html:438 user_profile/forms.py:54
 msgid ""
 "Send me updates about Lost at Night and citizen-science campaigns (optional)."
-msgstr ""
+msgstr "Schicke mir Neuigkeiten zu Lost at Night und Bürgerwissenschafts-Kampagnen (optional)."
 
 #: templates/account/signup.html:444
 msgid ""
 "By creating an account, you agree to our use of your contributions for "
 "scientific research on light pollution."
-msgstr ""
+msgstr "Mit der Erstellung eines Kontos stimmst du der Verwendung deiner Beiträge für die wissenschaftliche Forschung zur Lichtverschmutzung zu."
 
 #: templates/account/signup.html:450
 msgid "Create account"
@@ -1955,7 +1955,7 @@ msgstr "Konto erstellen"
 
 #: templates/account/signup.html:470
 msgid "Already have an account?"
-msgstr ""
+msgstr "Hast du schon ein Konto?"
 
 #: templates/socialaccount/snippets/login.html:10
 msgid "Or use a third-party"

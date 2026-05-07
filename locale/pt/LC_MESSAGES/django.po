@@ -124,7 +124,7 @@ msgstr "Preferências de cookies"
 #: templates/account/logout.html:160 templates/account/password_reset.html:207
 #: templates/account/signup.html:325
 msgid "About"
-msgstr ""
+msgstr "Sobre"
 
 #: frontend/templates/_footer.html:171
 msgid ""
@@ -1811,7 +1811,7 @@ msgstr ""
 msgid ""
 "“Every match you submit helps measure light pollution where satellites "
 "cannot reach.”"
-msgstr ""
+msgstr "«Cada correspondência que envias ajuda a medir a poluição luminosa onde os satélites não chegam.»"
 
 #: templates/account/login.html:287
 msgid "Welcome back"
@@ -1819,7 +1819,7 @@ msgstr "Bem-vindo de volta!"
 
 #: templates/account/login.html:288
 msgid "Sign in to continue locating the night."
-msgstr ""
+msgstr "Inicia sessão para continuar a localizar a noite."
 
 #: templates/account/login.html:300 templates/account/password_reset.html:234
 #: templates/account/signup.html:347 user_profile/templates/user.html:1236
@@ -1828,24 +1828,24 @@ msgstr "E-mail:"
 
 #: templates/account/login.html:316 templates/account/signup.html:382
 msgid "Password"
-msgstr ""
+msgstr "Palavra-passe"
 
 #: templates/account/login.html:317
 msgid "Forgot password?"
-msgstr ""
+msgstr "Esqueceste a palavra-passe?"
 
 #: templates/account/login.html:327 templates/account/signup.html:392
 #: templates/account/signup.html:414
 msgid "Show password"
-msgstr ""
+msgstr "Mostrar palavra-passe"
 
 #: templates/account/login.html:347 templates/account/signup.html:457
 msgid "or continue with"
-msgstr ""
+msgstr "ou continua com"
 
 #: templates/account/login.html:360
 msgid "New here?"
-msgstr ""
+msgstr "Novo por aqui?"
 
 #: templates/account/login.html:361 templates/account/signup.html:10
 #: templates/account/signup.html:333
@@ -1883,21 +1883,21 @@ msgstr "Mudou de ideias?"
 
 #: templates/account/password_reset.html:9
 msgid "Reset password"
-msgstr ""
+msgstr "Repor palavra-passe"
 
 #: templates/account/password_reset.html:215
 msgid "Reset your password"
-msgstr ""
+msgstr "Repõe a tua palavra-passe"
 
 #: templates/account/password_reset.html:217
 msgid ""
 "Enter the email address you signed up with and we'll send you a link to "
 "choose a new password."
-msgstr ""
+msgstr "Introduz o e-mail com que te registaste e enviar-te-emos um link para escolheres uma nova palavra-passe."
 
 #: templates/account/password_reset.html:249
 msgid "Trouble resetting your password?"
-msgstr ""
+msgstr "Problemas a repor a tua palavra-passe?"
 
 #: templates/account/password_reset.html:249
 msgid "Contact us"
@@ -1905,15 +1905,15 @@ msgstr "Contacte-nos"
 
 #: templates/account/password_reset.html:253
 msgid "Send reset link"
-msgstr ""
+msgstr "Enviar link"
 
 #: templates/account/password_reset.html:259
 msgid "Remembered your password?"
-msgstr ""
+msgstr "Lembraste-te da palavra-passe?"
 
 #: templates/account/signup.html:334
 msgid "Join the project and start locating the night."
-msgstr ""
+msgstr "Junta-te ao projeto e começa a localizar a noite."
 
 #: templates/account/signup.html:365 user_profile/templates/user.html:1232
 msgid "Username"
@@ -1921,7 +1921,7 @@ msgstr "Nome de utilizador"
 
 #: templates/account/signup.html:404
 msgid "Confirm password"
-msgstr ""
+msgstr "Confirmar palavra-passe"
 
 #: templates/account/signup.html:428
 msgid ""
@@ -1936,13 +1936,13 @@ msgstr ""
 #: templates/account/signup.html:438 user_profile/forms.py:54
 msgid ""
 "Send me updates about Lost at Night and citizen-science campaigns (optional)."
-msgstr ""
+msgstr "Envia-me novidades sobre o Lost at Night e campanhas de ciência cidadã (opcional)."
 
 #: templates/account/signup.html:444
 msgid ""
 "By creating an account, you agree to our use of your contributions for "
 "scientific research on light pollution."
-msgstr ""
+msgstr "Ao criar uma conta, aceitas que utilizemos as tuas contribuições para investigação científica sobre poluição luminosa."
 
 #: templates/account/signup.html:450
 msgid "Create account"
@@ -1950,7 +1950,7 @@ msgstr "Criar conta"
 
 #: templates/account/signup.html:470
 msgid "Already have an account?"
-msgstr ""
+msgstr "Já tens uma conta?"
 
 #: templates/socialaccount/snippets/login.html:10
 msgid "Or use a third-party"
