@@ -2120,11 +2120,11 @@ msgstr "Ваша статистика"
 
 #: user_profile/templates/user.html:773
 msgid "Activity"
-msgstr ""
+msgstr "Активность"
 
 #: user_profile/templates/user.html:778
 msgid "Lifetime"
-msgstr ""
+msgstr "За всё время"
 
 #: user_profile/templates/user.html:783
 msgid "Total placed"
@@ -2132,7 +2132,7 @@ msgstr "Всего изображений"
 
 #: user_profile/templates/user.html:791
 msgid "Cheating flag"
-msgstr ""
+msgstr "Флаг мошенничества"
 
 #: user_profile/templates/user.html:797 user_profile/templates/user.html:913
 msgid "Global ranking"
@@ -2148,11 +2148,11 @@ msgstr "Контрольные точки"
 
 #: user_profile/templates/user.html:810
 msgid "Time rank"
-msgstr ""
+msgstr "Рейтинг по времени"
 
 #: user_profile/templates/user.html:816
 msgid "Your share of the project"
-msgstr ""
+msgstr "Ваш вклад в проект"
 
 #: user_profile/templates/user.html:841
 #, fuzzy, python-format
@@ -2174,19 +2174,19 @@ msgstr "Мои посещённые места"
 
 #: user_profile/templates/user.html:871
 msgid "Your challenges"
-msgstr ""
+msgstr "Ваши испытания"
 
 #: user_profile/templates/user.html:881
 msgid "Group"
-msgstr ""
+msgstr "Группа"
 
 #: user_profile/templates/user.html:897
 msgid "Open"
-msgstr ""
+msgstr "Открыть"
 
 #: user_profile/templates/user.html:904
 msgid "Browse all challenges"
-msgstr ""
+msgstr "Просмотреть все испытания"
 
 #: user_profile/templates/user.html:928
 msgid "Control Points"
@@ -2195,7 +2195,7 @@ msgstr "Контрольные точки"
 #: user_profile/templates/user.html:929
 #: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2456
 msgid "Time"
-msgstr ""
+msgstr "Время"
 
 #: user_profile/templates/user.html:982
 msgid "control points"
@@ -2237,7 +2237,7 @@ msgstr "Фото профиля"
 
 #: user_profile/templates/user.html:1298
 msgid "Remove"
-msgstr ""
+msgstr "Удалить"
 
 #: user_profile/templates/user.html:1308
 msgid "Save changes"
@@ -2245,7 +2245,7 @@ msgstr "Сохранить изменения"
 
 #: user_profile/templates/user.html:1359
 msgid "Search country…"
-msgstr ""
+msgstr "Поиск страны…"
 
 #: user_profile/templates/user.html:1383
 msgid "No matches"
@@ -2253,15 +2253,15 @@ msgstr "Нет совпадений"
 
 #: user_profile/templates/user.html:1442
 msgid "Saving…"
-msgstr ""
+msgstr "Сохранение…"
 
 #: user_profile/templates/user.html:1459
 msgid "Could not save. Please try again."
-msgstr ""
+msgstr "Не удалось сохранить. Попробуйте ещё раз."
 
 #: user_profile/templates/user.html:1463
 msgid "Network error — please try again."
-msgstr ""
+msgstr "Сетевая ошибка — попробуйте ещё раз."
 
 #: user_profile/views.py:360
 msgid "Your profile has been updated successfully!"

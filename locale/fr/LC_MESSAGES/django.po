@@ -2162,11 +2162,11 @@ msgstr "Vos statistiques"
 
 #: user_profile/templates/user.html:773
 msgid "Activity"
-msgstr ""
+msgstr "Activité"
 
 #: user_profile/templates/user.html:778
 msgid "Lifetime"
-msgstr ""
+msgstr "Total"
 
 #: user_profile/templates/user.html:783
 msgid "Total placed"
@@ -2174,7 +2174,7 @@ msgstr "Images totales"
 
 #: user_profile/templates/user.html:791
 msgid "Cheating flag"
-msgstr ""
+msgstr "Indicateur de triche"
 
 #: user_profile/templates/user.html:797 user_profile/templates/user.html:913
 msgid "Global ranking"
@@ -2190,11 +2190,11 @@ msgstr "Points de contrôle"
 
 #: user_profile/templates/user.html:810
 msgid "Time rank"
-msgstr ""
+msgstr "Classement par temps"
 
 #: user_profile/templates/user.html:816
 msgid "Your share of the project"
-msgstr ""
+msgstr "Votre part dans le projet"
 
 #: user_profile/templates/user.html:841
 #, fuzzy, python-format
@@ -2216,19 +2216,19 @@ msgstr "Mes lieux visités"
 
 #: user_profile/templates/user.html:871
 msgid "Your challenges"
-msgstr ""
+msgstr "Vos défis"
 
 #: user_profile/templates/user.html:881
 msgid "Group"
-msgstr ""
+msgstr "Groupe"
 
 #: user_profile/templates/user.html:897
 msgid "Open"
-msgstr ""
+msgstr "Ouvrir"
 
 #: user_profile/templates/user.html:904
 msgid "Browse all challenges"
-msgstr ""
+msgstr "Parcourir tous les défis"
 
 #: user_profile/templates/user.html:928
 msgid "Control Points"
@@ -2237,7 +2237,7 @@ msgstr "Points de contrôle"
 #: user_profile/templates/user.html:929
 #: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2456
 msgid "Time"
-msgstr ""
+msgstr "Temps"
 
 #: user_profile/templates/user.html:982
 msgid "control points"
@@ -2279,7 +2279,7 @@ msgstr "Photo de profil"
 
 #: user_profile/templates/user.html:1298
 msgid "Remove"
-msgstr ""
+msgstr "Supprimer"
 
 #: user_profile/templates/user.html:1308
 msgid "Save changes"
@@ -2287,7 +2287,7 @@ msgstr "Enregistrer les modifications"
 
 #: user_profile/templates/user.html:1359
 msgid "Search country…"
-msgstr ""
+msgstr "Rechercher un pays…"
 
 #: user_profile/templates/user.html:1383
 msgid "No matches"
@@ -2295,15 +2295,15 @@ msgstr "Aucun résultat"
 
 #: user_profile/templates/user.html:1442
 msgid "Saving…"
-msgstr ""
+msgstr "Enregistrement…"
 
 #: user_profile/templates/user.html:1459
 msgid "Could not save. Please try again."
-msgstr ""
+msgstr "Impossible d'enregistrer. Veuillez réessayer."
 
 #: user_profile/templates/user.html:1463
 msgid "Network error — please try again."
-msgstr ""
+msgstr "Erreur réseau — veuillez réessayer."
 
 #: user_profile/views.py:360
 msgid "Your profile has been updated successfully!"

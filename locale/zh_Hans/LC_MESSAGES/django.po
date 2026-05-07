@@ -2058,11 +2058,11 @@ msgstr "您的统计"
 
 #: user_profile/templates/user.html:773
 msgid "Activity"
-msgstr ""
+msgstr "活动"
 
 #: user_profile/templates/user.html:778
 msgid "Lifetime"
-msgstr ""
+msgstr "累计"
 
 #: user_profile/templates/user.html:783
 msgid "Total placed"
@@ -2070,7 +2070,7 @@ msgstr "总图像数"
 
 #: user_profile/templates/user.html:791
 msgid "Cheating flag"
-msgstr ""
+msgstr "作弊标记"
 
 #: user_profile/templates/user.html:797 user_profile/templates/user.html:913
 msgid "Global ranking"
@@ -2086,11 +2086,11 @@ msgstr "控制点"
 
 #: user_profile/templates/user.html:810
 msgid "Time rank"
-msgstr ""
+msgstr "时间排名"
 
 #: user_profile/templates/user.html:816
 msgid "Your share of the project"
-msgstr ""
+msgstr "您在项目中的份额"
 
 #: user_profile/templates/user.html:841
 #, fuzzy, python-format
@@ -2112,19 +2112,19 @@ msgstr "我访问过的地方"
 
 #: user_profile/templates/user.html:871
 msgid "Your challenges"
-msgstr ""
+msgstr "您的挑战"
 
 #: user_profile/templates/user.html:881
 msgid "Group"
-msgstr ""
+msgstr "团队"
 
 #: user_profile/templates/user.html:897
 msgid "Open"
-msgstr ""
+msgstr "打开"
 
 #: user_profile/templates/user.html:904
 msgid "Browse all challenges"
-msgstr ""
+msgstr "浏览所有挑战"
 
 #: user_profile/templates/user.html:928
 msgid "Control Points"
@@ -2133,7 +2133,7 @@ msgstr "控制点"
 #: user_profile/templates/user.html:929
 #: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2456
 msgid "Time"
-msgstr ""
+msgstr "时间"
 
 #: user_profile/templates/user.html:982
 msgid "control points"
@@ -2175,7 +2175,7 @@ msgstr "头像"
 
 #: user_profile/templates/user.html:1298
 msgid "Remove"
-msgstr ""
+msgstr "移除"
 
 #: user_profile/templates/user.html:1308
 msgid "Save changes"
@@ -2183,7 +2183,7 @@ msgstr "保存更改"
 
 #: user_profile/templates/user.html:1359
 msgid "Search country…"
-msgstr ""
+msgstr "搜索国家…"
 
 #: user_profile/templates/user.html:1383
 msgid "No matches"
@@ -2191,15 +2191,15 @@ msgstr "无匹配"
 
 #: user_profile/templates/user.html:1442
 msgid "Saving…"
-msgstr ""
+msgstr "保存中…"
 
 #: user_profile/templates/user.html:1459
 msgid "Could not save. Please try again."
-msgstr ""
+msgstr "无法保存。请重试。"
 
 #: user_profile/templates/user.html:1463
 msgid "Network error — please try again."
-msgstr ""
+msgstr "网络错误 — 请重试。"
 
 #: user_profile/views.py:360
 msgid "Your profile has been updated successfully!"

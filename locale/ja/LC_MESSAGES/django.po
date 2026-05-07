@@ -2102,11 +2102,11 @@ msgstr "あなたの統計"
 
 #: user_profile/templates/user.html:773
 msgid "Activity"
-msgstr ""
+msgstr "アクティビティ"
 
 #: user_profile/templates/user.html:778
 msgid "Lifetime"
-msgstr ""
+msgstr "累計"
 
 #: user_profile/templates/user.html:783
 msgid "Total placed"
@@ -2114,7 +2114,7 @@ msgstr "総画像数"
 
 #: user_profile/templates/user.html:791
 msgid "Cheating flag"
-msgstr ""
+msgstr "不正フラグ"
 
 #: user_profile/templates/user.html:797 user_profile/templates/user.html:913
 msgid "Global ranking"
@@ -2130,11 +2130,11 @@ msgstr "制御点"
 
 #: user_profile/templates/user.html:810
 msgid "Time rank"
-msgstr ""
+msgstr "時間順位"
 
 #: user_profile/templates/user.html:816
 msgid "Your share of the project"
-msgstr ""
+msgstr "プロジェクトでのあなたの貢献度"
 
 #: user_profile/templates/user.html:841
 #, fuzzy, python-format
@@ -2156,19 +2156,19 @@ msgstr "訪問した場所"
 
 #: user_profile/templates/user.html:871
 msgid "Your challenges"
-msgstr ""
+msgstr "あなたのチャレンジ"
 
 #: user_profile/templates/user.html:881
 msgid "Group"
-msgstr ""
+msgstr "グループ"
 
 #: user_profile/templates/user.html:897
 msgid "Open"
-msgstr ""
+msgstr "開く"
 
 #: user_profile/templates/user.html:904
 msgid "Browse all challenges"
-msgstr ""
+msgstr "すべてのチャレンジを閲覧"
 
 #: user_profile/templates/user.html:928
 msgid "Control Points"
@@ -2177,7 +2177,7 @@ msgstr "制御点"
 #: user_profile/templates/user.html:929
 #: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2456
 msgid "Time"
-msgstr ""
+msgstr "時間"
 
 #: user_profile/templates/user.html:982
 msgid "control points"
@@ -2219,7 +2219,7 @@ msgstr "プロフィール写真"
 
 #: user_profile/templates/user.html:1298
 msgid "Remove"
-msgstr ""
+msgstr "削除"
 
 #: user_profile/templates/user.html:1308
 msgid "Save changes"
@@ -2227,7 +2227,7 @@ msgstr "変更を保存"
 
 #: user_profile/templates/user.html:1359
 msgid "Search country…"
-msgstr ""
+msgstr "国を検索…"
 
 #: user_profile/templates/user.html:1383
 msgid "No matches"
@@ -2235,15 +2235,15 @@ msgstr "一致なし"
 
 #: user_profile/templates/user.html:1442
 msgid "Saving…"
-msgstr ""
+msgstr "保存中…"
 
 #: user_profile/templates/user.html:1459
 msgid "Could not save. Please try again."
-msgstr ""
+msgstr "保存できませんでした。もう一度お試しください。"
 
 #: user_profile/templates/user.html:1463
 msgid "Network error — please try again."
-msgstr ""
+msgstr "ネットワークエラー — もう一度お試しください。"
 
 #: user_profile/views.py:360
 msgid "Your profile has been updated successfully!"
