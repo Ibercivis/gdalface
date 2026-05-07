@@ -678,7 +678,7 @@ msgid "Hours"
 msgstr "Ore"
 
 #: frontend/templates/gettask.html:438
-#, fuzzy, python-format
+#, python-format
 #| msgid ""
 #| "You're participating anonymously — <a href=\"%(url)s\">create an account</"
 #| "a> to save your progress and appear on the leaderboard!"
@@ -2174,7 +2174,7 @@ msgid "Your share of the project"
 msgstr "Il tuo contributo al progetto"
 
 #: user_profile/templates/user.html:841
-#, fuzzy, python-format
+#, python-format
 #| msgid "Your Daily Contributions (%(start)s - %(end)s)"
 msgid "Daily contributions (%(start)s - %(end)s)"
 msgstr "I tuoi contributi giornalieri (%(start)s - %(end)s)"
@@ -3599,7 +3599,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: venv/lib/python3.12/site-packages/django/utils/timesince.py:9
-#, fuzzy, python-format
+#, python-format
 #| msgid "%(count)d minute"
 #| msgid_plural "%(count)d minutes"
 msgid "%(num)d month"
@@ -3615,7 +3615,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: venv/lib/python3.12/site-packages/django/utils/timesince.py:11
-#, fuzzy, python-format
+#, python-format
 #| msgid "%(count)d day"
 #| msgid_plural "%(count)d days"
 msgid "%(num)d day"
@@ -3624,7 +3624,7 @@ msgstr[0] "%(count)d giorno"
 msgstr[1] "%(count)d giorni"
 
 #: venv/lib/python3.12/site-packages/django/utils/timesince.py:12
-#, fuzzy, python-format
+#, python-format
 #| msgid "%(count)d hour"
 #| msgid_plural "%(count)d hours"
 msgid "%(num)d hour"
@@ -3633,7 +3633,7 @@ msgstr[0] "%(count)d ora"
 msgstr[1] "%(count)d ore"
 
 #: venv/lib/python3.12/site-packages/django/utils/timesince.py:13
-#, fuzzy, python-format
+#, python-format
 #| msgid "%(count)d minute"
 #| msgid_plural "%(count)d minutes"
 msgid "%(num)d minute"

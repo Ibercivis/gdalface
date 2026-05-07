@@ -2137,7 +2137,7 @@ msgid "Your share of the project"
 msgstr "プロジェクトでのあなたの貢献度"
 
 #: user_profile/templates/user.html:841
-#, fuzzy, python-format
+#, python-format
 #| msgid "Your Daily Contributions (%(start)s - %(end)s)"
 msgid "Daily contributions (%(start)s - %(end)s)"
 msgstr "日別貢献（%(start)s - %(end)s）"
@@ -3545,7 +3545,7 @@ msgid_plural "%(num)d years"
 msgstr[0] ""
 
 #: venv/lib/python3.12/site-packages/django/utils/timesince.py:9
-#, fuzzy, python-format
+#, python-format
 #| msgid "%(count)d minute"
 #| msgid_plural "%(count)d minutes"
 msgid "%(num)d month"
@@ -3560,7 +3560,7 @@ msgid_plural "%(num)d weeks"
 msgstr[0] ""
 
 #: venv/lib/python3.12/site-packages/django/utils/timesince.py:11
-#, fuzzy, python-format
+#, python-format
 #| msgid "%(count)d day"
 #| msgid_plural "%(count)d days"
 msgid "%(num)d day"
@@ -3569,7 +3569,7 @@ msgstr[0] "%(count)d日"
 msgstr[1] "%(count)d日"
 
 #: venv/lib/python3.12/site-packages/django/utils/timesince.py:12
-#, fuzzy, python-format
+#, python-format
 #| msgid "%(count)d hour"
 #| msgid_plural "%(count)d hours"
 msgid "%(num)d hour"
@@ -3578,7 +3578,7 @@ msgstr[0] "%(count)d時間"
 msgstr[1] "%(count)d時間"
 
 #: venv/lib/python3.12/site-packages/django/utils/timesince.py:13
-#, fuzzy, python-format
+#, python-format
 #| msgid "%(count)d minute"
 #| msgid_plural "%(count)d minutes"
 msgid "%(num)d minute"
