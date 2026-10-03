@@ -24,7 +24,13 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone as dt_tz
 
 import requests
+import urllib3.util.connection as _urllib3_conn
 from decouple import config
+
+# This host has an IPv6 address but no IPv6 route: connections to the NASA
+# servers (dual-stack) hang in SYN-SENT until the timeout before falling back
+# to IPv4. Force IPv4 for everything this process downloads.
+_urllib3_conn.allowed_gai_family = lambda: __import__('socket').AF_INET
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
@@ -187,7 +193,7 @@ def _dl(url, subdir):
         return True
     for attempt in range(3):
         try:
-            r = requests.get(url, timeout=60)
+            r = requests.get(url, timeout=(10, 120))
             r.raise_for_status()
             default_storage.save(rel, ContentFile(r.content))
             return True
@@ -222,10 +228,15 @@ class Command(BaseCommand):
         if o['min_sun_elev'] is not None:
             rows = {k: v for k, v in rows.items() if v['elev'] is None or v['elev'] <= o['min_sun_elev']}
         dropped_day = total_rows - len(rows)
-        existing = set(Image.objects.values_list('name', flat=True))
-        todo = [pid for pid in rows if f'{pid}.JPG' not in existing and f'{pid}.jpg' not in existing]
+        existing = {}
+        for name, status in Image.objects.values_list('name', 'status'):
+            existing[re.sub(r'\.(jpg|jpeg)$', '', name, flags=re.I)] = status
+        # Skip photos already fully imported; retry rows left PENDING / FAILED by
+        # an interrupted run (their files and tasks are (re)created below).
+        todo = [pid for pid in rows if existing.get(pid) in (None, 'PENDING', 'FAILED_DOWNLOADED')]
+        retry = sum(1 for pid in todo if pid in existing)
         missions = sorted({ID_RE.match(p).group(1) for p in todo})
-        log(f'rows={total_rows} dropped_daylight={dropped_day} already_in_db={len(rows) - len(todo)} to_import={len(todo)} missions={missions}')
+        log(f'rows={total_rows} dropped_daylight={dropped_day} already_in_db={len(rows) - len(todo)} to_import={len(todo)} (retrying {retry} incomplete) missions={missions}')
         if not todo:
             return
 
@@ -278,18 +289,21 @@ class Command(BaseCommand):
         # Create images, download, create tasks
         def do_one(pid):
             f = resolved[pid]
-            img = Image.objects.create(
-                name=f['name'], taken=f['taken'], focalLength=f['focalLength'] or 0, camera=(f['camera'] or '')[:100] or None,
+            img, _created = Image.objects.get_or_create(name=f['name'], defaults=dict(
+                taken=f['taken'], focalLength=f['focalLength'] or 0, camera=(f['camera'] or '')[:100] or None,
                 spacecraftNadirPoint=f['spacecraftNadirPoint'], photoCenterPoint=f['photoCenterPoint'],
                 photoCenterByMachineLearning=f['photoCenterByMachineLearning'],
                 largeImageURL=f['largeImageURL'], smallImageURL=f['smallImageURL'],
-                batch=batch, replicas=o['replicas'], status='PENDING')
+                batch=batch, replicas=o['replicas'], status='PENDING'))
+            if GeoAttempt.objects.filter(image=img).exists() and img.status == 'DOWNLOADED_GENERATED':
+                return pid, True
             ok_l = _dl(f['largeImageURL'], 'original')
             ok_s = _dl(f['smallImageURL'], 'small')
             if not (ok_l or ok_s):
                 img.status = 'FAILED_DOWNLOADED'; img.save(update_fields=['status'])
                 FailedImage.objects.update_or_create(batch=batch, name=pid, defaults={'reason': 'DOWNLOAD_FAILED', 'detail': f['largeImageURL']})
                 return pid, False
+            GeoAttempt.objects.filter(image=img, status='PENDING').delete()  # from an interrupted run
             for _ in range(o['replicas']):
                 GeoAttempt.objects.create(image=img, status='PENDING')
             img.status = 'DOWNLOADED_GENERATED'; img.save(update_fields=['status'])
