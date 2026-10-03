@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-03 09:51+0000\n"
+"POT-Creation-Date: 2026-10-03 11:16+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,7 +23,7 @@ msgid "Enrolled"
 msgstr "登録済み"
 
 #: frontend/templates/_challenge_card.html:31
-#: frontend/templates/challenge_detail.html:468
+#: frontend/templates/challenge_detail.html:470
 msgid "All photos"
 msgstr ""
 
@@ -32,17 +32,17 @@ msgid "Only photos inside a geographic region count"
 msgstr ""
 
 #: frontend/templates/_challenge_card.html:35
-#: frontend/templates/challenge_detail.html:471
+#: frontend/templates/challenge_detail.html:473
 msgid "Region"
 msgstr "地域が指定されています"
 
 #: frontend/templates/_challenge_card.html:40
-#: frontend/templates/challenge_detail.html:474
+#: frontend/templates/challenge_detail.html:476
 msgid "participants"
 msgstr "参加者"
 
 #: frontend/templates/_challenge_card.html:57
-#: frontend/templates/gettask.html:231 frontend/templates/index.html:848
+#: frontend/templates/gettask.html:231 frontend/templates/index.html:849
 msgid "Paused"
 msgstr "一時停止"
 
@@ -172,71 +172,122 @@ msgstr "クイックリンク"
 msgid "Home"
 msgstr "ホーム"
 
-#: frontend/templates/_footer.html:186 frontend/templates/_topbar.html:272
-#: frontend/templates/index.html:748 frontend/templates/index.html:828
+#: frontend/templates/_footer.html:186 frontend/templates/_topbar.html:273
+#: frontend/templates/index.html:749 frontend/templates/index.html:829
+#: frontend/templates/map.html:37
 msgid "Participate"
 msgstr "参加"
 
 #: frontend/templates/_footer.html:187 frontend/templates/_topbar.html:269
-#: frontend/templates/index.html:817
+#: frontend/templates/index.html:818
 msgid "Challenges"
 msgstr "チャレンジ"
 
-#: frontend/templates/_footer.html:188 frontend/templates/_topbar.html:271
+#: frontend/templates/_footer.html:188 frontend/templates/_topbar.html:270
+#: frontend/templates/map.html:4
+msgid "Map"
+msgstr ""
+
+#: frontend/templates/_footer.html:189 frontend/templates/_topbar.html:272
 #: frontend/templates/ranking.html:5 frontend/templates/ranking.html:57
 msgid "Ranking"
 msgstr "ランク"
 
-#: frontend/templates/_footer.html:189 frontend/templates/_topbar.html:270
+#: frontend/templates/_footer.html:190 frontend/templates/_topbar.html:271
 #: frontend/templates/ranking.html:76 teams/templates/team_list.html:3
 #: teams/templates/team_list.html:6 user_profile/templates/user.html:1040
 msgid "Teams"
 msgstr ""
 
-#: frontend/templates/_footer.html:190
+#: frontend/templates/_footer.html:191
 msgid "Manual"
 msgstr ""
 
-#: frontend/templates/_footer.html:191
+#: frontend/templates/_footer.html:192
 msgid "Video tutorial"
 msgstr "ビデオチュートリアル"
 
-#: frontend/templates/_footer.html:192 frontend/templates/_footer.html:198
+#: frontend/templates/_footer.html:193 frontend/templates/_footer.html:199
 #: templates/account/login.html:280 templates/account/logout.html:161
 #: templates/account/password_reset.html:208 templates/account/signup.html:326
 msgid "Contact"
 msgstr "お問い合わせ"
 
-#: frontend/templates/_footer.html:218 frontend/templates/gettask.html:571
+#: frontend/templates/_footer.html:219 frontend/templates/gettask.html:571
 msgid "Developed by <b>Ibercivis</b>"
 msgstr "<b>Ibercivis</b>が開発"
 
-#: frontend/templates/_footer.html:226
+#: frontend/templates/_footer.html:227
 msgid "Legal"
 msgstr "法的事項"
 
-#: frontend/templates/_footer.html:227
+#: frontend/templates/_footer.html:228
 msgid "Privacy"
 msgstr "プライバシー"
 
-#: frontend/templates/_footer.html:228
+#: frontend/templates/_footer.html:229
 msgid "Terms"
 msgstr "利用規約"
 
-#: frontend/templates/_footer.html:229
+#: frontend/templates/_footer.html:230
 msgid "Cookies"
 msgstr "Cookie"
 
-#: frontend/templates/_footer.html:230 frontend/templates/legal/legal.html:4
+#: frontend/templates/_footer.html:231 frontend/templates/legal/legal.html:4
 #: frontend/templates/legal/legal.html:7
 msgid "Legal notice"
 msgstr "法的通知"
 
-#: frontend/templates/_footer.html:232
+#: frontend/templates/_footer.html:233
 msgid "© 2025 Lost at Night. All rights reserved."
 msgstr "© 2025 Lost at Night. 全著作権所有。"
 
-#: frontend/templates/_topbar.html:219 frontend/templates/_topbar.html:283
+#: frontend/templates/_located_map_assets.html:32
+#| msgid "3. Your contributions"
+msgid "contributions"
+msgstr "3. あなたの貢献"
+
+#: frontend/templates/_located_map_assets.html:32
+#| msgid "Contributor"
+msgid "contribution"
+msgstr "貢献する"
+
+#: frontend/templates/_located_map_assets.html:32
+#: frontend/templates/ranking.html:139
+msgid "control points"
+msgstr "制御点"
+
+#: frontend/templates/_located_map_assets.html:33
+msgid "Taken"
+msgstr ""
+
+#: frontend/templates/_located_map_assets.html:33
+#| msgid "Original images"
+msgid "Original at NASA"
+msgstr "元画像"
+
+#: frontend/templates/_located_map_assets.html:33
+msgid "Still needs more eyes"
+msgstr ""
+
+#: frontend/templates/_located_map_assets.html:34
+msgid "You located this one"
+msgstr ""
+
+#: frontend/templates/_located_map_assets.html:34
+msgid "Night lights (VIIRS)"
+msgstr ""
+
+#: frontend/templates/_located_map_assets.html:34
+msgid "Located photos"
+msgstr ""
+
+#: frontend/templates/_located_map_assets.html:35
+#| msgid "Photos located per week"
+msgid "Nothing located here yet."
+msgstr "位置確認済みの写真"
+
+#: frontend/templates/_topbar.html:219 frontend/templates/_topbar.html:284
 #: frontend/templates/gettask.html:236 georeferencing/models.py:544
 #: user_profile/templates/diploma_challenge.html:88
 #: user_profile/templates/diploma_challenge.html:91
@@ -263,18 +314,18 @@ msgid "Your previous active challenge was automatically left."
 msgstr "以前のアクティブなチャレンジは自動的に退出されました。"
 
 #: frontend/templates/_topbar.html:225
-#: frontend/templates/challenge_detail.html:527 georeferencing/diplomas.py:45
+#: frontend/templates/challenge_detail.html:529 georeferencing/diplomas.py:45
 msgid "Bronze"
 msgstr "ブロンズ"
 
 #: frontend/templates/_topbar.html:226
-#: frontend/templates/challenge_detail.html:528 georeferencing/diplomas.py:44
+#: frontend/templates/challenge_detail.html:530 georeferencing/diplomas.py:44
 msgid "Silver"
 msgstr "シルバー"
 
 #: frontend/templates/_topbar.html:227
-#: frontend/templates/challenge_detail.html:529
-#: frontend/templates/challenge_detail.html:571 georeferencing/diplomas.py:43
+#: frontend/templates/challenge_detail.html:531
+#: frontend/templates/challenge_detail.html:573 georeferencing/diplomas.py:43
 msgid "Gold"
 msgstr "ゴールド"
 
@@ -294,7 +345,7 @@ msgid ""
 msgstr ""
 
 #: frontend/templates/_topbar.html:232
-#: frontend/templates/challenge_detail.html:810
+#: frontend/templates/challenge_detail.html:829
 msgid "Leave this challenge? Your contributions are preserved."
 msgstr "このチャレンジを離れますか？あなたの貢献は保持されます。"
 
@@ -315,7 +366,7 @@ msgid "Soon"
 msgstr ""
 
 #: frontend/templates/_topbar.html:237
-#: frontend/templates/challenge_detail.html:556
+#: frontend/templates/challenge_detail.html:558
 msgid "Ended"
 msgstr "終了"
 
@@ -347,7 +398,7 @@ msgid "Start contributing"
 msgstr "貢献を始める"
 
 #: frontend/templates/_topbar.html:245
-#: frontend/templates/challenge_detail.html:602
+#: frontend/templates/challenge_detail.html:621
 msgid "Left"
 msgstr "退出しました"
 
@@ -372,133 +423,143 @@ msgstr "ホームに戻る"
 msgid "Menu"
 msgstr ""
 
-#: frontend/templates/_topbar.html:291 frontend/templates/gettask.html:240
+#: frontend/templates/_topbar.html:292 frontend/templates/gettask.html:240
 #: frontend/templates/ranking.html:111
 msgid "Your area"
 msgstr "あなたのエリア"
 
-#: frontend/templates/_topbar.html:302 frontend/templates/gettask.html:74
+#: frontend/templates/_topbar.html:303 frontend/templates/gettask.html:74
 #: frontend/templates/ranking.html:109 templates/account/login.html:10
 #: templates/account/login.html:340 templates/account/logout.html:203
 #: templates/account/password_reset.html:260 templates/account/signup.html:471
 msgid "Sign in"
 msgstr "サインイン"
 
-#: frontend/templates/challenge_detail.html:449
+#: frontend/templates/challenge_detail.html:451
 msgid "All challenges"
 msgstr "すべてのチャレンジ"
 
-#: frontend/templates/challenge_detail.html:466
+#: frontend/templates/challenge_detail.html:468
 msgid "Only photos from this set count"
 msgstr ""
 
-#: frontend/templates/challenge_detail.html:466
+#: frontend/templates/challenge_detail.html:468
 msgid "Photo set:"
 msgstr "写真中心："
 
-#: frontend/templates/challenge_detail.html:488
+#: frontend/templates/challenge_detail.html:490
 msgid "You are enrolled"
 msgstr "登録されています"
 
-#: frontend/templates/challenge_detail.html:492
+#: frontend/templates/challenge_detail.html:494
 msgid "Contribute"
 msgstr "貢献する"
 
-#: frontend/templates/challenge_detail.html:497
+#: frontend/templates/challenge_detail.html:499
 msgid "Leave challenge"
 msgstr "チャレンジを離れる"
 
-#: frontend/templates/challenge_detail.html:501
+#: frontend/templates/challenge_detail.html:503
 msgid "This challenge has finished."
 msgstr "このチャレンジは終了しました。"
 
-#: frontend/templates/challenge_detail.html:504
+#: frontend/templates/challenge_detail.html:506
 msgid "Re-joining preserves your previous CPs."
 msgstr "再参加すると、以前のコントロールポイントは保持されます。"
 
-#: frontend/templates/challenge_detail.html:507
+#: frontend/templates/challenge_detail.html:509
 msgid "Join challenge"
 msgstr "チャレンジに参加"
 
-#: frontend/templates/challenge_detail.html:512
+#: frontend/templates/challenge_detail.html:514
 msgid "Log in to join"
 msgstr "ログインして参加"
 
-#: frontend/templates/challenge_detail.html:520
+#: frontend/templates/challenge_detail.html:522
 #: frontend/templates/gettask.html:232
 msgid "Group progress"
 msgstr "グループの進捗"
 
-#: frontend/templates/challenge_detail.html:538
+#: frontend/templates/challenge_detail.html:540
 msgid "Total CPs"
 msgstr "合計CP"
 
-#: frontend/templates/challenge_detail.html:545
-#: frontend/templates/index.html:880 frontend/templates/ranking.html:63
+#: frontend/templates/challenge_detail.html:547
+#: frontend/templates/index.html:895 frontend/templates/ranking.html:63
 msgid "Participants"
 msgstr "参加者"
 
-#: frontend/templates/challenge_detail.html:557
+#: frontend/templates/challenge_detail.html:559
 msgid "Days to start"
 msgstr "開始までの日数"
 
-#: frontend/templates/challenge_detail.html:558
+#: frontend/templates/challenge_detail.html:560
 msgid "Days left"
 msgstr "残り日数"
 
-#: frontend/templates/challenge_detail.html:569
+#: frontend/templates/challenge_detail.html:571
 msgid "to"
 msgstr "まで"
 
-#: frontend/templates/challenge_detail.html:572
+#: frontend/templates/challenge_detail.html:574
 msgid "Gold reached!"
 msgstr "ゴールド達成！"
 
 #: frontend/templates/challenge_detail.html:584
+#| msgid "Could not join the challenge."
+msgid "Photos located in this challenge"
+msgstr "チャレンジを退出しました"
+
+#: frontend/templates/challenge_detail.html:585
+#: frontend/templates/index.html:872
+msgid "Open the full map"
+msgstr ""
+
+#: frontend/templates/challenge_detail.html:603
 msgid "Your performance"
 msgstr "マイページ"
 
-#: frontend/templates/challenge_detail.html:588
+#: frontend/templates/challenge_detail.html:607
 #: frontend/templates/gettask.html:229 user_profile/templates/user.html:944
 msgid "Your rank"
 msgstr "あなたの順位"
 
-#: frontend/templates/challenge_detail.html:592
+#: frontend/templates/challenge_detail.html:611
 #: user_profile/templates/user.html:943
 msgid "Your CPs"
 msgstr "あなたのCP"
 
-#: frontend/templates/challenge_detail.html:597
+#: frontend/templates/challenge_detail.html:616
 msgid "of group total"
 msgstr "グループ全体の"
 
-#: frontend/templates/challenge_detail.html:611
+#: frontend/templates/challenge_detail.html:630
 #, python-format
 msgid "Only %(cp)s CP to overtake %(username)s!"
 msgstr ""
 
-#: frontend/templates/challenge_detail.html:615
+#: frontend/templates/challenge_detail.html:634
 #, python-format
 msgid "Only %(cp)s CP to climb one place!"
 msgstr ""
 
-#: frontend/templates/challenge_detail.html:628
+#: frontend/templates/challenge_detail.html:647
 #: frontend/templates/gettask.html:234
 msgid "Leaderboard"
 msgstr "リーダーボード"
 
-#: frontend/templates/challenge_detail.html:631
-#: frontend/templates/challenge_detail.html:681
+#: frontend/templates/challenge_detail.html:650
+#: frontend/templates/challenge_detail.html:700
 #: frontend/templates/ranking.html:84
 msgid "Jump to me"
 msgstr "自分の位置へ"
 
-#: frontend/templates/challenge_detail.html:640
+#: frontend/templates/challenge_detail.html:659
 #: frontend/templates/ranking.html:134
 msgid "User"
 msgstr "ユーザー"
 
-#: frontend/templates/challenge_detail.html:641
+#: frontend/templates/challenge_detail.html:660 frontend/templates/map.html:30
 #: user_profile/templates/diploma_general.html:27
 #: user_profile/templates/diploma_verify.html:69
 #: user_profile/templates/diploma_verify.html:83
@@ -506,44 +567,44 @@ msgstr "ユーザー"
 msgid "Control points"
 msgstr "制御点"
 
-#: frontend/templates/challenge_detail.html:642
+#: frontend/templates/challenge_detail.html:661
 #: user_profile/templates/user.html:942
 msgid "Status"
 msgstr "ステータス"
 
-#: frontend/templates/challenge_detail.html:647
+#: frontend/templates/challenge_detail.html:666
 #: frontend/templates/ranking.html:92
 msgid "Loading…"
 msgstr "読み込み中…"
 
-#: frontend/templates/challenge_detail.html:682
+#: frontend/templates/challenge_detail.html:701
 #: frontend/templates/ranking.html:132
 #, python-brace-format
 msgid "Page {p} of {t}"
 msgstr "{p} / {t} ページ"
 
-#: frontend/templates/challenge_detail.html:683
+#: frontend/templates/challenge_detail.html:702
 msgid "No participants yet — be the first one!"
 msgstr "まだ参加者がいません — 最初の参加者になりましょう！"
 
-#: frontend/templates/challenge_detail.html:684
+#: frontend/templates/challenge_detail.html:703
 msgid "Could not load leaderboard."
 msgstr "ランキングを読み込めませんでした。"
 
-#: frontend/templates/challenge_detail.html:685
+#: frontend/templates/challenge_detail.html:704
 msgid "you"
 msgstr "あなた"
 
-#: frontend/templates/challenge_detail.html:686
+#: frontend/templates/challenge_detail.html:705
 #: frontend/templates/ranking.html:133 teams/templates/team_detail.html:67
 msgid "Invisible user"
 msgstr "非表示ユーザー"
 
-#: frontend/templates/challenge_detail.html:687
+#: frontend/templates/challenge_detail.html:706
 msgid "active"
 msgstr "実施中"
 
-#: frontend/templates/challenge_detail.html:688
+#: frontend/templates/challenge_detail.html:707
 #: user_profile/templates/user.html:956
 msgid "left"
 msgstr "残り"
@@ -704,12 +765,10 @@ msgid "Team"
 msgstr ""
 
 #: frontend/templates/gettask.html:77
-#| msgid "Your team"
 msgid "Yours for the team"
 msgstr "あなたのエリア"
 
 #: frontend/templates/gettask.html:78
-#| msgid "Total"
 msgid "Team total"
 msgstr "合計"
 
@@ -988,25 +1047,25 @@ msgstr "戻る"
 msgid "Got it!"
 msgstr "わかりました！"
 
-#: frontend/templates/index.html:738
+#: frontend/templates/index.html:739
 #, python-format
 msgid "Welcome back, <span class=\"accent\">%(name)s</span>."
 msgstr "おかえりなさい、<span class=\"accent\">%(name)s</span>。"
 
-#: frontend/templates/index.html:740
+#: frontend/templates/index.html:741
 msgid "Help us locate the night from <span class=\"accent\">orbit</span>."
 msgstr ""
 "<span class=\"accent\">軌道</span>から夜を見つけるのを手伝ってください。"
 
-#: frontend/templates/index.html:744
+#: frontend/templates/index.html:745
 msgid "Help map Earth's lights from space and combat light pollution"
 msgstr "宇宙から地球の光をマッピングし、光害と闘いましょう"
 
-#: frontend/templates/index.html:753
+#: frontend/templates/index.html:754
 msgid "Watch how it works"
 msgstr "仕組みを見る"
 
-#: frontend/templates/index.html:759
+#: frontend/templates/index.html:760
 #, python-format
 msgid ""
 "%(n)s challenge is open — join it and your work counts for a shared goal."
@@ -1014,17 +1073,17 @@ msgid_plural ""
 "%(n)s challenges are open — join one and your work counts for a shared goal."
 msgstr[0] ""
 
-#: frontend/templates/index.html:761
+#: frontend/templates/index.html:762
 msgid ""
 "No challenge is open right now: every photo you locate goes to the general "
 "queue."
 msgstr ""
 
-#: frontend/templates/index.html:775
+#: frontend/templates/index.html:776
 msgid "Our Mission"
 msgstr "私たちのミッション"
 
-#: frontend/templates/index.html:777
+#: frontend/templates/index.html:778
 msgid ""
 "This application is designed to help georeference images taken by astronauts "
 "aboard the International Space Station (ISS). The goal is to create a global "
@@ -1040,88 +1099,98 @@ msgstr ""
 "正確に一致させることで、科学研究、光害の監視、そして生態系や人間の健康への影"
 "響理解に活用できる貴重な環境データ収集に貢献します。"
 
-#: frontend/templates/index.html:790
+#: frontend/templates/index.html:791
 msgid "Georeference Images"
 msgstr "画像のジオリファレンス"
 
-#: frontend/templates/index.html:791
+#: frontend/templates/index.html:792
 msgid "Help align ISS night images with precise geographic coordinates"
 msgstr "ISS夜間画像を精密な地理座標に合わせましょう"
 
-#: frontend/templates/index.html:799
+#: frontend/templates/index.html:800
 msgid "Map Light Pollution"
 msgstr "光害のマッピング"
 
-#: frontend/templates/index.html:800
+#: frontend/templates/index.html:801
 msgid "Contribute to a global database of nighttime light patterns"
 msgstr "夜間光パターンのグローバルデータベースに貢献"
 
-#: frontend/templates/index.html:808
+#: frontend/templates/index.html:809
 msgid "Support Research"
 msgstr "研究を支援"
 
-#: frontend/templates/index.html:809
+#: frontend/templates/index.html:810
 msgid "Enable scientific studies on light pollution's environmental impact"
 msgstr "光害の環境影響に関する科学的研究を可能にする"
 
-#: frontend/templates/index.html:818
+#: frontend/templates/index.html:819
 msgid ""
 "A challenge is a shared goal with a deadline: a region or a set of photos "
 "the community locates together. Join one and your contributions count for it."
 msgstr ""
 
-#: frontend/templates/index.html:825
+#: frontend/templates/index.html:826
 msgid "No challenge is open right now."
 msgstr ""
 
-#: frontend/templates/index.html:826
+#: frontend/templates/index.html:827
 msgid ""
 "You can still participate: every photo you locate goes to the general queue. "
 "New challenges are announced here and in the newsletter."
 msgstr ""
 
-#: frontend/templates/index.html:834
+#: frontend/templates/index.html:835
 msgid "Active"
 msgstr "実施中"
 
-#: frontend/templates/index.html:841
+#: frontend/templates/index.html:842
 msgid "Upcoming"
 msgstr "近日開催"
 
-#: frontend/templates/index.html:855
+#: frontend/templates/index.html:856
 msgid "Recently finished"
 msgstr ""
 
-#: frontend/templates/index.html:865
+#: frontend/templates/index.html:866 frontend/templates/map.html:21
+msgid "What we have lit up so far"
+msgstr ""
+
+#: frontend/templates/index.html:867
+msgid ""
+"Every point is a night photo from the International Space Station located by "
+"the community. Click one to see it."
+msgstr ""
+
+#: frontend/templates/index.html:880
 msgid "Project Statistics"
 msgstr "プロジェクト統計"
 
-#: frontend/templates/index.html:866
+#: frontend/templates/index.html:881
 msgid "Global impact of our community's contributions"
 msgstr "コミュニティの貢献のグローバルな影響"
 
-#: frontend/templates/index.html:872 frontend/templates/ranking.html:61
+#: frontend/templates/index.html:887 frontend/templates/ranking.html:61
 msgid "Control points placed"
 msgstr "制御点"
 
-#: frontend/templates/index.html:876
+#: frontend/templates/index.html:891 frontend/templates/map.html:28
 msgid "Photos located"
 msgstr "位置確認済みの写真"
 
-#: frontend/templates/index.html:884 frontend/templates/ranking.html:62
+#: frontend/templates/index.html:899 frontend/templates/ranking.html:62
 #: user_profile/templates/user.html:776
 msgid "Tasks completed"
 msgstr "完了"
 
-#: frontend/templates/index.html:889
+#: frontend/templates/index.html:904
 msgid "Photos located per week, last 12 weeks"
 msgstr ""
 
-#: frontend/templates/index.html:890 user_profile/templates/user.html:1039
+#: frontend/templates/index.html:905 user_profile/templates/user.html:1039
 msgid "See the ranking"
 msgstr ""
 
-#: frontend/templates/index.html:892
+#: frontend/templates/index.html:907
 msgid "Photos located per week"
 msgstr "位置確認済みの写真"
 
@@ -1779,6 +1848,29 @@ msgstr ""
 "本規約はスペイン法に準拠します。紛争は、消費者保護法令の強行規定を妨げない範"
 "囲で、スペイン・サラゴサの裁判所に付託されます。"
 
+#: frontend/templates/map.html:23
+msgid ""
+"Every point is a night photo from the International Space Station that the "
+"community has located. Click one to see it."
+msgstr ""
+
+#: frontend/templates/map.html:24
+msgid "Show the whole world"
+msgstr ""
+
+#: frontend/templates/map.html:29
+#| msgid "Contributor"
+msgid "Contributions"
+msgstr "貢献する"
+
+#: frontend/templates/map.html:35
+msgid "Located photo (bigger = more contributions)"
+msgstr ""
+
+#: frontend/templates/map.html:36
+msgid "Background: Earth at night (VIIRS)."
+msgstr ""
+
 #: frontend/templates/ranking.html:58
 msgid ""
 "Who is lighting up the map. Only accounts with a verified e-mail count; "
@@ -1844,7 +1936,7 @@ msgstr "ランキングを読み込めませんでした。"
 
 #: frontend/templates/ranking.html:134 user_profile/forms.py:31
 #: user_profile/models.py:45 user_profile/templates/edit_profile.html:253
-#: user_profile/templates/user.html:1155
+#: user_profile/templates/user.html:1087
 msgid "Country"
 msgstr "国"
 
@@ -1891,10 +1983,6 @@ msgstr ""
 #: frontend/templates/ranking.html:138
 msgid "You are not in a team yet."
 msgstr "サインインしていません。"
-
-#: frontend/templates/ranking.html:139
-msgid "control points"
-msgstr "制御点"
 
 #: frontend/templates/ranking.html:139
 msgid "time"
@@ -2197,22 +2285,18 @@ msgid "Sign in to join"
 msgstr "ログインして参加"
 
 #: teams/templates/team_detail.html:55
-#| msgid "All time"
 msgid "All teams"
 msgstr "時間"
 
 #: teams/templates/team_detail.html:61
-#| msgid "Tasks completed"
 msgid "Tasks for the team"
 msgstr "完了"
 
 #: teams/templates/team_detail.html:61
-#| msgid "Create a team"
 msgid "CP for the team"
 msgstr "アカウントを作成"
 
 #: teams/templates/team_detail.html:61
-#| msgid "All time"
 msgid "CP all time"
 msgstr "時間"
 
@@ -2240,7 +2324,7 @@ msgstr ""
 msgid "Remove this member from the team?"
 msgstr ""
 
-#: teams/templates/team_detail.html:76 user_profile/templates/user.html:1208
+#: teams/templates/team_detail.html:76 user_profile/templates/user.html:1140
 msgid "Remove"
 msgstr "削除"
 
@@ -2259,7 +2343,6 @@ msgid "Team settings (owner)"
 msgstr ""
 
 #: teams/templates/team_detail.html:93
-#| msgid "Description"
 msgid "Description (optional)"
 msgstr "期間"
 
@@ -2284,7 +2367,6 @@ msgid "Delete this team? This cannot be undone."
 msgstr ""
 
 #: teams/templates/team_detail.html:100
-#| msgid "Delete"
 msgid "Delete team"
 msgstr "削除"
 
@@ -2293,12 +2375,10 @@ msgid "To delete the team, remove the other members first."
 msgstr ""
 
 #: teams/templates/team_join_confirm.html:3
-#| msgid "Join this team"
 msgid "Join team"
 msgstr "このバッチで。"
 
 #: teams/templates/team_join_confirm.html:7
-#| msgid "You've been unsubscribed"
 msgid "You have been invited to"
 msgstr "配信停止しました"
 
@@ -2343,7 +2423,6 @@ msgid "%(n)s members"
 msgstr ""
 
 #: teams/templates/team_list.html:26
-#| msgid "Join this team"
 msgid "Join with a code"
 msgstr "このバッチで。"
 
@@ -2373,12 +2452,10 @@ msgid "Create"
 msgstr "アカウントを作成"
 
 #: teams/templates/team_list.html:46
-#| msgid "Sign in to join"
 msgid "Sign in to join or create a team"
 msgstr "ログインして参加"
 
 #: teams/templates/team_list.html:50
-#| msgid "Search"
 msgid "Search teams"
 msgstr "検索"
 
@@ -2391,7 +2468,6 @@ msgid "No team matches your search."
 msgstr ""
 
 #: teams/templates/team_list.html:73
-#| msgid "No participants yet — be the first one!"
 msgid "No teams yet. Be the first to create one!"
 msgstr "まだ参加者がいません — 最初の参加者になりましょう！"
 
@@ -2440,7 +2516,6 @@ msgid "You have left %(team)s. The points you earned there stay with the team."
 msgstr ""
 
 #: teams/views.py:255
-#| msgid "Team name"
 msgid "Team updated."
 msgstr "名前"
 
@@ -2485,7 +2560,7 @@ msgid "Sign in to continue locating the night."
 msgstr "サインインして、夜の位置確認を続けましょう。"
 
 #: templates/account/login.html:300 templates/account/password_reset.html:234
-#: templates/account/signup.html:347 user_profile/templates/user.html:1146
+#: templates/account/signup.html:347 user_profile/templates/user.html:1078
 msgid "Email"
 msgstr "メール："
 
@@ -2536,7 +2611,7 @@ msgstr "サインインしていません。"
 #: templates/account/logout.html:196
 #: user_profile/templates/delete_account.html:115
 #: user_profile/templates/edit_profile.html:280
-#: user_profile/templates/user.html:1217
+#: user_profile/templates/user.html:1149
 msgid "Cancel"
 msgstr "キャンセル"
 
@@ -2580,7 +2655,7 @@ msgstr "パスワードを思い出しましたか？"
 msgid "Join the project and start locating the night."
 msgstr "プロジェクトに参加して、夜の位置確認を始めましょう。"
 
-#: templates/account/signup.html:365 user_profile/templates/user.html:1142
+#: templates/account/signup.html:365 user_profile/templates/user.html:1074
 msgid "Username"
 msgstr "ユーザー名"
 
@@ -2630,12 +2705,12 @@ msgstr "Googleでサインイン"
 
 #: user_profile/forms.py:24 user_profile/forms.py:32 user_profile/models.py:46
 #: user_profile/templates/edit_profile.html:248
-#: user_profile/templates/user.html:1150
+#: user_profile/templates/user.html:1082
 msgid "City"
 msgstr "市区町村"
 
 #: user_profile/forms.py:29 user_profile/templates/edit_profile.html:258
-#: user_profile/templates/user.html:1160
+#: user_profile/templates/user.html:1092
 msgid "Biography"
 msgstr "自己紹介"
 
@@ -2980,7 +3055,7 @@ msgstr ""
 "Lost at Nightのニュースレターは届かなくなります。プロフィールページからいつで"
 "も再登録できます。"
 
-#: user_profile/templates/user.html:607 user_profile/templates/user.html:1134
+#: user_profile/templates/user.html:607 user_profile/templates/user.html:1066
 msgid "Edit profile"
 msgstr "プロフィールを編集"
 
@@ -3142,7 +3217,6 @@ msgid "Start your own and compete together in the team ranking."
 msgstr ""
 
 #: user_profile/templates/user.html:1017
-#| msgid "Browse challenges"
 msgid "Browse all teams"
 msgstr "チャレンジを閲覧"
 
@@ -3155,45 +3229,45 @@ msgstr ""
 msgid "You are #%(rank)s of %(total)s by control points."
 msgstr ""
 
-#: user_profile/templates/user.html:1075
+#: user_profile/templates/user.html:1055
 msgid "No completed tasks yet"
 msgstr "まだ完了したタスクはありません"
 
-#: user_profile/templates/user.html:1183
+#: user_profile/templates/user.html:1115
 #, python-format
 msgid "Subscribed on %(d)s."
 msgstr "%(d)sに登録。"
 
-#: user_profile/templates/user.html:1187
+#: user_profile/templates/user.html:1119
 #, python-format
 msgid "You unsubscribed on %(d)s."
 msgstr "%(d)sに配信停止しました。"
 
-#: user_profile/templates/user.html:1192
+#: user_profile/templates/user.html:1124
 msgid "Profile picture"
 msgstr "プロフィール写真"
 
-#: user_profile/templates/user.html:1218
+#: user_profile/templates/user.html:1150
 msgid "Save changes"
 msgstr "変更を保存"
 
-#: user_profile/templates/user.html:1269
+#: user_profile/templates/user.html:1201
 msgid "Search country…"
 msgstr "国を検索…"
 
-#: user_profile/templates/user.html:1293
+#: user_profile/templates/user.html:1225
 msgid "No matches"
 msgstr "一致なし"
 
-#: user_profile/templates/user.html:1352
+#: user_profile/templates/user.html:1284
 msgid "Saving…"
 msgstr "保存中…"
 
-#: user_profile/templates/user.html:1369
+#: user_profile/templates/user.html:1301
 msgid "Could not save. Please try again."
 msgstr "保存できませんでした。もう一度お試しください。"
 
-#: user_profile/templates/user.html:1373
+#: user_profile/templates/user.html:1305
 msgid "Network error — please try again."
 msgstr "ネットワークエラー — もう一度お試しください。"
 

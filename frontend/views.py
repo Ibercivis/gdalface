@@ -569,3 +569,34 @@ def ranking(request, scope='users'):
         'totals': metrics.project_totals(),
         'active_30': metrics.active_users(30),
     })
+
+
+# ── Located-photos map ────────────────────────────────────────────────
+def located_map(request):
+    """Public map of every photo the community has located."""
+    from georeferencing.mapdata import located_geojson
+    challenge = None
+    if request.GET.get('challenge'):
+        challenge = Challenge.objects.filter(pk=request.GET['challenge']).first()
+    data = located_geojson(challenge)
+    return render(request, 'map.html', {
+        'meta': data['meta'],
+        'challenge': challenge,
+        'data_url': '/map/data.geojson' + (f'?challenge={challenge.id}' if challenge else ''),
+    })
+
+
+def located_map_data(request):
+    """GeoJSON for the map component. ?challenge=<id> filters; ?mine=1 marks
+    the viewer's own photos (requires login)."""
+    from django.http import JsonResponse
+    from georeferencing.mapdata import located_geojson
+    challenge = None
+    if request.GET.get('challenge'):
+        challenge = Challenge.objects.filter(pk=request.GET['challenge']).first()
+    user = request.user if request.GET.get('mine') == '1' else None
+    data = located_geojson(challenge, user=user)
+    resp = JsonResponse(data)
+    if user is None:
+        resp['Cache-Control'] = 'public, max-age=600'
+    return resp

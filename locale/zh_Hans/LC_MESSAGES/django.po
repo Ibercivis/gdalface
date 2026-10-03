@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-03 09:51+0000\n"
+"POT-Creation-Date: 2026-10-03 11:16+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,7 +23,7 @@ msgid "Enrolled"
 msgstr "已加入"
 
 #: frontend/templates/_challenge_card.html:31
-#: frontend/templates/challenge_detail.html:468
+#: frontend/templates/challenge_detail.html:470
 msgid "All photos"
 msgstr ""
 
@@ -32,17 +32,17 @@ msgid "Only photos inside a geographic region count"
 msgstr ""
 
 #: frontend/templates/_challenge_card.html:35
-#: frontend/templates/challenge_detail.html:471
+#: frontend/templates/challenge_detail.html:473
 msgid "Region"
 msgstr "已定义区域"
 
 #: frontend/templates/_challenge_card.html:40
-#: frontend/templates/challenge_detail.html:474
+#: frontend/templates/challenge_detail.html:476
 msgid "participants"
 msgstr "参与者"
 
 #: frontend/templates/_challenge_card.html:57
-#: frontend/templates/gettask.html:231 frontend/templates/index.html:848
+#: frontend/templates/gettask.html:231 frontend/templates/index.html:849
 msgid "Paused"
 msgstr "已暂停"
 
@@ -169,71 +169,122 @@ msgstr "快速链接"
 msgid "Home"
 msgstr "首页"
 
-#: frontend/templates/_footer.html:186 frontend/templates/_topbar.html:272
-#: frontend/templates/index.html:748 frontend/templates/index.html:828
+#: frontend/templates/_footer.html:186 frontend/templates/_topbar.html:273
+#: frontend/templates/index.html:749 frontend/templates/index.html:829
+#: frontend/templates/map.html:37
 msgid "Participate"
 msgstr "参与"
 
 #: frontend/templates/_footer.html:187 frontend/templates/_topbar.html:269
-#: frontend/templates/index.html:817
+#: frontend/templates/index.html:818
 msgid "Challenges"
 msgstr "挑战"
 
-#: frontend/templates/_footer.html:188 frontend/templates/_topbar.html:271
+#: frontend/templates/_footer.html:188 frontend/templates/_topbar.html:270
+#: frontend/templates/map.html:4
+msgid "Map"
+msgstr ""
+
+#: frontend/templates/_footer.html:189 frontend/templates/_topbar.html:272
 #: frontend/templates/ranking.html:5 frontend/templates/ranking.html:57
 msgid "Ranking"
 msgstr "排名"
 
-#: frontend/templates/_footer.html:189 frontend/templates/_topbar.html:270
+#: frontend/templates/_footer.html:190 frontend/templates/_topbar.html:271
 #: frontend/templates/ranking.html:76 teams/templates/team_list.html:3
 #: teams/templates/team_list.html:6 user_profile/templates/user.html:1040
 msgid "Teams"
 msgstr ""
 
-#: frontend/templates/_footer.html:190
+#: frontend/templates/_footer.html:191
 msgid "Manual"
 msgstr ""
 
-#: frontend/templates/_footer.html:191
+#: frontend/templates/_footer.html:192
 msgid "Video tutorial"
 msgstr "视频教程"
 
-#: frontend/templates/_footer.html:192 frontend/templates/_footer.html:198
+#: frontend/templates/_footer.html:193 frontend/templates/_footer.html:199
 #: templates/account/login.html:280 templates/account/logout.html:161
 #: templates/account/password_reset.html:208 templates/account/signup.html:326
 msgid "Contact"
 msgstr "联系我们"
 
-#: frontend/templates/_footer.html:218 frontend/templates/gettask.html:571
+#: frontend/templates/_footer.html:219 frontend/templates/gettask.html:571
 msgid "Developed by <b>Ibercivis</b>"
 msgstr "由 <b>Ibercivis</b> 开发"
 
-#: frontend/templates/_footer.html:226
+#: frontend/templates/_footer.html:227
 msgid "Legal"
 msgstr "法律"
 
-#: frontend/templates/_footer.html:227
+#: frontend/templates/_footer.html:228
 msgid "Privacy"
 msgstr "隐私"
 
-#: frontend/templates/_footer.html:228
+#: frontend/templates/_footer.html:229
 msgid "Terms"
 msgstr "条款"
 
-#: frontend/templates/_footer.html:229
+#: frontend/templates/_footer.html:230
 msgid "Cookies"
 msgstr "Cookie"
 
-#: frontend/templates/_footer.html:230 frontend/templates/legal/legal.html:4
+#: frontend/templates/_footer.html:231 frontend/templates/legal/legal.html:4
 #: frontend/templates/legal/legal.html:7
 msgid "Legal notice"
 msgstr "法律声明"
 
-#: frontend/templates/_footer.html:232
+#: frontend/templates/_footer.html:233
 msgid "© 2025 Lost at Night. All rights reserved."
 msgstr "© 2025 Lost at Night. 保留所有权利。"
 
-#: frontend/templates/_topbar.html:219 frontend/templates/_topbar.html:283
+#: frontend/templates/_located_map_assets.html:32
+#| msgid "3. Your contributions"
+msgid "contributions"
+msgstr "3. 您的贡献"
+
+#: frontend/templates/_located_map_assets.html:32
+#| msgid "Contributor"
+msgid "contribution"
+msgstr "贡献"
+
+#: frontend/templates/_located_map_assets.html:32
+#: frontend/templates/ranking.html:139
+msgid "control points"
+msgstr "控制点"
+
+#: frontend/templates/_located_map_assets.html:33
+msgid "Taken"
+msgstr ""
+
+#: frontend/templates/_located_map_assets.html:33
+#| msgid "Original images"
+msgid "Original at NASA"
+msgstr "原始图像"
+
+#: frontend/templates/_located_map_assets.html:33
+msgid "Still needs more eyes"
+msgstr ""
+
+#: frontend/templates/_located_map_assets.html:34
+msgid "You located this one"
+msgstr ""
+
+#: frontend/templates/_located_map_assets.html:34
+msgid "Night lights (VIIRS)"
+msgstr ""
+
+#: frontend/templates/_located_map_assets.html:34
+msgid "Located photos"
+msgstr ""
+
+#: frontend/templates/_located_map_assets.html:35
+#| msgid "Photos located per week"
+msgid "Nothing located here yet."
+msgstr "已定位照片"
+
+#: frontend/templates/_topbar.html:219 frontend/templates/_topbar.html:284
 #: frontend/templates/gettask.html:236 georeferencing/models.py:544
 #: user_profile/templates/diploma_challenge.html:88
 #: user_profile/templates/diploma_challenge.html:91
@@ -260,18 +311,18 @@ msgid "Your previous active challenge was automatically left."
 msgstr "您之前的活动挑战已自动退出。"
 
 #: frontend/templates/_topbar.html:225
-#: frontend/templates/challenge_detail.html:527 georeferencing/diplomas.py:45
+#: frontend/templates/challenge_detail.html:529 georeferencing/diplomas.py:45
 msgid "Bronze"
 msgstr "铜级"
 
 #: frontend/templates/_topbar.html:226
-#: frontend/templates/challenge_detail.html:528 georeferencing/diplomas.py:44
+#: frontend/templates/challenge_detail.html:530 georeferencing/diplomas.py:44
 msgid "Silver"
 msgstr "银级"
 
 #: frontend/templates/_topbar.html:227
-#: frontend/templates/challenge_detail.html:529
-#: frontend/templates/challenge_detail.html:571 georeferencing/diplomas.py:43
+#: frontend/templates/challenge_detail.html:531
+#: frontend/templates/challenge_detail.html:573 georeferencing/diplomas.py:43
 msgid "Gold"
 msgstr "金级"
 
@@ -291,7 +342,7 @@ msgid ""
 msgstr ""
 
 #: frontend/templates/_topbar.html:232
-#: frontend/templates/challenge_detail.html:810
+#: frontend/templates/challenge_detail.html:829
 msgid "Leave this challenge? Your contributions are preserved."
 msgstr "离开此挑战？您的贡献会被保留。"
 
@@ -312,7 +363,7 @@ msgid "Soon"
 msgstr ""
 
 #: frontend/templates/_topbar.html:237
-#: frontend/templates/challenge_detail.html:556
+#: frontend/templates/challenge_detail.html:558
 msgid "Ended"
 msgstr "已结束"
 
@@ -344,7 +395,7 @@ msgid "Start contributing"
 msgstr "开始贡献"
 
 #: frontend/templates/_topbar.html:245
-#: frontend/templates/challenge_detail.html:602
+#: frontend/templates/challenge_detail.html:621
 msgid "Left"
 msgstr "已离开"
 
@@ -369,133 +420,143 @@ msgstr "返回首页"
 msgid "Menu"
 msgstr ""
 
-#: frontend/templates/_topbar.html:291 frontend/templates/gettask.html:240
+#: frontend/templates/_topbar.html:292 frontend/templates/gettask.html:240
 #: frontend/templates/ranking.html:111
 msgid "Your area"
 msgstr "您的区域"
 
-#: frontend/templates/_topbar.html:302 frontend/templates/gettask.html:74
+#: frontend/templates/_topbar.html:303 frontend/templates/gettask.html:74
 #: frontend/templates/ranking.html:109 templates/account/login.html:10
 #: templates/account/login.html:340 templates/account/logout.html:203
 #: templates/account/password_reset.html:260 templates/account/signup.html:471
 msgid "Sign in"
 msgstr "登录"
 
-#: frontend/templates/challenge_detail.html:449
+#: frontend/templates/challenge_detail.html:451
 msgid "All challenges"
 msgstr "所有挑战"
 
-#: frontend/templates/challenge_detail.html:466
+#: frontend/templates/challenge_detail.html:468
 msgid "Only photos from this set count"
 msgstr ""
 
-#: frontend/templates/challenge_detail.html:466
+#: frontend/templates/challenge_detail.html:468
 msgid "Photo set:"
 msgstr "照片中心："
 
-#: frontend/templates/challenge_detail.html:488
+#: frontend/templates/challenge_detail.html:490
 msgid "You are enrolled"
 msgstr "您已加入"
 
-#: frontend/templates/challenge_detail.html:492
+#: frontend/templates/challenge_detail.html:494
 msgid "Contribute"
 msgstr "贡献"
 
-#: frontend/templates/challenge_detail.html:497
+#: frontend/templates/challenge_detail.html:499
 msgid "Leave challenge"
 msgstr "离开挑战"
 
-#: frontend/templates/challenge_detail.html:501
+#: frontend/templates/challenge_detail.html:503
 msgid "This challenge has finished."
 msgstr "本挑战已结束。"
 
-#: frontend/templates/challenge_detail.html:504
+#: frontend/templates/challenge_detail.html:506
 msgid "Re-joining preserves your previous CPs."
 msgstr "重新加入会保留您之前的控制点。"
 
-#: frontend/templates/challenge_detail.html:507
+#: frontend/templates/challenge_detail.html:509
 msgid "Join challenge"
 msgstr "加入挑战"
 
-#: frontend/templates/challenge_detail.html:512
+#: frontend/templates/challenge_detail.html:514
 msgid "Log in to join"
 msgstr "登录以加入"
 
-#: frontend/templates/challenge_detail.html:520
+#: frontend/templates/challenge_detail.html:522
 #: frontend/templates/gettask.html:232
 msgid "Group progress"
 msgstr "团队进度"
 
-#: frontend/templates/challenge_detail.html:538
+#: frontend/templates/challenge_detail.html:540
 msgid "Total CPs"
 msgstr "总CP"
 
-#: frontend/templates/challenge_detail.html:545
-#: frontend/templates/index.html:880 frontend/templates/ranking.html:63
+#: frontend/templates/challenge_detail.html:547
+#: frontend/templates/index.html:895 frontend/templates/ranking.html:63
 msgid "Participants"
 msgstr "参与者"
 
-#: frontend/templates/challenge_detail.html:557
+#: frontend/templates/challenge_detail.html:559
 msgid "Days to start"
 msgstr "距开始天数"
 
-#: frontend/templates/challenge_detail.html:558
+#: frontend/templates/challenge_detail.html:560
 msgid "Days left"
 msgstr "剩余天数"
 
-#: frontend/templates/challenge_detail.html:569
+#: frontend/templates/challenge_detail.html:571
 msgid "to"
 msgstr "至"
 
-#: frontend/templates/challenge_detail.html:572
+#: frontend/templates/challenge_detail.html:574
 msgid "Gold reached!"
 msgstr "已达金级！"
 
 #: frontend/templates/challenge_detail.html:584
+#| msgid "Could not join the challenge."
+msgid "Photos located in this challenge"
+msgstr "您已退出挑战"
+
+#: frontend/templates/challenge_detail.html:585
+#: frontend/templates/index.html:872
+msgid "Open the full map"
+msgstr ""
+
+#: frontend/templates/challenge_detail.html:603
 msgid "Your performance"
 msgstr "个人中心"
 
-#: frontend/templates/challenge_detail.html:588
+#: frontend/templates/challenge_detail.html:607
 #: frontend/templates/gettask.html:229 user_profile/templates/user.html:944
 msgid "Your rank"
 msgstr "您的排名"
 
-#: frontend/templates/challenge_detail.html:592
+#: frontend/templates/challenge_detail.html:611
 #: user_profile/templates/user.html:943
 msgid "Your CPs"
 msgstr "您的CP"
 
-#: frontend/templates/challenge_detail.html:597
+#: frontend/templates/challenge_detail.html:616
 msgid "of group total"
 msgstr "团队总数中"
 
-#: frontend/templates/challenge_detail.html:611
+#: frontend/templates/challenge_detail.html:630
 #, python-format
 msgid "Only %(cp)s CP to overtake %(username)s!"
 msgstr ""
 
-#: frontend/templates/challenge_detail.html:615
+#: frontend/templates/challenge_detail.html:634
 #, python-format
 msgid "Only %(cp)s CP to climb one place!"
 msgstr ""
 
-#: frontend/templates/challenge_detail.html:628
+#: frontend/templates/challenge_detail.html:647
 #: frontend/templates/gettask.html:234
 msgid "Leaderboard"
 msgstr "排行榜"
 
-#: frontend/templates/challenge_detail.html:631
-#: frontend/templates/challenge_detail.html:681
+#: frontend/templates/challenge_detail.html:650
+#: frontend/templates/challenge_detail.html:700
 #: frontend/templates/ranking.html:84
 msgid "Jump to me"
 msgstr "跳到我"
 
-#: frontend/templates/challenge_detail.html:640
+#: frontend/templates/challenge_detail.html:659
 #: frontend/templates/ranking.html:134
 msgid "User"
 msgstr "用户"
 
-#: frontend/templates/challenge_detail.html:641
+#: frontend/templates/challenge_detail.html:660 frontend/templates/map.html:30
 #: user_profile/templates/diploma_general.html:27
 #: user_profile/templates/diploma_verify.html:69
 #: user_profile/templates/diploma_verify.html:83
@@ -503,44 +564,44 @@ msgstr "用户"
 msgid "Control points"
 msgstr "控制点"
 
-#: frontend/templates/challenge_detail.html:642
+#: frontend/templates/challenge_detail.html:661
 #: user_profile/templates/user.html:942
 msgid "Status"
 msgstr "状态"
 
-#: frontend/templates/challenge_detail.html:647
+#: frontend/templates/challenge_detail.html:666
 #: frontend/templates/ranking.html:92
 msgid "Loading…"
 msgstr "加载中…"
 
-#: frontend/templates/challenge_detail.html:682
+#: frontend/templates/challenge_detail.html:701
 #: frontend/templates/ranking.html:132
 #, python-brace-format
 msgid "Page {p} of {t}"
 msgstr "第 {p} 页，共 {t} 页"
 
-#: frontend/templates/challenge_detail.html:683
+#: frontend/templates/challenge_detail.html:702
 msgid "No participants yet — be the first one!"
 msgstr "暂无参与者 — 成为第一人！"
 
-#: frontend/templates/challenge_detail.html:684
+#: frontend/templates/challenge_detail.html:703
 msgid "Could not load leaderboard."
 msgstr "无法加载排行榜。"
 
-#: frontend/templates/challenge_detail.html:685
+#: frontend/templates/challenge_detail.html:704
 msgid "you"
 msgstr "您"
 
-#: frontend/templates/challenge_detail.html:686
+#: frontend/templates/challenge_detail.html:705
 #: frontend/templates/ranking.html:133 teams/templates/team_detail.html:67
 msgid "Invisible user"
 msgstr "隐藏用户"
 
-#: frontend/templates/challenge_detail.html:687
+#: frontend/templates/challenge_detail.html:706
 msgid "active"
 msgstr "进行中"
 
-#: frontend/templates/challenge_detail.html:688
+#: frontend/templates/challenge_detail.html:707
 #: user_profile/templates/user.html:956
 msgid "left"
 msgstr "剩余"
@@ -699,12 +760,10 @@ msgid "Team"
 msgstr ""
 
 #: frontend/templates/gettask.html:77
-#| msgid "Your team"
 msgid "Yours for the team"
 msgstr "您的区域"
 
 #: frontend/templates/gettask.html:78
-#| msgid "Total"
 msgid "Team total"
 msgstr "总计"
 
@@ -972,24 +1031,24 @@ msgstr "返回"
 msgid "Got it!"
 msgstr "明白了！"
 
-#: frontend/templates/index.html:738
+#: frontend/templates/index.html:739
 #, python-format
 msgid "Welcome back, <span class=\"accent\">%(name)s</span>."
 msgstr "欢迎回来，<span class=\"accent\">%(name)s</span>。"
 
-#: frontend/templates/index.html:740
+#: frontend/templates/index.html:741
 msgid "Help us locate the night from <span class=\"accent\">orbit</span>."
 msgstr "帮助我们从<span class=\"accent\">轨道</span>定位夜晚。"
 
-#: frontend/templates/index.html:744
+#: frontend/templates/index.html:745
 msgid "Help map Earth's lights from space and combat light pollution"
 msgstr "从太空绘制地球灯光地图，共同对抗光污染"
 
-#: frontend/templates/index.html:753
+#: frontend/templates/index.html:754
 msgid "Watch how it works"
 msgstr "了解工作原理"
 
-#: frontend/templates/index.html:759
+#: frontend/templates/index.html:760
 #, python-format
 msgid ""
 "%(n)s challenge is open — join it and your work counts for a shared goal."
@@ -997,17 +1056,17 @@ msgid_plural ""
 "%(n)s challenges are open — join one and your work counts for a shared goal."
 msgstr[0] ""
 
-#: frontend/templates/index.html:761
+#: frontend/templates/index.html:762
 msgid ""
 "No challenge is open right now: every photo you locate goes to the general "
 "queue."
 msgstr ""
 
-#: frontend/templates/index.html:775
+#: frontend/templates/index.html:776
 msgid "Our Mission"
 msgstr "我们的使命"
 
-#: frontend/templates/index.html:777
+#: frontend/templates/index.html:778
 msgid ""
 "This application is designed to help georeference images taken by astronauts "
 "aboard the International Space Station (ISS). The goal is to create a global "
@@ -1022,88 +1081,98 @@ msgstr ""
 "齐，该应用有助于收集宝贵的环境数据，可用于科学研究、光污染监测以及了解其对生"
 "态系统和人类健康的影响。"
 
-#: frontend/templates/index.html:790
+#: frontend/templates/index.html:791
 msgid "Georeference Images"
 msgstr "图像地理配准"
 
-#: frontend/templates/index.html:791
+#: frontend/templates/index.html:792
 msgid "Help align ISS night images with precise geographic coordinates"
 msgstr "帮助将 ISS 夜间图像与精确地理坐标对齐"
 
-#: frontend/templates/index.html:799
+#: frontend/templates/index.html:800
 msgid "Map Light Pollution"
 msgstr "绘制光污染地图"
 
-#: frontend/templates/index.html:800
+#: frontend/templates/index.html:801
 msgid "Contribute to a global database of nighttime light patterns"
 msgstr "为夜间光照模式全球数据库做贡献"
 
-#: frontend/templates/index.html:808
+#: frontend/templates/index.html:809
 msgid "Support Research"
 msgstr "支持研究"
 
-#: frontend/templates/index.html:809
+#: frontend/templates/index.html:810
 msgid "Enable scientific studies on light pollution's environmental impact"
 msgstr "推动关于光污染环境影响的科学研究"
 
-#: frontend/templates/index.html:818
+#: frontend/templates/index.html:819
 msgid ""
 "A challenge is a shared goal with a deadline: a region or a set of photos "
 "the community locates together. Join one and your contributions count for it."
 msgstr ""
 
-#: frontend/templates/index.html:825
+#: frontend/templates/index.html:826
 msgid "No challenge is open right now."
 msgstr ""
 
-#: frontend/templates/index.html:826
+#: frontend/templates/index.html:827
 msgid ""
 "You can still participate: every photo you locate goes to the general queue. "
 "New challenges are announced here and in the newsletter."
 msgstr ""
 
-#: frontend/templates/index.html:834
+#: frontend/templates/index.html:835
 msgid "Active"
 msgstr "进行中"
 
-#: frontend/templates/index.html:841
+#: frontend/templates/index.html:842
 msgid "Upcoming"
 msgstr "即将开始"
 
-#: frontend/templates/index.html:855
+#: frontend/templates/index.html:856
 msgid "Recently finished"
 msgstr ""
 
-#: frontend/templates/index.html:865
+#: frontend/templates/index.html:866 frontend/templates/map.html:21
+msgid "What we have lit up so far"
+msgstr ""
+
+#: frontend/templates/index.html:867
+msgid ""
+"Every point is a night photo from the International Space Station located by "
+"the community. Click one to see it."
+msgstr ""
+
+#: frontend/templates/index.html:880
 msgid "Project Statistics"
 msgstr "项目统计"
 
-#: frontend/templates/index.html:866
+#: frontend/templates/index.html:881
 msgid "Global impact of our community's contributions"
 msgstr "我们社区贡献的全球影响"
 
-#: frontend/templates/index.html:872 frontend/templates/ranking.html:61
+#: frontend/templates/index.html:887 frontend/templates/ranking.html:61
 msgid "Control points placed"
 msgstr "控制点"
 
-#: frontend/templates/index.html:876
+#: frontend/templates/index.html:891 frontend/templates/map.html:28
 msgid "Photos located"
 msgstr "已定位照片"
 
-#: frontend/templates/index.html:884 frontend/templates/ranking.html:62
+#: frontend/templates/index.html:899 frontend/templates/ranking.html:62
 #: user_profile/templates/user.html:776
 msgid "Tasks completed"
 msgstr "已完成"
 
-#: frontend/templates/index.html:889
+#: frontend/templates/index.html:904
 msgid "Photos located per week, last 12 weeks"
 msgstr ""
 
-#: frontend/templates/index.html:890 user_profile/templates/user.html:1039
+#: frontend/templates/index.html:905 user_profile/templates/user.html:1039
 msgid "See the ranking"
 msgstr ""
 
-#: frontend/templates/index.html:892
+#: frontend/templates/index.html:907
 msgid "Photos located per week"
 msgstr "已定位照片"
 
@@ -1730,6 +1799,29 @@ msgstr ""
 "本条款受西班牙法律管辖。争议应提交西班牙萨拉戈萨法院解决，但不影响适用的消费"
 "者保护强制性规定。"
 
+#: frontend/templates/map.html:23
+msgid ""
+"Every point is a night photo from the International Space Station that the "
+"community has located. Click one to see it."
+msgstr ""
+
+#: frontend/templates/map.html:24
+msgid "Show the whole world"
+msgstr ""
+
+#: frontend/templates/map.html:29
+#| msgid "Contributor"
+msgid "Contributions"
+msgstr "贡献"
+
+#: frontend/templates/map.html:35
+msgid "Located photo (bigger = more contributions)"
+msgstr ""
+
+#: frontend/templates/map.html:36
+msgid "Background: Earth at night (VIIRS)."
+msgstr ""
+
 #: frontend/templates/ranking.html:58
 msgid ""
 "Who is lighting up the map. Only accounts with a verified e-mail count; "
@@ -1795,7 +1887,7 @@ msgstr "无法加载排行榜。"
 
 #: frontend/templates/ranking.html:134 user_profile/forms.py:31
 #: user_profile/models.py:45 user_profile/templates/edit_profile.html:253
-#: user_profile/templates/user.html:1155
+#: user_profile/templates/user.html:1087
 msgid "Country"
 msgstr "国家"
 
@@ -1842,10 +1934,6 @@ msgstr ""
 #: frontend/templates/ranking.html:138
 msgid "You are not in a team yet."
 msgstr "您尚未登录。"
-
-#: frontend/templates/ranking.html:139
-msgid "control points"
-msgstr "控制点"
 
 #: frontend/templates/ranking.html:139
 msgid "time"
@@ -2148,22 +2236,18 @@ msgid "Sign in to join"
 msgstr "登录以加入"
 
 #: teams/templates/team_detail.html:55
-#| msgid "All time"
 msgid "All teams"
 msgstr "时间"
 
 #: teams/templates/team_detail.html:61
-#| msgid "Tasks completed"
 msgid "Tasks for the team"
 msgstr "已完成"
 
 #: teams/templates/team_detail.html:61
-#| msgid "Create a team"
 msgid "CP for the team"
 msgstr "创建账户"
 
 #: teams/templates/team_detail.html:61
-#| msgid "All time"
 msgid "CP all time"
 msgstr "时间"
 
@@ -2191,7 +2275,7 @@ msgstr ""
 msgid "Remove this member from the team?"
 msgstr ""
 
-#: teams/templates/team_detail.html:76 user_profile/templates/user.html:1208
+#: teams/templates/team_detail.html:76 user_profile/templates/user.html:1140
 msgid "Remove"
 msgstr "移除"
 
@@ -2210,7 +2294,6 @@ msgid "Team settings (owner)"
 msgstr ""
 
 #: teams/templates/team_detail.html:93
-#| msgid "Description"
 msgid "Description (optional)"
 msgstr "时长"
 
@@ -2235,7 +2318,6 @@ msgid "Delete this team? This cannot be undone."
 msgstr ""
 
 #: teams/templates/team_detail.html:100
-#| msgid "Delete"
 msgid "Delete team"
 msgstr "删除"
 
@@ -2244,12 +2326,10 @@ msgid "To delete the team, remove the other members first."
 msgstr ""
 
 #: teams/templates/team_join_confirm.html:3
-#| msgid "Join this team"
 msgid "Join team"
 msgstr "在此批次中。"
 
 #: teams/templates/team_join_confirm.html:7
-#| msgid "You've been unsubscribed"
 msgid "You have been invited to"
 msgstr "您已退订"
 
@@ -2294,7 +2374,6 @@ msgid "%(n)s members"
 msgstr ""
 
 #: teams/templates/team_list.html:26
-#| msgid "Join this team"
 msgid "Join with a code"
 msgstr "在此批次中。"
 
@@ -2324,12 +2403,10 @@ msgid "Create"
 msgstr "创建账户"
 
 #: teams/templates/team_list.html:46
-#| msgid "Sign in to join"
 msgid "Sign in to join or create a team"
 msgstr "登录以加入"
 
 #: teams/templates/team_list.html:50
-#| msgid "Search"
 msgid "Search teams"
 msgstr "搜索"
 
@@ -2342,7 +2419,6 @@ msgid "No team matches your search."
 msgstr ""
 
 #: teams/templates/team_list.html:73
-#| msgid "No participants yet — be the first one!"
 msgid "No teams yet. Be the first to create one!"
 msgstr "暂无参与者 — 成为第一人！"
 
@@ -2391,7 +2467,6 @@ msgid "You have left %(team)s. The points you earned there stay with the team."
 msgstr ""
 
 #: teams/views.py:255
-#| msgid "Team name"
 msgid "Team updated."
 msgstr "名称"
 
@@ -2434,7 +2509,7 @@ msgid "Sign in to continue locating the night."
 msgstr "登录以继续定位夜晚。"
 
 #: templates/account/login.html:300 templates/account/password_reset.html:234
-#: templates/account/signup.html:347 user_profile/templates/user.html:1146
+#: templates/account/signup.html:347 user_profile/templates/user.html:1078
 msgid "Email"
 msgstr "电子邮件："
 
@@ -2484,7 +2559,7 @@ msgstr "您尚未登录。"
 #: templates/account/logout.html:196
 #: user_profile/templates/delete_account.html:115
 #: user_profile/templates/edit_profile.html:280
-#: user_profile/templates/user.html:1217
+#: user_profile/templates/user.html:1149
 msgid "Cancel"
 msgstr "取消"
 
@@ -2526,7 +2601,7 @@ msgstr "想起密码了？"
 msgid "Join the project and start locating the night."
 msgstr "加入项目，开始定位夜晚。"
 
-#: templates/account/signup.html:365 user_profile/templates/user.html:1142
+#: templates/account/signup.html:365 user_profile/templates/user.html:1074
 msgid "Username"
 msgstr "用户名"
 
@@ -2572,12 +2647,12 @@ msgstr "使用 Google 登录"
 
 #: user_profile/forms.py:24 user_profile/forms.py:32 user_profile/models.py:46
 #: user_profile/templates/edit_profile.html:248
-#: user_profile/templates/user.html:1150
+#: user_profile/templates/user.html:1082
 msgid "City"
 msgstr "城市"
 
 #: user_profile/forms.py:29 user_profile/templates/edit_profile.html:258
-#: user_profile/templates/user.html:1160
+#: user_profile/templates/user.html:1092
 msgid "Biography"
 msgstr "个人简介"
 
@@ -2914,7 +2989,7 @@ msgid ""
 "subscribe at any time from your profile page."
 msgstr "您将不再收到 Lost at Night 的通讯。您可以随时在个人资料页重新订阅。"
 
-#: user_profile/templates/user.html:607 user_profile/templates/user.html:1134
+#: user_profile/templates/user.html:607 user_profile/templates/user.html:1066
 msgid "Edit profile"
 msgstr "编辑个人资料"
 
@@ -3076,7 +3151,6 @@ msgid "Start your own and compete together in the team ranking."
 msgstr ""
 
 #: user_profile/templates/user.html:1017
-#| msgid "Browse challenges"
 msgid "Browse all teams"
 msgstr "浏览挑战"
 
@@ -3089,45 +3163,45 @@ msgstr ""
 msgid "You are #%(rank)s of %(total)s by control points."
 msgstr ""
 
-#: user_profile/templates/user.html:1075
+#: user_profile/templates/user.html:1055
 msgid "No completed tasks yet"
 msgstr "暂无已完成的任务"
 
-#: user_profile/templates/user.html:1183
+#: user_profile/templates/user.html:1115
 #, python-format
 msgid "Subscribed on %(d)s."
 msgstr "于 %(d)s 订阅。"
 
-#: user_profile/templates/user.html:1187
+#: user_profile/templates/user.html:1119
 #, python-format
 msgid "You unsubscribed on %(d)s."
 msgstr "于 %(d)s 退订。"
 
-#: user_profile/templates/user.html:1192
+#: user_profile/templates/user.html:1124
 msgid "Profile picture"
 msgstr "头像"
 
-#: user_profile/templates/user.html:1218
+#: user_profile/templates/user.html:1150
 msgid "Save changes"
 msgstr "保存更改"
 
-#: user_profile/templates/user.html:1269
+#: user_profile/templates/user.html:1201
 msgid "Search country…"
 msgstr "搜索国家…"
 
-#: user_profile/templates/user.html:1293
+#: user_profile/templates/user.html:1225
 msgid "No matches"
 msgstr "无匹配"
 
-#: user_profile/templates/user.html:1352
+#: user_profile/templates/user.html:1284
 msgid "Saving…"
 msgstr "保存中…"
 
-#: user_profile/templates/user.html:1369
+#: user_profile/templates/user.html:1301
 msgid "Could not save. Please try again."
 msgstr "无法保存。请重试。"
 
-#: user_profile/templates/user.html:1373
+#: user_profile/templates/user.html:1305
 msgid "Network error — please try again."
 msgstr "网络错误 — 请重试。"
 

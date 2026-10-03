@@ -334,3 +334,48 @@ class ChallengeCardRulesTests(TestCase):
         self.assertEqual(ch.participants_count, 0)
         r = self.client.get(f'/challenges/{self.active.id}/')
         self.assertEqual(r.context['participants_count'], 0)
+
+
+class LocatedMapTests(TestCase):
+    def setUp(self):
+        from django.contrib.auth import get_user_model
+        from django.utils import timezone
+        from georeferencing.models import Batch, Image, GeoAttempt
+        staff = get_user_model().objects.create_user('s', 's@x.org', 'pw', is_staff=True)
+        self.u = get_user_model().objects.create_user('u', 'u@x.org', 'pw')
+        b = Batch.objects.create(name='B', user=staff)
+        self.img = Image.objects.create(name='ISS057-E-61.JPG', batch=b, taken=timezone.now())
+        other = Image.objects.create(name='ISS057-E-62.JPG', batch=b)
+        pts = lambda lat, lon: [{'lat': lat, 'lon': lon}, {'lat': lat + 1, 'lon': lon + 1}]
+        GeoAttempt.objects.create(image=self.img, status='DONE', assignedUser=self.u, finishedDateTime=timezone.now(), controlPoints=pts(40, -3))
+        GeoAttempt.objects.create(image=self.img, status='DONE', finishedDateTime=timezone.now(), controlPoints=pts(41, -2))
+        GeoAttempt.objects.create(image=self.img, status='PENDING')
+        GeoAttempt.objects.create(image=other, status='DONE', finishedDateTime=timezone.now(), controlPoints=[])  # no points → not on map
+
+    def test_geojson_aggregates_per_image(self):
+        from georeferencing.mapdata import located_geojson
+        gj = located_geojson(use_cache=False)
+        self.assertEqual(gj['meta'], {'images': 1, 'contributions': 2, 'points': 4})
+        f = gj['features'][0]
+        self.assertEqual(f['geometry']['coordinates'], [-2.0, 41.0])     # centroid of (40,-3),(41,-2),(41,-2),(42,-1)
+        p = f['properties']
+        self.assertEqual((p['name'], p['contributions'], p['points'], p['pending']), ('ISS057-E-61', 2, 4, True))
+        self.assertTrue(p['thumb'].endswith('ISS057-E-61.JPG'))  # local file if present, else NASA's small copy
+        self.assertIn('mission=ISS057&roll=E&frame=61', p['nasa'])
+        self.assertNotIn('mine', p)
+
+    def test_endpoint_and_mine_flag(self):
+        r = self.client.get('/map/data.geojson')
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r['Cache-Control'], 'public, max-age=600')
+        self.client.force_login(self.u)
+        r = self.client.get('/map/data.geojson?mine=1')
+        self.assertTrue(r.json()['features'][0]['properties']['mine'])
+
+    def test_pages_render(self):
+        r = self.client.get('/map/')
+        self.assertEqual(r.status_code, 200)
+        self.assertContains(r, 'id="located-map"')
+        r = self.client.get('/')
+        self.assertContains(r, 'id="home-map"')
+        self.assertContains(r, 'href="/map/"')

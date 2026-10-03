@@ -1,0 +1,37 @@
+{% load static %}{% load i18n %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" crossorigin="">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" crossorigin=""></script>
+<script src="{% static 'js/located_map.js' %}?v=1"></script>
+<style>
+    .lan-map { width: 100%; background: #05030a; border-radius: 12px; overflow: hidden; border: 1px solid var(--line-soft, rgba(255,255,255,.12)); }
+    .lan-map .leaflet-container { background: #05030a; font-family: inherit; }
+    .lan-map-cluster { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        background: rgba(233,249,144,.18); border: 2px solid #e9f990; color: #fff; font-weight: 700; font-size: 12px; box-shadow: 0 0 10px rgba(233,249,144,.35); }
+    .lan-map-popup .leaflet-popup-content-wrapper { background: #0f0b1c; color: #e8e8ec; border: 1px solid rgba(233,249,144,.25); border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,.5); }
+    .lan-map-popup .leaflet-popup-tip { background: #0f0b1c; }
+    .lan-map-popup .leaflet-popup-content { margin: 10px 12px; }
+    .lan-map-popup .leaflet-popup-close-button { color: #9aa0b4; }
+    .lan-map-pop { width: 230px; font-size: 12px; line-height: 1.45; }
+    .lan-map-pop img { width: 100%; display: block; border-radius: 6px; margin-bottom: 8px; }
+    .lan-map-pop__name { font-weight: 700; color: #fff; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+    .lan-map-pop__mine { color: #e9f990; font-family: inherit; font-weight: 600; }
+    .lan-map-pop__meta { color: #9aa0b4; margin-top: 2px; }
+    .lan-map-pop__pending { color: #e9f990; margin-top: 4px; }
+    .lan-map-pop__link { display: inline-block; margin-top: 6px; color: #e9f990; text-decoration: none; }
+    .lan-map-empty { background: rgba(10,6,18,.85); color: #c8c8d2; padding: 8px 12px; border-radius: 8px; font-size: 13px; }
+    .leaflet-control-layers { background: rgba(10,6,18,.9) !important; color: #e8e8ec; border: 1px solid rgba(255,255,255,.12) !important; }
+    .leaflet-control-layers-toggle { background-color: rgba(10,6,18,.9) !important; filter: invert(1); }
+    .leaflet-bar a { background: rgba(10,6,18,.9) !important; color: #e8e8ec !important; border-color: rgba(255,255,255,.12) !important; }
+    .leaflet-control-attribution { background: rgba(10,6,18,.7) !important; color: #7a8099 !important; font-size: 10px; }
+    .leaflet-control-attribution a { color: #9aa0b4 !important; }
+</style>
+<script>
+    window.LAN_MAP_I18N = {
+        contributions: "{% trans 'contributions' %}", contribution: "{% trans 'contribution' %}", points: "{% trans 'control points' %}",
+        taken: "{% trans 'Taken' %}", nasa: "{% trans 'Original at NASA' %}", pending: "{% trans 'Still needs more eyes' %}",
+        mine: "{% trans 'You located this one' %}", lights: "{% trans 'Night lights (VIIRS)' %}", photos: "{% trans 'Located photos' %}",
+        empty: "{% trans 'Nothing located here yet.' %}"
+    };
+</script>

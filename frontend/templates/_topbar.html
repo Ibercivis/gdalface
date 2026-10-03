@@ -265,6 +265,7 @@ so we don't clobber.{% endcomment %}
     <nav class="ds-nav" id="ds-nav">
         <a class="ds-nav__link {% if current_path == '/' %}is-active{% endif %}" href="/">{% trans "Home" %}</a>
         <a class="ds-nav__link" href="/#challenges-section">{% trans "Challenges" %}</a>
+        <a class="ds-nav__link {% if current_path|slice:":5" == '/map/' %}is-active{% endif %}" href="{% url 'located_map' %}">{% trans "Map" %}</a>
         <a class="ds-nav__link {% if current_path == '/ranking/teams/' or current_path|slice:":7" == '/teams/' %}is-active{% endif %}" href="{% url 'team_list' %}">{% trans "Teams" %}</a>
         <a class="ds-nav__link {% if current_path == '/ranking/' or current_path == '/ranking/countries/' %}is-active{% endif %}" href="{% url 'ranking' %}">{% trans "Ranking" %}</a>
         <a class="ds-nav__link {% if '/gettask' in current_path %}is-active{% endif %}" href="/gettask">{% trans "Participate" %}</a>

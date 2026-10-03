@@ -1,0 +1,45 @@
+{% extends 'legal/_legal_base.html' %}
+{% load i18n %}
+{% load l10n %}
+{% block legal_title %}{% trans "Map" %}{% endblock %}
+{% block legal_content %}
+{% include '_located_map_assets.html' %}
+<style>
+    .legal-wrap { max-width: 1280px; padding-top: 28px; }
+    .mp-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+    .mp-head h1 { margin: 0; }
+    .mp-kpis { display: flex; gap: 10px; flex-wrap: wrap; }
+    .mp-kpi { background: var(--bg-1); border: 1px solid var(--line-soft); border-radius: 10px; padding: 8px 14px; }
+    .mp-kpi .v { font-size: 20px; font-weight: 700; color: var(--ink-0); font-variant-numeric: tabular-nums; line-height: 1.1; }
+    .mp-kpi .k { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--ink-2); }
+    #located-map { height: calc(100vh - 260px); min-height: 460px; }
+    .mp-legend { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; color: var(--ink-2); font-size: 13px; margin-top: 10px; }
+    .mp-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #e9f990; box-shadow: 0 0 6px #e9f990; margin-right: 6px; vertical-align: -1px; }
+</style>
+<div class="mp-head">
+    <div>
+        <h1>{% if challenge %}{{ challenge.name }}{% else %}{% trans "What we have lit up so far" %}{% endif %}</h1>
+        <div class="legal-meta" style="margin:0;padding:0;border:0">
+            {% trans "Every point is a night photo from the International Space Station that the community has located. Click one to see it." %}
+            {% if challenge %}<a href="{% url 'located_map' %}">{% trans "Show the whole world" %}</a>{% endif %}
+        </div>
+    </div>
+    <div class="mp-kpis">
+        <div class="mp-kpi"><div class="v">{{ meta.images }}</div><div class="k">{% trans "Photos located" %}</div></div>
+        <div class="mp-kpi"><div class="v">{{ meta.contributions }}</div><div class="k">{% trans "Contributions" %}</div></div>
+        <div class="mp-kpi"><div class="v">{{ meta.points }}</div><div class="k">{% trans "Control points" %}</div></div>
+    </div>
+</div>
+<div id="located-map" class="lan-map"></div>
+<div class="mp-legend">
+    <span><span class="mp-dot"></span>{% trans "Located photo (bigger = more contributions)" %}</span>
+    <span>{% trans "Background: Earth at night (VIIRS)." %}</span>
+    <a href="/gettask" class="ds-btn ds-btn--primary ds-btn--sm" style="margin-left:auto">{% trans "Participate" %}</a>
+</div>
+<script>
+    LAN.locatedMap('#located-map', {
+        url: '{{ data_url|escapejs }}', fit: {% if challenge %}false{% else %}true{% endif %}, i18n: window.LAN_MAP_I18N,
+        {% if challenge and challenge.has_bbox %}bbox: [[{{ challenge.bbox_min_lat|unlocalize }}, {{ challenge.bbox_min_lon|unlocalize }}], [{{ challenge.bbox_max_lat|unlocalize }}, {{ challenge.bbox_max_lon|unlocalize }}]],{% endif %}
+    });
+</script>
+{% endblock %}

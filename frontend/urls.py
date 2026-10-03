@@ -16,6 +16,9 @@ urlpatterns = [
     path('contact', views.contact, name='contact'),
     path('manual/', views.manual, name='manual'),
     path('challenges/<int:pk>/', views.challenge_detail, name='challenge_detail'),
+    # Map of located photos
+    path('map/', views.located_map, name='located_map'),
+    path('map/data.geojson', views.located_map_data, name='located_map_data'),
     # Public ranking (people / teams / countries)
     path('ranking/', views.ranking, name='ranking'),
     path('ranking/<str:scope>/', views.ranking, name='ranking_scope'),

@@ -441,6 +441,8 @@
             .leaderboard-table th, .leaderboard-table td { padding: 10px 14px; }
         }
     </style>
+    {% include '_located_map_assets.html' %}
+    {% load l10n %}
 </head>
 <body>
     {% include '_topbar.html' %}
@@ -575,6 +577,23 @@
                 </div>
             </div>
         </div>
+
+        <!-- MAP: photos located inside this challenge -->
+        <div class="progress-panel" style="margin-top:18px">
+            <div class="progress-label" style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+                <span>{% trans "Photos located in this challenge" %}</span>
+                <a href="{% url 'located_map' %}?challenge={{ challenge.id }}" style="color:var(--accent,#e9f990);font-size:13px;text-decoration:none">{% trans "Open the full map" %} →</a>
+            </div>
+            <div id="challenge-map" class="lan-map" style="height:360px"></div>
+        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                if (!(window.LAN && LAN.locatedMap)) return;
+                LAN.locatedMap('#challenge-map', { url: '{% url "located_map_data" %}?challenge={{ challenge.id }}', fit: true, maxZoom: 6, i18n: window.LAN_MAP_I18N,
+                    {% if challenge.has_bbox %}bbox: [[{{ challenge.bbox_min_lat|unlocalize }}, {{ challenge.bbox_min_lon|unlocalize }}], [{{ challenge.bbox_max_lat|unlocalize }}, {{ challenge.bbox_max_lon|unlocalize }}]],{% endif %}
+                });
+            });
+        </script>
 
         <!-- PERSONAL (only if enrolled or has history) -->
         {% if my_enrollment %}

@@ -1045,84 +1045,16 @@
     
     {% include '_footer.html' %}
 
-    {{ visited_places|json_script:"visited-places-data" }}
+    {% include '_located_map_assets.html' %}
     <script>
-    (function() {
-        const places = JSON.parse(document.getElementById('visited-places-data').textContent);
-
-        const visitedMap = L.map('visited-map', {zoomControl: true, scrollWheelZoom: false}).setView([20, 0], 2);
-
-        // Dark tile layer
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
-            maxZoom: 18
-        }).addTo(visitedMap);
-
-        // Custom icon matching the app style
-        function makeIcon(color) {
-            return L.divIcon({
-                className: '',
-                html: '<div style="width:14px;height:14px;border-radius:50%;background:' + color + ';border:2px solid #fff;box-shadow:0 0 4px rgba(0,0,0,0.6);"></div>',
-                iconSize: [14, 14],
-                iconAnchor: [7, 7]
-            });
-        }
-
-        const icon = makeIcon('#e9f990');
-
-        if (places.length === 0) {
-            document.getElementById('visited-map').insertAdjacentHTML('beforeend',
-                '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#aaa;z-index:999;text-align:center;">{% trans "No completed tasks yet" %}</div>');
-        } else {
-            const bounds = [];
-            const geocodeCache = {};
-
-            places.forEach(function(p) {
-                const imgHtml = p.small_url
-                    ? '<img src="' + p.small_url + '" style="width:100%;border-radius:4px;display:block;margin-bottom:6px;" />'
-                    : '';
-                const name = p.name.replace(/\.JPG$/i, '');
-                const popupId = 'city-' + Math.random().toString(36).slice(2);
-                const popupHtml =
-                    // Note: these strings are in JS and not translatable via Django i18n
-                '<div style="width:180px;font-size:12px;">' +
-                    imgHtml +
-                    '<strong>' + name + '</strong><br>' +
-                    '<span id="' + popupId + '" style="color:#666;"><em>Looking up location…</em></span>' +
-                    '</div>';
-
-                const marker = L.marker([p.lat, p.lon], {icon: icon})
-                    .bindPopup(popupHtml, {maxWidth: 200})
-                    .addTo(visitedMap);
-
-                marker.on('popupopen', function() {
-                    const el = document.getElementById(popupId);
-                    if (!el) return;
-                    const key = p.lat.toFixed(2) + ',' + p.lon.toFixed(2);
-                    if (geocodeCache[key]) {
-                        el.textContent = geocodeCache[key];
-                        return;
-                    }
-                    fetch('https://nominatim.openstreetmap.org/reverse?lat=' + p.lat + '&lon=' + p.lon + '&format=json', {
-                        headers: {'Accept-Language': 'en'}
-                    })
-                    .then(r => r.json())
-                    .then(geo => {
-                        const addr = geo.address || {};
-                        const city = addr.city || addr.town || addr.village || addr.county || '';
-                        const country = addr.country || '';
-                        const label = [city, country].filter(Boolean).join(', ') || 'Open ocean';
-                        geocodeCache[key] = label;
-                        const el2 = document.getElementById(popupId);
-                        if (el2) el2.textContent = label;
-                    })
-                    .catch(() => { if (el) el.textContent = 'Unknown'; });
-                });
-
-                bounds.push([p.lat, p.lon]);
-            });
-            visitedMap.fitBounds(bounds, {padding: [40, 40], maxZoom: 8});
-        }
+    (function () {
+        var api = LAN.locatedMap('#visited-map', { url: '{% url "located_map_data" %}?mine=1', fit: true, mineOnly: true, maxZoom: 7, i18n: window.LAN_MAP_I18N,
+            onLoad: function (gj) {
+                if (!gj.features.some(function (f) { return f.properties.mine; })) {
+                    document.getElementById('visited-map').insertAdjacentHTML('beforeend',
+                        '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#aaa;z-index:999;text-align:center;background:rgba(10,6,18,.8);padding:10px 14px;border-radius:8px;">{% trans "No completed tasks yet" %}</div>');
+                }
+            } });
     })();
     </script>
 

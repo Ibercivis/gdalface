@@ -718,6 +718,7 @@
         .stats-week__bar { width: 100%; min-height: 2px; background: var(--accent); border-radius: 4px 4px 0 0; opacity: .85; }
         .stats-week__n { font-size: 10px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
     </style>
+    {% include '_located_map_assets.html' %}
 </head>
 <body>
     <!-- All content wrapped to ensure it's above stars background -->
@@ -859,6 +860,20 @@
                     </div>
                 </div>
 
+                <!-- Map of located photos -->
+                <div id="map-section" class="row batch-section">
+                    <div class="col-12 text-center mb-4">
+                        <h2 class="section-title"><i class="fa-solid fa-earth-europe section-title-icon"></i>{% trans "What we have lit up so far" %}</h2>
+                        <p class="text-center mb-4">{% trans "Every point is a night photo from the International Space Station located by the community. Click one to see it." %}</p>
+                    </div>
+                    <div class="col-12">
+                        <div id="home-map" class="lan-map" style="height:420px"></div>
+                        <div style="display:flex;justify-content:flex-end;margin-top:10px">
+                            <a href="{% url 'located_map' %}" class="ds-btn ds-btn--ghost ds-btn--sm">{% trans "Open the full map" %} <svg class="ds-icon"><use href="#ds-icon-chevron-right"/></svg></a>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Project Statistics Section (the only place numbers live on the homepage) -->
                 <div id="statistics-section" class="row batch-section">
                     <div class="col-12 text-center mb-4">
@@ -906,6 +921,11 @@
         
         {% include '_footer.html' %}
     </div>
+    <script>
+        if (window.LAN && LAN.locatedMap) {
+            LAN.locatedMap('#home-map', { url: '{% url "located_map_data" %}', fit: false, center: [30, 10], zoom: 2, i18n: window.LAN_MAP_I18N, cluster: true });
+        }
+    </script>
     
     <script>
         // Script para hacer funcionar los botones de cierre de los mensajes de alerta
