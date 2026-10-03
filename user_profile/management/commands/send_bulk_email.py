@@ -70,6 +70,14 @@ class Command(BaseCommand):
                             help="List recipients and exit without sending.")
         parser.add_argument("--test-email", default=None,
                             help="Send only to this address (must be a verified user).")
+        parser.add_argument("--country", default=None,
+                            help="Only users whose profile country is this ISO code (e.g. ES).")
+        parser.add_argument("--exclude-country", default=None,
+                            help="Skip users whose profile country is this ISO code.")
+        parser.add_argument("--email-domain", default=None,
+                            help="Only addresses ending with this (e.g. .es). Combined with --country as OR.")
+        parser.add_argument("--exclude-email-domain", default=None,
+                            help="Skip addresses ending with this. Combined with --exclude-country as OR.")
         parser.add_argument("--limit", type=int, default=None,
                             help="Cap the number of recipients (after filtering).")
         parser.add_argument("--sleep", type=float, default=0.1,
@@ -119,10 +127,28 @@ class Command(BaseCommand):
                     f"--test-email {test_email} is not a verified address."
                 )
 
+        # Audience filters: include = country OR e-mail domain; exclude likewise.
+        inc_country = (opts.get("country") or "").upper() or None
+        inc_domain = (opts.get("email_domain") or "").lower() or None
+        exc_country = (opts.get("exclude_country") or "").upper() or None
+        exc_domain = (opts.get("exclude_email_domain") or "").lower() or None
+        countries = dict(UserProfile.objects.filter(user_id__in=[e.user_id for e in qs])
+                         .values_list("user_id", "country")) if (inc_country or exc_country) else {}
+
+        def matches(ea):
+            c = str(countries.get(ea.user_id) or "").upper()
+            d = ea.email.lower()
+            if inc_country or inc_domain:
+                if not ((inc_country and c == inc_country) or (inc_domain and d.endswith(inc_domain))):
+                    return False
+            if (exc_country and c == exc_country) or (exc_domain and d.endswith(exc_domain)):
+                return False
+            return True
+
         seen_user_ids = set()
         recipients = []
         for ea in qs:
-            if ea.user_id in seen_user_ids:
+            if ea.user_id in seen_user_ids or not matches(ea):
                 continue
             seen_user_ids.add(ea.user_id)
             recipients.append(ea)
