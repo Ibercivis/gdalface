@@ -429,6 +429,27 @@ evento en `/stats/`.
   En curso: descarga de ISS001-ISS080 y sincronización. Pendiente: bloque en
   el panel de control y clasificación de miniaturas (ciudades / estrellas /
   limbo) con muestra revisada a mano.
+- ✅ Limpieza del 2026-10-03 (tarde): `dedupe_images --apply` fusionó 212 filas
+  duplicadas de `Image` (196 tareas con trabajo movidas a la fila principal,
+  559 pendientes sobrantes borradas, 299 estados corregidos); `park_bursts
+  --apply` aparcó 4628 fotos de ráfaga (ISS057 2020, ISS046 1326,
+  ISS047-ISS056 911, Easy ones 371), 23.140 tareas pendientes menos. Copias en
+  `gdalface-backups/image_geoattempt_before_dedup_20261003.sql.gz`.
+  **Hallazgo**: las 2112 de ISS057 eran un time-lapse a 1 foto/s y 9 km entre
+  fotogramas; con 85 mm el encuadre es de ~180 km. Regla adoptada: dentro de
+  una ráfaga (< 20 s entre fotogramas, misma focal) se conserva un fotograma
+  cada medio encuadre (36 mm / focal × 420 km). Aplicada también en
+  `import_from_catalog`.
+- ✅ Datos de abandono por nivel (imágenes cargadas antes de hoy): nivel A 0,9
+  saltos por tarea hecha y 15 % sin tocar; nivel C 5,9 saltos por hecha y 47 %
+  sin tocar, con la misma focal. El punto de partida fiable decide; la focal
+  apenas. Decisión: cargar A (validación) y B (centro ML, 60.757 nocturnas
+  aprovechables sin cargar, 7.334 sin ráfagas); C aparcado hasta que la
+  herramienta muestre la zona probable.
+- ⏳ Piloto pendiente de visto bueno: 300 de nivel A (misiones ≥ ISS030, al
+  azar) + nivel B de ISS066 (988) e ISS045 (1208) sin ráfagas. Seguimiento en
+  el bloque "Batch health" del panel (saltos/hecha, sin tocar, precisión A).
+- ⏳ Repartidor: servir A y B primero a quien empieza; C a quien tiene recorrido.
 - ⏳ Las 36 fotos de día del zip quedan fuera a propósito.
 
 ## Pendiente de infraestructura — IPv6 sin salida (detectado 2026-10-03) ⏳
