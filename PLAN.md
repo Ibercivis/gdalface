@@ -272,19 +272,24 @@ fila del usuario.
 - ✅ Mensajes 409/404 sin la palabra "batch": "Tu reto no tiene tareas
   pendientes" con Ver reto / Ver retos / Inicio. El bypass "seguir sin reto"
   sigue siendo salir del reto desde su página.
-- ⏳ Mostrar el contexto de trabajo en la barra: reto activo o "Cola general".
-- ⏳ `MyChallengeView` debe comprobar estado del reto: una inscripción a un reto
-  finalizado o futuro no debe pintarse como activa.
-- ⚠️ Cadenas fijas: `challenge_banner.js` (promo) pasa por `LAN_I18N`.
-  Pendientes `result_overlay.js` y `challenge_card.js`.
+- ⏳ Mostrar el contexto de trabajo en la barra: reto activo o "Cola general"
+  (cadena `general_queue` ya disponible en `LAN_I18N`; falta pintarla en
+  `challenge_banner.js` cuando no hay reto).
+- ✅ `MyChallengeView` devuelve `enrolled: false` si el reto ha terminado
+  (banner, chip y filtro dejan de usarlo). Un reto futuro sigue pintándose
+  como inscrito, con la pastilla "Empieza en…".
+- ⚠️ Cadenas fijas: `challenge_banner.js` y `challenge_card.js` pasan por
+  `LAN_I18N`. Pendiente `result_overlay.js`.
 
 ### 3.3 Retos
-- ⏳ No permitir unirse a retos futuros o pausados, o permitirlo pero sin botón
-  "Continuar" y con aviso de que el trabajo no cuenta hasta que empiece.
-- ⏳ Aviso previo al sustituir una inscripción activa (hoy se entera después).
-- ⏳ Mostrar la región (bbox) en tarjeta y detalle cuando exista.
-- ⏳ `participants_count` y `total_cp` en tarjetas: decidir si incluyen a quien
-  se fue y etiquetarlo.
+- ✅ Unirse a un reto futuro o pausado sigue permitido (preinscripción), pero
+  la tarjeta muestra la pastilla "Inscrito" en vez de "Continuar"; solo un
+  reto activo lleva a `/gettask`. Los enlaces ya no llevan el batch en la URL.
+- ✅ Aviso previo (`confirm`) al unirse a otro reto estando inscrito.
+- ✅ "Región" en tarjeta y detalle cuando hay bbox; "General" pasa a "Todas
+  las fotos" y "Batch" a "Conjunto de fotos".
+- ✅ `participants_count` cuenta solo inscripciones activas (portada, detalle y
+  API). `total_cp` sigue sumando a quien se fue: sus puntos se ganaron dentro.
 - ⏳ Decidir el reto permanente por defecto ("Cola general") y crearlo.
   **Pendiente de decisión**: nombre, objetivos y texto. Propuesta: no crearlo
   como reto; "Participa" ya sirve la cola general y la portada lo dice.
@@ -294,8 +299,9 @@ fila del usuario.
   "Equipos" → `/ranking/teams/` hasta que exista el listado de equipos.
 - ✅ Menú móvil: botón hamburguesa que despliega la navegación bajo la barra.
 - ✅ Pie coherente con la barra.
-- ⏳ Manual: eliminar referencias a botones que no existen ("Get a task in this
-  batch", salir del reto desde la tarjeta) y añadir sección de equipos.
+- ⚠️ Manual: sección de batches reescrita como "De dónde salen las fotos",
+  reglas de retos actualizadas, FAQ del filtro corregida. Falta la sección de
+  equipos (Fase 4).
 
 **Criterio de salida:** un visitante nuevo llega a su primera tarea en un clic
 desde la portada, y entiende qué es un reto antes de unirse. Medir en `/stats/`:

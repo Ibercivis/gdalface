@@ -8,7 +8,7 @@ Prefer the annotated values from the queryset (set in frontend.views.index).
 Fall back to the live methods only when not annotated (e.g. challenge_detail).
 {% endcomment %}
 {% with total=ch.total_cp_annot|default:ch.total_cp gold=ch.target_gold %}
-<article class="ds-ch-row{% if ch.id == enrolled_challenge_id %} is-enrolled{% endif %}"
+<article class="ds-ch-row{% if ch.id == enrolled_challenge_id %} is-enrolled{% endif %}" data-challenge-id="{{ ch.id }}" data-challenge-name="{{ ch.name }}"
          id="challenge-{{ ch.id }}"
          data-status="{{ ch.status }}"
          data-end-at="{{ ch.end_at|date:'c' }}"
@@ -28,7 +28,11 @@ Fall back to the live methods only when not annotated (e.g. challenge_detail).
                 <span class="mono ds-text-2">{{ ch.batch.name }}</span>
                 <span class="ds-text-3">·</span>
             {% else %}
-                <span class="ds-text-2">{% trans "General" %}</span>
+                <span class="ds-text-2">{% trans "All photos" %}</span>
+                <span class="ds-text-3">·</span>
+            {% endif %}
+            {% if ch.has_bbox %}
+                <span class="ds-text-2" title="{% trans 'Only photos inside a geographic region count' %}"><i class="fa-solid fa-draw-polygon" style="font-size:11px;margin-right:3px;"></i>{% trans "Region" %}</span>
                 <span class="ds-text-3">·</span>
             {% endif %}
             <span class="mono ds-text-2">{{ total }}/{{ gold }} CP</span>
@@ -62,11 +66,13 @@ Fall back to the live methods only when not annotated (e.g. challenge_detail).
             </a>
         {% endif %}
 
-        {% if ch.id == enrolled_challenge_id %}
-            <a href="/gettask{% if ch.batch_id %}/{{ ch.batch_id }}{% endif %}" class="ds-btn ds-btn--primary ds-btn--sm">
+        {% if ch.id == enrolled_challenge_id and ch.status == 'active' %}
+            <a href="/gettask" class="ds-btn ds-btn--primary ds-btn--sm">
                 {% trans "Continue" %}
                 <svg class="ds-icon ds-icon--sm"><use href="#ds-icon-chevron-right"/></svg>
             </a>
+        {% elif ch.id == enrolled_challenge_id %}
+            <span class="ds-pill ds-pill--neutral" title="{% trans 'Your work counts for this challenge only while it is active' %}">{% trans "Enrolled" %}</span>
         {% elif ch.status == 'finished' %}
             <a href="{% url 'challenge_detail' ch.id %}" class="ds-btn ds-btn--secondary ds-btn--sm">
                 {% trans "Review" %}
@@ -74,7 +80,7 @@ Fall back to the live methods only when not annotated (e.g. challenge_detail).
             </a>
         {% else %}
             {% if user.is_authenticated %}
-            <button class="ds-btn ds-btn--primary ds-btn--sm" data-challenge-join="{{ ch.id }}">
+            <button class="ds-btn ds-btn--primary ds-btn--sm" data-challenge-join="{{ ch.id }}" data-challenge-name="{{ ch.name }}">
                 {% trans "Join" %}
                 <svg class="ds-icon ds-icon--sm"><use href="#ds-icon-chevron-right"/></svg>
             </button>

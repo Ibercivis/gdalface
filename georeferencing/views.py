@@ -819,7 +819,7 @@ def _serialize_challenge(ch, request_user=None):
         'is_paused': ch.is_paused,
         'status': ch.status,
         'total_cp': ch.total_cp(),
-        'participants_count': ch.participants.count(),
+        'participants_count': ch.participants.filter(left_at__isnull=True).count(),
         'is_enrolled': enrolled,
     }
 
@@ -1102,6 +1102,10 @@ class MyChallengeView(APIView):
             return Response({'enrolled': False})
 
         ch = enrollment.challenge
+        # A finished challenge no longer drives the banner, chip or task filter.
+        if ch.status == 'finished':
+            return Response({'enrolled': False, 'reason': 'challenge finished',
+                             'challenge_id': ch.id, 'challenge_name': ch.name})
         # If a batch was specified, only return when challenge applies (general or matching).
         if batch_id:
             try:
@@ -1139,5 +1143,5 @@ class MyChallengeView(APIView):
             'my_cp': enrollment.cached_cp_count,
             'my_rank': my_rank,
             'leader': leader_payload,
-            'participants_count': ch.participants.count(),
+            'participants_count': ch.participants.filter(left_at__isnull=True).count(),
         })

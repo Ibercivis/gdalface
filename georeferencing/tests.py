@@ -379,3 +379,15 @@ class EnrollmentPeriodTests(TestCase):
         done(0.5, 13)  # after leaving everything → nobody
         self.assertEqual(expected_participant_cp(p1), 14)
         self.assertEqual(expected_participant_cp(p2), 12)
+
+
+class MyChallengeFinishedTests(TestCase):
+    def test_finished_enrollment_is_not_active(self):
+        now = timezone.now()
+        u = User.objects.create_user('u', 'u@x.org', 'pw')
+        ch = Challenge.objects.create(name='Old', start_at=now - timedelta(days=30), end_at=now - timedelta(days=1))
+        ChallengeParticipant.objects.create(challenge=ch, user=u)
+        self.client.force_login(u)
+        data = self.client.get(reverse('challenge-mine')).json()
+        self.assertFalse(data['enrolled'])
+        self.assertEqual(data['reason'], 'challenge finished')

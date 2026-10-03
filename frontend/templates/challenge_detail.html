@@ -463,9 +463,12 @@
                     </h1>
                     <div class="hero-meta">
                         {% if challenge.batch_id %}
-                            <span class="badge-batch">{% trans "Batch:" %} {{ challenge.batch.name }}</span>
+                            <span class="badge-batch" title="{% trans 'Only photos from this set count' %}">{% trans "Photo set:" %} {{ challenge.batch.name }}</span>
                         {% else %}
-                            <span class="badge-batch">{% trans "General" %}</span>
+                            <span class="badge-batch">{% trans "All photos" %}</span>
+                        {% endif %}
+                        {% if challenge.has_bbox %}
+                            <span class="badge-batch" title="{{ challenge.bbox_min_lat }}, {{ challenge.bbox_min_lon }} → {{ challenge.bbox_max_lat }}, {{ challenge.bbox_max_lon }}"><i class="fa-solid fa-draw-polygon"></i> {% trans "Region" %}</span>
                         {% endif %}
                         <span><i class="fa-regular fa-calendar"></i>{{ challenge.start_at|date:"Y-m-d H:i" }} → {{ challenge.end_at|date:"Y-m-d H:i" }}</span>
                         <span><i class="fa-solid fa-users"></i>{{ participants_count }} {% trans "participants" %}</span>
@@ -485,7 +488,7 @@
                             <i class="fa-solid fa-check"></i> {% trans "You are enrolled" %}
                         </span>
                         {% if challenge.status == 'active' %}
-                        <a class="btn-action primary push-right" href="/gettask{% if challenge.batch_id %}/{{ challenge.batch_id }}{% endif %}">
+                        <a class="btn-action primary push-right" href="/gettask">
                             <i class="fa-solid fa-location-dot"></i> {% trans "Contribute" %}
                         </a>
                         {% endif %}

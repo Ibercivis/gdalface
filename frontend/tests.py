@@ -294,3 +294,42 @@ class HomepageStructureTests(TestCase):
         r = self.client.get('/')
         self.assertEqual(r.context['open_challenges'], 1)
         self.assertNotContains(r, 'No challenge is open right now')
+
+
+class ChallengeCardRulesTests(TestCase):
+    def setUp(self):
+        from datetime import timedelta
+        from django.contrib.auth import get_user_model
+        from django.utils import timezone
+        from georeferencing.models import Challenge, ChallengeParticipant
+        now = timezone.now()
+        self.u = get_user_model().objects.create_user('u', 'u@x.org', 'pw')
+        self.other = get_user_model().objects.create_user('o', 'o@x.org', 'pw')
+        self.upcoming = Challenge.objects.create(name='Soon', start_at=now + timedelta(days=2), end_at=now + timedelta(days=9))
+        self.active = Challenge.objects.create(name='Now', start_at=now - timedelta(days=1), end_at=now + timedelta(days=9),
+                                               bbox_min_lat=0, bbox_max_lat=1, bbox_min_lon=0, bbox_max_lon=1)
+        ChallengeParticipant.objects.create(challenge=self.active, user=self.other, left_at=now)  # left → not counted
+
+    def test_enrolled_in_upcoming_shows_pill_not_continue(self):
+        from georeferencing.models import ChallengeParticipant
+        ChallengeParticipant.objects.create(challenge=self.upcoming, user=self.u)
+        self.client.force_login(self.u)
+        html = self.client.get('/').content.decode()
+        self.assertNotIn('>\n                Continue', html)
+        self.assertIn('Enrolled', html)
+        self.assertIn('data-challenge-name="Soon"', html)
+
+    def test_enrolled_in_active_shows_continue_without_batch_url(self):
+        from georeferencing.models import ChallengeParticipant
+        ChallengeParticipant.objects.create(challenge=self.active, user=self.u)
+        self.client.force_login(self.u)
+        html = self.client.get('/').content.decode()
+        self.assertIn('href="/gettask" class="ds-btn ds-btn--primary ds-btn--sm">', html)
+        self.assertIn('Region', html)  # bbox indicator
+
+    def test_participant_counts_exclude_left(self):
+        r = self.client.get('/')
+        ch = next(c for c in r.context['visible_challenges'] if c.id == self.active.id)
+        self.assertEqual(ch.participants_count, 0)
+        r = self.client.get(f'/challenges/{self.active.id}/')
+        self.assertEqual(r.context['participants_count'], 0)

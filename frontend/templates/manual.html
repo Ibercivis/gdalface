@@ -160,7 +160,7 @@
     <ol>
         <li><a href="#what">What is Lost at Night?</a></li>
         <li><a href="#participating">Participating</a></li>
-        <li><a href="#batches">Batches</a></li>
+        <li><a href="#batches">Where the photos come from</a></li>
         <li><a href="#challenges">Challenges</a></li>
         <li><a href="#stats">Personal stats &amp; ranking</a></li>
         <li><a href="#anti-cheat">Anti-cheat</a></li>
@@ -423,24 +423,16 @@
     pending pool.
 </p>
 
-<h2 id="batches">3. Batches <a class="anchor" href="#batches">#</a></h2>
+<h2 id="batches">3. Where the photos come from <a class="anchor" href="#batches">#</a></h2>
 <p>
-    A <b>batch</b> is a thematic group of images — typically a campaign
-    (e.g. "Asia at night, summer 2024") or an expedition. Admins create
-    a batch by feeding it a list of NASA image codes; a background job
-    downloads the originals, generates thumbnails and creates one
-    <code>GeoAttempt</code> per replica slot.
+    Photos are loaded by the project team in <b>sets</b> — typically an
+    expedition or a campaign (e.g. "ISS046"). Behind the scenes a set is a
+    <i>batch</i>: a list of NASA image codes whose originals are downloaded,
+    thumbnailed and turned into tasks (one per replica slot). Sets are an
+    internal concept: you never pick one. <b>Participate</b> draws from every
+    pending task, and a challenge may narrow the draw to one set and / or a
+    geographic region.
 </p>
-<p>
-    On the home page each batch shows a progress ring and a "Get a task
-    in this batch" button. The URL <code>/gettask/&lt;batch_id&gt;</code>
-    restricts the random task draw to that batch only. With no batch in
-    the URL (just <code>/gettask</code>) you get tasks from anywhere.
-</p>
-
-<figure class="manual-fig">
-    <img src="{% static 'img/manual/manual-batches-grid.webp' %}" alt="Home batch grid with completion rings." width="1760" height="990" loading="lazy">
-</figure>
 
 <h2 id="challenges">4. Challenges <a class="anchor" href="#challenges">#</a></h2>
 <p>
@@ -452,10 +444,11 @@
 <dl class="manual-kv">
     <dt>Targets</dt>          <dd>Default 1,000 / 2,000 / 3,000 CPs (admin-tunable).</dd>
     <dt>Time window</dt>      <dd>Each challenge has a <code>start_at</code> / <code>end_at</code>.</dd>
-    <dt>Scope</dt>            <dd>Optional batch (challenge counts only CPs from that batch) <i>and / or</i> a spatial bounding box drawn on a Leaflet map in the admin. Both filters intersect.</dd>
-    <dt>Joining</dt>          <dd>Free; auto-leaves any other active enrollment so you only count for one at a time.</dd>
-    <dt>Leaving</dt>          <dd>Available from the challenge detail page or any challenge card. Your previously-earned CPs are kept.</dd>
-    <dt>Strict filter</dt>    <dd>If you're enrolled in a challenge with a bbox/batch and you try to do tasks that don't match → an explanation modal lets you go view another challenge or pick another batch.</dd>
+    <dt>Scope</dt>            <dd>Optional photo set (the challenge counts only CPs from that set) <i>and / or</i> a geographic region drawn by the admin. Both filters intersect. Cards and detail pages show "Region" when one applies.</dd>
+    <dt>Joining</dt>          <dd>Free; you can only be in one challenge at a time, so joining another one leaves the current one (you are asked first). Your CPs are kept.</dd>
+    <dt>Leaving</dt>          <dd>From the challenge detail page. Your previously-earned CPs are kept.</dd>
+    <dt>While enrolled</dt>   <dd><b>Participate</b> only serves photos that count for your challenge. When none are left you get a notice with links to the challenge, the challenge list or home; leave the challenge to go back to the general queue.</dd>
+    <dt>Before it starts</dt> <dd>You can enroll in an upcoming challenge, but work done before <code>start_at</code> does not count for it.</dd>
 </dl>
 
 <figure class="manual-fig">
@@ -614,14 +607,13 @@
     you. The same applies to your daily-contribution counters.
 </p>
 
-<h3>Why am I seeing "Filtering for [Challenge name]" warnings?</h3>
+<h3>Why does it say "Your challenge has no tasks left"?</h3>
 <p>
     You're enrolled in a challenge that restricts the pool of available
-    images (by batch and / or by a geographic region the admin drew on
-    a map). If a batch URL doesn't intersect with that constraint, you
-    get a 0-results modal that points you to your challenge page or to
-    "Pick another batch". You can leave the challenge from its detail
-    page if you want different tasks.
+    photos (to a set and / or a geographic region) and every matching photo
+    has already been located enough times. The notice links to your
+    challenge page, the challenge list and home. Leave the challenge from
+    its page to keep working on the general queue.
 </p>
 
 <h3>The image looks impossible — pure black except a city, can I skip?</h3>

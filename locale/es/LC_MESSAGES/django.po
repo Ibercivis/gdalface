@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-03 09:35+0000\n"
+"POT-Creation-Date: 2026-10-03 09:40+0000\n"
 "PO-Revision-Date: 2026-03-24 15:44+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Spanish <es@li.org>\n"
@@ -18,42 +18,57 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: frontend/templates/_challenge_card.html:22
+#: frontend/templates/_challenge_card.html:75
 msgid "Enrolled"
 msgstr "Inscrito"
 
 #: frontend/templates/_challenge_card.html:31
 #: frontend/templates/challenge_detail.html:468
-msgid "General"
-msgstr "General"
+msgid "All photos"
+msgstr "Todas las fotos"
 
-#: frontend/templates/_challenge_card.html:36
+#: frontend/templates/_challenge_card.html:35
+msgid "Only photos inside a geographic region count"
+msgstr "Solo cuentan las fotos dentro de una región geográfica"
+
+#: frontend/templates/_challenge_card.html:35
 #: frontend/templates/challenge_detail.html:471
+#| msgid "Region defined"
+msgid "Region"
+msgstr "Región definida"
+
+#: frontend/templates/_challenge_card.html:40
+#: frontend/templates/challenge_detail.html:474
 msgid "participants"
 msgstr "participantes"
 
-#: frontend/templates/_challenge_card.html:53
+#: frontend/templates/_challenge_card.html:57
 #: frontend/templates/gettask.html:228 frontend/templates/index.html:848
 msgid "Paused"
 msgstr "En pausa"
 
-#: frontend/templates/_challenge_card.html:55
+#: frontend/templates/_challenge_card.html:59
 msgid "Complete"
 msgstr "Completado"
 
-#: frontend/templates/_challenge_card.html:60
+#: frontend/templates/_challenge_card.html:64
 msgid "Details"
 msgstr "Detalles"
 
-#: frontend/templates/_challenge_card.html:67
+#: frontend/templates/_challenge_card.html:71
 msgid "Continue"
 msgstr "Continuar"
 
-#: frontend/templates/_challenge_card.html:72
+#: frontend/templates/_challenge_card.html:75
+msgid "Your work counts for this challenge only while it is active"
+msgstr "Tu trabajo cuenta para este reto solo mientras está activo"
+
+#: frontend/templates/_challenge_card.html:78
 msgid "Review"
 msgstr "Revisar"
 
-#: frontend/templates/_challenge_card.html:78
-#: frontend/templates/_challenge_card.html:83
+#: frontend/templates/_challenge_card.html:84
+#: frontend/templates/_challenge_card.html:89
 #: teams/templates/team_detail.html:107 user_profile/templates/user.html:1004
 msgid "Join"
 msgstr "Unirse"
@@ -157,26 +172,26 @@ msgstr ""
 msgid "Quick Links"
 msgstr "Enlaces rápidos"
 
-#: frontend/templates/_footer.html:185 frontend/templates/_topbar.html:258
+#: frontend/templates/_footer.html:185 frontend/templates/_topbar.html:268
 msgid "Home"
 msgstr "Inicio"
 
-#: frontend/templates/_footer.html:186 frontend/templates/_topbar.html:262
+#: frontend/templates/_footer.html:186 frontend/templates/_topbar.html:272
 #: frontend/templates/index.html:748 frontend/templates/index.html:828
 msgid "Participate"
 msgstr "Participar"
 
-#: frontend/templates/_footer.html:187 frontend/templates/_topbar.html:259
+#: frontend/templates/_footer.html:187 frontend/templates/_topbar.html:269
 #: frontend/templates/index.html:817
 msgid "Challenges"
 msgstr "Desafíos"
 
-#: frontend/templates/_footer.html:188 frontend/templates/_topbar.html:261
+#: frontend/templates/_footer.html:188 frontend/templates/_topbar.html:271
 #: frontend/templates/ranking.html:5 frontend/templates/ranking.html:57
 msgid "Ranking"
 msgstr "Posición"
 
-#: frontend/templates/_footer.html:189 frontend/templates/_topbar.html:260
+#: frontend/templates/_footer.html:189 frontend/templates/_topbar.html:270
 #: frontend/templates/ranking.html:76 user_profile/templates/user.html:1038
 msgid "Teams"
 msgstr ""
@@ -224,7 +239,7 @@ msgstr "Aviso legal"
 msgid "© 2025 Lost at Night. All rights reserved."
 msgstr "© 2025 Lost at Night. Todos los derechos reservados."
 
-#: frontend/templates/_topbar.html:219 frontend/templates/_topbar.html:273
+#: frontend/templates/_topbar.html:219 frontend/templates/_topbar.html:283
 #: frontend/templates/gettask.html:233 georeferencing/models.py:544
 #: user_profile/templates/diploma_challenge.html:88
 #: user_profile/templates/diploma_challenge.html:91
@@ -251,77 +266,124 @@ msgid "Your previous active challenge was automatically left."
 msgstr "Tu challenge activo anterior se ha cerrado automáticamente."
 
 #: frontend/templates/_topbar.html:225
-#: frontend/templates/challenge_detail.html:524 georeferencing/diplomas.py:45
+#: frontend/templates/challenge_detail.html:527 georeferencing/diplomas.py:45
 msgid "Bronze"
 msgstr "Bronce"
 
 #: frontend/templates/_topbar.html:226
-#: frontend/templates/challenge_detail.html:525 georeferencing/diplomas.py:44
+#: frontend/templates/challenge_detail.html:528 georeferencing/diplomas.py:44
 msgid "Silver"
 msgstr "Plata"
 
 #: frontend/templates/_topbar.html:227
-#: frontend/templates/challenge_detail.html:526
-#: frontend/templates/challenge_detail.html:568 georeferencing/diplomas.py:43
+#: frontend/templates/challenge_detail.html:529
+#: frontend/templates/challenge_detail.html:571 georeferencing/diplomas.py:43
 msgid "Gold"
 msgstr "Oro"
 
 #: frontend/templates/_topbar.html:228
-msgid "Batch"
-msgstr "Lotes"
+#| msgid "Photo center"
+msgid "Photo set"
+msgstr "Centro de foto:"
 
 #: frontend/templates/_topbar.html:229
 msgid "Region defined"
 msgstr "Región definida"
 
-#: frontend/templates/_topbar.html:230
+#: frontend/templates/_topbar.html:231
+#, python-brace-format
+msgid ""
+"You are enrolled in “{current}”. Joining “{name}” leaves it (your points are "
+"kept). Continue?"
+msgstr ""
+
+#: frontend/templates/_topbar.html:232
+#: frontend/templates/challenge_detail.html:810
+msgid "Leave this challenge? Your contributions are preserved."
+msgstr "¿Salir de este desafío? Tus contribuciones se conservan."
+
+#: frontend/templates/_topbar.html:233
+#| msgid "You’ve left the challenge"
+msgid "Could not join the challenge."
+msgstr "Has salido del challenge"
+
+#: frontend/templates/_topbar.html:234
+#| msgid "You’ve left the challenge"
+msgid "Could not leave the challenge."
+msgstr "Has salido del challenge"
+
+#: frontend/templates/_topbar.html:235
+msgid "Network error."
+msgstr "Error de red."
+
+#: frontend/templates/_topbar.html:236
+msgid "Soon"
+msgstr "Pronto"
+
+#: frontend/templates/_topbar.html:237
+#: frontend/templates/challenge_detail.html:556
+msgid "Ended"
+msgstr "Finalizado"
+
+#: frontend/templates/_topbar.html:238
+#, python-brace-format
+msgid "Starts in {t}"
+msgstr "Empieza en {t}"
+
+#: frontend/templates/_topbar.html:239
+#, fuzzy, python-brace-format
+#| msgid "left"
+msgid "{t} left"
+msgstr "restantes"
+
+#: frontend/templates/_topbar.html:240
 msgid "images"
 msgstr "Imágenes:"
 
-#: frontend/templates/_topbar.html:231 frontend/templates/ranking.html:139
+#: frontend/templates/_topbar.html:241 frontend/templates/ranking.html:139
 msgid "tasks"
 msgstr "tareas"
 
-#: frontend/templates/_topbar.html:232 frontend/templates/gettask.html:65
+#: frontend/templates/_topbar.html:242 frontend/templates/gettask.html:65
 msgid "View challenge"
 msgstr "Ver desafío"
 
-#: frontend/templates/_topbar.html:233
+#: frontend/templates/_topbar.html:243
 msgid "Start contributing"
 msgstr "Empezar a contribuir"
 
-#: frontend/templates/_topbar.html:235
-#: frontend/templates/challenge_detail.html:599
+#: frontend/templates/_topbar.html:245
+#: frontend/templates/challenge_detail.html:602
 msgid "Left"
 msgstr "Dado de baja"
 
-#: frontend/templates/_topbar.html:236
+#: frontend/templates/_topbar.html:246
 msgid "You’ve left the challenge"
 msgstr "Has salido del challenge"
 
-#: frontend/templates/_topbar.html:237
+#: frontend/templates/_topbar.html:247
 #, python-brace-format
 msgid "Your {n} CPs are kept; you can rejoin any time."
 msgstr "Tus {n} CPs se conservan; puedes volver a unirte cuando quieras."
 
-#: frontend/templates/_topbar.html:238 frontend/templates/gettask.html:66
+#: frontend/templates/_topbar.html:248 frontend/templates/gettask.html:66
 msgid "Browse challenges"
 msgstr "Explorar desafíos"
 
-#: frontend/templates/_topbar.html:239 frontend/templates/gettask.html:67
+#: frontend/templates/_topbar.html:249 frontend/templates/gettask.html:67
 msgid "Go home"
 msgstr "Volver al inicio"
 
-#: frontend/templates/_topbar.html:253
+#: frontend/templates/_topbar.html:263
 msgid "Menu"
 msgstr "Menú"
 
-#: frontend/templates/_topbar.html:281 frontend/templates/gettask.html:237
+#: frontend/templates/_topbar.html:291 frontend/templates/gettask.html:237
 #: frontend/templates/ranking.html:111
 msgid "Your area"
 msgstr "Tu área"
 
-#: frontend/templates/_topbar.html:292 frontend/templates/gettask.html:74
+#: frontend/templates/_topbar.html:302 frontend/templates/gettask.html:74
 #: frontend/templates/ranking.html:109 templates/account/login.html:10
 #: templates/account/login.html:340 templates/account/logout.html:203
 #: templates/account/password_reset.html:260 templates/account/signup.html:471
@@ -333,116 +395,117 @@ msgid "All challenges"
 msgstr "Todos los desafíos"
 
 #: frontend/templates/challenge_detail.html:466
-msgid "Batch:"
-msgstr "Lotes"
+msgid "Only photos from this set count"
+msgstr "Solo cuentan las fotos de este conjunto"
 
-#: frontend/templates/challenge_detail.html:485
+#: frontend/templates/challenge_detail.html:466
+#| msgid "Photo center"
+msgid "Photo set:"
+msgstr "Centro de foto:"
+
+#: frontend/templates/challenge_detail.html:488
 msgid "You are enrolled"
 msgstr "Estás inscrito"
 
-#: frontend/templates/challenge_detail.html:489
+#: frontend/templates/challenge_detail.html:492
 msgid "Contribute"
 msgstr "Contribuir"
 
-#: frontend/templates/challenge_detail.html:494
+#: frontend/templates/challenge_detail.html:497
 msgid "Leave challenge"
 msgstr "Salir del desafío"
 
-#: frontend/templates/challenge_detail.html:498
+#: frontend/templates/challenge_detail.html:501
 msgid "This challenge has finished."
 msgstr "Este desafío ha terminado."
 
-#: frontend/templates/challenge_detail.html:501
+#: frontend/templates/challenge_detail.html:504
 msgid "Re-joining preserves your previous CPs."
 msgstr "Volver a unirte conserva tus puntos de control anteriores."
 
-#: frontend/templates/challenge_detail.html:504
+#: frontend/templates/challenge_detail.html:507
 msgid "Join challenge"
 msgstr "Unirse al desafío"
 
-#: frontend/templates/challenge_detail.html:509
+#: frontend/templates/challenge_detail.html:512
 msgid "Log in to join"
 msgstr "Inicia sesión para unirte"
 
-#: frontend/templates/challenge_detail.html:517
+#: frontend/templates/challenge_detail.html:520
 #: frontend/templates/gettask.html:229
 msgid "Group progress"
 msgstr "Progreso del grupo"
 
-#: frontend/templates/challenge_detail.html:535
+#: frontend/templates/challenge_detail.html:538
 msgid "Total CPs"
 msgstr "Total de PC"
 
-#: frontend/templates/challenge_detail.html:542
+#: frontend/templates/challenge_detail.html:545
 #: frontend/templates/index.html:880 frontend/templates/ranking.html:63
 msgid "Participants"
 msgstr "Participantes"
 
-#: frontend/templates/challenge_detail.html:553
-msgid "Ended"
-msgstr "Finalizado"
-
-#: frontend/templates/challenge_detail.html:554
+#: frontend/templates/challenge_detail.html:557
 msgid "Days to start"
 msgstr "Días para empezar"
 
-#: frontend/templates/challenge_detail.html:555
+#: frontend/templates/challenge_detail.html:558
 msgid "Days left"
 msgstr "Días restantes"
 
-#: frontend/templates/challenge_detail.html:566
+#: frontend/templates/challenge_detail.html:569
 msgid "to"
 msgstr "hasta"
 
-#: frontend/templates/challenge_detail.html:569
+#: frontend/templates/challenge_detail.html:572
 msgid "Gold reached!"
 msgstr "¡Oro alcanzado!"
 
-#: frontend/templates/challenge_detail.html:581
+#: frontend/templates/challenge_detail.html:584
 msgid "Your performance"
 msgstr "Tu área personal"
 
-#: frontend/templates/challenge_detail.html:585
+#: frontend/templates/challenge_detail.html:588
 #: frontend/templates/gettask.html:226 user_profile/templates/user.html:944
 msgid "Your rank"
 msgstr "Tu posición"
 
-#: frontend/templates/challenge_detail.html:589
+#: frontend/templates/challenge_detail.html:592
 #: user_profile/templates/user.html:943
 msgid "Your CPs"
 msgstr "Tus PC"
 
-#: frontend/templates/challenge_detail.html:594
+#: frontend/templates/challenge_detail.html:597
 msgid "of group total"
 msgstr "del total del grupo"
 
-#: frontend/templates/challenge_detail.html:608
+#: frontend/templates/challenge_detail.html:611
 #, python-format
 msgid "Only %(cp)s CP to overtake %(username)s!"
 msgstr ""
 
-#: frontend/templates/challenge_detail.html:612
+#: frontend/templates/challenge_detail.html:615
 #, python-format
 msgid "Only %(cp)s CP to climb one place!"
 msgstr "¡Solo %(cp)s PC para subir un puesto!"
 
-#: frontend/templates/challenge_detail.html:625
+#: frontend/templates/challenge_detail.html:628
 #: frontend/templates/gettask.html:231
 msgid "Leaderboard"
 msgstr "Clasificación"
 
-#: frontend/templates/challenge_detail.html:628
-#: frontend/templates/challenge_detail.html:678
+#: frontend/templates/challenge_detail.html:631
+#: frontend/templates/challenge_detail.html:681
 #: frontend/templates/ranking.html:84
 msgid "Jump to me"
 msgstr "Saltar a mí"
 
-#: frontend/templates/challenge_detail.html:637
+#: frontend/templates/challenge_detail.html:640
 #: frontend/templates/ranking.html:134 teams/templates/team_detail.html:125
 msgid "User"
 msgstr "Usuario"
 
-#: frontend/templates/challenge_detail.html:638
+#: frontend/templates/challenge_detail.html:641
 #: user_profile/templates/diploma_general.html:27
 #: user_profile/templates/diploma_verify.html:69
 #: user_profile/templates/diploma_verify.html:83
@@ -450,51 +513,47 @@ msgstr "Usuario"
 msgid "Control points"
 msgstr "Puntos de control"
 
-#: frontend/templates/challenge_detail.html:639
+#: frontend/templates/challenge_detail.html:642
 #: user_profile/templates/user.html:942
 msgid "Status"
 msgstr "Estado"
 
-#: frontend/templates/challenge_detail.html:644
+#: frontend/templates/challenge_detail.html:647
 #: frontend/templates/ranking.html:92
 msgid "Loading…"
 msgstr "Cargando…"
 
-#: frontend/templates/challenge_detail.html:679
+#: frontend/templates/challenge_detail.html:682
 #: frontend/templates/ranking.html:132
 #, python-brace-format
 msgid "Page {p} of {t}"
 msgstr "Página {p} de {t}"
 
-#: frontend/templates/challenge_detail.html:680
+#: frontend/templates/challenge_detail.html:683
 msgid "No participants yet — be the first one!"
 msgstr "Aún no hay participantes — ¡sé el primero!"
 
-#: frontend/templates/challenge_detail.html:681
+#: frontend/templates/challenge_detail.html:684
 msgid "Could not load leaderboard."
 msgstr "No se pudo cargar el ranking."
 
-#: frontend/templates/challenge_detail.html:682
+#: frontend/templates/challenge_detail.html:685
 msgid "you"
 msgstr "tú"
 
-#: frontend/templates/challenge_detail.html:683
+#: frontend/templates/challenge_detail.html:686
 #: frontend/templates/ranking.html:133 teams/templates/team_detail.html:141
 msgid "Invisible user"
 msgstr "Usuario invisible"
 
-#: frontend/templates/challenge_detail.html:684
+#: frontend/templates/challenge_detail.html:687
 msgid "active"
 msgstr "activo"
 
-#: frontend/templates/challenge_detail.html:685
+#: frontend/templates/challenge_detail.html:688
 #: user_profile/templates/user.html:956
 msgid "left"
 msgstr "restantes"
-
-#: frontend/templates/challenge_detail.html:807
-msgid "Leave this challenge? Your contributions are preserved."
-msgstr "¿Salir de este desafío? Tus contribuciones se conservan."
 
 #: frontend/templates/contact.html:35
 msgid "Contact Us"
@@ -520,7 +579,7 @@ msgstr "Asunto"
 msgid "Message"
 msgstr "Mensaje"
 
-#: frontend/templates/contact.html:92 frontend/views.py:282
+#: frontend/templates/contact.html:92 frontend/views.py:283
 msgid "Please enable JavaScript to send the form."
 msgstr "Activa JavaScript para poder enviar el formulario."
 
@@ -589,14 +648,10 @@ msgid "All done here"
 msgstr "Aquí ya no queda nada"
 
 #: frontend/templates/gettask.html:58
-#| msgid "No more tasks available here"
 msgid "No more tasks available right now"
 msgstr "Ya no hay más tareas disponibles aquí"
 
 #: frontend/templates/gettask.html:59
-#| msgid ""
-#| "Either every image in this batch has been georeferenced enough times, or "
-#| "there are no pending tasks at the moment. Thank you for contributing!"
 msgid ""
 "Every available photo has been located enough times, or there are no pending "
 "tasks at the moment. Thank you for contributing!"
@@ -607,7 +662,6 @@ msgstr ""
 "hay tareas pendientes en este momento. ¡Gracias por contribuir!"
 
 #: frontend/templates/gettask.html:60
-#| msgid "Your challenges"
 msgid "Your challenge has no tasks left"
 msgstr "Tus desafíos"
 
@@ -623,7 +677,9 @@ msgstr "No quedan fotos que cuenten para tus retos"
 msgid ""
 "Leave the challenge from its page to keep locating photos from the general "
 "queue."
-msgstr "Sal del reto desde su página para seguir localizando fotos de la cola general."
+msgstr ""
+"Sal del reto desde su página para seguir localizando fotos de la cola "
+"general."
 
 #: frontend/templates/gettask.html:69
 msgid "An active challenge is waiting for you"
@@ -644,12 +700,10 @@ msgid "{n} active challenges are going on"
 msgstr "Hay {n} retos activos en marcha"
 
 #: frontend/templates/gettask.html:73
-#| msgid "Joined"
 msgid "Join one"
 msgstr "Apuntado"
 
 #: frontend/templates/gettask.html:75
-#| msgid "General"
 msgid "General queue"
 msgstr "General"
 
@@ -963,7 +1017,9 @@ msgstr[1] ""
 msgid ""
 "No challenge is open right now: every photo you locate goes to the general "
 "queue."
-msgstr "Ahora mismo no hay ningún reto abierto: cada foto que localices va a la cola general."
+msgstr ""
+"Ahora mismo no hay ningún reto abierto: cada foto que localices va a la cola "
+"general."
 
 #: frontend/templates/index.html:775
 msgid "Our Mission"
@@ -1020,7 +1076,10 @@ msgstr ""
 msgid ""
 "A challenge is a shared goal with a deadline: a region or a set of photos "
 "the community locates together. Join one and your contributions count for it."
-msgstr "Un reto es un objetivo compartido con fecha límite: una región o un conjunto de fotos que la comunidad localiza en equipo. Únete a uno y tus contribuciones contarán para él."
+msgstr ""
+"Un reto es un objetivo compartido con fecha límite: una región o un conjunto "
+"de fotos que la comunidad localiza en equipo. Únete a uno y tus "
+"contribuciones contarán para él."
 
 #: frontend/templates/index.html:825
 msgid "No challenge is open right now."
@@ -1030,7 +1089,9 @@ msgstr "Ahora mismo no hay ningún reto abierto."
 msgid ""
 "You can still participate: every photo you locate goes to the general queue. "
 "New challenges are announced here and in the newsletter."
-msgstr "Puedes participar igualmente: cada foto que localices va a la cola general. Los nuevos retos se anuncian aquí y en el boletín."
+msgstr ""
+"Puedes participar igualmente: cada foto que localices va a la cola general. "
+"Los nuevos retos se anuncian aquí y en el boletín."
 
 #: frontend/templates/index.html:834
 msgid "Active"
@@ -1074,7 +1135,6 @@ msgid "See the ranking"
 msgstr "Ver el ranking"
 
 #: frontend/templates/index.html:892
-#| msgid "Photos located"
 msgid "Photos located per week"
 msgstr "Fotos localizadas"
 
@@ -1758,7 +1818,9 @@ msgstr ""
 msgid ""
 "Who is lighting up the map. Only accounts with a verified e-mail count; "
 "hidden profiles keep their place without their name."
-msgstr "Quién está iluminando el mapa. Solo cuentan las cuentas con correo verificado; los perfiles ocultos conservan su puesto sin mostrar el nombre."
+msgstr ""
+"Quién está iluminando el mapa. Solo cuentan las cuentas con correo "
+"verificado; los perfiles ocultos conservan su puesto sin mostrar el nombre."
 
 #: frontend/templates/ranking.html:64
 msgid "Active in the last 30 days"
@@ -1883,24 +1945,24 @@ msgstr "tiempo"
 msgid "CP per user"
 msgstr ""
 
-#: frontend/views.py:288
+#: frontend/views.py:289
 msgid "Your message has been sent. We'll be in touch soon."
 msgstr "Tu mensaje se ha enviado. Te contactaremos pronto."
 
-#: frontend/views.py:294
+#: frontend/views.py:295
 msgid "Captcha verification failed. Please try again."
 msgstr "La verificación del captcha ha fallado. Inténtalo de nuevo."
 
-#: frontend/views.py:298
+#: frontend/views.py:299
 msgid "Please fill all required fields."
 msgstr "Rellena todos los campos requeridos."
 
-#: frontend/views.py:312
+#: frontend/views.py:313
 #, python-format
 msgid "Could not send the message: %(error)s"
 msgstr "No se pudo enviar el mensaje: %(error)s"
 
-#: frontend/views.py:316
+#: frontend/views.py:317
 msgid "Your message has been sent successfully!"
 msgstr "¡Tu mensaje se ha enviado correctamente!"
 
@@ -2988,6 +3050,15 @@ msgid ""
 "You haven't taken part in this challenge, so there's no diploma to download "
 "for it. Here are the badges you've earned so far."
 msgstr ""
+
+#~ msgid "General"
+#~ msgstr "General"
+
+#~ msgid "Batch"
+#~ msgstr "Lotes"
+
+#~ msgid "Batch:"
+#~ msgstr "Lotes"
 
 #~ msgid "Batches"
 #~ msgstr "Lotes"

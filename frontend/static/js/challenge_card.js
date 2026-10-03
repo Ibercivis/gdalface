@@ -44,8 +44,10 @@
         });
     }
 
+    function L(key, fallback) { var T = window.LAN_I18N || {}; return T[key] || fallback; }
+
     function fmtDuration(ms, mode) {
-        if (ms <= 0) return mode === 'starts' ? 'Soon' : 'Ended';
+        if (ms <= 0) return mode === 'starts' ? L('pill_soon', 'Soon') : L('pill_ended', 'Ended');
         var totalMin = Math.round(ms / 60000);
         var d = Math.floor(totalMin / (60 * 24));
         var h = Math.floor((totalMin / 60) % 24);
@@ -54,7 +56,8 @@
         if (d >= 1) unit = d + 'd';
         else if (h >= 1) unit = h + 'h';
         else unit = m + 'm';
-        return mode === 'starts' ? 'Starts in ' + unit : unit + ' left';
+        return mode === 'starts' ? L('pill_starts_in', 'Starts in {t}').replace('{t}', unit)
+                                 : L('pill_left', '{t} left').replace('{t}', unit);
     }
 
     function renderTimePills() {
@@ -90,17 +93,31 @@
             return r.json().then(function (b) { return { ok: r.ok, body: b }; })
                 .catch(function () { return { ok: r.ok, body: null }; });
         }
+        // The page marks the viewer's current enrollment (card row or detail
+        // page root) with .is-enrolled + data-challenge-name. Joining another
+        // challenge leaves it, so ask first instead of telling afterwards.
+        function currentEnrollmentName(excludeId) {
+            var el = document.querySelector('.is-enrolled[data-challenge-name]');
+            if (!el || String(el.dataset.challengeId) === String(excludeId)) return null;
+            return el.dataset.challengeName;
+        }
         document.querySelectorAll('[data-challenge-join]').forEach(function (btn) {
             btn.addEventListener('click', function () {
                 var id = btn.dataset.challengeJoin;
+                var current = currentEnrollmentName(id);
+                if (current) {
+                    var q = L('confirm_switch', 'You are enrolled in “{current}”. Joining “{name}” leaves it (your points are kept). Continue?')
+                        .replace('{current}', current).replace('{name}', btn.dataset.challengeName || '');
+                    if (!confirm(q)) return;
+                }
                 btn.disabled = true;
                 postChallenge('join', id).then(readJson).then(function (res) {
                     if (res.ok && typeof window.LAN_showJoinedModal === 'function') {
                         window.LAN_showJoinedModal(res.body || {});
                     } else if (res.ok) { window.location.reload(); }
-                    else { alert('Could not join challenge.'); btn.disabled = false; }
+                    else { alert((res.body && res.body.error) || L('join_error', 'Could not join the challenge.')); btn.disabled = false; }
                 }).catch(function () {
-                    alert('Network error.'); btn.disabled = false;
+                    alert(L('network_error', 'Network error.')); btn.disabled = false;
                 });
             });
         });
@@ -108,15 +125,15 @@
         document.querySelectorAll('[data-challenge-leave]').forEach(function (btn) {
             btn.addEventListener('click', function () {
                 var id = btn.dataset.challengeLeave;
-                if (!confirm('Leave this challenge? Your contributions are preserved.')) return;
+                if (!confirm(L('confirm_leave', 'Leave this challenge? Your contributions are preserved.'))) return;
                 btn.disabled = true;
                 postChallenge('leave', id).then(readJson).then(function (res) {
                     if (res.ok && typeof window.LAN_showLeftModal === 'function') {
                         window.LAN_showLeftModal(res.body || {});
                     } else if (res.ok) { window.location.reload(); }
-                    else { alert('Could not leave.'); btn.disabled = false; }
+                    else { alert(L('leave_error', 'Could not leave the challenge.')); btn.disabled = false; }
                 }).catch(function () {
-                    alert('Network error.'); btn.disabled = false;
+                    alert(L('network_error', 'Network error.')); btn.disabled = false;
                 });
             });
         });

@@ -77,7 +77,8 @@ def index(request):
         Challenge.objects.filter(end_at__gte=now - timezone.timedelta(days=30))
         .select_related('batch')
         .annotate(
-            participants_count=Count('participants', distinct=True),
+            participants_count=Count('participants', distinct=True,
+                                     filter=Q(participants__left_at__isnull=True)),
             total_cp_annot=Sum('participants__cached_cp_count'),
         )
         .order_by('-start_at')
@@ -390,7 +391,7 @@ def challenge_detail(request, pk):
     return render(request, 'challenge_detail.html', {
         'challenge': ch,
         'participants': participants,
-        'participants_count': len(participants),
+        'participants_count': sum(1 for p in participants if p.left_at is None),
         'my_enrollment': my_enrollment,
         'my_rank': my_rank,
         'my_gap': my_gap,
