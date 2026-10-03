@@ -338,6 +338,16 @@ def _teams(now, start):
     }
 
 
+def _catalog():
+    from .models import NasaPhoto
+    if not NasaPhoto.objects.exists():
+        return None
+    from .management.commands.nasa_catalog_report import summarize
+    rows = summarize()
+    total = rows[-1]
+    return {"rows": rows[:-1], "total": total, "missions": len(rows) - 1}
+
+
 def _events(start):
     from .models import StatsEvent
     return [{
@@ -367,6 +377,7 @@ def build_staff_stats(days=60):
         "health": _health(now),
         "onboarding": _onboarding(),
         "teams": _teams(now, start),
+        "catalog": _catalog(),
         "events": _events(start),
     }
 

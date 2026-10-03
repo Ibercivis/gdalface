@@ -243,6 +243,33 @@
 <p style="color:var(--ink-2)">No teams yet. <a href="/teams/">Teams page</a>.</p>
 {% endif %}
 
+{# ── NASA catalogue ─────────────────────────────────────────────── #}
+{% if d.catalog %}
+<h2>NASA catalogue <small>{{ d.catalog.missions }} missions · what NASA has, what is usable at night, what we loaded and located</small></h2>
+<div class="st-grid">
+    <div class="st-tile"><div class="k">Photos in catalogue</div><div class="v">{{ d.catalog.total.photos }}</div><div class="s">{{ d.catalog.total.with_file }} with a large file</div></div>
+    <div class="st-tile"><div class="k">Night photos</div><div class="v">{{ d.catalog.total.night }}</div><div class="s">{{ d.catalog.total.night_usable }} usable (focal ≥ 50 mm, file)</div></div>
+    <div class="st-tile"><div class="k">Usable by tier</div><div class="v" style="font-size:16px">A {{ d.catalog.total.night_tier_A }} · B {{ d.catalog.total.night_tier_B }} · C {{ d.catalog.total.night_tier_C }} · D {{ d.catalog.total.night_tier_D }}</div><div class="s">A catalogued centre · B ML centre · C nadir+long lens · D nadir+wide</div></div>
+    <div class="st-tile"><div class="k">Loaded by us</div><div class="v">{{ d.catalog.total.in_our_db }}</div><div class="s">{{ d.catalog.total.located_once }} located once · {{ d.catalog.total.complete_5 }} complete</div></div>
+</div>
+<details>
+<summary style="cursor:pointer;color:var(--ink-2);font-size:13px;margin-bottom:8px">Per mission</summary>
+<div style="overflow:auto;max-height:420px">
+<table style="margin:0">
+    <thead><tr><th>Mission</th><th class="num">Photos</th><th class="num">Night</th><th class="num">Usable</th><th class="num">A</th><th class="num">B</th><th class="num">C</th><th class="num">D</th><th class="num">Loaded</th><th class="num">Located</th><th class="num">Complete</th><th class="num">Pending</th></tr></thead>
+    <tbody>
+    {% for r in d.catalog.rows %}
+    <tr{% if r.in_our_db %} style="color:var(--ink-0)"{% endif %}><td>{{ r.mission }}</td><td class="num">{{ r.photos }}</td><td class="num">{{ r.night }}</td><td class="num">{{ r.night_usable }}</td>
+        <td class="num">{{ r.night_tier_A }}</td><td class="num">{{ r.night_tier_B }}</td><td class="num">{{ r.night_tier_C }}</td><td class="num">{{ r.night_tier_D }}</td>
+        <td class="num">{{ r.in_our_db }}</td><td class="num">{{ r.located_once }}</td><td class="num">{{ r.complete_5 }}</td><td class="num">{{ r.pending_tasks }}</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+</details>
+<p class="st-note">Rebuild with <code>manage.py fetch_nasa_cache --missions ISS001-ISS080</code> then <code>manage.py sync_nasa_catalog</code>; CSV with <code>manage.py nasa_catalog_report --csv …</code>.</p>
+{% endif %}
+
 {# ── Health ──────────────────────────────────────────────────────── #}
 <h2>Health</h2>
 <div class="st-grid">
