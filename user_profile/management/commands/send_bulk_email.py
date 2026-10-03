@@ -78,6 +78,8 @@ class Command(BaseCommand):
                             help="Only addresses ending with this (e.g. .es). Combined with --country as OR.")
         parser.add_argument("--exclude-email-domain", default=None,
                             help="Skip addresses ending with this. Combined with --exclude-country as OR.")
+        parser.add_argument("--first-name-fallback", default=FIRST_NAME_FALLBACK,
+                            help='Text for [first name] when the user has none (default "there"; e.g. "de nuevo").')
         parser.add_argument("--limit", type=int, default=None,
                             help="Cap the number of recipients (after filtering).")
         parser.add_argument("--sleep", type=float, default=0.1,
@@ -187,7 +189,7 @@ class Command(BaseCommand):
                     "newsletter_unsubscribe", kwargs={"token": profile.newsletter_token}
                 )
                 unsubscribe_url = f"{base_url}{unsubscribe_path}"
-                first_name = (user.first_name or "").strip() or FIRST_NAME_FALLBACK
+                first_name = (user.first_name or "").strip() or opts["first_name_fallback"]
 
                 html_body = (
                     template_html
