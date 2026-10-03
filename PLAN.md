@@ -299,9 +299,8 @@ fila del usuario.
   "Equipos" → `/ranking/teams/` hasta que exista el listado de equipos.
 - ✅ Menú móvil: botón hamburguesa que despliega la navegación bajo la barra.
 - ✅ Pie coherente con la barra.
-- ⚠️ Manual: sección de batches reescrita como "De dónde salen las fotos",
-  reglas de retos actualizadas, FAQ del filtro corregida. Falta la sección de
-  equipos (Fase 4).
+- ✅ Manual: sección de batches reescrita como "De dónde salen las fotos",
+  reglas de retos actualizadas, FAQ del filtro corregida, sección de equipos.
 
 **Criterio de salida:** un visitante nuevo llega a su primera tarea en un clic
 desde la portada, y entiende qué es un reto antes de unirse. Medir en `/stats/`:
@@ -310,44 +309,45 @@ contribución.
 
 ---
 
-## Fase 4 — Equipos ⏳
+## Fase 4 — Equipos ✅ (salvo traducciones a 7 idiomas y tests extra)
 
 ### 4.1 Entradas
-- ⏳ Enlace "Equipos" en barra y pie.
-- ⏳ Página `/teams/` con listado de equipos abiertos, buscador, botón crear.
-- ⏳ Invitación por URL: `/teams/join/?code=…` (GET que muestra confirmación y
-  POST que une). Hoy unirse es solo POST desde el área personal.
-- ⏳ Bloque "Tu equipo" en el overlay de resultado y en el banner de la
-  pantalla de trabajo.
+- ✅ Enlace "Equipos" en barra y pie → `/teams/`.
+- ✅ Página `/teams/` con listado (ordenado por PC del equipo), buscador,
+  formularios de crear (nombre, descripción, abierto/cerrado) y unirse por
+  código, tarjeta "Tu equipo".
+- ✅ Invitación por URL: `/teams/join/?code=…` muestra confirmación (con aviso
+  si se abandona otro equipo) y el POST une. La página del equipo ofrece el
+  enlace con botón de copiar.
+- ⚠️ Bloque "Tu equipo" en el overlay de resultado (+PC, tuyos para el equipo,
+  total). Falta en el banner de la pantalla de trabajo.
 
 ### 4.2 Gestión para el propietario
-- ⏳ Editar nombre y descripción, abrir/cerrar, rotar código de invitación,
-  expulsar miembro, transferir propiedad, borrar equipo. Hoy todo esto solo se
-  puede hacer desde admin.
-- ⏳ Al salir el propietario, transferir al miembro más antiguo o cerrar el
-  equipo.
-- ⏳ El formulario de creación no envía `is_open`, así que todos los equipos
-  nacen abiertos; añadir el control.
+- ✅ Panel del propietario en la página del equipo: editar nombre, descripción
+  y privacidad, nuevo código, expulsar, transferir propiedad, borrar (solo si
+  está vacío).
+- ✅ Al salir el propietario, hereda el miembro más antiguo.
+- ✅ Creación con control abierto/cerrado (por defecto cerrado si no se marca;
+  el formulario del área personal crea abiertos).
 
 ### 4.3 Puntuación
-- ⏳ Contar solo contribuciones posteriores a `joined_at` (hoy un miembro trae
-  todo su historial y se lo lleva al irse). Requiere calcular desde
-  `GeoAttempt`/`GeoAttemptsByUserByDay` con filtro de fecha, no desde el
-  perfil.
-- ⏳ Aplicar filtros de verificado y `visible` como en el resto de rankings.
-- ⏳ Unificar "miembros" (hoy memberships en la API y perfiles en la página).
+- ✅ Puntuación por aportación: cada membresía guarda los contadores del perfil
+  al entrar (`baseline_*`) y aporta la diferencia; al salir la diferencia se
+  guarda (`banked_*`) y se queda en el equipo. Reinscribirse toma una base
+  nueva. Periodos 7/30 d: tabla diaria desde la fecha de ingreso.
+- ✅ Solo puntúan miembros verificados; los ocultos cuentan sin nombre.
+- ✅ "Miembros" = membresías activas en API y página.
 
 ### 4.4 Endurecimiento y acabado
-- ⏳ Validar `next` en `join_team` con `url_has_allowed_host_and_scheme`
-  (redirección abierta).
-- ⏳ Capturar `IntegrityError` o restricción case-insensitive al crear.
-- ⏳ Reescribir `team_detail.html` con componentes `ds-*` (hoy Bootstrap e
-  inline styles) y quitar `lang="en"` fijo.
-- ⏳ Traducir cadenas de equipos en los 8 `.po` y limpiar los fuzzy erróneos
-  ("Create a team" → "Crear una cuenta").
-- ⏳ Añadir `teams/` a git.
-- ⏳ Tests: periodos 7d/30d, visibilidad, rango en página de equipo, tarjeta
-  del perfil.
+- ✅ `next` validado con `url_has_allowed_host_and_scheme` en todas las vistas.
+- ✅ `IntegrityError` capturado al crear.
+- ✅ `team_detail.html`, `team_list.html` y `team_join_confirm.html` sobre
+  `_legal_base.html` con componentes `ds-*`.
+- ⚠️ Castellano completo para equipos. Faltan los otros 7 idiomas.
+- ✅ `teams/` en git.
+- ✅ Tests: puntuación (base, banco, reinscripción, sin verificar), ranking por
+  periodo desde la fecha de ingreso, enlace de invitación, `next` validado,
+  herramientas del propietario, herencia, ocultos.
 
 **Criterio de salida:** al menos un equipo con 3 miembros creado por usuarios
 reales en las dos semanas siguientes al lanzamiento. Anotar el lanzamiento como
@@ -360,7 +360,7 @@ evento en `/stats/`.
 - ⏳ Retención por cohortes semanales: altas → primera contribución → activos a
   4 semanas.
 - ⏳ Eventos automáticos: crear reto, cargar batch, enviar newsletter.
-- ⏳ Bloque de equipos cuando haya datos.
+- ⏳ Bloque de equipos en el panel cuando haya datos (hoy 0 equipos).
 - ⏳ Ejecutar `reconcile_counters --dry-run` desde el panel y mostrar la deriva.
 
 ---

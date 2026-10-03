@@ -1,0 +1,79 @@
+{% extends 'legal/_legal_base.html' %}
+{% load i18n %}
+{% block legal_title %}{% trans "Teams" %}{% endblock %}
+{% block legal_content %}
+{% include '_team_styles.html' %}
+<h1>{% trans "Teams" %}</h1>
+<div class="legal-meta">{% trans "Classrooms, clubs, offices, groups of friends: join a team and the photos you locate count for it too. One team at a time." %}</div>
+
+{% if messages %}{% for m in messages %}<div class="tm-msg {{ m.tags }}">{{ m }}</div>{% endfor %}{% endif %}
+
+{% if my_membership %}
+<div class="tm-card">
+    <div class="tm-head">
+        <div>
+            <div style="font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-2)">{% trans "Your team" %}</div>
+            <h2><a href="{% url 'team_detail' my_membership.team.slug %}" style="text-decoration:none">{{ my_membership.team.name }}</a></h2>
+            <p class="tm-desc">{% if my_membership.role == 'owner' %}<i class="fa-solid fa-crown" style="color:var(--accent)"></i> {% trans "You own this team." %}{% endif %}
+               {% blocktrans with n=my_stats.members %}{{ n }} members{% endblocktrans %} · {{ my_stats.control_points }} CP</p>
+        </div>
+        <a class="ds-btn ds-btn--primary ds-btn--md" href="{% url 'team_detail' my_membership.team.slug %}">{% trans "Open team page" %}</a>
+    </div>
+</div>
+{% elif user.is_authenticated %}
+<div class="tm-two">
+    <div class="tm-card">
+        <h2 style="font-size:16px">{% trans "Join with a code" %}</h2>
+        <p class="tm-desc" style="font-size:13px">{% trans "Got an invite code or link from a teacher, club or friend? Enter it here." %}</p>
+        <form method="post" action="{% url 'team_join' %}" class="tm-form" style="grid-template-columns:1fr auto">
+            {% csrf_token %}<input type="hidden" name="next" value="{% url 'team_list' %}">
+            <input type="text" name="invite_code" maxlength="16" placeholder="{% trans 'Invite code' %}" required>
+            <button type="submit" class="ds-btn ds-btn--primary ds-btn--md">{% trans "Join" %}</button>
+        </form>
+    </div>
+    <div class="tm-card">
+        <h2 style="font-size:16px">{% trans "Create a team" %}</h2>
+        <form method="post" action="{% url 'team_create' %}" class="tm-form">
+            {% csrf_token %}<input type="hidden" name="next" value="{% url 'team_list' %}">
+            <input type="text" name="name" maxlength="60" minlength="3" required placeholder="{% trans 'Team name' %}">
+            <textarea name="description" maxlength="500" placeholder="{% trans 'What brings you together? (optional)' %}"></textarea>
+            <label class="chk"><input type="checkbox" name="is_open" value="1" checked> {% trans "Open team: anyone can join from this page" %}</label>
+            <div><button type="submit" class="ds-btn ds-btn--primary ds-btn--md">{% trans "Create" %}</button></div>
+        </form>
+    </div>
+</div>
+{% else %}
+<div class="tm-card"><a href="/accounts/login?next=/teams/" class="ds-btn ds-btn--primary ds-btn--md">{% trans "Sign in to join or create a team" %}</a></div>
+{% endif %}
+
+<form method="get" class="tm-search">
+    <input type="search" name="q" value="{{ q }}" placeholder="{% trans 'Search teams' %}">
+    <button type="submit" class="ds-btn ds-btn--secondary ds-btn--md">{% trans "Search" %}</button>
+</form>
+
+<div class="tm-card" style="padding:0;overflow:hidden">
+<table class="tm-table">
+    <thead><tr><th>#</th><th>{% trans "Team" %}</th><th class="num">{% trans "Members" %}</th><th class="num">{% trans "Tasks" %}</th><th class="num">{% trans "Control Points" %}</th><th></th></tr></thead>
+    <tbody>
+    {% for r in rows %}
+    <tr {% if my_membership and my_membership.team_id == r.team.id %}class="me"{% endif %}>
+        <td>{{ forloop.counter }}</td>
+        <td><a href="{% url 'team_detail' r.team.slug %}"><strong>{{ r.team.name }}</strong></a>
+            {% if not r.team.is_open %}<span class="ds-pill ds-pill--ghost" style="margin-left:6px">{% trans "invite-only" %}</span>{% endif %}
+            {% if r.team.description %}<div style="color:var(--ink-2);font-size:12px">{{ r.team.description|truncatechars:90 }}</div>{% endif %}</td>
+        <td class="num">{{ r.members }}</td><td class="num">{{ r.tasks }}</td><td class="num">{{ r.cp }}</td>
+        <td style="text-align:right">
+            {% if user.is_authenticated and r.team.is_open and not my_membership %}
+            <form method="post" action="{% url 'team_join' %}" style="margin:0">{% csrf_token %}<input type="hidden" name="slug" value="{{ r.team.slug }}"><input type="hidden" name="next" value="{% url 'team_list' %}">
+                <button type="submit" class="ds-btn ds-btn--secondary ds-btn--sm">{% trans "Join" %}</button></form>
+            {% endif %}
+        </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6" style="text-align:center;color:var(--ink-2);padding:24px">{% if q %}{% trans "No team matches your search." %}{% else %}{% trans "No teams yet. Be the first to create one!" %}{% endif %}</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+<p style="color:var(--ink-2);font-size:13px">{% trans "Teams are ranked by the control points their members placed while in the team." %} <a href="{% url 'ranking_scope' 'teams' %}">{% trans "See the team ranking by period" %}</a></p>
+{% endblock %}

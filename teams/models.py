@@ -53,17 +53,28 @@ class Team(models.Model):
         return self.memberships.filter(left_at__isnull=True)
 
     def stats(self):
-        """All-time totals over the *current* members' lifetime counters."""
-        from user_profile.models import UserProfile
-        return UserProfile.objects.filter(
-            user__team_memberships__team=self,
-            user__team_memberships__left_at__isnull=True,
-        ).aggregate(
-            members=models.Count('id'),
-            tasks=models.Sum('geoattempts_done'),
-            control_points=models.Sum('controlPointsDone'),
-            time_spent=models.Sum('time_spent'),
-        )
+        """Team totals = Σ contribution() over memberships (active deltas +
+        banked stints) of verified users, plus the active member count."""
+        from georeferencing.metrics import verified_user_ids
+        verified = set(verified_user_ids())
+        tasks = cp = secs = 0
+        members = 0
+        for m in self.memberships.all():
+            if m.left_at is None:
+                members += 1
+            if m.user_id not in verified:
+                continue
+            c = m.contribution()
+            tasks += c['tasks']; cp += c['cp']; secs += c['seconds']
+        return {'members': members, 'tasks': tasks, 'control_points': cp, 'time_spent': secs}
+
+    def owner(self):
+        return self.active_memberships().filter(role=TeamMembership.ROLE_OWNER).select_related('user').first()
+
+    def rotate_invite_code(self):
+        self.invite_code = _invite_code()
+        self.save(update_fields=['invite_code'])
+        return self.invite_code
 
 
 class TeamMembership(models.Model):
@@ -85,6 +96,17 @@ class TeamMembership(models.Model):
     joined_at = models.DateTimeField(auto_now_add=True)
     left_at = models.DateTimeField(blank=True, null=True)
 
+    # Scoring. A member's contribution to the team is what they did *while a
+    # member*: profile counters now minus the snapshot taken when they joined.
+    # When they leave, that difference is banked on the row so the team keeps
+    # the points earned inside it; re-joining takes a fresh baseline.
+    baseline_tasks = models.IntegerField(default=0)
+    baseline_cp = models.IntegerField(default=0)
+    baseline_seconds = models.BigIntegerField(default=0)
+    banked_tasks = models.IntegerField(default=0)
+    banked_cp = models.IntegerField(default=0)
+    banked_seconds = models.BigIntegerField(default=0)
+
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -105,6 +127,38 @@ class TeamMembership(models.Model):
     @property
     def is_active(self):
         return self.left_at is None
+
+    def _profile_counters(self):
+        from user_profile.models import UserProfile
+        p = UserProfile.objects.filter(user_id=self.user_id).values(
+            'geoattempts_done', 'controlPointsDone', 'time_spent').first()
+        if not p:
+            return 0, 0, 0
+        return p['geoattempts_done'] or 0, p['controlPointsDone'] or 0, p['time_spent'] or 0
+
+    def take_baseline(self):
+        self.baseline_tasks, self.baseline_cp, self.baseline_seconds = self._profile_counters()
+
+    def contribution(self):
+        """{'tasks','cp','seconds'} this membership adds to the team: banked
+        from earlier stints plus the live delta if currently active."""
+        tasks, cp, secs = self.banked_tasks, self.banked_cp, self.banked_seconds
+        if self.left_at is None:
+            t, c, s = self._profile_counters()
+            tasks += max(0, t - self.baseline_tasks)
+            cp += max(0, c - self.baseline_cp)
+            secs += max(0, s - self.baseline_seconds)
+        return {'tasks': tasks, 'cp': cp, 'seconds': secs}
+
+    def close(self, at=None):
+        """Leave: bank the live delta and stamp left_at."""
+        from django.utils import timezone
+        if self.left_at is not None:
+            return
+        live = self.contribution()
+        self.banked_tasks, self.banked_cp, self.banked_seconds = live['tasks'], live['cp'], live['seconds']
+        self.left_at = at or timezone.now()
+        self.save(update_fields=['banked_tasks', 'banked_cp', 'banked_seconds', 'left_at'])
 
     def __str__(self):
         state = 'left' if self.left_at else 'active'

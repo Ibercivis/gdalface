@@ -1,0 +1,41 @@
+{% load i18n %}
+<style>
+    .legal-wrap { max-width: 1000px; }
+    .tm-card { background: var(--bg-1); border: 1px solid var(--line-soft); border-radius: 12px; padding: 18px 20px; margin: 0 0 16px; }
+    .tm-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .tm-head h1, .tm-head h2 { margin: 0; }
+    .tm-desc { color: var(--ink-2); margin: 6px 0 0; max-width: 62ch; }
+    .tm-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-top: 14px; }
+    .tm-kpi { background: var(--bg-2); border-radius: 10px; padding: 10px 12px; }
+    .tm-kpi .v { font-size: 22px; font-weight: 700; color: var(--ink-0); font-variant-numeric: tabular-nums; line-height: 1.2; }
+    .tm-kpi .k { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--ink-2); margin-top: 2px; }
+    .tm-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 14px; }
+    .tm-actions form { margin: 0; display: inline-flex; gap: 8px; align-items: center; }
+    .tm-invite { display: inline-flex; align-items: center; gap: 8px; background: var(--bg-2); border: 1px dashed var(--line);
+                 border-radius: 8px; padding: 6px 12px; font-family: var(--font-mono); font-size: 13px; color: var(--ink-0); }
+    .tm-invite button { all: unset; cursor: pointer; color: var(--accent); font-family: var(--font-ui); font-size: 12px; }
+    .tm-form { display: grid; grid-template-columns: 1fr; gap: 8px; }
+    .tm-form input[type=text], .tm-form textarea {
+        width: 100%; box-sizing: border-box; background: var(--bg-2); color: var(--ink-0); border: 1px solid var(--line-soft);
+        border-radius: 8px; padding: 8px 10px; font: inherit; font-size: 13px;
+    }
+    .tm-form textarea { min-height: 60px; resize: vertical; }
+    .tm-form label.chk { display: flex; align-items: center; gap: 8px; color: var(--ink-1); font-size: 13px; }
+    .tm-two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 720px) { .tm-two { grid-template-columns: 1fr; } }
+    .legal-wrap table.tm-table { margin: 0; width: 100%; border-collapse: collapse; font-size: 14px; }
+    .tm-table th, .tm-table td { border: 0; border-bottom: 1px solid var(--line-soft); padding: 9px 12px; text-align: left; }
+    .tm-table th { background: var(--bg-2); color: var(--accent); font-size: 12px; }
+    .tm-table td.num, .tm-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
+    .tm-table tr.me td { background: oklch(0.95 0.13 113 / 0.10); }
+    .tm-table a { text-decoration: none; color: var(--ink-0); }
+    .tm-table a:hover { color: var(--accent); }
+    .tm-owner-tools summary { cursor: pointer; color: var(--ink-2); font-size: 13px; }
+    .tm-owner-tools form { display: inline; }
+    .tm-owner-tools .mini { all: unset; cursor: pointer; color: var(--ink-3); font-size: 12px; margin-left: 8px; }
+    .tm-owner-tools .mini:hover { color: var(--danger); }
+    .tm-msg { background: var(--bg-2); border-left: 3px solid var(--accent); padding: 8px 12px; border-radius: 6px; margin-bottom: 14px; font-size: 13px; }
+    .tm-msg.error { border-left-color: var(--danger); }
+    .tm-search { display: flex; gap: 8px; margin-bottom: 14px; }
+    .tm-search input { flex: 1; background: var(--bg-2); color: var(--ink-0); border: 1px solid var(--line-soft); border-radius: 8px; padding: 8px 10px; font: inherit; font-size: 13px; }
+</style>

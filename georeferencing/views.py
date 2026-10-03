@@ -560,6 +560,20 @@ class GeoAttemptIndividualView(APIView):
                             'my_rank': ahead_ch + 1,
                             'previous_rank': prev_ahead_ch + 1,
                         }
+                    # Team section: the member's team and what this submit added to it.
+                    try:
+                        from teams.models import TeamMembership
+                        tm = (TeamMembership.objects.select_related('team')
+                              .filter(user=geoattemp.assignedUser, left_at__isnull=True).first())
+                        if tm:
+                            st = tm.team.stats()
+                            result['team'] = {
+                                'name': tm.team.name, 'slug': tm.team.slug,
+                                'added_cp': cp_added, 'my_cp': tm.contribution()['cp'],
+                                'total_cp': st['control_points'], 'members': st['members'],
+                            }
+                    except Exception:
+                        pass
                 payload = dict(serializer.data)
                 payload['result'] = result
                 return Response(payload, status=status.HTTP_200_OK)

@@ -385,6 +385,25 @@
                 + '</div>';
         }
 
+        // ── Team section (if the user is in a team) ──────────────────────
+        var teamHtml = '';
+        var tm = result.team || null;
+        if (tm) {
+            var TT = window.LAN_I18N || {};
+            teamHtml = ''
+                + '<div class="lan-result-card__challenge">'
+                + '<div class="lan-result-card__challenge-head">'
+                +   '<i class="fa-solid fa-people-group" style="color:var(--accent)"></i> '
+                +   (TT.team_label || 'Team') + ' · <a class="name" href="/teams/' + encodeURIComponent(tm.slug) + '/" style="text-decoration:none">' + escapeHtml(tm.name) + '</a>'
+                + '</div>'
+                + '<div class="lan-result-card__challenge-stats">'
+                +   '<span><span class="accent">+' + fmtInt(tm.added_cp) + ' CP</span></span>'
+                +   '<span>' + (TT.team_yours || 'Yours for the team') + ': <b>' + fmtInt(tm.my_cp) + '</b></span>'
+                +   '<span>' + (TT.team_total || 'Team total') + ': <b>' + fmtInt(tm.total_cp) + '</b></span>'
+                + '</div>'
+                + '</div>';
+        }
+
         // ── Compose ──────────────────────────────────────────────────────
         var overlay = document.createElement('div');
         overlay.id = 'lan-result-overlay';
@@ -406,6 +425,7 @@
             +   stripHtml
             +   chipsHtml
             +   challengeHtml
+            + teamHtml
             +   '<div class="lan-result-card__actions">'
             +     '<button class="ds-btn ds-btn--ghost" id="lan-share-btn">'
             +       '<svg class="ds-icon"><use href="#ds-icon-share"/></svg> Share</button>'

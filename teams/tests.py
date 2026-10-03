@@ -124,3 +124,151 @@ class TeamsRankingApiTests(TestCase):
         data = self.client.get('/api/v1/ranking/teams/').json()
         self.assertEqual(data['my_team_slug'], self.t2.slug)
         self.assertEqual(data['my_team_rank'], 2)
+
+
+@override_settings(CACHES=LOCMEM_CACHE)
+class TeamScoringTests(TestCase):
+    """A member adds what they did while in the team; it stays banked on leave."""
+
+    def setUp(self):
+        self.alice = make_user('alice', cp=100, tasks=10)
+        self.bob = make_user('bob', cp=50, tasks=5)
+        self.carol = make_user('carol', cp=999, tasks=99, verified=False)
+        self.client.force_login(self.alice)
+        self.client.post(reverse('team_create'), {'name': 'Owls', 'is_open': '1'})
+        self.team = Team.objects.get(name='Owls')
+
+    def _bump(self, user, cp, tasks):
+        p = UserProfile.objects.get(user=user)
+        p.controlPointsDone += cp; p.geoattempts_done += tasks; p.save()
+
+    def test_baseline_taken_on_join_and_delta_counts(self):
+        self.assertEqual(self.team.stats()['control_points'], 0)   # 100 lifetime, 0 for the team
+        self._bump(self.alice, 30, 3)
+        st = self.team.stats()
+        self.assertEqual((st['control_points'], st['tasks'], st['members']), (30, 3, 1))
+
+    def test_unverified_member_does_not_score(self):
+        self.client.force_login(self.carol)
+        self.client.post(reverse('team_join'), {'slug': self.team.slug})
+        self._bump(self.carol, 500, 50)
+        self.assertEqual(self.team.stats()['control_points'], 0)
+        self.assertEqual(self.team.stats()['members'], 2)
+
+    def test_points_bank_on_leave_and_rejoin_starts_fresh(self):
+        self._bump(self.alice, 30, 3)
+        self.client.post(reverse('team_leave'))
+        m = TeamMembership.objects.get(team=self.team, user=self.alice)
+        self.assertEqual((m.banked_cp, m.banked_tasks), (30, 3))
+        self.assertEqual(self.team.stats()['control_points'], 30)   # stays with the team
+        self._bump(self.alice, 20, 2)                                # earned outside → not for the team
+        self.client.post(reverse('team_join'), {'invite_code': self.team.invite_code})
+        self.assertEqual(self.team.stats()['control_points'], 30)
+        self._bump(self.alice, 5, 1)
+        self.assertEqual(self.team.stats()['control_points'], 35)
+
+    def test_ranking_api_uses_contributions(self):
+        self._bump(self.alice, 30, 3)
+        self.client.force_login(self.bob)
+        self.client.post(reverse('team_create'), {'name': 'Bats'})
+        self._bump(self.bob, 80, 8)
+        data = self.client.get('/api/v1/ranking/teams/').json()
+        self.assertEqual([(r['name'], r['control_points']) for r in data['rows']], [('Bats', 80), ('Owls', 30)])
+        self.assertEqual(data['my_team_slug'], 'bats')
+        self.assertEqual(data['my_team_rank'], 1)
+
+    def test_period_ranking_counts_from_join_date(self):
+        from datetime import date, timedelta
+        from georeferencing.models import GeoAttemptsByUserByDay
+        GeoAttemptsByUserByDay.objects.create(user=self.alice, date=date.today(), numberGeoAttempts=4, controlPoints=12)
+        GeoAttemptsByUserByDay.objects.create(user=self.alice, date=date.today() - timedelta(days=3), numberGeoAttempts=9, controlPoints=50)  # before joining
+        data = self.client.get('/api/v1/ranking/teams/?period=week').json()
+        owls = next(r for r in data['rows'] if r['slug'] == 'owls')
+        self.assertEqual((owls['tasks'], owls['control_points']), (4, 12))
+
+
+@override_settings(CACHES=LOCMEM_CACHE)
+class TeamPagesAndOwnerToolsTests(TestCase):
+    def setUp(self):
+        self.alice = make_user('alice'); self.bob = make_user('bob'); self.eve = make_user('eve')
+        self.client.force_login(self.alice)
+        self.client.post(reverse('team_create'), {'name': 'Owls', 'description': 'Night birds', 'is_open': '1'})
+        self.team = Team.objects.get(name='Owls')
+
+    def test_list_page_public_and_searchable(self):
+        self.client.logout()
+        r = self.client.get('/teams/')
+        self.assertEqual(r.status_code, 200)
+        self.assertContains(r, 'Owls'); self.assertContains(r, 'Night birds')
+        self.assertNotContains(self.client.get('/teams/?q=zzz'), 'Night birds')
+
+    def test_invite_link_flow(self):
+        url = f'/teams/join/?code={self.team.invite_code}'
+        self.client.logout()
+        r = self.client.get(url)
+        self.assertEqual(r.status_code, 302); self.assertIn('/accounts/login', r['Location'])
+        self.client.force_login(self.bob)
+        r = self.client.get(url)
+        self.assertEqual(r.status_code, 200); self.assertContains(r, 'Owls')
+        r = self.client.post(reverse('team_join'), {'invite_code': self.team.invite_code})
+        self.assertRedirects(r, f'/teams/{self.team.slug}/')
+        self.assertTrue(TeamMembership.objects.filter(team=self.team, user=self.bob, left_at__isnull=True).exists())
+        r = self.client.get('/teams/join/?code=nope', follow=True)
+        self.assertContains(r, 'No team matches')
+
+    def test_next_redirect_is_validated(self):
+        r = self.client.post(reverse('team_join'), {'invite_code': 'bad', 'next': 'https://evil.example/x'})
+        self.assertEqual(r['Location'], '/teams/')
+
+    def test_create_default_is_invite_only_and_closed_join_refused(self):
+        self.client.force_login(self.bob)
+        self.client.post(reverse('team_create'), {'name': 'Secret'})
+        secret = Team.objects.get(name='Secret')
+        self.assertFalse(secret.is_open)
+        self.client.force_login(self.eve)
+        self.client.post(reverse('team_join'), {'slug': secret.slug})
+        self.assertFalse(TeamMembership.objects.filter(team=secret, user=self.eve).exists())
+
+    def test_owner_tools(self):
+        # bob joins; alice (owner) edits, rotates the code, transfers, is removed-protected
+        self.client.force_login(self.bob)
+        self.client.post(reverse('team_join'), {'slug': self.team.slug})
+        bob_m = TeamMembership.objects.get(team=self.team, user=self.bob)
+        self.client.force_login(self.alice)
+        old_code = self.team.invite_code
+        self.client.post(reverse('team_edit', args=[self.team.slug]), {'name': 'Night Owls', 'description': 'd', 'is_open': '0'})
+        self.team.refresh_from_db()
+        self.assertEqual((self.team.name, self.team.is_open), ('Night Owls', False))
+        self.client.post(reverse('team_rotate_code', args=[self.team.slug]))
+        self.team.refresh_from_db(); self.assertNotEqual(self.team.invite_code, old_code)
+        # non-owner cannot use tools
+        self.client.force_login(self.bob)
+        self.assertEqual(self.client.post(reverse('team_rotate_code', args=[self.team.slug])).status_code, 404)
+        # transfer, then the new owner removes alice
+        self.client.force_login(self.alice)
+        self.client.post(reverse('team_transfer', args=[self.team.slug]), {'membership_id': bob_m.id})
+        self.assertEqual(TeamMembership.objects.get(team=self.team, user=self.bob).role, 'owner')
+        self.client.force_login(self.bob)
+        alice_m = TeamMembership.objects.get(team=self.team, user=self.alice)
+        self.client.post(reverse('team_remove_member', args=[self.team.slug]), {'membership_id': alice_m.id})
+        alice_m.refresh_from_db(); self.assertIsNotNone(alice_m.left_at)
+        # delete only when alone
+        r = self.client.post(reverse('team_delete', args=[self.team.slug]))
+        self.assertRedirects(r, '/teams/')
+        self.assertFalse(Team.objects.filter(pk=self.team.pk).exists())
+
+    def test_owner_leaving_passes_ownership_to_oldest_member(self):
+        self.client.force_login(self.bob)
+        self.client.post(reverse('team_join'), {'slug': self.team.slug})
+        self.client.force_login(self.alice)
+        self.client.post(reverse('team_leave'))
+        self.assertEqual(self.team.owner().user, self.bob)
+
+    def test_detail_page_hides_invisible_members(self):
+        UserProfile.objects.filter(user=self.bob).update(visible=False)
+        self.client.force_login(self.bob)
+        self.client.post(reverse('team_join'), {'slug': self.team.slug})
+        self.client.logout()
+        r = self.client.get(f'/teams/{self.team.slug}/')
+        self.assertEqual(r.status_code, 200)
+        self.assertNotContains(r, '>bob<'); self.assertContains(r, 'Invisible user')

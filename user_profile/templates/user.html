@@ -972,7 +972,7 @@
 
         <!-- My team -->
         <div class="contribution-section mt-4">
-            <div class="section-heading personal-contrib-heading">
+            <div class="section-heading personal-contrib-heading" id="team">
                 <span><i class="fas fa-people-group"></i> {% trans "My team" %}</span>
             </div>
             {% if my_team %}
@@ -988,7 +988,7 @@
                 </div>
                 <form method="post" action="{% url 'team_leave' %}"
                       onsubmit="return confirm('{% trans "Leave this team?" %}');">
-                    {% csrf_token %}
+                    {% csrf_token %}<input type="hidden" name="next" value="/user-profile/#team">
                     <button type="submit" class="btn btn-outline-light btn-sm">{% trans "Leave team" %}</button>
                 </form>
             </div>
@@ -1008,11 +1008,13 @@
                     <div style="font-weight:600;margin-bottom:8px;">{% trans "Create a team" %}</div>
                     <p style="color:var(--ink-2);font-size:0.85rem;">{% trans "Start your own and compete together in the team ranking." %}</p>
                     <form method="post" action="{% url 'team_create' %}" class="d-flex" style="gap:8px;flex-wrap:wrap;">
-                        {% csrf_token %}
+                        {% csrf_token %}<input type="hidden" name="next" value="/user-profile/#team">
                         <input type="text" name="name" class="form-control form-control-sm" maxlength="60" minlength="3" required
                                placeholder="{% trans 'Team name' %}" style="max-width:200px;">
+                        <input type="hidden" name="is_open" value="1">
                         <button type="submit" class="btn btn-primary btn-sm">{% trans "Create" %}</button>
                     </form>
+                    <p style="color:var(--ink-2);font-size:0.8rem;margin-top:8px;"><a href="{% url 'team_list' %}" style="color:var(--accent);">{% trans "Browse all teams" %}</a> · {% trans "Description and privacy can be set from the team page." %}</p>
                 </div>
             </div>
             {% endif %}

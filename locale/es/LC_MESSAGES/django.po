@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-03 09:40+0000\n"
+"POT-Creation-Date: 2026-10-03 09:51+0000\n"
 "PO-Revision-Date: 2026-03-24 15:44+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Spanish <es@li.org>\n"
@@ -33,7 +33,6 @@ msgstr "Solo cuentan las fotos dentro de una región geográfica"
 
 #: frontend/templates/_challenge_card.html:35
 #: frontend/templates/challenge_detail.html:471
-#| msgid "Region defined"
 msgid "Region"
 msgstr "Región definida"
 
@@ -43,7 +42,7 @@ msgid "participants"
 msgstr "participantes"
 
 #: frontend/templates/_challenge_card.html:57
-#: frontend/templates/gettask.html:228 frontend/templates/index.html:848
+#: frontend/templates/gettask.html:231 frontend/templates/index.html:848
 msgid "Paused"
 msgstr "En pausa"
 
@@ -69,7 +68,8 @@ msgstr "Revisar"
 
 #: frontend/templates/_challenge_card.html:84
 #: frontend/templates/_challenge_card.html:89
-#: teams/templates/team_detail.html:107 user_profile/templates/user.html:1004
+#: teams/templates/team_detail.html:49 teams/templates/team_list.html:31
+#: teams/templates/team_list.html:68 user_profile/templates/user.html:1004
 msgid "Join"
 msgstr "Unirse"
 
@@ -192,9 +192,10 @@ msgid "Ranking"
 msgstr "Posición"
 
 #: frontend/templates/_footer.html:189 frontend/templates/_topbar.html:270
-#: frontend/templates/ranking.html:76 user_profile/templates/user.html:1038
+#: frontend/templates/ranking.html:76 teams/templates/team_list.html:3
+#: teams/templates/team_list.html:6 user_profile/templates/user.html:1040
 msgid "Teams"
-msgstr ""
+msgstr "Equipos"
 
 #: frontend/templates/_footer.html:190
 msgid "Manual"
@@ -210,7 +211,7 @@ msgstr "Videotutorial"
 msgid "Contact"
 msgstr "Contacto"
 
-#: frontend/templates/_footer.html:218 frontend/templates/gettask.html:568
+#: frontend/templates/_footer.html:218 frontend/templates/gettask.html:571
 msgid "Developed by <b>Ibercivis</b>"
 msgstr "Desarrollado por <b>Ibercivis</b>"
 
@@ -240,7 +241,7 @@ msgid "© 2025 Lost at Night. All rights reserved."
 msgstr "© 2025 Lost at Night. Todos los derechos reservados."
 
 #: frontend/templates/_topbar.html:219 frontend/templates/_topbar.html:283
-#: frontend/templates/gettask.html:233 georeferencing/models.py:544
+#: frontend/templates/gettask.html:236 georeferencing/models.py:544
 #: user_profile/templates/diploma_challenge.html:88
 #: user_profile/templates/diploma_challenge.html:91
 #: user_profile/templates/user.html:941
@@ -282,7 +283,6 @@ msgid "Gold"
 msgstr "Oro"
 
 #: frontend/templates/_topbar.html:228
-#| msgid "Photo center"
 msgid "Photo set"
 msgstr "Centro de foto:"
 
@@ -303,12 +303,10 @@ msgid "Leave this challenge? Your contributions are preserved."
 msgstr "¿Salir de este desafío? Tus contribuciones se conservan."
 
 #: frontend/templates/_topbar.html:233
-#| msgid "You’ve left the challenge"
 msgid "Could not join the challenge."
 msgstr "Has salido del challenge"
 
 #: frontend/templates/_topbar.html:234
-#| msgid "You’ve left the challenge"
 msgid "Could not leave the challenge."
 msgstr "Has salido del challenge"
 
@@ -378,7 +376,7 @@ msgstr "Volver al inicio"
 msgid "Menu"
 msgstr "Menú"
 
-#: frontend/templates/_topbar.html:291 frontend/templates/gettask.html:237
+#: frontend/templates/_topbar.html:291 frontend/templates/gettask.html:240
 #: frontend/templates/ranking.html:111
 msgid "Your area"
 msgstr "Tu área"
@@ -399,7 +397,6 @@ msgid "Only photos from this set count"
 msgstr "Solo cuentan las fotos de este conjunto"
 
 #: frontend/templates/challenge_detail.html:466
-#| msgid "Photo center"
 msgid "Photo set:"
 msgstr "Centro de foto:"
 
@@ -432,7 +429,7 @@ msgid "Log in to join"
 msgstr "Inicia sesión para unirte"
 
 #: frontend/templates/challenge_detail.html:520
-#: frontend/templates/gettask.html:229
+#: frontend/templates/gettask.html:232
 msgid "Group progress"
 msgstr "Progreso del grupo"
 
@@ -466,7 +463,7 @@ msgid "Your performance"
 msgstr "Tu área personal"
 
 #: frontend/templates/challenge_detail.html:588
-#: frontend/templates/gettask.html:226 user_profile/templates/user.html:944
+#: frontend/templates/gettask.html:229 user_profile/templates/user.html:944
 msgid "Your rank"
 msgstr "Tu posición"
 
@@ -490,7 +487,7 @@ msgid "Only %(cp)s CP to climb one place!"
 msgstr "¡Solo %(cp)s PC para subir un puesto!"
 
 #: frontend/templates/challenge_detail.html:628
-#: frontend/templates/gettask.html:231
+#: frontend/templates/gettask.html:234
 msgid "Leaderboard"
 msgstr "Clasificación"
 
@@ -501,7 +498,7 @@ msgid "Jump to me"
 msgstr "Saltar a mí"
 
 #: frontend/templates/challenge_detail.html:640
-#: frontend/templates/ranking.html:134 teams/templates/team_detail.html:125
+#: frontend/templates/ranking.html:134
 msgid "User"
 msgstr "Usuario"
 
@@ -542,7 +539,7 @@ msgid "you"
 msgstr "tú"
 
 #: frontend/templates/challenge_detail.html:686
-#: frontend/templates/ranking.html:133 teams/templates/team_detail.html:141
+#: frontend/templates/ranking.html:133 teams/templates/team_detail.html:67
 msgid "Invisible user"
 msgstr "Usuario invisible"
 
@@ -707,99 +704,114 @@ msgstr "Apuntado"
 msgid "General queue"
 msgstr "General"
 
-#: frontend/templates/gettask.html:227
+#: frontend/templates/gettask.html:76 frontend/templates/ranking.html:134
+#: teams/templates/team_list.html:56
+msgid "Team"
+msgstr "Equipo"
+
+#: frontend/templates/gettask.html:77
+#| msgid "Your team"
+msgid "Yours for the team"
+msgstr "Tu área"
+
+#: frontend/templates/gettask.html:78
+#| msgid "Total"
+msgid "Team total"
+msgstr "Total"
+
+#: frontend/templates/gettask.html:230
 #: user_profile/templates/diploma_challenge.html:64
 #: user_profile/templates/user.html:807 user_profile/templates/user.html:812
 #: user_profile/templates/user.html:817
 msgid "of"
 msgstr "de"
 
-#: frontend/templates/gettask.html:230
+#: frontend/templates/gettask.html:233
 msgid "Leader"
 msgstr "Líder"
 
-#: frontend/templates/gettask.html:232
+#: frontend/templates/gettask.html:235
 msgid "You are leading!"
 msgstr "¡Vas en cabeza!"
 
-#: frontend/templates/gettask.html:249
+#: frontend/templates/gettask.html:252
 msgid "Replay tutorial"
 msgstr "Repetir tutorial"
 
-#: frontend/templates/gettask.html:343
+#: frontend/templates/gettask.html:346
 msgid "Unknown"
 msgstr "Desconocido"
 
-#: frontend/templates/gettask.html:376
+#: frontend/templates/gettask.html:379
 msgid "Date"
 msgstr "Fecha:"
 
-#: frontend/templates/gettask.html:377
+#: frontend/templates/gettask.html:380
 msgid "Focal length"
 msgstr "Distancia focal:"
 
-#: frontend/templates/gettask.html:378
+#: frontend/templates/gettask.html:381
 msgid "Location"
 msgstr "Ubicación:"
 
-#: frontend/templates/gettask.html:378
+#: frontend/templates/gettask.html:381
 msgid "looking up…"
 msgstr "buscando…"
 
-#: frontend/templates/gettask.html:379
+#: frontend/templates/gettask.html:382
 msgid "Nadir point"
 msgstr "Punto nadir:"
 
-#: frontend/templates/gettask.html:380
+#: frontend/templates/gettask.html:383
 msgid "Photo center"
 msgstr "Centro de foto:"
 
-#: frontend/templates/gettask.html:381
+#: frontend/templates/gettask.html:384
 msgid "Photo center (ML)"
 msgstr "Centro de foto (ML):"
 
-#: frontend/templates/gettask.html:387
+#: frontend/templates/gettask.html:390
 msgid "ISS Expedition"
 msgstr "Expedición ISS"
 
-#: frontend/templates/gettask.html:400
+#: frontend/templates/gettask.html:403
 msgid "Your stats"
 msgstr "Tus estadísticas"
 
-#: frontend/templates/gettask.html:408
+#: frontend/templates/gettask.html:411
 msgid "Total"
 msgstr "Total"
 
-#: frontend/templates/gettask.html:409
+#: frontend/templates/gettask.html:412
 #: user_profile/templates/diploma_challenge.html:64
 msgid "Rank"
 msgstr "Posición"
 
-#: frontend/templates/gettask.html:410
+#: frontend/templates/gettask.html:413
 msgid "To next"
 msgstr "Al siguiente"
 
-#: frontend/templates/gettask.html:411
+#: frontend/templates/gettask.html:414
 msgid "To #1"
 msgstr "Al n.° 1"
 
-#: frontend/templates/gettask.html:416 frontend/templates/ranking.html:135
-#: teams/templates/team_detail.html:76 teams/templates/team_detail.html:126
+#: frontend/templates/gettask.html:419 frontend/templates/ranking.html:135
+#: teams/templates/team_detail.html:24 teams/templates/team_list.html:56
 #: user_profile/templates/diploma_general.html:31
 #: user_profile/templates/diploma_verify.html:84
 #: user_profile/templates/user.html:824
 msgid "Tasks"
 msgstr "Tareas"
 
-#: frontend/templates/gettask.html:423
+#: frontend/templates/gettask.html:426
 msgid "Control pts"
 msgstr "Puntos de control"
 
-#: frontend/templates/gettask.html:430
+#: frontend/templates/gettask.html:433
 msgid "Hours"
 msgstr "Horas"
 
-#: frontend/templates/gettask.html:445
+#: frontend/templates/gettask.html:448
 #, python-format
 msgid ""
 "You're participating anonymously — <a href=\"%(url)s\">create an account</a> "
@@ -808,67 +820,67 @@ msgstr ""
 "Estás participando de forma anónima — <a href=\"%(url)s\">crea una cuenta</"
 "a> para guardar tu progreso y aparecer en el ranking."
 
-#: frontend/templates/gettask.html:450
+#: frontend/templates/gettask.html:453
 msgid "Dismiss"
 msgstr "Descartar"
 
-#: frontend/templates/gettask.html:452
+#: frontend/templates/gettask.html:455
 msgid "Start locating"
 msgstr "Empezar a localizar"
 
-#: frontend/templates/gettask.html:465
+#: frontend/templates/gettask.html:468
 msgid "Georeferencing!"
 msgstr "¡Georreferenciando!"
 
-#: frontend/templates/gettask.html:485
+#: frontend/templates/gettask.html:488
 msgid "OK"
 msgstr "Aceptar"
 
-#: frontend/templates/gettask.html:498
+#: frontend/templates/gettask.html:501
 msgid "Show photo metadata"
 msgstr "Mostrar metadatos de la foto"
 
-#: frontend/templates/gettask.html:508
+#: frontend/templates/gettask.html:511
 msgid "Image adjustments"
 msgstr "Ajustes de imagen"
 
-#: frontend/templates/gettask.html:509 frontend/templates/gettask.html:511
+#: frontend/templates/gettask.html:512 frontend/templates/gettask.html:514
 msgid "Reset"
 msgstr "Restablecer"
 
-#: frontend/templates/gettask.html:516
+#: frontend/templates/gettask.html:519
 msgid "Brightness"
 msgstr "Brillo"
 
-#: frontend/templates/gettask.html:521
+#: frontend/templates/gettask.html:524
 msgid "Contrast"
 msgstr "Contraste"
 
-#: frontend/templates/gettask.html:526
+#: frontend/templates/gettask.html:529
 msgid "Gamma"
 msgstr "Gamma"
 
-#: frontend/templates/gettask.html:531
+#: frontend/templates/gettask.html:534
 msgid "Saturation"
 msgstr "Saturación"
 
-#: frontend/templates/gettask.html:560
+#: frontend/templates/gettask.html:563
 msgid "Try Server"
 msgstr "Servidor de prueba"
 
-#: frontend/templates/gettask.html:561
+#: frontend/templates/gettask.html:564
 msgid "Submit"
 msgstr "Enviar"
 
-#: frontend/templates/gettask.html:562
+#: frontend/templates/gettask.html:565
 msgid "Skip"
 msgstr "Omitir"
 
-#: frontend/templates/gettask.html:581
+#: frontend/templates/gettask.html:584
 msgid "Welcome to Lost At Night!"
 msgstr "¡Bienvenido a Lost At Night!"
 
-#: frontend/templates/gettask.html:582
+#: frontend/templates/gettask.html:585
 msgid ""
 "This is a real photo taken from the International Space Station. Your job is "
 "to figure out where on Earth it was taken — and we will guide you through it "
@@ -878,11 +890,11 @@ msgstr ""
 "tarea es averiguar en qué lugar de la Tierra se tomó — y te guiaremos paso a "
 "paso."
 
-#: frontend/templates/gettask.html:583
+#: frontend/templates/gettask.html:586
 msgid "Find the area on the map"
 msgstr "Encuentra la zona en el mapa"
 
-#: frontend/templates/gettask.html:584
+#: frontend/templates/gettask.html:587
 msgid ""
 "Pan and zoom this map to the region you think the photo shows. The crew "
 "metadata gives you a hint about where to look."
@@ -890,11 +902,11 @@ msgstr ""
 "Desplaza y haz zoom en este mapa hasta la región que crees que muestra la "
 "foto. Los metadatos de la tripulación te dan una pista de dónde mirar."
 
-#: frontend/templates/gettask.html:585
+#: frontend/templates/gettask.html:588
 msgid "Explore the photo"
 msgstr "Explora la foto"
 
-#: frontend/templates/gettask.html:586
+#: frontend/templates/gettask.html:589
 msgid ""
 "Drag with the left mouse button to pan, use the wheel to zoom in and out, "
 "and hold the right mouse button to rotate. Take your time exploring the "
@@ -904,11 +916,11 @@ msgstr ""
 "para acercar y alejar, y mantén pulsado el botón derecho para rotar. Tómate "
 "tu tiempo para explorar la imagen."
 
-#: frontend/templates/gettask.html:587
+#: frontend/templates/gettask.html:590
 msgid "Adjust brightness and filters"
 msgstr "Ajusta brillo y filtros"
 
-#: frontend/templates/gettask.html:588
+#: frontend/templates/gettask.html:591
 msgid ""
 "Night photos can be hard to read. Use these sliders to tweak brightness, "
 "contrast, gamma and saturation — perfect for revealing faint coastlines or "
@@ -918,11 +930,11 @@ msgstr ""
 "para ajustar brillo, contraste, gamma y saturación — perfecto para revelar "
 "costas tenues o luces de ciudades. Pulsa Restablecer para empezar de nuevo."
 
-#: frontend/templates/gettask.html:589
+#: frontend/templates/gettask.html:592
 msgid "Pick a recognisable point on the photo"
 msgstr "Elige un punto reconocible en la foto"
 
-#: frontend/templates/gettask.html:590
+#: frontend/templates/gettask.html:593
 msgid ""
 "Click a clearly identifiable feature on the photo — a coastline, a city, an "
 "island."
@@ -930,20 +942,20 @@ msgstr ""
 "Haz clic en un elemento claramente identificable de la foto — una costa, una "
 "ciudad, una isla."
 
-#: frontend/templates/gettask.html:591
+#: frontend/templates/gettask.html:594
 msgid "Match it on the map"
 msgstr "Encuéntralo en el mapa"
 
-#: frontend/templates/gettask.html:592
+#: frontend/templates/gettask.html:595
 msgid "Now click the same place on the map. That pair is one control point."
 msgstr ""
 "Ahora haz clic en ese mismo lugar en el mapa. Ese par es un punto de control."
 
-#: frontend/templates/gettask.html:593
+#: frontend/templates/gettask.html:596
 msgid "Submit and earn points!"
 msgstr "¡Envía y gana puntos!"
 
-#: frontend/templates/gettask.html:594
+#: frontend/templates/gettask.html:597
 msgid ""
 "Once you have at least 3 control points hit Submit — but 7 or more is "
 "recommended for better accuracy. Every control point counts towards your "
@@ -953,34 +965,34 @@ msgstr ""
 "recomienda 7 o más para mayor precisión. Cada punto de control cuenta para "
 "tu clasificación."
 
-#: frontend/templates/gettask.html:595
+#: frontend/templates/gettask.html:598
 msgid ""
 "Tip: create an account to save your progress and appear on the leaderboard."
 msgstr ""
 "Consejo: crea una cuenta para guardar tu progreso y aparecer en la tabla de "
 "clasificación."
 
-#: frontend/templates/gettask.html:597
+#: frontend/templates/gettask.html:600
 msgid "Prefer to watch a video instead?"
 msgstr "¿Prefieres ver un vídeo?"
 
-#: frontend/templates/gettask.html:598
+#: frontend/templates/gettask.html:601
 msgid "Want a deeper walkthrough? Watch the full video tutorial."
 msgstr "¿Quieres una guía más detallada? Mira el videotutorial completo."
 
-#: frontend/templates/gettask.html:599
+#: frontend/templates/gettask.html:602
 msgid "Watch the video tutorial"
 msgstr "Ver el videotutorial"
 
-#: frontend/templates/gettask.html:600
+#: frontend/templates/gettask.html:603
 msgid "Next"
 msgstr "Siguiente"
 
-#: frontend/templates/gettask.html:601
+#: frontend/templates/gettask.html:604
 msgid "Back"
 msgstr "Atrás"
 
-#: frontend/templates/gettask.html:602
+#: frontend/templates/gettask.html:605
 msgid "Got it!"
 msgstr "¡Entendido!"
 
@@ -1130,7 +1142,7 @@ msgstr "Completado"
 msgid "Photos located per week, last 12 weeks"
 msgstr "Fotos localizadas por semana, últimas 12 semanas"
 
-#: frontend/templates/index.html:890 user_profile/templates/user.html:1037
+#: frontend/templates/index.html:890 user_profile/templates/user.html:1039
 msgid "See the ranking"
 msgstr "Ver el ranking"
 
@@ -1827,7 +1839,7 @@ msgid "Active in the last 30 days"
 msgstr "Activos en los últimos 30 días"
 
 #: frontend/templates/ranking.html:72 frontend/templates/ranking.html:132
-#: user_profile/templates/user.html:802 user_profile/templates/user.html:1029
+#: user_profile/templates/user.html:802 user_profile/templates/user.html:1031
 msgid "Global ranking"
 msgstr "Ranking global"
 
@@ -1835,7 +1847,7 @@ msgstr "Ranking global"
 msgid "People"
 msgstr "Personas"
 
-#: frontend/templates/ranking.html:77 user_profile/templates/user.html:1039
+#: frontend/templates/ranking.html:77 user_profile/templates/user.html:1041
 msgid "Countries"
 msgstr "País"
 
@@ -1867,7 +1879,7 @@ msgstr "Tu posición en tiempo"
 msgid "Your country"
 msgstr "País"
 
-#: frontend/templates/ranking.html:131
+#: frontend/templates/ranking.html:131 teams/templates/team_list.html:15
 msgid "Your team"
 msgstr "Tu área"
 
@@ -1881,25 +1893,21 @@ msgstr "No se pudo cargar el ranking."
 
 #: frontend/templates/ranking.html:134 user_profile/forms.py:31
 #: user_profile/models.py:45 user_profile/templates/edit_profile.html:253
-#: user_profile/templates/user.html:1153
+#: user_profile/templates/user.html:1155
 msgid "Country"
 msgstr "País"
-
-#: frontend/templates/ranking.html:134
-msgid "Team"
-msgstr ""
 
 #: frontend/templates/ranking.html:134
 msgid "Users"
 msgstr "Usuario"
 
-#: frontend/templates/ranking.html:135 teams/templates/team_detail.html:75
-#: teams/templates/team_detail.html:119
+#: frontend/templates/ranking.html:135 teams/templates/team_detail.html:22
+#: teams/templates/team_list.html:56
 msgid "Members"
-msgstr ""
+msgstr "Miembros"
 
-#: frontend/templates/ranking.html:135 teams/templates/team_detail.html:77
-#: teams/templates/team_detail.html:127
+#: frontend/templates/ranking.html:135 teams/templates/team_detail.html:23
+#: teams/templates/team_list.html:56
 msgid "Control Points"
 msgstr "Puntos de control"
 
@@ -2046,7 +2054,7 @@ msgstr "Descarga fallida"
 msgid "Downloaded & Generated"
 msgstr "Descargado y generado"
 
-#: georeferencing/models.py:133
+#: georeferencing/models.py:133 teams/templates/team_list.html:51
 msgid "Search"
 msgstr "Búsqueda"
 
@@ -2166,105 +2174,348 @@ msgstr "Duración"
 msgid "Open to everyone"
 msgstr ""
 
-#: teams/models.py:73
+#: teams/models.py:84
 msgid "Owner"
 msgstr ""
 
-#: teams/models.py:74
+#: teams/models.py:85 teams/templates/team_detail.html:61
 msgid "Member"
-msgstr ""
+msgstr "Miembro"
 
-#: teams/templates/team_detail.html:68
-msgid "Open team — anyone can join."
-msgstr ""
+#: teams/templates/team_detail.html:14
+msgid "Open team: anyone can join."
+msgstr "Equipo abierto: cualquiera puede unirse."
 
-#: teams/templates/team_detail.html:68
+#: teams/templates/team_detail.html:14
 msgid "Invite-only team."
-msgstr ""
+msgstr "Equipo solo por invitación."
 
-#: teams/templates/team_detail.html:71
+#: teams/templates/team_detail.html:15
+#, python-format
+msgid "Owner: %(name)s"
+msgstr "Propietario: %(name)s"
+
+#: teams/templates/team_detail.html:16
+#, fuzzy, python-format
+#| msgid "Create"
+msgid "Created %(d)s"
+msgstr "Crear cuenta"
+
+#: teams/templates/team_detail.html:19
 #, python-format
 msgid "Rank #%(rank)s"
-msgstr ""
+msgstr "Puesto #%(rank)s"
 
-#: teams/templates/team_detail.html:83
-msgid "Share this code so others can join"
-msgstr ""
+#: teams/templates/team_detail.html:30
+msgid "Share this link so others can join"
+msgstr "Comparte este enlace para que otros se unan"
 
-#: teams/templates/team_detail.html:87 user_profile/templates/user.html:990
-msgid "Leave this team?"
-msgstr ""
+#: teams/templates/team_detail.html:32
+msgid "copy"
+msgstr "copiar"
 
-#: teams/templates/team_detail.html:89 user_profile/templates/user.html:992
+#: teams/templates/team_detail.html:34
+msgid "code"
+msgstr "código"
+
+#: teams/templates/team_detail.html:35
+msgid "Leave this team? The points you earned here stay with the team."
+msgstr "¿Salir de este equipo? Los puntos que ganaste aquí se quedan en el equipo."
+
+#: teams/templates/team_detail.html:37 user_profile/templates/user.html:992
 msgid "Leave team"
-msgstr ""
+msgstr "Salir del equipo"
 
-#: teams/templates/team_detail.html:95
+#: teams/templates/team_detail.html:42
+#: teams/templates/team_join_confirm.html:18
 msgid "Join this team"
 msgstr "en este batch."
 
-#: teams/templates/team_detail.html:99
+#: teams/templates/team_detail.html:44
 #, python-format
 msgid "You will leave %(current)s when you join."
-msgstr ""
+msgstr "Saldrás de %(current)s al unirte."
 
-#: teams/templates/team_detail.html:106 user_profile/templates/user.html:1003
+#: teams/templates/team_detail.html:48 teams/templates/team_list.html:30
+#: user_profile/templates/user.html:1003
 msgid "Invite code"
-msgstr ""
+msgstr "Código de invitación"
 
-#: teams/templates/team_detail.html:112
+#: teams/templates/team_detail.html:53
 msgid "Sign in to join"
 msgstr "Inicia sesión para unirte"
 
-#: teams/templates/team_detail.html:138
-msgid "Team owner"
-msgstr ""
+#: teams/templates/team_detail.html:55
+#| msgid "All time"
+msgid "All teams"
+msgstr "tiempo"
 
-#: teams/templates/team_detail.html:148
+#: teams/templates/team_detail.html:61
+#| msgid "Tasks completed"
+msgid "Tasks for the team"
+msgstr "Completado"
+
+#: teams/templates/team_detail.html:61
+#| msgid "Create a team"
+msgid "CP for the team"
+msgstr "Crear una cuenta"
+
+#: teams/templates/team_detail.html:61
+#| msgid "All time"
+msgid "CP all time"
+msgstr "tiempo"
+
+#: teams/templates/team_detail.html:68
+msgid "Team owner"
+msgstr "Propietario del equipo"
+
+#: teams/templates/team_detail.html:69
+msgid "Unverified e-mail: does not score yet"
+msgstr "Correo sin verificar: todavía no puntúa"
+
+#: teams/templates/team_detail.html:69
+msgid "unverified"
+msgstr "sin verificar"
+
+#: teams/templates/team_detail.html:75
+msgid "Make this member the owner?"
+msgstr "¿Hacer propietario a este miembro?"
+
+#: teams/templates/team_detail.html:75
+msgid "Transfer ownership"
+msgstr "Transferir la propiedad"
+
+#: teams/templates/team_detail.html:76
+msgid "Remove this member from the team?"
+msgstr "¿Expulsar a este miembro del equipo?"
+
+#: teams/templates/team_detail.html:76 user_profile/templates/user.html:1208
+msgid "Remove"
+msgstr "Quitar"
+
+#: teams/templates/team_detail.html:81
 msgid "No members yet"
 msgstr "Aún no hay usuarios"
 
-#: teams/templates/team_detail.html:156
-msgid "Back to my profile"
-msgstr "Ir a tu perfil"
-
-#: teams/views.py:113
-msgid "Team names must be between 3 and 60 characters."
+#: teams/templates/team_detail.html:85
+msgid ""
+"“For the team” counts only what each member did while in the team. Points of "
+"members who left stay in the team total."
 msgstr ""
 
-#: teams/views.py:116
-msgid "A team with that name already exists."
-msgstr ""
+#: teams/templates/team_detail.html:89
+msgid "Team settings (owner)"
+msgstr "Ajustes del equipo (propietario)"
 
-#: teams/views.py:123
-msgid "Your team is ready. Share the invite code to grow it!"
-msgstr ""
+#: teams/templates/team_detail.html:93
+#| msgid "Description"
+msgid "Description (optional)"
+msgstr "Duración"
 
-#: teams/views.py:137
-msgid "No team matches that invite code."
-msgstr ""
+#: teams/templates/team_detail.html:94
+msgid "Open team: anyone can join from the teams page"
+msgstr "Equipo abierto: cualquiera puede unirse desde la página de equipos"
 
-#: teams/views.py:142
-msgid "This team is invite-only."
-msgstr ""
+#: teams/templates/team_detail.html:95
+msgid "Save"
+msgstr "Guardar"
 
-#: teams/views.py:145
-msgid "Enter an invite code to join a team."
-msgstr ""
+#: teams/templates/team_detail.html:98
+msgid "Generate a new invite code? Old links will stop working."
+msgstr "¿Generar un nuevo código de invitación? Los enlaces antiguos dejarán de funcionar."
 
-#: teams/views.py:150
+#: teams/templates/team_detail.html:98
+msgid "New invite code"
+msgstr "Nuevo código de invitación"
+
+#: teams/templates/team_detail.html:100
+msgid "Delete this team? This cannot be undone."
+msgstr "¿Borrar este equipo? No se puede deshacer."
+
+#: teams/templates/team_detail.html:100
+#| msgid "Delete"
+msgid "Delete team"
+msgstr "Eliminar"
+
+#: teams/templates/team_detail.html:101
+msgid "To delete the team, remove the other members first."
+msgstr "Para borrar el equipo, expulsa antes al resto de miembros."
+
+#: teams/templates/team_join_confirm.html:3
+#| msgid "Join this team"
+msgid "Join team"
+msgstr "en este batch."
+
+#: teams/templates/team_join_confirm.html:7
+#| msgid "You've been unsubscribed"
+msgid "You have been invited to"
+msgstr "Te has dado de baja"
+
+#: teams/templates/team_join_confirm.html:10
+#, fuzzy, python-format
+#| msgid "control points"
+msgid "%(n)s members · %(cp)s control points"
+msgstr "puntos de control"
+
+#: teams/templates/team_join_confirm.html:12 teams/views.py:220
 msgid "You are already a member of this team."
-msgstr ""
+msgstr "Ya eres miembro de este equipo."
 
-#: teams/views.py:153
+#: teams/templates/team_join_confirm.html:13 teams/templates/team_list.html:20
+msgid "Open team page"
+msgstr "Abrir la página del equipo"
+
+#: teams/templates/team_join_confirm.html:15
+#, python-format
+msgid ""
+"You will leave %(current)s when you join. The points you earned there stay "
+"with it."
+msgstr "Saldrás de %(current)s al unirte. Los puntos que ganaste allí se quedan en él."
+
+#: teams/templates/team_join_confirm.html:19
+msgid "Not now"
+msgstr "Ahora no"
+
+#: teams/templates/team_list.html:7
+msgid ""
+"Classrooms, clubs, offices, groups of friends: join a team and the photos "
+"you locate count for it too. One team at a time."
+msgstr "Clases, clubes, oficinas, grupos de amigos: únete a un equipo y las fotos que localices contarán también para él. Un equipo a la vez."
+
+#: teams/templates/team_list.html:17 user_profile/templates/user.html:985
+msgid "You own this team."
+msgstr "Eres el propietario de este equipo."
+
+#: teams/templates/team_list.html:18
+#, python-format
+msgid "%(n)s members"
+msgstr "%(n)s miembros"
+
+#: teams/templates/team_list.html:26
+#| msgid "Join this team"
+msgid "Join with a code"
+msgstr "en este batch."
+
+#: teams/templates/team_list.html:27
+msgid ""
+"Got an invite code or link from a teacher, club or friend? Enter it here."
+msgstr "¿Tienes un código o un enlace de invitación de un profesor, un club o un amigo? Introdúcelo aquí."
+
+#: teams/templates/team_list.html:35 user_profile/templates/user.html:1008
+msgid "Create a team"
+msgstr "Crear una cuenta"
+
+#: teams/templates/team_list.html:38 user_profile/templates/user.html:1013
+msgid "Team name"
+msgstr "nombre"
+
+#: teams/templates/team_list.html:39
+msgid "What brings you together? (optional)"
+msgstr "¿Qué os une? (opcional)"
+
+#: teams/templates/team_list.html:40
+msgid "Open team: anyone can join from this page"
+msgstr "Equipo abierto: cualquiera puede unirse desde esta página"
+
+#: teams/templates/team_list.html:41 user_profile/templates/user.html:1015
+msgid "Create"
+msgstr "Crear cuenta"
+
+#: teams/templates/team_list.html:46
+#| msgid "Sign in to join"
+msgid "Sign in to join or create a team"
+msgstr "Inicia sesión para unirte"
+
+#: teams/templates/team_list.html:50
+#| msgid "Search"
+msgid "Search teams"
+msgstr "Búsqueda"
+
+#: teams/templates/team_list.html:62
+msgid "invite-only"
+msgstr "solo por invitación"
+
+#: teams/templates/team_list.html:73
+msgid "No team matches your search."
+msgstr "Ningún equipo coincide con tu búsqueda."
+
+#: teams/templates/team_list.html:73
+#| msgid "No participants yet — be the first one!"
+msgid "No teams yet. Be the first to create one!"
+msgstr "Aún no hay participantes — ¡sé el primero!"
+
+#: teams/templates/team_list.html:78
+msgid ""
+"Teams are ranked by the control points their members placed while in the "
+"team."
+msgstr "Los equipos se ordenan por los puntos de control que sus miembros colocaron mientras estaban en el equipo."
+
+#: teams/templates/team_list.html:78
+#| msgid "See the ranking"
+msgid "See the team ranking by period"
+msgstr "Ver el ranking"
+
+#: teams/views.py:164 teams/views.py:245
+msgid "Team names must be between 3 and 60 characters."
+msgstr "El nombre del equipo debe tener entre 3 y 60 caracteres."
+
+#: teams/views.py:167 teams/views.py:174 teams/views.py:248
+msgid "A team with that name already exists."
+msgstr "Ya existe un equipo con ese nombre."
+
+#: teams/views.py:177
+msgid "Your team is ready. Share the invite link to grow it!"
+msgstr "Tu equipo está listo. ¡Comparte el enlace de invitación para hacerlo crecer!"
+
+#: teams/views.py:188 teams/views.py:207
+msgid "No team matches that invite code."
+msgstr "Ningún equipo coincide con ese código de invitación."
+
+#: teams/views.py:212
+msgid "This team is invite-only."
+msgstr "Este equipo es solo por invitación."
+
+#: teams/views.py:215
+msgid "Enter an invite code to join a team."
+msgstr "Introduce un código de invitación para unirte a un equipo."
+
+#: teams/views.py:223
 #, python-format
 msgid "Welcome to %(team)s!"
-msgstr ""
+msgstr "¡Bienvenido a %(team)s!"
 
-#: teams/views.py:163
+#: teams/views.py:233
 #, python-format
-msgid "You have left %(team)s."
-msgstr ""
+msgid "You have left %(team)s. The points you earned there stay with the team."
+msgstr "Has salido de %(team)s. Los puntos que ganaste allí se quedan en el equipo."
+
+#: teams/views.py:255
+#| msgid "Team name"
+msgid "Team updated."
+msgstr "nombre"
+
+#: teams/views.py:265
+msgid "New invite code generated. Old links no longer work."
+msgstr "Nuevo código de invitación generado. Los enlaces antiguos ya no funcionan."
+
+#: teams/views.py:279
+#, python-format
+msgid "%(user)s was removed from the team."
+msgstr "%(user)s ha sido expulsado del equipo."
+
+#: teams/views.py:295
+#, python-format
+msgid "%(user)s is now the team owner."
+msgstr "%(user)s es ahora el propietario del equipo."
+
+#: teams/views.py:305
+msgid "Remove the other members before deleting the team."
+msgstr "Expulsa al resto de miembros antes de borrar el equipo."
+
+#: teams/views.py:310
+#, python-format
+msgid "Team %(team)s deleted."
+msgstr "Equipo %(team)s borrado."
 
 #: templates/account/login.html:274 templates/account/logout.html:155
 #: templates/account/password_reset.html:202 templates/account/signup.html:320
@@ -2284,7 +2535,7 @@ msgid "Sign in to continue locating the night."
 msgstr "Inicia sesión para seguir localizando la noche."
 
 #: templates/account/login.html:300 templates/account/password_reset.html:234
-#: templates/account/signup.html:347 user_profile/templates/user.html:1144
+#: templates/account/signup.html:347 user_profile/templates/user.html:1146
 msgid "Email"
 msgstr "Correo electrónico:"
 
@@ -2335,7 +2586,7 @@ msgstr "No has iniciado sesión."
 #: templates/account/logout.html:196
 #: user_profile/templates/delete_account.html:115
 #: user_profile/templates/edit_profile.html:280
-#: user_profile/templates/user.html:1215
+#: user_profile/templates/user.html:1217
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -2379,7 +2630,7 @@ msgstr "¿Recordaste tu contraseña?"
 msgid "Join the project and start locating the night."
 msgstr "Únete al proyecto y empieza a localizar la noche."
 
-#: templates/account/signup.html:365 user_profile/templates/user.html:1140
+#: templates/account/signup.html:365 user_profile/templates/user.html:1142
 msgid "Username"
 msgstr "Nombre de usuario"
 
@@ -2430,12 +2681,12 @@ msgstr "Iniciar sesión con Google"
 
 #: user_profile/forms.py:24 user_profile/forms.py:32 user_profile/models.py:46
 #: user_profile/templates/edit_profile.html:248
-#: user_profile/templates/user.html:1148
+#: user_profile/templates/user.html:1150
 msgid "City"
 msgstr "Ciudad"
 
 #: user_profile/forms.py:29 user_profile/templates/edit_profile.html:258
-#: user_profile/templates/user.html:1158
+#: user_profile/templates/user.html:1160
 msgid "Biography"
 msgstr "Biografía"
 
@@ -2783,7 +3034,7 @@ msgstr ""
 "Ya no recibirás boletines de Lost at Night. Puedes volver a suscribirte "
 "cuando quieras desde tu página de perfil."
 
-#: user_profile/templates/user.html:607 user_profile/templates/user.html:1132
+#: user_profile/templates/user.html:607 user_profile/templates/user.html:1134
 msgid "Edit profile"
 msgstr "Editar perfil"
 
@@ -2921,19 +3172,19 @@ msgstr "Explorar todos los desafíos"
 
 #: user_profile/templates/user.html:976
 msgid "My team"
-msgstr ""
-
-#: user_profile/templates/user.html:985
-msgid "You own this team."
-msgstr ""
+msgstr "Mi equipo"
 
 #: user_profile/templates/user.html:986
 msgid "Invite code:"
-msgstr ""
+msgstr "Código de invitación:"
+
+#: user_profile/templates/user.html:990
+msgid "Leave this team?"
+msgstr "¿Salir de este equipo?"
 
 #: user_profile/templates/user.html:998
 msgid "Join a team"
-msgstr ""
+msgstr "Unirse a un equipo"
 
 #: user_profile/templates/user.html:999
 msgid ""
@@ -2941,70 +3192,63 @@ msgid ""
 "— or pick an open team from the Teams ranking."
 msgstr ""
 
-#: user_profile/templates/user.html:1008
-msgid "Create a team"
-msgstr "Crear una cuenta"
-
 #: user_profile/templates/user.html:1009
 msgid "Start your own and compete together in the team ranking."
-msgstr ""
+msgstr "Crea el tuyo y competid juntos en el ranking de equipos."
 
-#: user_profile/templates/user.html:1013
-msgid "Team name"
-msgstr "nombre"
+#: user_profile/templates/user.html:1017
+#| msgid "Browse challenges"
+msgid "Browse all teams"
+msgstr "Explorar desafíos"
 
-#: user_profile/templates/user.html:1014
-msgid "Create"
-msgstr "Crear cuenta"
+#: user_profile/templates/user.html:1017
+msgid "Description and privacy can be set from the team page."
+msgstr "La descripción y la privacidad se ajustan desde la página del equipo."
 
-#: user_profile/templates/user.html:1031
+#: user_profile/templates/user.html:1033
 #, python-format
 msgid "You are #%(rank)s of %(total)s by control points."
 msgstr "Eres el #%(rank)s de %(total)s por puntos de control."
 
-#: user_profile/templates/user.html:1073
+#: user_profile/templates/user.html:1075
 msgid "No completed tasks yet"
 msgstr "Aún no hay tareas completadas"
 
-#: user_profile/templates/user.html:1181
+#: user_profile/templates/user.html:1183
 #, python-format
 msgid "Subscribed on %(d)s."
 msgstr "Suscrito el %(d)s."
 
-#: user_profile/templates/user.html:1185
+#: user_profile/templates/user.html:1187
 #, python-format
 msgid "You unsubscribed on %(d)s."
 msgstr "Te diste de baja el %(d)s."
 
-#: user_profile/templates/user.html:1190
+#: user_profile/templates/user.html:1192
 msgid "Profile picture"
 msgstr "Foto de perfil"
 
-#: user_profile/templates/user.html:1206
-msgid "Remove"
-msgstr "Quitar"
-
-#: user_profile/templates/user.html:1216
+#: user_profile/templates/user.html:1218
 msgid "Save changes"
 msgstr "Guardar cambios"
 
-#: user_profile/templates/user.html:1267
+#: user_profile/templates/user.html:1269
 msgid "Search country…"
 msgstr "Buscar país…"
 
-#: user_profile/templates/user.html:1291
+#: user_profile/templates/user.html:1293
 msgid "No matches"
 msgstr "Sin coincidencias"
 
-#: user_profile/templates/user.html:1350
+#: user_profile/templates/user.html:1352
 msgid "Saving…"
 msgstr "Guardando…"
 
-#: user_profile/templates/user.html:1367
+#: user_profile/templates/user.html:1369
 msgid "Could not save. Please try again."
 msgstr "No se pudo guardar. Inténtalo de nuevo."
 
-#: user_profile/templates/user.html:1371
+#: user_profile/templates/user.html:1373
 msgid "Network error — please try again."
 msgstr "Error de red — inténtalo de nuevo."
 
@@ -3050,6 +3294,9 @@ msgid ""
 "You haven't taken part in this challenge, so there's no diploma to download "
 "for it. Here are the badges you've earned so far."
 msgstr ""
+
+#~ msgid "Back to my profile"
+#~ msgstr "Ir a tu perfil"
 
 #~ msgid "General"
 #~ msgstr "General"
@@ -3155,9 +3402,6 @@ msgstr ""
 
 #~ msgid "A JSON object"
 #~ msgstr "Un objeto JSON"
-
-#~ msgid "Delete"
-#~ msgstr "Eliminar"
 
 #~ msgid "Change"
 #~ msgstr "Cambiar"

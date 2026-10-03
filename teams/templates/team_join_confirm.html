@@ -1,0 +1,23 @@
+{% extends 'legal/_legal_base.html' %}
+{% load i18n %}
+{% block legal_title %}{% trans "Join team" %}{% endblock %}
+{% block legal_content %}
+{% include '_team_styles.html' %}
+<div class="tm-card" style="max-width:560px">
+    <div style="font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-2)">{% trans "You have been invited to" %}</div>
+    <h1 style="margin:4px 0 6px"><i class="fa-solid fa-people-group" style="color:var(--accent);margin-right:10px"></i>{{ team.name }}</h1>
+    {% if team.description %}<p class="tm-desc">{{ team.description }}</p>{% endif %}
+    <p class="tm-desc" style="font-size:13px">{% blocktrans with n=stats.members cp=stats.control_points %}{{ n }} members · {{ cp }} control points{% endblocktrans %}</p>
+    {% if already %}
+        <p>{% trans "You are already a member of this team." %}</p>
+        <a class="ds-btn ds-btn--primary ds-btn--md" href="{% url 'team_detail' team.slug %}">{% trans "Open team page" %}</a>
+    {% else %}
+        {% if current %}<p style="color:var(--warn);font-size:13px">{% blocktrans with current=current.name %}You will leave {{ current }} when you join. The points you earned there stay with it.{% endblocktrans %}</p>{% endif %}
+        <form method="post" action="{% url 'team_join' %}" style="display:flex;gap:8px;flex-wrap:wrap">
+            {% csrf_token %}<input type="hidden" name="invite_code" value="{{ team.invite_code }}">
+            <button type="submit" class="ds-btn ds-btn--primary ds-btn--md">{% trans "Join this team" %}</button>
+            <a class="ds-btn ds-btn--ghost ds-btn--md" href="{% url 'team_list' %}">{% trans "Not now" %}</a>
+        </form>
+    {% endif %}
+</div>
+{% endblock %}
