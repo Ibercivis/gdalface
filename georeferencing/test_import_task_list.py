@@ -131,3 +131,46 @@ class EnrichImagesTests(TransactionTestCase):
         self.assertEqual(img.photoCenterByMachineLearning, '51.3, 12.4')
         self.assertEqual((img.photoCenterLat, img.photoCenterLon), (51.3, 12.4))  # recomputed from ML centre
         self.assertEqual(img.taken.year, 2018)
+
+
+class CatalogSyncTests(TransactionTestCase):
+    def test_sync_builds_rows_tiers_night_and_links(self):
+        from georeferencing.models import Batch, GeoAttempt, NasaPhoto
+        from georeferencing.management.commands.nasa_catalog_report import summarize
+        staff = User.objects.create_user('s', 's@x.org', 'pw', is_staff=True)
+        tmp = tempfile.mkdtemp(); cache = os.path.join(tmp, 'cache')
+        write_cache(cache, 'ISS057',
+                    images=[{'images.frame': '61', 'images.filename': 'ISS057-E-61.JPG', 'images.directory': 'ESC/large/ISS057'},
+                            {'images.frame': '62', 'images.filename': 'ISS057-E-62.JPG', 'images.directory': 'ESC/large/ISS057'},
+                            {'images.frame': '63', 'images.filename': 'ISS057-E-63.JPG', 'images.directory': 'ESC/large/ISS057'},
+                            {'images.frame': '64', 'images.filename': 'ISS057-E-64.JPG', 'images.directory': 'ESC/large/ISS057'}],
+                    # 61: night over Leipzig (17:45 UTC Oct) long lens → tier C ; 62: ML centre → B ; 63: daytime (12:00 UTC) ; 64: catalogued → A
+                    nadir=[{'nadir.frame': '61', 'nadir.lat': '51.4', 'nadir.lon': '12.5', 'nadir.pdate': '20181004', 'nadir.ptime': '174538'},
+                           {'nadir.frame': '62', 'nadir.lat': '40.0', 'nadir.lon': '-3.0', 'nadir.pdate': '20181004', 'nadir.ptime': '220000'},
+                           {'nadir.frame': '63', 'nadir.lat': '40.0', 'nadir.lon': '-3.0', 'nadir.pdate': '20180704', 'nadir.ptime': '120000'}],
+                    camera=[{'camera.frame': '61', 'camera.camera': 'NIKON D4', 'camera.fclt': '56'},
+                            {'camera.frame': '62', 'camera.camera': 'NIKON D4', 'camera.fclt': '24'}],
+                    mlcoord=[{'mlcoord.frame': '62', 'mlcoord.lat': '40.4', 'mlcoord.lon': '-3.7'}],
+                    frames=[{'frames.frame': '64', 'frames.lat': '10.0', 'frames.lon': '20.0', 'frames.nlat': '10.5', 'frames.nlon': '20.5',
+                             'frames.camera': 'N4', 'frames.fclt': '400', 'frames.pdate': '20181005', 'frames.ptime': '010203',
+                             'frames.tilt': 'LO', 'frames.feat': 'CITY LIGHTS', 'frames.cldp': '10', 'frames.elev': '-40', 'frames.geon': 'SUDAN'}])
+        b = Batch.objects.create(name='B', user=staff)
+        img = Image.objects.create(name='ISS057-E-61.JPG', batch=b)
+        for st in ('DONE', 'DONE', 'PENDING'):
+            GeoAttempt.objects.create(image=img, status=st)
+        out = StringIO()
+        call_command('sync_nasa_catalog', '--cache-dir', cache, stdout=out)
+        self.assertEqual(NasaPhoto.objects.count(), 4)
+        p61 = NasaPhoto.objects.get(frame=61)
+        self.assertTrue(p61.night); self.assertEqual(p61.tier, 'C'); self.assertEqual(p61.image_id, img.id)
+        self.assertEqual((p61.done_count, p61.pending_count), (2, 1))
+        self.assertEqual(NasaPhoto.objects.get(frame=62).tier, 'B')
+        self.assertFalse(NasaPhoto.objects.get(frame=63).night)
+        p64 = NasaPhoto.objects.get(frame=64)
+        self.assertEqual((p64.tier, p64.features, p64.region, p64.cloud_pct, p64.sun_elev_nasa), ('A', 'CITY LIGHTS', 'SUDAN', 10, -40.0))
+        rep = summarize()
+        m = next(r for r in rep if r['mission'] == 'ISS057')
+        self.assertEqual((m['photos'], m['night'], m['catalogued_centre'], m['ml_centre'], m['in_our_db'], m['located_once']), (4, 3, 1, 1, 1, 1))
+        # re-sync is idempotent
+        call_command('sync_nasa_catalog', '--cache-dir', cache, stdout=out)
+        self.assertEqual(NasaPhoto.objects.count(), 4)

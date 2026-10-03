@@ -584,3 +584,69 @@ class DailyMetric(models.Model):
 
     def __str__(self):
         return f'{self.date} {self.key}={self.value}'
+
+
+class NasaPhoto(models.Model):
+    """
+    Our catalogue of NASA's ISS photography: one row per photo of every synced
+    mission, built from the cached EOL tables (`fetch_nasa_cache` +
+    `sync_nasa_catalog`). Metadata only; files are downloaded when a photo is
+    loaded as a task (`import_task_list`).
+
+    tier: how easy the photo is to locate — A catalogued centre, B machine-
+    learning centre, C nadir only with a long lens (likely looking down),
+    D nadir only with a wide lens or oblique, '' no coordinates at all.
+    """
+    TIERS = (('A', 'Catalogued centre'), ('B', 'ML centre'), ('C', 'Nadir, long lens'),
+             ('D', 'Nadir, wide/oblique'), ('', 'No coordinates'))
+
+    mission = models.CharField(max_length=10, db_index=True)
+    roll = models.CharField(max_length=2, default='E')
+    frame = models.IntegerField()
+    has_large = models.BooleanField(default=False)
+    filename = models.CharField(max_length=100, blank=True)
+    directory = models.CharField(max_length=100, blank=True)
+    nadir_lat = models.FloatField(null=True, blank=True)
+    nadir_lon = models.FloatField(null=True, blank=True)
+    center_lat = models.FloatField(null=True, blank=True)
+    center_lon = models.FloatField(null=True, blank=True)
+    ml_lat = models.FloatField(null=True, blank=True)
+    ml_lon = models.FloatField(null=True, blank=True)
+    taken = models.DateTimeField(null=True, blank=True)
+    camera = models.CharField(max_length=100, blank=True)
+    focal = models.IntegerField(null=True, blank=True)
+    tilt = models.CharField(max_length=4, blank=True)        # NV / LO / HO or degrees (catalogued only)
+    features = models.CharField(max_length=200, blank=True)  # NASA analyst keywords (catalogued only)
+    cloud_pct = models.IntegerField(null=True, blank=True)
+    region = models.CharField(max_length=120, blank=True)    # NASA geographic name (catalogued only)
+    sun_elev_nasa = models.FloatField(null=True, blank=True)
+    sun_elev = models.FloatField(null=True, blank=True)      # computed from nadir/centre + time
+    night = models.BooleanField(default=False)               # sun_elev <= -6
+    tier = models.CharField(max_length=1, blank=True, choices=TIERS)
+    image = models.ForeignKey('Image', null=True, blank=True, on_delete=models.SET_NULL, related_name='catalog_rows')
+    done_count = models.IntegerField(default=0)
+    pending_count = models.IntegerField(default=0)
+    synced_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=['mission', 'roll', 'frame'], name='unique_nasa_photo')]
+        indexes = [
+            models.Index(fields=['night', 'tier']),
+            models.Index(fields=['nadir_lat', 'nadir_lon']),
+            models.Index(fields=['mission', 'night']),
+        ]
+
+    @property
+    def nasa_id(self):
+        return f'{self.mission}-{self.roll}-{self.frame}'
+
+    @property
+    def best_lat(self):
+        return self.center_lat if self.center_lat is not None else (self.ml_lat if self.ml_lat is not None else self.nadir_lat)
+
+    @property
+    def best_lon(self):
+        return self.center_lon if self.center_lon is not None else (self.ml_lon if self.ml_lon is not None else self.nadir_lon)
+
+    def __str__(self):
+        return self.nasa_id
