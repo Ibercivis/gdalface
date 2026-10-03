@@ -106,3 +106,28 @@ class ImportTaskListTests(TransactionTestCase):
         self.assertEqual(GeoAttempt.objects.count(), 0)
         self.assertEqual(Image.objects.filter(status='FAILED_DOWNLOADED').count(), 3)
         self.assertEqual(FailedImage.objects.filter(reason='DOWNLOAD_FAILED').count(), 3)
+
+
+class EnrichImagesTests(TransactionTestCase):
+    def test_fills_only_gaps(self):
+        from georeferencing.models import Batch
+        staff = User.objects.create_user('s', 's@x.org', 'pw', is_staff=True)
+        tmp = tempfile.mkdtemp(); cache = os.path.join(tmp, 'cache')
+        write_cache(cache, 'ISS057',
+                    images=[{'images.frame': '61', 'images.filename': 'ISS057-E-61.JPG', 'images.directory': 'ESC/large/ISS057'}],
+                    nadir=[{'nadir.frame': '61', 'nadir.lat': '51.4', 'nadir.lon': '12.5', 'nadir.pdate': '20181004', 'nadir.ptime': '174538'}],
+                    camera=[{'camera.frame': '61', 'camera.camera': 'NIKON D4', 'camera.fclt': '56'}],
+                    mlcoord=[{'mlcoord.frame': '61', 'mlcoord.lat': '51.3', 'mlcoord.lon': '12.4'}])
+        b = Batch.objects.create(name='B', user=staff)
+        img = Image.objects.create(name='ISS057-E-61.JPG', batch=b, spacecraftNadirPoint='50.0, 10.0', camera=None, focalLength=0)
+        out = StringIO()
+        call_command('enrich_images', '--cache-dir', cache, stdout=out)
+        self.assertIn('[DRY RUN] images_touched=1', out.getvalue())
+        img.refresh_from_db(); self.assertIsNone(img.camera)
+        call_command('enrich_images', '--apply', '--cache-dir', cache, stdout=out)
+        img.refresh_from_db()
+        self.assertEqual(img.spacecraftNadirPoint, '50.0, 10.0')          # existing value kept
+        self.assertEqual((img.camera, img.focalLength), ('NIKON D4', 56))
+        self.assertEqual(img.photoCenterByMachineLearning, '51.3, 12.4')
+        self.assertEqual((img.photoCenterLat, img.photoCenterLon), (51.3, 12.4))  # recomputed from ML centre
+        self.assertEqual(img.taken.year, 2018)
