@@ -1048,7 +1048,7 @@
     {% include '_located_map_assets.html' %}
     <script>
     (function () {
-        var api = LAN.locatedMap('#visited-map', { url: '{% url "located_map_data" %}?mine=1', fit: true, mineOnly: true, maxZoom: 7, i18n: window.LAN_MAP_I18N,
+        var api = LAN.locatedMap('#visited-map', { url: '{% url "located_map_data" %}?mine=1', fit: true, onlyMine: true, maxZoom: 7, i18n: window.LAN_MAP_I18N,
             onLoad: function (gj) {
                 if (!gj.features.some(function (f) { return f.properties.mine; })) {
                     document.getElementById('visited-map').insertAdjacentHTML('beforeend',

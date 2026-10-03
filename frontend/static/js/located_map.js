@@ -9,7 +9,8 @@
     var DEFAULT_T = {
         contributions: 'contributions', contribution: 'contribution', points: 'control points',
         taken: 'Taken', nasa: 'Original at NASA', pending: 'Still needs more eyes', mine: 'You located this one',
-        lights: 'Night lights (VIIRS)', black_marble: 'NASA Black Marble', photos: 'Located photos', empty: 'Nothing located here yet.'
+        lights: 'Night lights (VIIRS)', black_marble: 'NASA Black Marble', photos: 'Located photos', mine_photos: 'My photos',
+        empty: 'Nothing located here yet.'
     };
 
     function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
@@ -62,13 +63,19 @@
         if (opts.lights !== false) lights.addTo(map);
         labels.addTo(map);
 
-        var group = (opts.cluster !== false && L.markerClusterGroup)
-            ? L.markerClusterGroup({ maxClusterRadius: 40, disableClusteringAtZoom: 7, showCoverageOnHover: false, spiderfyOnMaxZoom: true,
-                iconCreateFunction: function (c) { var n = c.getChildCount();
-                    return L.divIcon({ className: '', iconSize: [34, 34], html: '<div class="lan-map-cluster">' + n + '</div>' }); } })
-            : L.layerGroup();
-        group.addTo(map);
-        if (interactive) L.control.layers(null, (function () { var o = {}; o[T.lights] = lights; o[T.black_marble] = blackMarble; o[T.photos] = group; return o; })(), { collapsed: true }).addTo(map);
+        function makeGroup() {
+            return (opts.cluster !== false && L.markerClusterGroup)
+                ? L.markerClusterGroup({ maxClusterRadius: 40, disableClusteringAtZoom: 7, showCoverageOnHover: false, spiderfyOnMaxZoom: true,
+                    iconCreateFunction: function (c) { var n = c.getChildCount();
+                        return L.divIcon({ className: '', iconSize: [34, 34], html: '<div class="lan-map-cluster">' + n + '</div>' }); } })
+                : L.layerGroup();
+        }
+        // onlyMine: show just the viewer's photos (the public map has everyone's).
+        var group = makeGroup(); group.addTo(map);
+        if (interactive) L.control.layers(null, (function () {
+            var o = {}; o[T.lights] = lights; o[T.black_marble] = blackMarble;
+            o[opts.onlyMine ? T.mine_photos : T.photos] = group;
+            return o; })(), { collapsed: true }).addTo(map);
 
         if (opts.bbox) {
             L.rectangle(opts.bbox, { color: '#e9f990', weight: 1.5, dashArray: '6 4', fill: true, fillOpacity: 0.04 }).addTo(map);
@@ -85,8 +92,9 @@
                     var c = f.geometry.coordinates, p = f.properties;
                     var m = L.marker([c[1], c[0]], { icon: icon(p.mine, p.contributions), title: p.name });
                     if (interactive) m.bindPopup(popup(p, T), { maxWidth: 260, className: 'lan-map-popup' });
+                    if (opts.onlyMine && !p.mine) return;
                     group.addLayer(m);
-                    if (!opts.bbox && (!opts.mineOnly || p.mine)) bounds.push([c[1], c[0]]);
+                    if (!opts.bbox) bounds.push([c[1], c[0]]);
                 });
                 if (opts.fit && bounds.length && !opts.bbox) map.fitBounds(bounds, { padding: [30, 30], maxZoom: opts.maxZoom || 6 });
                 if (!api.features.length) {
