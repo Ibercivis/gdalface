@@ -404,6 +404,29 @@ evento en `/stats/`.
   acercarse; capa de calor para ver dónde faltan manos. Guardar el GeoTIFF al
   enviar si algún día se quiere superponer la foto real (~2 MB/contribución).
 
+## Pendiente de infraestructura — IPv6 sin salida (detectado 2026-10-03) ⏳
+
+El servidor tiene dirección y ruta IPv6 (`2001:41d0:306:28b4::/64`, default vía
+`2001:41d0:306:28ff:ff:ff:ff:ff`) pero el tráfico IPv6 no llega a destino:
+`curl -6 https://eol.jsc.nasa.gov/` falla y `curl -4` responde al instante. Los
+servidores de la NASA son dual-stack y Python (`requests`/`urllib3`) prueba la
+IPv6 primero y espera el timeout completo en cada conexión antes de caer a IPv4.
+Consecuencias observadas: descargas de imágenes a 4/min en vez de 90/min, y los
+`API_ERROR` del pipeline de batches (`georeferencing/tasks.py`) y de
+`download_image` en los workers de RQ.
+
+- ✅ Parche local: `import_task_list` fuerza IPv4 (`allowed_gai_family`).
+- ⏳ **Recomendación**: arreglarlo a nivel de sistema, con una de estas dos:
+  1. Dar salida IPv6 real al servidor (revisar con el proveedor la ruta por
+     defecto / el firewall).
+  2. Preferir IPv4 en la resolución de nombres: en `/etc/gai.conf` añadir
+     `precedence ::ffff:0:0/96  100`. Afecta a todos los procesos del host sin
+     tocar código. Después, comprobar que `python -c "import requests;
+     print(requests.get('https://eol.jsc.nasa.gov/', timeout=10).status_code)"`
+     responde en menos de un segundo.
+- ⏳ Tras el arreglo, quitar el parche local y aplicar el mismo criterio (o
+  ninguno) en `tasks.py`.
+
 ## Orden y dependencias
 
 ```
