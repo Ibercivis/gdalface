@@ -17,9 +17,12 @@ def schedule_tasks(sender, **kwargs):
     scheduler = get_scheduler('lost_scheduler')
     print(sender)
 
-    # First, clear the existing job for update_assigned if it exists
+    # First, clear existing copies of the jobs we (re)schedule below.
+    managed = {'georeferencing.tasks.update_assigned',
+               'georeferencing.tasks.write_stats_snapshot',
+               'georeferencing.tasks.reconcile_counters_job'}
     for job in scheduler.get_jobs():
-        if job.func_name == 'georeferencing.tasks.update_assigned':
+        if job.func_name in managed:
             job.delete()
 
     # Now, schedule the new task to run every hour indefinitely
@@ -28,4 +31,20 @@ def schedule_tasks(sender, **kwargs):
         func='georeferencing.tasks.update_assigned',  # Task to run
         interval=3600,  # 3600 seconds = 1 hour
         repeat=None  # Run indefinitely
+    )
+
+    # Refresh the public project-stats snapshot every day at 00:00 UTC.
+    scheduler.cron(
+        '0 0 * * *',  # midnight UTC (rq-scheduler uses UTC by default)
+        func='georeferencing.tasks.write_stats_snapshot',
+        queue_name='lost_scheduler',
+        repeat=None  # Run indefinitely
+    )
+
+    # Weekly counter reconciliation (Monday 03:00 UTC). Logs drift as a StatsEvent.
+    scheduler.cron(
+        '0 3 * * 1',
+        func='georeferencing.tasks.reconcile_counters_job',
+        queue_name='lost_scheduler',
+        repeat=None
     )

@@ -135,6 +135,7 @@
         var steps = buildSteps(opts);
         var totalSteps = steps.length;
         var completedFlag = false;
+        var lastIndex = 0;
 
         function setTutorialActive(on) {
             document.body.classList.toggle('tutorial-active', !!on);
@@ -149,13 +150,19 @@
             doneBtnText: opts.t.done,
             steps: steps,
             onHighlightStarted: function (el, step, ctx) {
-                logEvent('step', (ctx.state.activeIndex || 0) + 1);
+                lastIndex = (ctx && ctx.state && typeof ctx.state.activeIndex === 'number')
+                    ? ctx.state.activeIndex : lastIndex;
+                logEvent('step', lastIndex + 1);
             },
             onDestroyed: function (el, step, ctx) {
                 setTutorialActive(false);
                 if (completedFlag) return;
+                // driver.js has already reset ctx.state by the time onDestroyed
+                // fires on "Done", so activeIndex is undefined there and every
+                // finish used to be logged as "dismissed" at step 1. Use the
+                // last highlighted index instead.
                 var idx = (ctx && ctx.state && typeof ctx.state.activeIndex === 'number')
-                    ? ctx.state.activeIndex : 0;
+                    ? ctx.state.activeIndex : lastIndex;
                 if (idx >= totalSteps - 1) {
                     completedFlag = true;
                     logEvent('completed');

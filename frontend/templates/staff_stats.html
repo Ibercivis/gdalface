@@ -1,0 +1,298 @@
+{% extends 'legal/_legal_base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block legal_title %}Control{% endblock %}
+
+{% block legal_content %}
+<style>
+    .legal-wrap { max-width: 1180px; }
+    .st-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+    .st-head h1 { margin: 0; }
+    .st-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .st-tools a { text-decoration: none; }
+    .st-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin: 14px 0 22px; }
+    .st-tile { background: var(--bg-1); border: 1px solid var(--line-soft); border-radius: 10px; padding: 12px 14px; }
+    .st-tile .k { font-size: 11px; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-2); }
+    .st-tile .v { font-size: 26px; font-weight: 700; color: var(--ink-0); line-height: 1.2; margin-top: 4px; font-variant-numeric: tabular-nums; }
+    .st-tile .s { font-size: 12px; color: var(--ink-2); margin-top: 2px; }
+    .st-tile.warn { border-color: var(--warn); }
+    .st-tile.bad  { border-color: var(--danger); }
+    .st-chart { background: var(--bg-1); border: 1px solid var(--line-soft); border-radius: 10px; padding: 14px; margin: 0 0 18px; }
+    .st-chart canvas { width: 100% !important; height: 260px !important; }
+    .legal-wrap h2 { margin-top: 36px; display: flex; align-items: baseline; gap: 10px; }
+    .legal-wrap h2 small { font-size: 12px; font-weight: 400; color: var(--ink-2); }
+    .legal-wrap table td.num, .legal-wrap table th.num { text-align: right; font-variant-numeric: tabular-nums; }
+    .st-bar { height: 6px; background: var(--bg-2); border-radius: 3px; overflow: hidden; min-width: 80px; }
+    .st-bar i { display: block; height: 100%; background: var(--accent); }
+    .st-ch { background: var(--bg-1); border: 1px solid var(--line-soft); border-radius: 10px; padding: 16px; margin: 0 0 18px; }
+    .st-ch header { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .st-ch header h3 { margin: 0; font-size: 18px; }
+    .st-ch .st-grid { margin: 10px 0 14px; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+    .st-ch canvas { width: 100% !important; height: 180px !important; }
+    .st-two { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+    @media (max-width: 820px) { .st-two { grid-template-columns: 1fr; } }
+    .st-form { display: grid; grid-template-columns: 130px 150px 1fr; gap: 8px; align-items: center; }
+    .st-form .full { grid-column: 1 / -1; }
+    .st-form input, .st-form select, .st-form textarea {
+        width: 100%; box-sizing: border-box; background: var(--bg-2); color: var(--ink-0);
+        border: 1px solid var(--line-soft); border-radius: 8px; padding: 8px 10px; font: inherit; font-size: 13px;
+    }
+    .st-form textarea { min-height: 56px; resize: vertical; }
+    @media (max-width: 640px) { .st-form { grid-template-columns: 1fr 1fr; } }
+    .st-ev { list-style: none; padding: 0; margin: 0; }
+    .st-ev li { display: flex; gap: 10px; align-items: baseline; padding: 8px 0; border-bottom: 1px solid var(--line-soft); font-size: 13px; }
+    .st-ev time { font-family: var(--font-mono); font-size: 12px; color: var(--ink-2); white-space: nowrap; }
+    .st-ev .t { flex: 1; }
+    .st-ev .t small { color: var(--ink-2); display: block; }
+    .st-ev form { margin: 0; }
+    .st-ev form button { all: unset; cursor: pointer; color: var(--ink-3); font-size: 12px; }
+    .st-ev form button:hover { color: var(--danger); }
+    .st-note { font-size: 12px; color: var(--ink-2); margin: -8px 0 14px; }
+    .st-msg { background: var(--bg-2); border-left: 3px solid var(--accent); padding: 8px 12px; border-radius: 6px; margin-bottom: 14px; font-size: 13px; }
+</style>
+
+<div class="st-head">
+    <div>
+        <h1>Control panel</h1>
+        <div class="legal-meta" style="margin:0;padding:0;border:0">
+            Staff only · {{ d.start }} → {{ d.end }} · generated {{ d.generated_at|slice:":16" }} UTC · cached 5 min
+        </div>
+    </div>
+    <div class="st-tools">
+        {% for n in day_options %}
+        <a class="ds-pill {% if n == days %}ds-pill--accent{% else %}ds-pill--ghost{% endif %}" href="?days={{ n }}">{{ n }}d</a>
+        {% endfor %}
+        <a class="ds-pill ds-pill--neutral" href="?days={{ days }}&refresh=1" title="Recompute now">↻ refresh</a>
+        <a class="ds-pill ds-pill--neutral" href="{% url 'staff_stats_csv' %}?days={{ days }}">⬇ CSV</a>
+        <a class="ds-pill ds-pill--neutral" href="/admin/">admin</a>
+    </div>
+</div>
+
+{% if messages %}{% for m in messages %}<div class="st-msg">{{ m }}</div>{% endfor %}{% endif %}
+
+{# ── People ──────────────────────────────────────────────────────── #}
+<h2>People <small>active = at least one contribution in the window</small></h2>
+<div class="st-grid">
+    <div class="st-tile"><div class="k">Active 7d</div><div class="v">{{ d.people.active_7 }}</div></div>
+    <div class="st-tile"><div class="k">Active 30d</div><div class="v">{{ d.people.active_30 }}</div></div>
+    <div class="st-tile"><div class="k">Sign-ups 7d</div><div class="v">{{ d.people.signups_7 }}</div><div class="s">{{ d.people.signups_30 }} in 30d</div></div>
+    <div class="st-tile"><div class="k">Registered</div><div class="v">{{ d.people.total }}</div><div class="s">{{ d.people.verified }} verified email</div></div>
+    <div class="st-tile"><div class="k">Ever contributed</div><div class="v">{{ d.people.contributors_ever }}</div><div class="s">{{ d.people.contributors_pct }}% of registered</div></div>
+    <div class="st-tile"><div class="k">Newsletter</div><div class="v">{{ d.people.newsletter }}</div></div>
+    <div class="st-tile {% if d.people.cheating_flagged %}warn{% endif %}"><div class="k">Cheating flags</div><div class="v">{{ d.people.cheating_flagged }}</div></div>
+</div>
+
+{# ── Contributions ───────────────────────────────────────────────── #}
+<h2>Contributions <small>GeoAttempts marked DONE, by finish date (UTC)</small></h2>
+<div class="st-grid">
+    <div class="st-tile"><div class="k">Last 7d</div><div class="v">{{ d.contributions.last_7 }}</div><div class="s">{{ d.contributions.avg_per_day_7 }} / day</div></div>
+    <div class="st-tile"><div class="k">Last 30d</div><div class="v">{{ d.contributions.last_30 }}</div></div>
+    <div class="st-tile"><div class="k">All time</div><div class="v">{{ d.contributions.total }}</div><div class="s">{{ d.contributions.anonymous_total }} anonymous</div></div>
+    <div class="st-tile"><div class="k">Control points</div><div class="v">{{ d.contributions.control_points_total }}</div></div>
+    <div class="st-tile"><div class="k">Avg time / task</div><div class="v">{% if d.contributions.avg_seconds_per_task %}{% widthratio d.contributions.avg_seconds_per_task 60 1 %} min{% else %}–{% endif %}</div></div>
+    <div class="st-tile"><div class="k">Skips (all time)</div><div class="v">{{ d.contributions.skipped_total }}</div></div>
+</div>
+<div class="st-chart"><canvas id="chart-contrib"></canvas></div>
+<div class="st-chart"><canvas id="chart-signups"></canvas></div>
+<p class="st-note">Dashed vertical lines are the events logged below. Hover a line for the title.</p>
+
+{# ── Events ──────────────────────────────────────────────────────── #}
+<h2>Events <small>campaigns, mailings, releases… anything that might move the curves</small></h2>
+<div class="st-two">
+    <div class="st-ch">
+        <form method="post" class="st-form">
+            {% csrf_token %}
+            <input type="date" name="happened_at" value="{{ today }}" required>
+            <select name="kind">
+                {% for k, label in kind_choices %}<option value="{{ k }}">{{ label }}</option>{% endfor %}
+            </select>
+            <input type="text" name="title" maxlength="140" placeholder="Title (e.g. Newsletter #4 sent to 3.5k)" required>
+            <input class="full" type="url" name="url" placeholder="Link (optional): campaign, email, post…">
+            <textarea class="full" name="note" placeholder="Note (optional)"></textarea>
+            <div class="full"><button type="submit" class="ds-btn ds-btn--primary ds-btn--md">Add event</button></div>
+        </form>
+    </div>
+    <div class="st-ch">
+        {% if d.events %}
+        <ul class="st-ev">
+            {% for e in d.events reversed %}
+            <li>
+                <time>{{ e.date }}</time>
+                <span class="t">
+                    <span class="ds-pill ds-pill--ghost">{{ e.kind_label }}</span>
+                    {% if e.url %}<a href="{{ e.url }}" target="_blank" rel="noopener">{{ e.title }}</a>{% else %}{{ e.title }}{% endif %}
+                    {% if e.note %}<small>{{ e.note }}</small>{% endif %}
+                </span>
+                <form method="post" onsubmit="return confirm('Delete this event?')">
+                    {% csrf_token %}<input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="{{ e.id }}">
+                    <button type="submit" title="Delete">✕</button>
+                </form>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p style="color:var(--ink-2);font-size:13px;margin:0">No events in this window yet.</p>
+        {% endif %}
+    </div>
+</div>
+
+{# ── Challenges ──────────────────────────────────────────────────── #}
+<h2>Challenges <small>open = active, paused or upcoming</small></h2>
+{% for c in d.challenges.open %}
+<div class="st-ch" id="challenge-{{ c.id }}">
+    <header>
+        <h3><a href="{% url 'challenge_detail' c.id %}">{{ c.name }}</a></h3>
+        <span class="ds-pill {% if c.status == 'active' %}ds-pill--live{% elif c.status == 'paused' %}ds-pill--warn{% else %}ds-pill--info{% endif %}">{{ c.status }}</span>
+        <span class="ds-pill ds-pill--ghost">{{ c.start }} → {{ c.end }}{% if c.status == 'active' %} · {{ c.days_left }} days left{% endif %}</span>
+        {% if c.batch %}<span class="ds-pill ds-pill--ghost">batch: {{ c.batch }}</span>{% endif %}
+        {% if c.has_bbox %}<span class="ds-pill ds-pill--ghost">bbox</span>{% endif %}
+        <a class="ds-pill ds-pill--neutral" href="/admin/georeferencing/challenge/{{ c.id }}/change/">edit</a>
+    </header>
+    <div class="st-grid">
+        <div class="st-tile"><div class="k">Control points</div><div class="v">{{ c.total_cp }}</div>
+            <div class="s">{{ c.progress_pct }}% of gold ({{ c.targets.gold }}){% if c.next_tier %} · {{ c.next_tier.remaining }} to {{ c.next_tier.label }}{% endif %}</div></div>
+        <div class="st-tile"><div class="k">Participants</div><div class="v">{{ c.participants_active }}</div>
+            <div class="s">{{ c.participants }} ever · {{ c.participants_contributing }} contributed · +{{ c.joined_7 }} this week</div></div>
+        <div class="st-tile"><div class="k">Tasks done</div><div class="v">{{ c.tasks_done }}</div><div class="s">{{ c.tasks_done_7 }} last 7d</div></div>
+        <div class="st-tile {% if c.tasks_pending == 0 %}bad{% elif c.tasks_pending < 100 %}warn{% endif %}"><div class="k">Tasks pending</div><div class="v">{{ c.tasks_pending }}</div><div class="s">of {{ c.tasks_total }} matching</div></div>
+        <div class="st-tile"><div class="k">Diplomas</div><div class="v">{{ c.diplomas }}</div></div>
+    </div>
+    <div class="st-two">
+        <div><canvas id="chart-ch-{{ c.id }}"></canvas></div>
+        <table style="margin:0">
+            <thead><tr><th>#</th><th>User</th><th class="num">CP</th></tr></thead>
+            <tbody>
+            {% for p in c.top %}
+            <tr><td>{{ forloop.counter }}</td><td>{{ p.username }}{% if not p.active %} <span class="ds-pill ds-pill--ghost">left</span>{% endif %}</td><td class="num">{{ p.cp }}</td></tr>
+            {% empty %}<tr><td colspan="3" style="color:var(--ink-2)">No participants yet</td></tr>{% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if c.cached_task_count != c.tasks_total %}<p class="st-note" style="margin-top:8px">Cached task count on the challenge ({{ c.cached_task_count }}) differs from live ({{ c.tasks_total }}). Use “Recompute counts” in admin.</p>{% endif %}
+</div>
+{% empty %}
+<p style="color:var(--ink-2)">No open challenges. <a href="/admin/georeferencing/challenge/add/">Create one</a>.</p>
+{% endfor %}
+
+{% if d.challenges.finished %}
+<h3>Finished</h3>
+<table>
+    <thead><tr><th>Challenge</th><th>Dates</th><th class="num">Participants</th><th class="num">CP</th><th class="num">Gold</th><th class="num">Diplomas</th></tr></thead>
+    <tbody>
+    {% for c in d.challenges.finished %}
+    <tr><td><a href="{% url 'challenge_detail' c.id %}">{{ c.name }}</a></td><td>{{ c.start }} → {{ c.end }}</td>
+        <td class="num">{{ c.participants }}</td><td class="num">{{ c.total_cp }}</td><td class="num">{{ c.gold }}</td><td class="num">{{ c.diplomas }}</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+{# ── Queue ───────────────────────────────────────────────────────── #}
+<h2>Work queue <small>GeoAttempts by status</small></h2>
+<div class="st-grid">
+    <div class="st-tile"><div class="k">Pending</div><div class="v">{{ d.queue.pending }}</div></div>
+    <div class="st-tile"><div class="k">Assigned</div><div class="v">{{ d.queue.assigned }}</div></div>
+    <div class="st-tile"><div class="k">Done</div><div class="v">{{ d.queue.done }}</div><div class="s">of {{ d.queue.total }}</div></div>
+    <div class="st-tile"><div class="k">Days to exhaust</div><div class="v">{% if d.queue.days_to_exhaust != None %}{{ d.queue.days_to_exhaust }}{% else %}–{% endif %}</div><div class="s">at the last-7-day rate</div></div>
+    <div class="st-tile"><div class="k">Images untouched</div><div class="v">{{ d.queue.images_untouched }}</div><div class="s">of {{ d.queue.images_total }} (no DONE yet)</div></div>
+    <div class="st-tile {% if d.queue.orphan_pending %}warn{% endif %}"><div class="k">Orphan pending</div><div class="v">{{ d.queue.orphan_pending }}</div><div class="s">image has no batch</div></div>
+</div>
+<table>
+    <thead><tr><th>Batch</th><th>Created</th><th class="num">Images</th><th class="num">Untouched</th><th class="num">Pending</th><th class="num">Assigned</th><th class="num">Done</th><th>Progress</th></tr></thead>
+    <tbody>
+    {% for b in d.queue.per_batch %}
+    <tr>
+        <td><a href="/admin/georeferencing/batch/{{ b.id }}/change/">{{ b.name }}</a></td><td>{{ b.created }}</td>
+        <td class="num">{{ b.images }}</td><td class="num">{{ b.images_untouched }}</td>
+        <td class="num">{{ b.pending }}</td><td class="num">{{ b.assigned }}</td><td class="num">{{ b.done }}</td>
+        <td><div class="st-bar" title="{{ b.pct_done }}%"><i style="width:{{ b.pct_done }}%"></i></div><small style="color:var(--ink-2)">{{ b.pct_done }}%</small></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{# ── Health ──────────────────────────────────────────────────────── #}
+<h2>Health</h2>
+<div class="st-grid">
+    <div class="st-tile {% if d.health.stale_assigned %}bad{% endif %}"><div class="k">Stale assigned</div><div class="v">{{ d.health.stale_assigned }}</div><div class="s">&gt; 6 h, should be auto-released</div></div>
+    <div class="st-tile {% if d.health.images_pending_download %}warn{% endif %}"><div class="k">Images pending download</div><div class="v">{{ d.health.images_pending_download }}</div></div>
+    <div class="st-tile {% if d.health.images_failed_download %}bad{% endif %}"><div class="k">Images failed download</div><div class="v">{{ d.health.images_failed_download }}</div></div>
+    <div class="st-tile {% if d.health.images_no_coords %}warn{% endif %}"><div class="k">Images w/o coords</div><div class="v">{{ d.health.images_no_coords }}</div><div class="s">invisible to bbox challenges</div></div>
+    <div class="st-tile"><div class="k">Failed imports</div><div class="v">{% for f in d.health.failed_images %}{{ f.n }}{% if not forloop.last %}+{% endif %}{% empty %}0{% endfor %}</div>
+        <div class="s">{% for f in d.health.failed_images %}{{ f.reason }} {{ f.n }}{% if not forloop.last %}, {% endif %}{% endfor %}</div></div>
+    <div class="st-tile"><div class="k">Last batch</div><div class="v" style="font-size:16px">{% if d.health.last_batch %}{{ d.health.last_batch.name }}{% else %}–{% endif %}</div><div class="s">{% if d.health.last_batch %}{{ d.health.last_batch.status }} · {{ d.health.last_batch.created }}{% endif %}</div></div>
+    <div class="st-tile"><div class="k">Public snapshot</div><div class="v" style="font-size:16px">{{ d.health.snapshot_generated_at|default:"never"|slice:":10" }}</div><div class="s">/.well-known/stats.json, daily 00:00</div></div>
+</div>
+
+{# ── Onboarding ──────────────────────────────────────────────────── #}
+<h2>Onboarding &amp; diplomas <small>distinct users or sessions</small></h2>
+<div class="st-grid">
+    <div class="st-tile"><div class="k">Tutorial started</div><div class="v">{{ d.onboarding.tutorial_started }}</div></div>
+    <div class="st-tile"><div class="k">Completed</div><div class="v">{{ d.onboarding.tutorial_completed }}</div><div class="s">{{ d.onboarding.tutorial_completion_pct }}%</div></div>
+    <div class="st-tile"><div class="k">Dismissed</div><div class="v">{{ d.onboarding.tutorial_dismissed }}</div></div>
+    <div class="st-tile"><div class="k">Diploma downloads</div><div class="v">{{ d.onboarding.diploma_downloads }}</div><div class="s">{{ d.onboarding.diploma_previews }} previews</div></div>
+</div>
+
+{{ data_json|json_script:"stats-data" }}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/3.0.1/chartjs-plugin-annotation.min.js"></script>
+<script>
+(function () {
+    const D = JSON.parse(document.getElementById('stats-data').textContent);
+    const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+    const ink2 = css('--ink-2') || '#aaa', line = css('--line-soft') || 'rgba(255,255,255,.15)';
+    const accent = css('--accent') || '#e6f066', warn = css('--warn') || '#f0b35a', info = 'oklch(0.75 0.13 230)';
+    Chart.defaults.color = ink2;
+    Chart.defaults.font.family = css('--font-ui') || 'system-ui';
+    Chart.defaults.font.size = 11;
+
+    // Event markers (annotation plugin). Events on the same day stack labels.
+    const annotations = {};
+    (D.events || []).forEach((e, i) => {
+        annotations['ev' + i] = {
+            type: 'line', xMin: e.date, xMax: e.date, borderColor: warn, borderWidth: 1, borderDash: [4, 4],
+            label: { display: true, content: e.title, position: 'start', rotation: -90,
+                     backgroundColor: 'rgba(0,0,0,.55)', color: warn, font: { size: 10 }, padding: 3 },
+            enter({ element }) { element.label.options.display = true; },
+        };
+    });
+
+    const base = (yTitle) => ({
+        responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+        plugins: { legend: { display: true, labels: { boxWidth: 10 } }, annotation: { annotations },
+                   tooltip: { callbacks: { footer(items) {
+                        const d = items[0]?.label; const ev = (D.events || []).filter(e => e.date === d);
+                        return ev.length ? ev.map(e => '● ' + e.kind_label + ': ' + e.title).join('\n') : '';
+                   } } } },
+        scales: { x: { grid: { color: line }, ticks: { maxTicksLimit: 12, callback(v) { return this.getLabelForValue(v).slice(5); } } },
+                  y: { beginAtZero: true, grid: { color: line }, ticks: { precision: 0 }, title: { display: !!yTitle, text: yTitle } } },
+    });
+    const labels = D.contributions.series.map(r => r.date);
+    const vals = (s) => s.map(r => r.n);
+
+    new Chart(document.getElementById('chart-contrib'), {
+        type: 'bar',
+        data: { labels, datasets: [
+            { label: 'Registered', data: vals(D.contributions.series_registered), backgroundColor: accent, stack: 's' },
+            { label: 'Anonymous', data: vals(D.contributions.series_anonymous), backgroundColor: info, stack: 's' },
+        ] },
+        options: base('contributions / day'),
+    });
+    new Chart(document.getElementById('chart-signups'), {
+        type: 'bar',
+        data: { labels, datasets: [{ label: 'Sign-ups', data: vals(D.people.signups_series), backgroundColor: info }] },
+        options: base('sign-ups / day'),
+    });
+    (D.challenges.open || []).forEach(c => {
+        const el = document.getElementById('chart-ch-' + c.id);
+        if (!el || !c.series.length) { if (el) el.parentNode.innerHTML = '<p style="color:var(--ink-2);font-size:13px">No contributions in this window.</p>'; return; }
+        new Chart(el, {
+            type: 'bar',
+            data: { labels: c.series.map(r => r.date), datasets: [{ label: 'Tasks done by participants', data: vals(c.series), backgroundColor: accent }] },
+            options: base(''),
+        });
+    });
+})();
+</script>
+{% endblock %}

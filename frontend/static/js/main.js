@@ -52,6 +52,7 @@ $(document).ready(function () {
     let opacityControl;
     let infoModal;
     let georeferencingModal;
+    let alertModal;
     let viirs;
     let sdgsatEuUk; // Nueva variable para la capa SDGSAT_EU_UK
     infoModal = new bootstrap.Modal(document.getElementById('taskInfoModal'), {
@@ -59,26 +60,46 @@ $(document).ready(function () {
     });
     georeferencingModal = new bootstrap.Modal(document.getElementById('georeferencingModal'), {
     });
+    alertModal = new bootstrap.Modal(document.getElementById('alertModal'), {
+        keyboard: true,
+    });
+
+    // Show an ephemeral alert in its own dedicated modal so it never
+    // overwrites the structured contents of #taskInfoModal or
+    // #georeferencingModal. `body` may contain HTML.
+    function showAlert(title, body) {
+        document.getElementById('alertModal-title').textContent = title;
+        document.getElementById('alertModal-body').innerHTML = body;
+        alertModal.show();
+    }
 
     // Public namespace for trylocal.js — merge with anything already defined
     // (e.g. refreshPhotoTitle wired up by the inline template script that runs
-    // before $(document).ready).
-    window.LAN = Object.assign(window.LAN || {}, {
-        get iconList() { return iconList; },
-        get map()      { return map; },
-        infoModal: infoModal,
-        georeferencingModal: georeferencingModal,
-        currentMapFilter: '',
-        geoLayer: null,
-        tryLocalLayer: null,
-        applyMapFilters: function() {
-            var f = window.LAN.currentMapFilter;
-            var tl = window.LAN.tryLocalLayer;
-            var gl = window.LAN.geoLayer;
-            if (tl && tl._image) tl._image.style.filter = f;
-            if (gl && gl._container) gl._container.style.filter = f;
-        },
+    // before $(document).ready). We use defineProperty for the getters so they
+    // stay live (Object.assign would invoke them once and freeze the value).
+    window.LAN = window.LAN || {};
+    Object.defineProperty(window.LAN, 'iconList', {
+        configurable: true,
+        enumerable: true,
+        get: function () { return iconList; },
     });
+    Object.defineProperty(window.LAN, 'map', {
+        configurable: true,
+        enumerable: true,
+        get: function () { return map; },
+    });
+    window.LAN.infoModal           = infoModal;
+    window.LAN.georeferencingModal = georeferencingModal;
+    window.LAN.currentMapFilter    = '';
+    window.LAN.geoLayer            = null;
+    window.LAN.tryLocalLayer       = null;
+    window.LAN.applyMapFilters = function () {
+        var f = window.LAN.currentMapFilter;
+        var tl = window.LAN.tryLocalLayer;
+        var gl = window.LAN.geoLayer;
+        if (tl && tl._image) tl._image.style.filter = f;
+        if (gl && gl._container) gl._container.style.filter = f;
+    };
     $('#usage-info').on('click', function () {
         georeferencingModal.hide();
         infoModal.show();
@@ -135,9 +156,9 @@ $(document).ready(function () {
                 $('#ti-photo-center').text(fmtCoord(response.photo_center_point));
                 if (response.photo_center_by_machine_learning) {
                     $('#ti-ml-center').text(response.photo_center_by_machine_learning);
-                    $('#ti-ml-row').show();
+                    $('#ti-ml-row, #ti-ml-row-dt').show();
                 } else {
-                    $('#ti-ml-row').hide();
+                    $('#ti-ml-row, #ti-ml-row-dt').hide();
                 }
 
                 // Expedition & crew
@@ -246,15 +267,14 @@ $(document).ready(function () {
             // Add buttons behavior
             $('#Try').on('click', function () {
                 if (iconList.length < 3) {
-
-                    $('.modal-title').html('Few control points!'); // Set the modal content
-                    $('.modal-body').html('Please add at least three control points.'); // Set the modal body content
-                    infoModal.show(); // Show the modal
+                    var T = window.LAN_I18N || {};
+                    showAlert(T.few_cp_title || 'Few control points!',
+                              T.few_cp_body || 'Please add at least three control points.');
                     return;
                 } else {
-                    $('.modal-title').html('Georefencing in progress...'); // Set the modal content
-                    $('.modal-body').html('We are georeferencing the photography. Please wait.<br /><br />'
-                        +'<div class="d-flex justify-content-center"><img width="40px" src="/static/img/doing.gif" /></div>'); // Set the modal body content
+                    $('#georeferencingModal .modal-title').html('Georeferencing in progress...');
+                    $('#georeferencingModal .modal-body').html('We are georeferencing the photography. Please wait.<br /><br />'
+                        +'<div class="d-flex justify-content-center"><img width="40px" src="/static/img/doing.gif" /></div>');
                     georeferencingModal.show();
                     // Doing a post request to the backend
                     const data = {
@@ -287,11 +307,19 @@ $(document).ready(function () {
                             window.LAN.geoLayer = lyr;
                             window.LAN.applyMapFilters();
 
-                            // Add/replace Georeferenced slider (always recreate so it binds to the new lyr)
+                            // Add/replace Georeferenced slider (always recreate so it binds to the new lyr).
+                            // Insert at the dyn-layers anchor so it sits alongside VIIRS/SDGSAT layer
+                            // opacities, above the image-filter sliders.
                             if (opacitySlidersDiv) {
                                 var existing = document.getElementById('georef-slider-row');
                                 if (existing) existing.remove();
-                                opacitySlidersDiv.appendChild(makeSliderRow('Georeferenced', lyr, 0.9, 'georef-slider-row'));
+                                var anchor = document.getElementById('dyn-layers-sep');
+                                var row = makeSliderRow('Georeferenced', lyr, 0.9, 'georef-slider-row');
+                                if (anchor) {
+                                    opacitySlidersDiv.insertBefore(row, anchor);
+                                } else {
+                                    opacitySlidersDiv.appendChild(row);
+                                }
                             }
 
                             // Ajustar zoom
@@ -302,19 +330,23 @@ $(document).ready(function () {
                         error: function (response) {
                             console.log(response);
                             georeferencingModal.hide();
-                            $('.modal-title').html('Error!'); // Set the modal content
-                            $('.modal-body').html('An error ' + response.status + ' occurred:<br />' + response.responseText); // Set the modal body content
-                            infoModal.show(); // Show the modal
+                            var T = window.LAN_I18N || {};
+                            showAlert(T.error_title || 'Error',
+                                (T.error_generic || 'An error occurred.') + ' (' + response.status + ')<br />' + response.responseText);
                         }
                     })
                 }
             });
 
             $('#Submit').on('click', function () {
+                // Guard against double-clicks: a second PATCH would now be
+                // refused by the server (409) and show an error.
+                if ($(this).prop('disabled')) return;
+                $(this).prop('disabled', true);
                 // Doing a post request to the backend
                 const data = {
                     "geoattempt_id": geoatempt_id,
-                    "controlPoints": iconList,
+                    "control_points": iconList,
                     "status": "DONE"
                 }
                 $.ajax({
@@ -336,20 +368,23 @@ $(document).ready(function () {
                             window.LAN_showResult({
                                 cpCount: (iconList && iconList.length) || 0,
                                 imageName: window.LAN && window.LAN.imageName,
+                                imageCaption: window.LAN && window.LAN.imageCaption,
+                                result: response && response.result,
                             });
                         } else {
-                            // Fallback to the old modal if the result UI failed to load.
-                            $('.modal-title').html('Thank you for your contribution');
-                            $('.modal-body').html('Your control points have been submitted successfully.');
-                            $('#modalClose').html('Try another one!');
-                            $('#modalClose').on('click', function () { location.reload(); });
-                            infoModal.show();
+                            // Fallback when the result UI script failed to load.
+                            var T = window.LAN_I18N || {};
+                            showAlert(T.thanks_title || 'Thank you for your contribution',
+                                T.thanks_body || 'Your control points have been submitted successfully.');
                         }
                     },
                     error: function (response) {
-                        $('.modal-title').html('Error!'); // Set the modal content
-                        $('.modal-body').html('An error ' + response.status + ' occurred:<br />' + response.responseText); // Set the modal body content
-                        infoModal.show(); // Show the modal
+                        $('#Submit').prop('disabled', false);
+                        var T = window.LAN_I18N || {};
+                        var body = {};
+                        try { body = response.responseJSON || JSON.parse(response.responseText || '{}'); } catch (e) {}
+                        showAlert(T.error_title || 'Error',
+                            (body.error || (T.error_generic || 'An error occurred.')) + ' (' + response.status + ')');
                     }
                 })
             });
@@ -369,9 +404,9 @@ $(document).ready(function () {
                         location.reload();
                     },
                     error: function (response) {
-                        $('.modal-title').html('Error!'); // Set the modal content
-                        $('.modal-body').html('An error ' + response.status + ' occurred:<br />' + response.responseText); // Set the modal body content
-                        infoModal.show(); // Show the modal
+                        var T = window.LAN_I18N || {};
+                        showAlert(T.error_title || 'Error',
+                            (T.error_generic || 'An error occurred.') + ' (' + response.status + ')<br />' + response.responseText);
                     }
                 });
             });
@@ -841,6 +876,33 @@ $(document).ready(function () {
                 viirs.addTo(map);
                 sdgsatEuUk.addTo(map);
 
+                // ISS nadir marker — hint showing where the station was directly
+                // overhead when the photo was taken (spacecraft nadir point).
+                try {
+                var nadirCoord = response.spacecraft_nadir_point
+                    ? parseCoordinates(response.spacecraft_nadir_point) : null;
+                if (nadirCoord) {
+                    // Real ISS silhouette (top-down), painted in the brand yellow
+                    // via CSS mask so the SVG's own colours are ignored.
+                    var issIcon = L.divIcon({
+                        html: '<div style="width:42px;height:42px;background:var(--accent);' +
+                            '-webkit-mask:url(/static/img/iss.svg) center/contain no-repeat;' +
+                            'mask:url(/static/img/iss.svg) center/contain no-repeat;' +
+                            'filter:drop-shadow(0 0 1.5px rgba(0,0,0,.9))"></div>',
+                        className: 'iss-nadir-icon',
+                        iconSize: [42, 42],
+                        iconAnchor: [21, 21],
+                    });
+                    window.LAN.issMarker = L.marker(nadirCoord, {
+                        icon: issIcon,
+                        keyboard: false,
+                        zIndexOffset: 1000,
+                        title: 'ISS (nadir)',
+                    }).addTo(map);
+                    window.LAN.issMarker.bindTooltip('ISS (nadir)', { direction: 'top', offset: [0, -10] });
+                }
+                } catch (e) { /* malformed nadir coord — skip ISS marker, don't break the task */ }
+
                 // Coord readout (design system, bottom-right of the map).
                 var coordReadout = document.getElementById('ds-coord-readout');
                 if (coordReadout) {
@@ -867,10 +929,10 @@ $(document).ready(function () {
                 makeSliderRow = function(label, layer, initialOpacity, rowId) {
                     var row = document.createElement('div');
                     if (rowId) row.id = rowId;
-                    row.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:4px;';
+                    row.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:2px;';
                     var lbl = document.createElement('span');
                     lbl.textContent = label;
-                    lbl.style.minWidth = '110px';
+                    lbl.style.minWidth = '70px';
                     var slider = document.createElement('input');
                     slider.type = 'range';
                     slider.min = '0';
@@ -881,7 +943,7 @@ $(document).ready(function () {
                     var val = document.createElement('span');
                     val.className = 'mono';
                     val.textContent = parseFloat(initialOpacity).toFixed(2);
-                    val.style.cssText = 'min-width:32px;text-align:right;font-size:12px;';
+                    val.style.cssText = 'min-width:28px;text-align:right;';
                     slider.addEventListener('input', function() {
                         var v = parseFloat(this.value);
                         layer.setOpacity(v);
@@ -900,7 +962,7 @@ $(document).ready(function () {
                 L.Control.OpacitySliders = L.Control.extend({
                     onAdd: function() {
                         var outer = L.DomUtil.create('div', 'leaflet-control-layers leaflet-control-layers-expanded ds-map-adjust');
-                        outer.style.cssText = 'font-size:13px;';
+                        outer.style.cssText = 'font-size:12px;';
                         L.DomEvent.disableClickPropagation(outer);
                         L.DomEvent.disableScrollPropagation(outer);
 
@@ -952,19 +1014,27 @@ $(document).ready(function () {
                         opacitySlidersDiv.appendChild(makeSliderRow('VIIRS', viirs, 0.8));
                         opacitySlidersDiv.appendChild(makeSliderRow('SDGSAT EU/UK', sdgsatEuUk, 0.8));
 
+                        // Anchor for dynamic layer sliders (e.g. Georeferenced)
+                        // appended later — they get inserted *here*, so they sit
+                        // alongside the other layer-opacity rows and above the
+                        // SDGSAT/VIIRS image-filter sliders.
+                        var dynSep = document.createElement('div');
+                        dynSep.id = 'dyn-layers-sep';
+                        opacitySlidersDiv.appendChild(dynSep);
+
                         // SDGSAT image filters
                         var filterSep = document.createElement('div');
-                        filterSep.style.cssText = 'margin:10px 0 6px;font-size:10px;color:var(--ink-3);text-transform:uppercase;letter-spacing:1px;font-weight:600;';
+                        filterSep.style.cssText = 'margin:6px 0 3px;font-size:10px;color:var(--ink-3);text-transform:uppercase;letter-spacing:1px;font-weight:600;';
                         filterSep.textContent = 'SDGSAT & VIIRS filters';
                         opacitySlidersDiv.appendChild(filterSep);
 
                         var sdgsatFilterRefs = [];  // [{slider, val, key, initial}]
                         function makeSdgsatFilterRow(label, filterKey, min, max, step, initial) {
                             var row = document.createElement('div');
-                            row.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:4px;';
+                            row.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:2px;';
                             var lbl = document.createElement('span');
                             lbl.textContent = label;
-                            lbl.style.minWidth = '110px';
+                            lbl.style.minWidth = '70px';
                             var slider = document.createElement('input');
                             slider.type = 'range';
                             slider.min = String(min);
@@ -975,7 +1045,7 @@ $(document).ready(function () {
                             var val = document.createElement('span');
                             val.className = 'mono';
                             val.textContent = parseFloat(initial).toFixed(2);
-                            val.style.cssText = 'min-width:32px;text-align:right;font-size:12px;';
+                            val.style.cssText = 'min-width:28px;text-align:right;';
                             slider.addEventListener('input', function() {
                                 var v = parseFloat(this.value);
                                 sdgsatFilters[filterKey] = v;
@@ -997,16 +1067,16 @@ $(document).ready(function () {
                         opacitySlidersDiv.appendChild(makeSdgsatFilterRow('Contrast',   'contrast',   0, 1, 0.05, 0.5));
                         opacitySlidersDiv.appendChild(makeSdgsatFilterRow('Saturation', 'saturate',   0, 1, 0.05, 0.5));
 
-                        // Reset button for the SDGSAT + VIIRS filters.
-                        var sdgsatResetWrap = document.createElement('div');
-                        sdgsatResetWrap.style.cssText = 'text-align:right;margin-top:6px;';
+                        // Reset button for the SDGSAT + VIIRS filters — lives in the
+                        // header of the panel to save vertical space in the body.
                         var sdgsatResetBtn = document.createElement('button');
                         sdgsatResetBtn.type = 'button';
-                        sdgsatResetBtn.className = 'ds-btn ds-btn--ghost ds-btn--sm';
+                        sdgsatResetBtn.className = 'ds-panel-reset';
+                        sdgsatResetBtn.title = 'Reset SDGSAT & VIIRS filters';
                         sdgsatResetBtn.innerHTML =
-                            '<svg class="ds-icon ds-icon--sm" viewBox="0 0 24 24" fill="none" ' +
+                            '<svg class="ds-icon" viewBox="0 0 24 24" fill="none" ' +
                             'stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' +
-                            '<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg> Reset';
+                            '<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Reset';
                         sdgsatResetBtn.addEventListener('click', function () {
                             sdgsatFilterRefs.forEach(function (r) {
                                 r.slider.value = String(r.initial);
@@ -1016,14 +1086,7 @@ $(document).ready(function () {
                             applySdgsatFilters();
                         });
                         L.DomEvent.disableClickPropagation(sdgsatResetBtn);
-                        sdgsatResetWrap.appendChild(sdgsatResetBtn);
-                        opacitySlidersDiv.appendChild(sdgsatResetWrap);
-
-                        // Hidden anchor for dynamic layers (e.g. Georeferenced) that get
-                        // appended later. No visual separator.
-                        var dynSep = document.createElement('div');
-                        dynSep.id = 'dyn-layers-sep';
-                        opacitySlidersDiv.appendChild(dynSep);
+                        header.appendChild(sdgsatResetBtn);
 
                         return outer;
                     },
@@ -1083,10 +1146,9 @@ $(document).ready(function () {
                     // Don't accept clicks while the tutorial is showing.
                     if (window.LAN && window.LAN.tutorialActive) return;
                     if (isTurn === 'image') {
-
-                        $('.modal-title').html('Wrong place!'); // Set the modal content
-                        $('.modal-body').html('Please add the control point on the image first.'); // Set the modal body content
-                        infoModal.show(); // Show the modal
+                        var T = window.LAN_I18N || {};
+                        showAlert(T.wrong_place_title || 'Wrong place!',
+                                  T.wrong_place_image || 'Please add the control point on the image first.');
                         return;
                     } else {
                         var lat = e.latlng.lat;
@@ -1229,14 +1291,11 @@ $(document).ready(function () {
                                 isDragged = false; // Reset the drag state
                             } else {
                                 console.log('Wrong place!');
-                                $('.modal-title').html('Wrong place!'); // Set the modal content
-                                $('.modal-body').html('Please add a point in the map (related to the last control point).'); // Set the modal body content
-                            
-                                infoModal.show(); // Show the modal
-
+                                var T = window.LAN_I18N || {};
+                                showAlert(T.wrong_place_title || 'Wrong place!',
+                                          T.wrong_place_map || 'Please add a point in the map (related to the last control point).');
                                 isDragging = false; // Stop the left-click drag movement
                                 isDragged = false; // Reset the drag state
-                                
                                 return;
                             }
 
@@ -1257,15 +1316,76 @@ $(document).ready(function () {
         },
         error: function (response) {
             console.log(response);
-            $('.modal-title').html('Error!'); // Set the modal content
-            $('.modal-body').html('An error ' + response.status + ' occurred:<br />' + response.responseText); // Set the modal body content
-                // Add a button to go to /batch url
-                $('.modal-footer').html('<button type="button" class="btn btn-primary" id="go-to-batch">Go to batchs </button>');
-                $('#go-to-batch').on('click', function () {
-                    window.location.href = '/batchs';
+            var body = {};
+            try { body = response.responseJSON || JSON.parse(response.responseText || '{}'); }
+            catch (e) {}
+
+            var T = window.LAN_I18N || {};
+
+            // 409 with challenge_conflict: pool empty because of active
+            // enrollments. Tell the user and link to the challenge detail
+            // where they can leave it if they want different tasks.
+            if (response.status === 409 && body.challenge_conflict) {
+                var manyChallenges = (body.challenges || []).length !== 1;
+                var noMatchTxt = manyChallenges
+                    ? (T.no_match_many || 'No tasks match the constraints of your active challenges')
+                    : (T.no_match_one  || 'No tasks match the constraints of your active challenge');
+                var firstCh = (body.challenges || [])[0];
+                var nameHtml = '';
+                if (firstCh) {
+                    nameHtml = ' (<a href="/challenges/' + firstCh.id + '/"><b>' + firstCh.name + '</b></a>)';
                 }
-                );
-            infoModal.show(); // Show the modal
+                var actionsHtml = '<div style="display:flex;flex-wrap:wrap;gap:8px;">';
+                if (firstCh) {
+                    actionsHtml += '<a href="/challenges/' + firstCh.id + '/" class="ds-btn ds-btn--primary">'
+                        + (T.btn_view_challenge || 'View challenge') + '</a>';
+                }
+                actionsHtml += '<a href="/#challenges-section" class="ds-btn ds-btn--secondary">'
+                    + (T.btn_browse_challenges || 'Browse challenges') + '</a>'
+                    + '<a href="/#batch-section" class="ds-btn ds-btn--ghost">'
+                    + (T.btn_pick_batch || 'Pick another batch') + '</a>'
+                    + '</div>';
+                var html = ''
+                    + '<p>'
+                    + noMatchTxt
+                    + nameHtml
+                    + ' ' + (T.in_this_batch || 'in this batch.')
+                    + '</p>'
+                    + '<p style="margin:10px 0 14px;color:var(--ink-2);font-size:12.5px;">'
+                    + (T.leave_to_change || 'You can leave the challenge from its page if you want different tasks.')
+                    + '</p>'
+                    + actionsHtml;
+                showAlert(T.challenge_active || 'Challenge filter active', html);
+                return;
+            }
+
+            // 404 = no pending tasks left in the batch (or globally).
+            if (response.status === 404) {
+                var emptyHtml = ''
+                    + '<div style="text-align:center;padding:8px 4px 14px;">'
+                    + '<div style="font-size:42px;margin-bottom:8px;">🎉</div>'
+                    + '<p style="margin:0 0 8px;color:var(--ink-0);font-weight:600;">'
+                    + (T.all_done_heading || 'No more tasks available here')
+                    + '</p>'
+                    + '<p style="margin:0 0 18px;color:var(--ink-2);font-size:13px;line-height:1.5;">'
+                    + (T.all_done_body || 'Either every image in this batch has been georeferenced enough times, or there are no pending tasks at the moment. Thank you for contributing!')
+                    + '</p>'
+                    + '<div style="display:inline-flex;flex-wrap:wrap;gap:8px;justify-content:center;">'
+                    + '<a href="/#batch-section" class="ds-btn ds-btn--primary">'
+                    + (T.btn_pick_batch || 'Pick another batch') + '</a>'
+                    + '<a href="/" class="ds-btn ds-btn--ghost">'
+                    + (T.btn_go_home || 'Go home') + '</a>'
+                    + '</div>'
+                    + '</div>';
+                showAlert(T.all_done_title || 'All done here', emptyHtml);
+                return;
+            }
+
+            // Network error (no response) or 5xx.
+            var msg = body.error || (T.error_generic || 'An error occurred.');
+            showAlert(T.error_title || 'Error',
+                msg + '<br /><br /><a href="/#batch-section" class="ds-btn ds-btn--primary ds-btn--sm">'
+                + (T.btn_go_batches || 'Go to batches') + '</a>');
         }
 
     });

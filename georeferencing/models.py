@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 import hashlib
 import uuid
 from django.contrib.auth import get_user_model
@@ -15,7 +16,7 @@ class GeoAttempt(models.Model):
  
     
     image = models.ForeignKey('Image', on_delete=models.CASCADE)
-    assignedUser = models.ForeignKey(get_user_model(), on_delete=models.DO_NOTHING, blank=True, null=True)
+    assignedUser = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, blank=True, null=True)
     createdDateTime = models.DateTimeField(auto_now_add=True)
     assignedDateTime = models.DateTimeField(blank=True, null=True)
     finishedDateTime = models.DateTimeField(blank=True, null=True)
@@ -70,17 +71,57 @@ class Image(models.Model):
     spacecraftNadirPoint = models.CharField(max_length=100, blank = True, null = True)
     photoCenterPoint = models.CharField(max_length=100, blank = True, null = True)
     photoCenterByMachineLearning = models.CharField(max_length=100, blank = True, null = True)
+    # Numeric copies of the best available "centre" coords used for spatial
+    # filters (e.g. challenge bounding-box). Populated by save() and the
+    # backfill_image_coords management command, with priority:
+    # photoCenterPoint > photoCenterByMachineLearning > spacecraftNadirPoint.
+    photoCenterLat = models.FloatField(blank=True, null=True, db_index=True)
+    photoCenterLon = models.FloatField(blank=True, null=True, db_index=True)
     spaceCraftAltitude = models.IntegerField( blank = True, null = True)
     link = models.URLField( blank = True, null = True)
     largeImageURL = models.URLField( blank = True, null = True)
     smallImageURL = models.URLField( blank = True, null = True)
     batch = models.ForeignKey('Batch', on_delete=models.CASCADE, blank=True, null=True)
     replicas = models.IntegerField(default=5)
-    
+
+    @staticmethod
+    def parse_latlon(s):
+        """Parse a 'lat,lon' string into (float, float) or None on failure."""
+        if not s:
+            return None
+        try:
+            parts = [p.strip() for p in str(s).split(',')]
+            if len(parts) < 2:
+                return None
+            lat = float(parts[0])
+            lon = float(parts[1])
+            if not (-90 <= lat <= 90 and -180 <= lon <= 180):
+                return None
+            return (lat, lon)
+        except (ValueError, TypeError):
+            return None
+
+    def best_center(self):
+        """Return (lat, lon) using priority chain, or None."""
+        for src in (self.photoCenterPoint,
+                    self.photoCenterByMachineLearning,
+                    self.spacecraftNadirPoint):
+            parsed = self.parse_latlon(src)
+            if parsed is not None:
+                return parsed
+        return None
+
     def save(self, *args, **kwargs):
-        print(self.focalLength)
+        # Recompute numeric centre on every save so newly-added images
+        # don't need the backfill command.
+        center = self.best_center()
+        if center is not None:
+            self.photoCenterLat, self.photoCenterLon = center
+        else:
+            self.photoCenterLat = None
+            self.photoCenterLon = None
         super().save(*args, **kwargs)
-    
+
     def __str__(self):
         return str(self.name)
     
@@ -157,7 +198,7 @@ class Expedition(models.Model):
 
 class GeoAttemptsByUserByDay(models.Model):
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-    date = models.DateField()
+    date = models.DateField(db_index=True)
     numberGeoAttempts = models.IntegerField(default=0)
 
     def __str__(self):
@@ -185,6 +226,20 @@ class Challenge(models.Model):
         blank=True, null=True, related_name='created_challenges',
     )
 
+    # Optional spatial bounding-box filter. When set, only images whose
+    # photoCenterLat/Lon fall inside the rectangle count towards the
+    # challenge. Antimeridian-aware: if min_lon > max_lon the box wraps.
+    bbox_min_lat = models.FloatField(blank=True, null=True)
+    bbox_max_lat = models.FloatField(blank=True, null=True)
+    bbox_min_lon = models.FloatField(blank=True, null=True)
+    bbox_max_lon = models.FloatField(blank=True, null=True)
+
+    # Cached counts of images / tasks that match (batch ∩ bbox). Refreshed
+    # on save() and via the "Recompute counts" admin action. Stale if new
+    # images are added to the batch after the challenge is saved.
+    cached_image_count = models.PositiveIntegerField(default=0)
+    cached_task_count  = models.PositiveIntegerField(default=0)
+
     class Meta:
         ordering = ['-start_at']
         constraints = [
@@ -203,6 +258,79 @@ class Challenge(models.Model):
 
     def __str__(self):
         return self.name
+
+    # ── Bounding-box helpers ───────────────────────────────────────────
+    @property
+    def has_bbox(self):
+        return None not in (
+            self.bbox_min_lat, self.bbox_max_lat,
+            self.bbox_min_lon, self.bbox_max_lon,
+        )
+
+    def bbox_filter_q(self, lat_field='photoCenterLat', lon_field='photoCenterLon'):
+        """
+        Return a Q filtering Image (or related) rows whose lat/lon fall
+        inside the challenge's bbox. Returns Q() (no-op) if no bbox.
+        Antimeridian-aware: if min_lon > max_lon, the bbox wraps.
+        """
+        if not self.has_bbox:
+            return models.Q()
+        lat_q = models.Q(**{f'{lat_field}__gte': self.bbox_min_lat,
+                            f'{lat_field}__lte': self.bbox_max_lat})
+        if self.bbox_min_lon <= self.bbox_max_lon:
+            lon_q = models.Q(**{f'{lon_field}__gte': self.bbox_min_lon,
+                                f'{lon_field}__lte': self.bbox_max_lon})
+        else:
+            # Wraps: lon ≥ min OR lon ≤ max (e.g. 170°E to -170°W = Pacific).
+            lon_q = (
+                models.Q(**{f'{lon_field}__gte': self.bbox_min_lon})
+                | models.Q(**{f'{lon_field}__lte': self.bbox_max_lon})
+            )
+        return lat_q & lon_q
+
+    def matching_images(self):
+        """Image queryset filtered by batch (if any) AND bbox (if any).
+        Images without lat/lon are excluded when a bbox is set."""
+        qs = Image.objects.all()
+        if self.batch_id:
+            qs = qs.filter(batch_id=self.batch_id)
+        if self.has_bbox:
+            qs = qs.filter(self.bbox_filter_q()).filter(
+                photoCenterLat__isnull=False,
+                photoCenterLon__isnull=False,
+            )
+        return qs
+
+    def matching_tasks(self):
+        """GeoAttempt queryset for images that match the challenge."""
+        qs = GeoAttempt.objects.filter(image__in=self.matching_images())
+        return qs
+
+    def compute_counts(self):
+        """Return (n_images, n_tasks) for the current batch+bbox config."""
+        n_images = self.matching_images().count()
+        n_tasks = self.matching_tasks().count()
+        return n_images, n_tasks
+
+    def save(self, *args, **kwargs):
+        """Refresh cached_image_count / cached_task_count whenever the
+        conditions (batch / bbox) might have changed. Callers that update
+        only unrelated fields can pass update_fields to skip the recount."""
+        update_fields = kwargs.get('update_fields')
+        affecting = {'batch', 'batch_id',
+                     'bbox_min_lat', 'bbox_max_lat',
+                     'bbox_min_lon', 'bbox_max_lon'}
+        should_recount = update_fields is None or bool(set(update_fields) & affecting)
+        if should_recount:
+            try:
+                self.cached_image_count, self.cached_task_count = self.compute_counts()
+                if update_fields is not None:
+                    kwargs['update_fields'] = list(
+                        set(update_fields) | {'cached_image_count', 'cached_task_count'}
+                    )
+            except Exception:
+                pass  # Don't block save() on a count error.
+        super().save(*args, **kwargs)
 
     @property
     def status(self):
@@ -236,6 +364,9 @@ class ChallengeParticipant(models.Model):
     joined_at = models.DateTimeField(auto_now_add=True)
     left_at = models.DateTimeField(blank=True, null=True)
     cached_cp_count = models.PositiveIntegerField(default=0)
+    # Unique token printed on the participant's challenge diploma; backs the
+    # public /verify/<code>/ page. Generated lazily on first download.
+    verify_code = models.CharField(max_length=48, blank=True, db_index=True)
 
     class Meta:
         constraints = [
@@ -258,9 +389,47 @@ class ChallengeParticipant(models.Model):
     def is_active(self):
         return self.left_at is None
 
+    def ensure_verify_code(self):
+        """Generate the diploma verification token if missing and persist it.
+        Uses hex (no '-'/'_') so the code survives copy-paste from the PDF."""
+        if not self.verify_code:
+            import secrets
+            self.verify_code = secrets.token_hex(16)
+            if self.pk:
+                self.save(update_fields=['verify_code'])
+        return self.verify_code
+
     def __str__(self):
         state = 'left' if self.left_at else 'active'
         return f'{self.user} -> {self.challenge} ({state}, {self.cached_cp_count} cp)'
+
+
+class DiplomaDownload(models.Model):
+    """One row per successful diploma render. Lets us measure whether diplomas
+    are actually used: real downloads vs. previews, by whom, and over time."""
+    KIND_CHOICES = (('general', 'general'), ('challenge', 'challenge'))
+    user = models.ForeignKey(
+        get_user_model(), on_delete=models.SET_NULL,
+        null=True, blank=True, related_name='diploma_downloads',
+    )
+    kind = models.CharField(max_length=12, choices=KIND_CHOICES, db_index=True)
+    challenge = models.ForeignKey(
+        'Challenge', on_delete=models.SET_NULL,
+        null=True, blank=True, related_name='diploma_downloads',
+    )
+    # True when opened as an inline preview (?inline=1); False for a real download.
+    inline = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [models.Index(fields=['kind', '-created_at'])]
+
+    def __str__(self):
+        who = self.user.username if self.user_id else 'deleted-user'
+        target = self.challenge.name if self.challenge_id else 'overall'
+        mode = 'preview' if self.inline else 'download'
+        return f'{who} · {self.kind}/{target} · {mode} · {self.created_at:%Y-%m-%d %H:%M}'
 
 
 class TutorialEvent(models.Model):
@@ -285,3 +454,68 @@ class TutorialEvent(models.Model):
     def __str__(self):
         who = self.user.username if self.user else f"anon:{self.session_key[:8]}"
         return f"{who} - {self.event}{f' #{self.step}' if self.step is not None else ''} - {self.created_at:%Y-%m-%d %H:%M}"
+
+
+class FailedImage(models.Model):
+    """
+    Records an image name from a LIST batch that could not be resolved/imported,
+    associated with the batch that created it. One row per (batch, name); a later
+    successful re-run removes the row (see process_single_image).
+    """
+
+    FAILURE_REASON_CHOICES = (
+        ('NOT_FOUND',       _('No image file found (not in images table)')),
+        ('NO_COORDS',       _('No coordinates (not in frames or nadir)')),
+        ('DOWNLOAD_FAILED', _('Download failed')),
+        ('API_ERROR',       _('NASA API error')),
+        ('PARSE_ERROR',     _('Could not parse mission/roll/frame')),
+        ('ERROR',           _('Unexpected error')),
+    )
+
+    batch = models.ForeignKey('Batch', on_delete=models.CASCADE, related_name='failed_images')
+    name = models.CharField(max_length=100)
+    reason = models.CharField(max_length=30, choices=FAILURE_REASON_CHOICES, default='ERROR')
+    detail = models.TextField(blank=True, null=True)
+    createdDateTime = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('batch', 'name')
+        ordering = ['-createdDateTime']
+
+    def __str__(self):
+        return f"{self.name} ({self.reason})"
+
+
+class StatsEvent(models.Model):
+    """
+    A dated note on the staff statistics page ("newsletter sent", "campaign
+    launched", "press article"...). Drawn as a vertical marker on the daily
+    charts so staff can see whether an action moved sign-ups or contributions.
+    """
+    KIND_CHOICES = (
+        ('campaign',   _('Campaign')),
+        ('email',      _('Email / newsletter')),
+        ('press',      _('Press / media')),
+        ('social',     _('Social media')),
+        ('challenge',  _('Challenge')),
+        ('deploy',     _('Deploy / release')),
+        ('batch',      _('Batch loaded')),
+        ('other',      _('Other')),
+    )
+
+    happened_at = models.DateTimeField(default=timezone.now, db_index=True)
+    kind = models.CharField(max_length=12, choices=KIND_CHOICES, default='other')
+    title = models.CharField(max_length=140)
+    note = models.TextField(blank=True)
+    url = models.URLField(blank=True)
+    created_by = models.ForeignKey(
+        get_user_model(), on_delete=models.SET_NULL, blank=True, null=True,
+        related_name='stats_events',
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-happened_at']
+
+    def __str__(self):
+        return f'{self.happened_at:%Y-%m-%d} · {self.get_kind_display()} · {self.title}'

@@ -15,7 +15,7 @@ from django.urls import path, reverse
 from .forms import PrettyJSONWidget
 from .models import (
     Batch, Image, GeoAttempt, GeoAttemptsByUserByDay, TutorialEvent,
-    Challenge, ChallengeParticipant,
+    Challenge, ChallengeParticipant, FailedImage, DiplomaDownload, StatsEvent,
 )
 from .tasks import download_image, generate_from_list
 
@@ -346,19 +346,39 @@ class ChallengeParticipantInline(admin.TabularInline):
 
 
 class ChallengeAdmin(admin.ModelAdmin):
+    change_form_template = 'admin/georeferencing/challenge/change_form.html'
     list_display = (
-        'name', 'status_badge', 'batch', 'start_at', 'end_at',
+        'name', 'status_badge', 'batch', 'has_bbox_badge',
+        'cached_image_count', 'cached_task_count',
+        'start_at', 'end_at',
         'target_bronze', 'target_silver', 'target_gold',
         'participants_count', 'total_cp',
     )
     list_filter = ('is_paused', 'batch', 'start_at', 'end_at')
     search_fields = ('name', 'description')
-    readonly_fields = ('created_at', 'created_by', 'paused_at', 'total_cp')
+    readonly_fields = ('created_at', 'created_by', 'paused_at', 'total_cp',
+                       'cached_image_count', 'cached_task_count')
     inlines = [ChallengeParticipantInline]
-    actions = ['pause_challenges', 'resume_challenges', 'recompute_totals']
+    actions = ['pause_challenges', 'resume_challenges',
+               'recompute_totals', 'recompute_counts']
     fieldsets = (
         (None, {
             'fields': ('name', 'description', 'batch'),
+        }),
+        ('Spatial bbox (optional)', {
+            'description': (
+                'Draw a rectangle on the map below; the four lat/lon fields'
+                ' are filled automatically. Only images whose centre falls'
+                ' inside the rectangle will count for the challenge. If the'
+                ' rectangle wraps the antimeridian (min_lon &gt; max_lon),'
+                ' the filter handles it correctly. The cached counts below'
+                ' refresh on save and via the "Recompute counts" action.'
+            ),
+            'fields': (
+                'bbox_min_lat', 'bbox_max_lat',
+                'bbox_min_lon', 'bbox_max_lon',
+                'cached_image_count', 'cached_task_count',
+            ),
         }),
         ('Schedule', {
             'fields': ('start_at', 'end_at', 'is_paused', 'paused_at'),
@@ -391,6 +411,13 @@ class ChallengeAdmin(admin.ModelAdmin):
         return obj.participants.count()
     participants_count.short_description = '# Participants'
 
+    def has_bbox_badge(self, obj):
+        from django.utils.html import format_html
+        if obj.has_bbox:
+            return format_html('<span style="background:#0d6efd;color:#fff;padding:2px 6px;border-radius:8px;font-size:10px;">BBOX</span>')
+        return format_html('<span style="color:#999;font-size:11px;">—</span>')
+    has_bbox_badge.short_description = 'BBox'
+
     def total_cp(self, obj):
         return obj.total_cp() if obj.pk else 0
     total_cp.short_description = 'Total CPs'
@@ -415,29 +442,46 @@ class ChallengeAdmin(admin.ModelAdmin):
         self.message_user(request, f'{n} challenge(s) resumed.')
     resume_challenges.short_description = 'Resume selected challenges'
 
-    def recompute_totals(self, request, queryset):
-        # Reconcile cached_cp_count from finished GeoAttempts during the
-        # window, scoped to participant + batch (or any batch when general).
-        from django.db.models import Q
-        total_updated = 0
+    def recompute_counts(self, request, queryset):
+        """Refresh cached_image_count / cached_task_count for selected challenges."""
+        n = 0
         for ch in queryset:
-            qs = GeoAttempt.objects.filter(
-                status='DONE',
-                finishedDateTime__gte=ch.start_at,
-                finishedDateTime__lt=ch.end_at,
-            )
-            if ch.batch_id:
-                qs = qs.filter(image__batch_id=ch.batch_id)
-            for participant in ch.participants.all():
-                user_qs = qs.filter(assignedUser=participant.user)
-                cp_total = 0
-                for ga in user_qs.only('controlPoints'):
-                    cp_total += len(ga.controlPoints) if isinstance(ga.controlPoints, list) else 0
-                participant.cached_cp_count = cp_total
-                participant.save(update_fields=['cached_cp_count'])
-                total_updated += 1
-        self.message_user(request, f'Recomputed totals for {total_updated} participant(s).')
+            ch.cached_image_count, ch.cached_task_count = ch.compute_counts()
+            ch.save(update_fields=['cached_image_count', 'cached_task_count'])
+            n += 1
+        self.message_user(request, f'Recomputed image/task counts for {n} challenge(s).')
+    recompute_counts.short_description = 'Recompute image/task counts (batch+bbox)'
+
+    def recompute_totals(self, request, queryset):
+        # Same rule as `reconcile_counters` (georeferencing.reconcile):
+        # DONE tasks by the participant inside challenge ∩ enrollment window,
+        # on images matching batch ∩ bbox.
+        from .reconcile import recompute_challenge
+        changed = sum(recompute_challenge(ch) for ch in queryset)
+        self.message_user(request, f'Recomputed totals; {changed} participant(s) changed.')
     recompute_totals.short_description = 'Recompute totals (slow)'
+
+
+class FailedImageAdmin(admin.ModelAdmin):
+    """List of image names that could not be resolved/imported, grouped by batch."""
+    list_display = ('name', 'batch', 'reason', 'createdDateTime')
+    list_filter = ('reason', 'batch')
+    search_fields = ('name', 'detail')
+    readonly_fields = ('createdDateTime',)
+    list_select_related = ('batch',)
+
+
+class DiplomaDownloadAdmin(admin.ModelAdmin):
+    """Browse diploma renders to gauge usefulness (downloads vs previews)."""
+    list_display = ('created_at', 'user', 'kind', 'challenge', 'inline')
+    list_filter = ('kind', 'inline', 'challenge', 'created_at')
+    date_hierarchy = 'created_at'
+    search_fields = ('user__username', 'user__email', 'challenge__name')
+    list_select_related = ('user', 'challenge')
+    readonly_fields = ('user', 'kind', 'challenge', 'inline', 'created_at')
+
+    def has_add_permission(self, request):
+        return False  # log rows are created by the app, not by hand
 
 
 admin.site.register(Batch, BatchAdmin)
@@ -446,5 +490,20 @@ admin.site.register(GeoAttempt, GeoAttemptAdmin)
 admin.site.register(GeoAttemptsByUserByDay)
 admin.site.register(TutorialEvent, TutorialEventAdmin)
 admin.site.register(Challenge, ChallengeAdmin)
+admin.site.register(FailedImage, FailedImageAdmin)
+admin.site.register(DiplomaDownload, DiplomaDownloadAdmin)
+
+
+@admin.register(StatsEvent)
+class StatsEventAdmin(admin.ModelAdmin):
+    list_display = ('happened_at', 'kind', 'title', 'url', 'created_by')
+    list_filter = ('kind',)
+    search_fields = ('title', 'note')
+    readonly_fields = ('created_by', 'created_at')
+
+    def save_model(self, request, obj, form, change):
+        if not obj.created_by_id:
+            obj.created_by = request.user
+        super().save_model(request, obj, form, change)
 
 # Register your models here.

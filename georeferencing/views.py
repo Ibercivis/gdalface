@@ -7,8 +7,7 @@ from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated  # Add this import
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from .serializers import GeoAttemptSerializer, ImageSerializer, MiniGeoAttemptSerializer
 from .models import (
     GeoAttempt, Image, Batch, GeoAttemptsByUserByDay, TutorialEvent,
@@ -21,6 +20,7 @@ import subprocess
 import random
 from haversine import haversine
 from datetime import datetime, timedelta
+from django.db import models
 # import isAuthenticated from rest_framework.permissions
 # from django.contrib.auth.decorators import login_required
 
@@ -73,20 +73,98 @@ class PendingGeoAttemptView(APIView):
     def get(self, request, pk=None):
         # Determine the queryset based on whether pk (batch ID) is provided
         if pk is None:
-            # No batch specified: get all pending GeoAttempts
             pending_geoattempts = GeoAttempt.objects.filter(status="PENDING")
         else:
-            # Batch specified: get pending GeoAttempts for that batch
-            print("Batch ID provided:", pk)
             try:
                 batch = Batch.objects.get(id=pk)
-                print(batch)
-                pending_geoattempts = GeoAttempt.objects.filter(status="PENDING", image__batch=batch)
+                pending_geoattempts = GeoAttempt.objects.filter(
+                    status="PENDING", image__batch=batch,
+                )
             except Batch.DoesNotExist:
                 return Response({"error": "Batch not found."}, status=status.HTTP_404_NOT_FOUND)
 
+        # Don't serve images that have already met their replica quota.
+        # Image.replicas defines how many DONE attempts that image needs;
+        # once reached, the remaining PENDING rows for it are wasted work.
+        from django.db.models import Count
+        covered_image_ids = (
+            Image.objects
+            .annotate(done_count=Count(
+                'geoattempt', filter=models.Q(geoattempt__status='DONE'),
+            ))
+            .filter(done_count__gte=models.F('replicas'))
+            .values_list('id', flat=True)
+        )
+        pending_geoattempts = pending_geoattempts.exclude(
+            image_id__in=covered_image_ids,
+        )
+
+        # Avoid serving the same image twice to the same user. We exclude
+        # any pending GeoAttempt whose Image already has a DONE attempt by
+        # this user (in any other replica slot). Skipped tasks are not
+        # tracked per-user yet, so a skipped image may reappear.
+        if request.user.is_authenticated:
+            done_image_ids = (
+                GeoAttempt.objects
+                .filter(assignedUser=request.user, status='DONE')
+                .values_list('image_id', flat=True)
+            )
+            pending_geoattempts = pending_geoattempts.exclude(
+                image_id__in=done_image_ids,
+            )
+
+        # Strict intersection: pending must satisfy the URL batch AND match
+        # at least ONE active enrollment (UNION across the user's
+        # challenges). Each enrollment's match condition is:
+        # (challenge.batch matches OR challenge has no batch) AND
+        # (image inside bbox if challenge has one).
+        # Challenges without batch and without bbox don't restrict anything.
+        challenge_filter_applied = False
+        active_challenges_info = []
+        if request.user.is_authenticated:
+            now = timezone.now()
+            active_enrollments = (
+                ChallengeParticipant.objects
+                .select_related('challenge')
+                .filter(
+                    user=request.user,
+                    left_at__isnull=True,
+                    challenge__is_paused=False,
+                    challenge__start_at__lte=now,
+                    challenge__end_at__gt=now,
+                )
+            )
+            union_q = None
+            for ep in active_enrollments:
+                ch = ep.challenge
+                applies = False
+                ch_q = models.Q()
+                if ch.batch_id:
+                    ch_q &= models.Q(image__batch_id=ch.batch_id)
+                    applies = True
+                if ch.has_bbox:
+                    ch_q &= ch.bbox_filter_q(
+                        lat_field='image__photoCenterLat',
+                        lon_field='image__photoCenterLon',
+                    ) & models.Q(image__photoCenterLat__isnull=False)
+                    applies = True
+                if applies:
+                    active_challenges_info.append({'id': ch.id, 'name': ch.name})
+                    union_q = ch_q if union_q is None else (union_q | ch_q)
+            if union_q is not None:
+                pending_geoattempts = pending_geoattempts.filter(union_q)
+                challenge_filter_applied = True
+
         # Check if any pending GeoAttempts exist
         if not pending_geoattempts.exists():
+            if challenge_filter_applied:
+                # Conflict: the active challenge(s) restricted the pool to 0.
+                # Tell the client so it can prompt for the bypass.
+                return Response({
+                    "error": "No tasks match your active challenge(s) and the chosen batch.",
+                    "challenge_conflict": True,
+                    "challenges": active_challenges_info,
+                }, status=status.HTTP_409_CONFLICT)
             error_msg = "No pending geo attempts found" + (" in this batch." if pk else ".")
             return Response({"error": error_msg}, status=status.HTTP_404_NOT_FOUND)
 
@@ -175,10 +253,17 @@ class GeoAttemptIndividualView(APIView):
     """
     API view for patching and deleting an image geo attempt.
     Methods:
-    - patch: Patch an image geo attempt.
-    - delete: Delete an image geo attempt.
+    - patch: Patch an image geo attempt (anonymous OK — used during gettask flow).
+    - delete: Delete an image geo attempt (admin only).
     """
     parser_classes = (JSONParser,)
+
+    def get_permissions(self):
+        # PATCH must work for anonymous users (gettask flow), but DELETE
+        # is destructive and must be restricted to staff.
+        if self.request.method == 'DELETE':
+            return [IsAdminUser()]
+        return [AllowAny()]
     # TODO: Remove print statements
     def max_distance(self, points):
         print("Input to max_distance:", points)
@@ -246,15 +331,60 @@ class GeoAttemptIndividualView(APIView):
         operation_summary="Patch an image geo attempt")
     def patch(self, request, pk=None):
         geoattemp = get_object_or_404(GeoAttempt, pk=pk)
-        print(request.data)
-        serializer = GeoAttemptSerializer(
-            geoattemp, data=request.data, partial=True)
+        # Accept both spellings for backwards compat with older clients.
+        # Newer clients should send `control_points` only.
+        control_points = (
+            request.data.get('control_points')
+            or request.data.get('controlPoints')
+            or []
+        )
+        new_status = request.data.get('status')
+        if new_status not in ('ASSIGNED', 'DONE', 'PENDING'):
+            return Response({"error": "status must be ASSIGNED, DONE or PENDING"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # ── Ownership guard ──────────────────────────────────────────────
+        # A task assigned to a user may only be changed by that user (or
+        # staff). Anonymous callers may only touch anonymous tasks.
+        owner_id = geoattemp.assignedUser_id
+        if owner_id is not None and not request.user.is_staff and (
+                not request.user.is_authenticated or request.user.id != owner_id):
+            return Response({"error": "This task is assigned to another user."},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        # ── State guard ──────────────────────────────────────────────────
+        # Try / submit / skip only make sense while the task is ASSIGNED.
+        # This makes DONE idempotent (a second submit is refused instead of
+        # inflating counters) and stops "skip" from wiping a finished task
+        # or a stale tab from submitting a task that was already released.
+        if geoattemp.status != 'ASSIGNED':
+            if geoattemp.status == 'DONE':
+                msg = "This task was already submitted."
+            else:
+                msg = "This task is no longer assigned to you. Please load a new one."
+            return Response({"error": msg, "task_status": geoattemp.status},
+                            status=status.HTTP_409_CONFLICT)
+
+        # A finished task without any control point is not a contribution.
+        # (Seen in production: 'control_points': [] accepted as DONE.)
+        if new_status == 'DONE' and not control_points:
+            return Response({"error": "At least one control point is required to submit."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # The model field is `controlPoints`; make sure whatever spelling the
+        # client used ends up stored (this mapping was missing between
+        # 2026-05-02 and 2026-10-03 and every submit saved an empty list).
+        data = dict(request.data)
+        if control_points:
+            data['controlPoints'] = control_points
+        data.pop('control_points', None)
+        serializer = GeoAttemptSerializer(geoattemp, data=data, partial=True)
         if serializer.is_valid():
 
             # We are receiving this status from user, so that means
             # that it's not finished yet, and the user is asking for
             # a new try
-            if request.data['status'] == 'ASSIGNED':
+            if new_status == 'ASSIGNED':
                 print('Starting the testing process')
                 # We increment the number of tries
                 geoattemp.numberTries += 1
@@ -267,7 +397,7 @@ class GeoAttemptIndividualView(APIView):
 
                 # First command: gdal_translate
                 command = 'gdal_translate -of GTiff'
-                for item in request.data['control_points']:
+                for item in control_points:
                     command += ' -gcp ' + \
                         str(item['actualPx']) + ' ' + str(item['actualPy'])
                     command += ' ' + str(item['lon']) + ' ' + str(item['lat'])
@@ -312,7 +442,7 @@ class GeoAttemptIndividualView(APIView):
                 # Fourth command: (-r bilinear is slower, but....)
                 # zoom will depend on the focal length
                 # Show max distance between two points
-                mx = self.max_distance(request.data['control_points'])
+                mx = self.max_distance(control_points)
                 print(mx)
                 zoom = self.get_zooms(mx)
                 print(zoom)
@@ -329,7 +459,7 @@ class GeoAttemptIndividualView(APIView):
                     return Response({"error": f"gdal2tiles.py failed: {e.stderr}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
                 return Response(serializer.data, status=status.HTTP_200_OK)
             # That means that the user is happy with the final result
-            elif request.data['status'] == 'DONE':
+            elif new_status == 'DONE':
                 # Clean up temporary tiles generated during Try
                 tile_dir = 'media/georeferenced/' + geoattemp.image.name + geoattemp.hash
                 tile_tif = tile_dir + '.tif'
@@ -337,35 +467,48 @@ class GeoAttemptIndividualView(APIView):
                     os.remove(tile_tif)
                 if os.path.exists(tile_dir):
                     shutil.rmtree(tile_dir)
-                # let's start the georeferencing process
-                # for the moment, launch a batch script
                 print('Submitting the final result')
-                print(request.data['controlPoints'])
                 geoattemp.finishedDateTime = timezone.now()
                 geoattemp.save()
-                spend_time = (geoattemp.finishedDateTime -
-                              geoattemp.assignedDateTime).total_seconds()
-                # Now, if the user is logged in, we can add a geoattempt to today
+                if geoattemp.assignedDateTime:
+                    spend_time = (geoattemp.finishedDateTime -
+                                  geoattemp.assignedDateTime).total_seconds()
+                else:
+                    spend_time = 0
+
+                # Count exactly what will be persisted in `controlPoints`.
+                cp_added = len(data.get('controlPoints') or [])
+                user_profile = None
+                enrollment = None
+
+                # CHEATING CHECK FIRST — reject before touching any counters,
+                # so that suspicious submits don't inflate stats / challenge
+                # progress / daily streak.
+                if spend_time < 10:
+                    print('User is cheating')
+                    geoattemp.finishedDateTime = None
+                    geoattemp.save()
+                    if geoattemp.assignedUser:
+                        cheat_profile, _c = UserProfile.objects.get_or_create(
+                            user=geoattemp.assignedUser)
+                        cheat_profile.cheating += 1
+                        cheat_profile.save()
+                    return Response({"error": f"Are you cheating?. {spend_time}"}, status=status.HTTP_400_BAD_REQUEST)
+
                 if geoattemp.assignedUser:
-                    print('User is authenticated')
                     user_profile, created = UserProfile.objects.get_or_create(
                         user=geoattemp.assignedUser)
-                    if created:
-                        print('User profile created')
                     user_profile.geoattempts_done += 1
                     user_profile.time_spent += spend_time
-                    user_profile.controlPointsDone += len(
-                        request.data['controlPoints'])
+                    user_profile.controlPointsDone += cp_added
                     user_profile.save()
 
                     # Challenge progress: if the user has an active enrollment
                     # whose challenge applies (active status + matching batch
                     # or general), add the submitted CPs to its cached counter.
-                    cp_added = len(request.data['controlPoints'])
                     if cp_added:
-                        from django.db.models import F, Q
+                        from django.db.models import F
                         now = timezone.now()
-                        image_batch_id = geoattemp.image.batch_id
                         enrollment = (
                             ChallengeParticipant.objects
                             .select_related('challenge')
@@ -376,47 +519,109 @@ class GeoAttemptIndividualView(APIView):
                                 challenge__start_at__lte=now,
                                 challenge__end_at__gt=now,
                             )
-                            .filter(
-                                Q(challenge__batch__isnull=True)
-                                | Q(challenge__batch_id=image_batch_id)
-                            )
                             .first()
                         )
+                        # The image must match the challenge (batch AND
+                        # bbox) — same rule the task picker uses.
+                        if enrollment and not enrollment.challenge.matching_images().filter(
+                                pk=geoattemp.image_id).exists():
+                            enrollment = None
                         if enrollment:
                             ChallengeParticipant.objects.filter(
                                 pk=enrollment.pk,
                             ).update(cached_cp_count=F('cached_cp_count') + cp_added)
 
-                    # Now, we can add a geoattempt to today
+                    # Daily contribution counter
                     today = timezone.now().date()
                     geoattempts_today, created = GeoAttemptsByUserByDay.objects.get_or_create(
-                        user=geoattemp.assignedUser, date=today)
-                    if created:
-                        print('GeoAttemptsByUserByDay created')
-                        geoattempts_today.numberGeoAttempts += 1
-                        geoattempts_today.save()
-                    else:
-                        print('GeoAttemptsByUserByDay updated')
-                        geoattempts_today.numberGeoAttempts += 1
-                        geoattempts_today.save()
-
-                if spend_time < 10:
-                    print('User is cheating')
-                    geoattemp.finishedDateTime = None
-                    geoattemp.save()
-                    user_profile, created = UserProfile.objects.get_or_create(
-                        user=geoattemp.assignedUser)
-                    if created:
-                        print('User profile created')
-                    user_profile.cheating += 1
-                    user_profile.save()
-                    return Response({"error": f"Are you cheating?. {spend_time}"}, status=status.HTTP_400_BAD_REQUEST)
+                        user=geoattemp.assignedUser, date=today,
+                    )
+                    geoattempts_today.numberGeoAttempts += 1
+                    geoattempts_today.save()
 
                 serializer.save()
 
+                # ── Build the rich result payload for the post-submit overlay
+                result = {
+                    'delta': {
+                        'cp': cp_added,
+                        'tasks': 1,
+                        'time_seconds': int(spend_time),
+                    },
+                    'image': {
+                        'name': geoattemp.image.name,
+                    },
+                }
+                if user_profile:
+                    result['totals'] = {
+                        'cp': user_profile.controlPointsDone,
+                        'tasks': user_profile.geoattempts_done,
+                        'time_seconds': int(user_profile.time_spent),
+                    }
+                    ahead = UserProfile.objects.filter(
+                        controlPointsDone__gt=user_profile.controlPointsDone,
+                    ).count()
+                    prev_cp = max(user_profile.controlPointsDone - cp_added, 0)
+                    prev_ahead = UserProfile.objects.filter(
+                        controlPointsDone__gt=prev_cp,
+                    ).count()
+                    result['rank'] = {
+                        'global': ahead + 1,
+                        'previous_global': prev_ahead + 1,
+                    }
+                    # Streak: consecutive days backwards from today with at least 1 attempt
+                    from datetime import timedelta as _td
+                    day = timezone.now().date()
+                    streak = 0
+                    for _ in range(366):  # bounded sweep
+                        rec = GeoAttemptsByUserByDay.objects.filter(
+                            user=geoattemp.assignedUser, date=day,
+                        ).first()
+                        if rec and rec.numberGeoAttempts > 0:
+                            streak += 1
+                            day = day - _td(days=1)
+                        else:
+                            break
+                    result['streak_days'] = streak
+                    # Challenge section (only if enrolled and CPs added)
+                    if cp_added and enrollment is not None:
+                        from django.db.models import Sum
+                        fresh = (
+                            ChallengeParticipant.objects
+                            .select_related('challenge')
+                            .get(pk=enrollment.pk)
+                        )
+                        ch = fresh.challenge
+                        ahead_ch = ChallengeParticipant.objects.filter(
+                            challenge=ch,
+                            cached_cp_count__gt=fresh.cached_cp_count,
+                        ).count()
+                        prev_ahead_ch = ChallengeParticipant.objects.filter(
+                            challenge=ch,
+                            cached_cp_count__gt=max(fresh.cached_cp_count - cp_added, 0),
+                        ).count()
+                        total_cp_ch = ChallengeParticipant.objects.filter(
+                            challenge=ch,
+                        ).aggregate(total=Sum('cached_cp_count'))['total'] or 0
+                        result['challenge'] = {
+                            'id': ch.id,
+                            'name': ch.name,
+                            'added_cp': cp_added,
+                            'my_cp': fresh.cached_cp_count,
+                            'total_cp': total_cp_ch,
+                            'target_bronze': ch.target_bronze,
+                            'target_silver': ch.target_silver,
+                            'target_gold': ch.target_gold,
+                            'my_rank': ahead_ch + 1,
+                            'previous_rank': prev_ahead_ch + 1,
+                        }
+                payload = dict(serializer.data)
+                payload['result'] = result
+                return Response(payload, status=status.HTTP_200_OK)
+
             # That means that the user click on "skip" button
             # So returning back to pending status
-            elif request.data['status'] == 'PENDING':
+            elif new_status == 'PENDING':
                 # Clean up temporary tiles generated during Try
                 tile_dir = 'media/georeferenced/' + geoattemp.image.name + geoattemp.hash
                 tile_tif = tile_dir + '.tif'
@@ -740,7 +945,106 @@ class ChallengeDetailView(APIView):
         data['leaderboard'] = leaderboard
         data['my_rank'] = my_rank
         data['my_cp'] = my_cp
+
+        # Nudge: how many CP separate me from the participant right above.
+        my_gap = None
+        if my_rank is not None and my_rank > 1:
+            nxt = (ch.participants
+                   .filter(cached_cp_count__gt=my_cp or 0)
+                   .select_related('user')
+                   .order_by('cached_cp_count')
+                   .first())
+            if nxt:
+                my_gap = {
+                    'cp_needed': nxt.cached_cp_count - (my_cp or 0) + 1,
+                    'username': nxt.user.username,
+                }
+        data['my_gap'] = my_gap
         return Response(data)
+
+
+class ChallengeLeaderboardView(APIView):
+    """
+    Paginated per-challenge leaderboard.
+    Query params:
+      page:        1-based page number (default 1)
+      page_size:   default 20, max 100
+      jump_to_me:  '1' → return the page that contains the requesting user
+    """
+    permission_classes = [AllowAny]
+
+    @swagger_auto_schema(
+        tags=['04. Challenges'],
+        operation_summary='Paginated leaderboard for a single challenge')
+    def get(self, request, pk):
+        ch = get_object_or_404(Challenge, pk=pk)
+
+        try:
+            page_size = max(1, min(100, int(request.GET.get('page_size', 20))))
+        except (TypeError, ValueError):
+            page_size = 20
+
+        base = ch.participants.select_related('user', 'user__userprofile')
+        total_users = base.count()
+        total_pages = max(1, (total_users + page_size - 1) // page_size)
+
+        my_rank = None
+        my_cp = None
+        my_username = None
+        if request.user.is_authenticated:
+            mine = base.filter(user=request.user).first()
+            if mine:
+                my_cp = mine.cached_cp_count
+                my_rank = base.filter(
+                    cached_cp_count__gt=mine.cached_cp_count,
+                ).count() + 1
+                my_username = request.user.username
+
+        if request.GET.get('jump_to_me') == '1' and my_rank:
+            page = ((my_rank - 1) // page_size) + 1
+        else:
+            try:
+                page = max(1, int(request.GET.get('page', 1)))
+            except (TypeError, ValueError):
+                page = 1
+        page = min(page, total_pages)
+
+        offset = (page - 1) * page_size
+        qs = base.order_by('-cached_cp_count', 'joined_at')[offset:offset + page_size]
+
+        rows = []
+        for i, p in enumerate(qs):
+            rank = offset + i + 1
+            up = getattr(p.user, 'userprofile', None)
+            is_you = (request.user.is_authenticated and p.user_id == request.user.id)
+            visible = bool(up.visible) if up is not None else True
+            visible = visible or is_you
+            rows.append({
+                'rank': rank,
+                'username': p.user.username if visible else None,
+                'profile_pic_url': up.profile_pic.url if (visible and up and up.profile_pic) else None,
+                'visible': visible,
+                'is_you': is_you,
+                'is_active': p.left_at is None,
+                'cp_count': p.cached_cp_count,
+                'joined_at': p.joined_at.isoformat() if p.joined_at else None,
+                'left_at': p.left_at.isoformat() if p.left_at else None,
+            })
+
+        return Response({
+            'challenge': {
+                'id': ch.id,
+                'name': ch.name,
+            },
+            'page': page,
+            'page_size': page_size,
+            'total_pages': total_pages,
+            'total_users': total_users,
+            'my_rank': my_rank,
+            'my_cp': my_cp,
+            'my_username': my_username,
+            'rows': rows,
+        })
 
 
 class ChallengeJoinView(APIView):
@@ -774,8 +1078,25 @@ class ChallengeJoinView(APIView):
 
         return Response({
             'ok': True,
-            'challenge_id': ch.id,
+            'challenge': {
+                'id': ch.id,
+                'name': ch.name,
+                'description': ch.description,
+                'batch_id': ch.batch_id,
+                'batch_name': ch.batch.name if ch.batch_id else None,
+                'has_bbox': ch.has_bbox,
+                'bbox': {
+                    'min_lat': ch.bbox_min_lat, 'max_lat': ch.bbox_max_lat,
+                    'min_lon': ch.bbox_min_lon, 'max_lon': ch.bbox_max_lon,
+                } if ch.has_bbox else None,
+                'target_bronze': ch.target_bronze,
+                'target_silver': ch.target_silver,
+                'target_gold': ch.target_gold,
+                'cached_image_count': ch.cached_image_count,
+                'cached_task_count': ch.cached_task_count,
+            },
             'cp_count': enrollment.cached_cp_count,
+            'replaced_other_enrollment': bool(other),
         }, status=status.HTTP_200_OK)
 
 
@@ -787,10 +1108,23 @@ class ChallengeLeaveView(APIView):
         operation_summary='Leave the active challenge enrollment')
     def post(self, request, pk):
         ch = get_object_or_404(Challenge, pk=pk)
+        # Capture pre-leave CP count so we can tell the user "your N CPs are kept".
+        existing = ChallengeParticipant.objects.filter(
+            challenge=ch, user=request.user, left_at__isnull=True,
+        ).first()
+        cp_kept = existing.cached_cp_count if existing else 0
         n = ChallengeParticipant.objects.filter(
             challenge=ch, user=request.user, left_at__isnull=True,
         ).update(left_at=timezone.now())
-        return Response({'ok': True, 'left': n > 0})
+        return Response({
+            'ok': True,
+            'left': n > 0,
+            'challenge': {
+                'id': ch.id,
+                'name': ch.name,
+            },
+            'cp_count_kept': cp_kept,
+        })
 
 
 class MyChallengeView(APIView):
