@@ -378,4 +378,4 @@ class LocatedMapTests(TestCase):
         self.assertContains(r, 'id="located-map"')
         r = self.client.get('/')
         self.assertContains(r, 'id="home-map"')
-        self.assertContains(r, 'href="/map/"')
+        self.assertContains(r, 'href="/#map-section"')
