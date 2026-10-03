@@ -85,3 +85,25 @@ class SeriesEndpointTests(TestCase):
         self.assertEqual(body['bucket'], 'week')
         self.assertEqual(len(body['labels']), len(body['events']['contributions']))
         self.assertIn('tasks_pending', body['states'])
+
+
+class CohortTests(TestCase):
+    def test_weekly_cohorts(self):
+        from georeferencing.models import GeoAttemptsByUserByDay
+        today = timezone.now().date()
+        joined = timezone.now() - timedelta(days=20)
+        a = User.objects.create_user('a', 'a@x.org', 'pw'); b = User.objects.create_user('b', 'b@x.org', 'pw')
+        User.objects.filter(pk__in=[a.pk, b.pk]).update(date_joined=joined)
+        GeoAttemptsByUserByDay.objects.create(user=a, date=joined.date() + timedelta(days=2), numberGeoAttempts=1)   # P1
+        GeoAttemptsByUserByDay.objects.create(user=a, date=joined.date() + timedelta(days=9), numberGeoAttempts=1)   # P2
+        c = ts.cohorts('30d', today)
+        self.assertEqual(c['unit'], 'week')
+        row = next(r for r in c['rows'] if r['size'] == 2)
+        self.assertEqual((row['ever_pct'], row['first_pct']), (50, 50))
+        self.assertEqual(row['periods'][0], 50)
+        self.assertEqual(row['periods'][1], 50)
+        self.assertIsNone(row['periods'][3])  # 4th week not elapsed for the whole cohort
+        self.assertIn('cohorts', ts.series('30d', today))
+
+    def test_monthly_cohorts_for_long_ranges(self):
+        self.assertEqual(ts.cohorts('1y')['unit'], 'month')

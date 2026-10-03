@@ -97,6 +97,16 @@
 </div>
 <p class="st-note">State lines (pending tasks, registered, teams…) come from a daily snapshot that started on 2026-10-03; earlier values are reconstructed where possible and missing otherwise. Event bars (contributions, sign-ups, joins) are recomputed from the database and always reflect corrections.</p>
 
+{# ── Retention ───────────────────────────────────────────────────── #}
+<h2>Retention <small>sign-up cohorts by <span id="st-cohort-unit">…</span> · % of the cohort with at least one contribution in each period after joining</small></h2>
+<div class="st-chart" style="padding:0;overflow:auto">
+<table id="st-cohorts" style="margin:0">
+    <thead><tr><th>Cohort</th><th class="num">Signed up</th><th class="num">Ever contributed</th><th class="num">In first period</th><th class="num">P1</th><th class="num">P2</th><th class="num">P3</th><th class="num">P4</th></tr></thead>
+    <tbody><tr><td colspan="8" style="color:var(--ink-2)">Loading…</td></tr></tbody>
+</table>
+</div>
+<p class="st-note">P1–P4 = first, second, third and fourth period (week or month) after the sign-up date. Empty cells: period not elapsed yet. Colour = share of the cohort.</p>
+
 {# ── Events ──────────────────────────────────────────────────────── #}
 <h2>Events <small>campaigns, mailings, releases… anything that might move the curves</small></h2>
 <div class="st-two">
@@ -212,6 +222,27 @@
     </tbody>
 </table>
 
+{# ── Teams ───────────────────────────────────────────────────────── #}
+<h2>Teams <small>classrooms, clubs, groups · points earned while in the team</small></h2>
+<div class="st-grid">
+    <div class="st-tile"><div class="k">Teams</div><div class="v">{{ d.teams.total }}</div><div class="s">+{{ d.teams.created_in_range }} in range</div></div>
+    <div class="st-tile"><div class="k">Members</div><div class="v">{{ d.teams.members_active }}</div><div class="s">+{{ d.teams.joins_in_range }} joins in range</div></div>
+    <div class="st-tile"><div class="k">Active users in a team</div><div class="v">{{ d.teams.users_in_team_pct }}%</div><div class="s">of active users in range</div></div>
+</div>
+{% if d.teams.top %}
+<table>
+    <thead><tr><th>Team</th><th>Created</th><th class="num">Members</th><th class="num">Tasks</th><th class="num">CP</th></tr></thead>
+    <tbody>
+    {% for t in d.teams.top %}
+    <tr><td><a href="/teams/{{ t.slug }}/">{{ t.name }}</a>{% if not t.is_open %} <span class="ds-pill ds-pill--ghost">invite-only</span>{% endif %}</td><td>{{ t.created }}</td>
+        <td class="num">{{ t.members }}</td><td class="num">{{ t.tasks }}</td><td class="num">{{ t.cp }}</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p style="color:var(--ink-2)">No teams yet. <a href="/teams/">Teams page</a>.</p>
+{% endif %}
+
 {# ── Health ──────────────────────────────────────────────────────── #}
 <h2>Health</h2>
 <div class="st-grid">
@@ -277,6 +308,19 @@
         return o;
     }
     var right = { y2: { position: 'right', beginAtZero: false, grid: { display: false }, ticks: { precision: 0 } } };
+    function heat(pct) {
+        if (pct == null) return '<td class="num" style="color:var(--ink-3)">·</td>';
+        var a = Math.min(0.85, 0.08 + pct / 100 * 0.8);
+        return '<td class="num" style="background:oklch(0.95 0.13 113 / ' + a.toFixed(2) + ');color:' + (pct >= 50 ? 'var(--accent-ink)' : 'var(--ink-0)') + '">' + pct + '%</td>';
+    }
+    function renderCohorts(C) {
+        document.getElementById('st-cohort-unit').textContent = C.unit;
+        var tb = document.querySelector('#st-cohorts tbody');
+        if (!C.rows.length) { tb.innerHTML = '<tr><td colspan="8" style="color:var(--ink-2)">No sign-ups in this range.</td></tr>'; return; }
+        tb.innerHTML = C.rows.map(function (r) {
+            return '<tr><td>' + r.label + '</td><td class="num">' + r.size + '</td>' + heat(r.ever_pct) + heat(r.first_pct) + r.periods.map(heat).join('') + '</tr>';
+        }).join('');
+    }
     var charts = [];
     function draw(S) {
         document.getElementById('st-bucket').textContent = S.bucket;
@@ -288,6 +332,7 @@
                 d.textContent = (diff >= 0 ? '+' : '') + fmt(diff) + ' vs previous ' + RANGE + ' (' + fmt(p) + ')';
                 d.className = 's ' + (diff > 0 ? 'up' : diff < 0 ? 'down' : ''); }
         });
+        renderCohorts(S.cohorts);
         var L = S.labels, E = S.events, T = S.states;
         charts.forEach(function (c) { c.destroy(); }); charts = [];
         var ln = function (label, data, color, dashed, axis) { return { type: 'line', label: label, data: data, borderColor: color, backgroundColor: color, borderWidth: 2, pointRadius: L.length > 60 ? 0 : 2, tension: .25, spanGaps: true, borderDash: dashed ? [5, 4] : [], yAxisID: axis || 'y' }; };

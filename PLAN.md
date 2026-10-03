@@ -355,7 +355,7 @@ evento en `/stats/`.
 
 ---
 
-## Fase 5 — Panel de control (segunda pasada) 🔧
+## Fase 5 — Panel de control (segunda pasada) ✅
 
 - ✅ Evolución en vez de datos estáticos. Selector de rango 7 d / 30 d / 1 año /
   4 años con agrupado automático (día / día / semana / mes). Seis gráficas:
@@ -374,11 +374,16 @@ evento en `/stats/`.
   de lo reconstruible (hechas y pendientes acumuladas, registrados, imágenes,
   activos 7/30, inscritos en retos y equipos): 5808 filas.
 - ✅ Endpoint `/stats/series.json?range=` (staff) cacheado 5 min.
-- ⏳ Retención por cohortes semanales: altas → primera contribución → activos a
-  4 semanas.
-- ⏳ Eventos automáticos: crear reto (hecho vía `clone_challenge`), cargar
-  batch, enviar newsletter.
-- ⏳ Bloque de equipos en el panel cuando haya datos (hoy 0 equipos).
+- ✅ Retención por cohortes: semanales en 7 d / 30 d, mensuales en 1 / 4 años.
+  Por cohorte: altas, % que contribuyó alguna vez, % en el primer periodo y %
+  activo en cada uno de los 4 periodos siguientes (celdas vacías si el periodo
+  no ha terminado). **Hallazgo**: las cohortes de mayo a julio de 2026 suman
+  3625 altas con 0–3 % de contribución; parece registro automatizado. Revisar
+  (captcha en el alta, limpieza de cuentas sin verificar).
+- ✅ Eventos automáticos: crear reto (`clone_challenge`), batch completado
+  (`_finalize_if_last`), envío de newsletter (`send_bulk_email`).
+- ✅ Bloque de equipos en el panel: total, miembros, % de usuarios activos en
+  un equipo, top 10.
 
 ---
 

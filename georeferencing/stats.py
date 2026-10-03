@@ -318,6 +318,26 @@ def _onboarding():
     }
 
 
+def _teams(now, start):
+    from teams.models import Team, TeamMembership
+    rows = []
+    for t in Team.objects.all():
+        st = t.stats()
+        rows.append({"id": t.id, "name": t.name, "slug": t.slug, "is_open": t.is_open,
+                     "created": t.created_at.date().isoformat(), "members": st["members"],
+                     "cp": st["control_points"], "tasks": st["tasks"]})
+    rows.sort(key=lambda r: (-r["cp"], -r["members"]))
+    return {
+        "total": len(rows),
+        "created_in_range": sum(1 for r in rows if r["created"] >= start.isoformat()),
+        "members_active": TeamMembership.objects.filter(left_at__isnull=True).count(),
+        "joins_in_range": TeamMembership.objects.filter(joined_at__date__gte=start).count(),
+        "users_in_team_pct": round(TeamMembership.objects.filter(left_at__isnull=True).values("user_id").distinct().count()
+                                   / max(1, _active_users(start)) * 100, 1),
+        "top": rows[:10],
+    }
+
+
 def _events(start):
     from .models import StatsEvent
     return [{
@@ -346,6 +366,7 @@ def build_staff_stats(days=60):
         "challenges": _challenges(now, today, start),
         "health": _health(now),
         "onboarding": _onboarding(),
+        "teams": _teams(now, start),
         "events": _events(start),
     }
 

@@ -472,6 +472,15 @@ def _finalize_if_last(batch_id, idx, total, images_created):
         if updated:
             batch.refresh_from_db()
             _add_log(batch_id, 'II', f"====== BATCH COMPLETADO. Total imágenes: {batch.numberImages} / {total} procesadas ======")
+            try:
+                from .models import StatsEvent
+                StatsEvent.objects.create(
+                    kind='batch', title=f'Photo set loaded: {batch.name}',
+                    note=f'{batch.numberImages} images, {total} requested, replicas={batch.replicas}.',
+                    url=f'/admin/georeferencing/batch/{batch.id}/change/', created_by=batch.user,
+                )
+            except Exception:
+                pass
 
     return True
 

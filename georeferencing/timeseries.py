@@ -257,4 +257,59 @@ def series(range_key=DEFAULT_RANGE, today=None):
         'totals': totals,
         'prev_totals': prev_totals,
         'markers': events,
+        'cohorts': cohorts(range_key, today),
     }
+
+
+# ── Retention cohorts ────────────────────────────────────────────────────
+def cohorts(range_key=DEFAULT_RANGE, today=None, max_rows=12):
+    """Sign-up cohorts (weekly for short ranges, monthly for 1y/4y): size, how
+    many ever contributed, contributed within the first period, and the share
+    active in each of the 4 periods after joining. Activity = a DONE task
+    (GeoAttemptsByUserByDay). Periods not yet elapsed are None."""
+    from django.contrib.auth import get_user_model
+    from .models import GeoAttemptsByUserByDay
+    today = today or timezone.now().date()
+    spec = RANGES.get(range_key, RANGES[DEFAULT_RANGE])
+    unit = 'month' if spec['bucket'] == 'month' or spec['days'] >= 365 else 'week'
+    unit_days = 30 if unit == 'month' else 7
+    first_start = bucket_start(today - timedelta(days=spec['days'] - 1), unit)
+    # Cohort buckets (cap the number of rows)
+    starts = []
+    d = first_start
+    while d <= today:
+        starts.append(d)
+        d = next_bucket(d, unit)
+    starts = starts[-max_rows:]
+
+    User = get_user_model()
+    users = list(User.objects.filter(date_joined__date__gte=starts[0]).values_list('id', 'date_joined'))
+    activity = defaultdict(list)
+    for uid, dt in GeoAttemptsByUserByDay.objects.filter(
+            numberGeoAttempts__gt=0, user_id__in=[u for u, _ in users]).values_list('user_id', 'date'):
+        activity[uid].append(dt)
+
+    rows = []
+    for i, start in enumerate(starts):
+        end = next_bucket(start, unit) - timedelta(days=1)
+        members = [(uid, dj.date()) for uid, dj in users if start <= dj.date() <= end]
+        size = len(members)
+        ever = sum(1 for uid, _ in members if activity.get(uid))
+        first_period = sum(1 for uid, dj in members if any(dj <= a <= dj + timedelta(days=unit_days - 1) for a in activity.get(uid, [])))
+        periods = []
+        for k in range(4):
+            lo_off, hi_off = k * unit_days, (k + 1) * unit_days - 1
+            # elapsed only if the whole cohort could have completed period k
+            if end + timedelta(days=hi_off) > today:
+                periods.append(None)
+                continue
+            n = sum(1 for uid, dj in members if any(dj + timedelta(days=lo_off) <= a <= dj + timedelta(days=hi_off) for a in activity.get(uid, [])))
+            periods.append(round(n / size * 100) if size else None)
+        rows.append({
+            'label': start.isoformat() if unit == 'week' else start.strftime('%Y-%m'),
+            'size': size,
+            'ever_pct': round(ever / size * 100) if size else None,
+            'first_pct': round(first_period / size * 100) if size else None,
+            'periods': periods,
+        })
+    return {'unit': unit, 'rows': rows}
