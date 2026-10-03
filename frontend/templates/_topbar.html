@@ -238,7 +238,7 @@ so we don't clobber.{% endcomment %}
         <a class="ds-nav__link {% if current_path == '/' %}is-active{% endif %}" href="/">{% trans "Home" %}</a>
         <a class="ds-nav__link" href="/#challenges-section">{% trans "Challenges" %}</a>
         <a class="ds-nav__link" href="/#batch-section">{% trans "Batches" %}</a>
-        <a class="ds-nav__link" href="/#statistics-section">{% trans "Statistics" %}</a>
+        <a class="ds-nav__link {% if current_path|slice:":9" == '/ranking/' %}is-active{% endif %}" href="{% url 'ranking' %}">{% trans "Ranking" %}</a>
         <a class="ds-nav__link {% if '/gettask' in current_path %}is-active{% endif %}" href="/gettask">{% trans "Participate" %}</a>
         {% if user.is_staff %}<a class="ds-nav__link {% if current_path == '/stats/' %}is-active{% endif %}" href="/stats/" title="Staff only">Control</a>{% endif %}
     </nav>

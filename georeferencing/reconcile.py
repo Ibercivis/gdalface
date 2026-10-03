@@ -43,12 +43,15 @@ def expected_profile_totals():
 
 
 def expected_daily_counts():
-    """{(user_id, date): n} from DONE tasks by finish date (UTC)."""
-    out = defaultdict(int)
+    """{(user_id, date): {'tasks', 'cp', 'seconds'}} from DONE tasks by finish date (UTC)."""
+    out = defaultdict(lambda: {'tasks': 0, 'cp': 0, 'seconds': 0})
     qs = done_queryset().filter(assignedUser__isnull=False, finishedDateTime__isnull=False).only(
-        'assignedUser_id', 'finishedDateTime')
+        'assignedUser_id', 'finishedDateTime', 'controlPoints', 'assignedDateTime')
     for ga in qs.iterator(chunk_size=5000):
-        out[(ga.assignedUser_id, ga.finishedDateTime.date())] += 1
+        row = out[(ga.assignedUser_id, ga.finishedDateTime.date())]
+        row['tasks'] += 1
+        row['cp'] += _cp(ga)
+        row['seconds'] += _seconds(ga)
     return out
 
 

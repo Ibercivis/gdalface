@@ -283,17 +283,22 @@ def _period_start(period):
     return None
 
 
-def _period_ranking(request, period, page_size):
-    """Ranking over a rolling window, built from GeoAttemptsByUserByDay.
-    Only tasks are tracked per-day, so the metric is always 'tasks' here.
-    Returns the same response shape as the all-time ranking; control_points
-    and time_seconds are null in the rows."""
+PERIOD_FIELDS = {'tasks': 'numberGeoAttempts', 'cp': 'controlPoints', 'time': 'seconds'}
+
+
+def _period_ranking(request, period, page_size, ordering='tasks'):
+    """Ranking over a rolling window, built from GeoAttemptsByUserByDay (tasks,
+    control points and seconds per user per day). Same response shape as the
+    all-time ranking."""
     start = _period_start(period)
     verified = _verified_user_ids()
+    ordering = ordering if ordering in PERIOD_FIELDS else 'tasks'
+    field = PERIOD_FIELDS[ordering]
     agg = (GeoAttemptsByUserByDay.objects
            .filter(date__gte=start, user_id__in=verified)
            .values('user_id')
-           .annotate(metric=Sum('numberGeoAttempts'))
+           .annotate(metric=Sum(field), tasks=Sum('numberGeoAttempts'),
+                     cp=Sum('controlPoints'), secs=Sum('seconds'))
            .filter(metric__gt=0)
            .order_by('-metric', 'user_id'))
 
@@ -306,7 +311,7 @@ def _period_ranking(request, period, page_size):
     if request.user.is_authenticated:
         my_metric = (GeoAttemptsByUserByDay.objects
                      .filter(date__gte=start, user=request.user)
-                     .aggregate(total=Sum('numberGeoAttempts'))['total']) or 0
+                     .aggregate(total=Sum(field))['total']) or 0
         if my_metric > 0:
             my_rank = agg.filter(metric__gt=my_metric).count() + 1
             my_username = request.user.username
@@ -348,14 +353,14 @@ def _period_ranking(request, period, page_size):
             'profile_pic_url': prof.profile_pic.url if (visible and prof.profile_pic) else None,
             'visible': visible,
             'is_you': is_you,
-            'tasks': w['metric'],
-            'control_points': None,
-            'time_seconds': None,
-            'time_pretty': None,
+            'tasks': w['tasks'],
+            'control_points': w['cp'],
+            'time_seconds': w['secs'],
+            'time_pretty': convert_time_spent(w['secs'] or 0),
         })
 
     return JsonResponse({
-        'ordering': 'tasks',
+        'ordering': ordering,
         'period': period,
         'page': page,
         'page_size': page_size,
@@ -396,7 +401,7 @@ def ranking_api(request):
         page_size_pre = 20
     period = request.GET.get('period', 'all')
     if period in ('week', 'month'):
-        return _period_ranking(request, period, page_size_pre)
+        return _period_ranking(request, period, page_size_pre, request.GET.get('ordering', 'tasks'))
 
     ordering = request.GET.get('ordering', 'cp')
     field_map = {
@@ -501,8 +506,8 @@ def country_ranking_api(request):
     if period not in ('all', 'week', 'month'):
         period = 'all'
     ordering = request.GET.get('ordering', 'cp')
-    if period != 'all' or ordering not in ('cp', 'tasks', 'cp_per_user'):
-        ordering = 'tasks' if period != 'all' else 'cp'
+    if ordering not in ('cp', 'tasks', 'cp_per_user'):
+        ordering = 'cp'
 
     cache_key = f'country_ranking:v1:{period}'
     raw = cache.get(cache_key)
@@ -527,7 +532,8 @@ def country_ranking_api(request):
                    .exclude(user__userprofile__country='')
                    .values(country=F('user__userprofile__country'))
                    .annotate(users=Count('user_id', distinct=True),
-                             tasks=Sum('numberGeoAttempts'))
+                             tasks=Sum('numberGeoAttempts'),
+                             control_points=Sum('controlPoints'))
                    .order_by())
         raw = []
         for row in agg:
@@ -537,8 +543,8 @@ def country_ranking_api(request):
                 'country_code': str(row['country']).lower(),
                 'users': users,
                 'tasks': row['tasks'] or 0,
-                'control_points': cp if period == 'all' else None,
-                'cp_per_user': round(cp / users, 1) if (period == 'all' and users) else None,
+                'control_points': cp,
+                'cp_per_user': round(cp / users, 1) if users else None,
             })
         cache.set(cache_key, raw, 300)
 

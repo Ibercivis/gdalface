@@ -70,19 +70,22 @@ class Command(BaseCommand):
             exp_daily = expected_daily_counts()
             rows = {(r.user_id, r.date): r for r in GeoAttemptsByUserByDay.objects.all()}
             d_changed = d_created = d_deleted = 0
-            for key, n in exp_daily.items():
+            for key, e in exp_daily.items():
                 r = rows.get(key)
                 if r is None:
                     d_created += 1
-                    show(f"daily {key[0]} {key[1]}: missing -> {n}")
+                    show(f"daily {key[0]} {key[1]}: missing -> {e}")
                     if apply:
-                        GeoAttemptsByUserByDay.objects.create(user_id=key[0], date=key[1], numberGeoAttempts=n)
-                elif r.numberGeoAttempts != n:
+                        GeoAttemptsByUserByDay.objects.create(
+                            user_id=key[0], date=key[1], numberGeoAttempts=e['tasks'],
+                            controlPoints=e['cp'], seconds=e['seconds'])
+                elif (r.numberGeoAttempts, r.controlPoints, r.seconds) != (e['tasks'], e['cp'], e['seconds']):
                     d_changed += 1
-                    show(f"daily {key[0]} {key[1]}: {r.numberGeoAttempts} -> {n}")
+                    show(f"daily {key[0]} {key[1]}: tasks {r.numberGeoAttempts}->{e['tasks']} "
+                         f"cp {r.controlPoints}->{e['cp']} s {r.seconds}->{e['seconds']}")
                     if apply:
-                        r.numberGeoAttempts = n
-                        r.save(update_fields=['numberGeoAttempts'])
+                        r.numberGeoAttempts, r.controlPoints, r.seconds = e['tasks'], e['cp'], e['seconds']
+                        r.save(update_fields=['numberGeoAttempts', 'controlPoints', 'seconds'])
             for key, r in rows.items():
                 if key not in exp_daily:
                     d_deleted += 1

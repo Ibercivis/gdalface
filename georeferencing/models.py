@@ -198,9 +198,13 @@ class Expedition(models.Model):
 
 
 class GeoAttemptsByUserByDay(models.Model):
+    """Per-user daily activity. Feeds streaks, the heatmap and the rolling
+    7/30-day rankings. Rebuilt from GeoAttempt DONE rows by reconcile_counters."""
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     date = models.DateField(db_index=True)
     numberGeoAttempts = models.IntegerField(default=0)
+    controlPoints = models.IntegerField(default=0)
+    seconds = models.IntegerField(default=0)
 
     def __str__(self):
         return str(self.user) +  " - " + str(self.date) + " - " + str(self.numberGeoAttempts)

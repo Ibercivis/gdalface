@@ -498,6 +498,8 @@ class GeoAttemptIndividualView(APIView):
                         user=geoattemp.assignedUser, date=today,
                     )
                     geoattempts_today.numberGeoAttempts += 1
+                    geoattempts_today.controlPoints += cp_added
+                    geoattempts_today.seconds += int(spend_time)
                     geoattempts_today.save()
 
                 serializer.save()

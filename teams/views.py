@@ -183,8 +183,8 @@ def teams_ranking_api(request):
     if period not in ('all', 'week', 'month'):
         period = 'all'
     ordering = request.GET.get('ordering', 'cp')
-    if period != 'all' or ordering not in ('cp', 'tasks'):
-        ordering = 'tasks' if period != 'all' else 'cp'
+    if ordering not in ('cp', 'tasks'):
+        ordering = 'cp'
 
     cache_key = f'teams_ranking:v1:{period}'
     raw = cache.get(cache_key)
@@ -219,7 +219,8 @@ def teams_ranking_api(request):
                    .filter(date__gte=start, user_id__in=verified,
                            user__team_memberships__left_at__isnull=True)
                    .values(team_id=F('user__team_memberships__team_id'))
-                   .annotate(tasks=Sum('numberGeoAttempts')))
+                   .annotate(tasks=Sum('numberGeoAttempts'),
+                             control_points=Sum('controlPoints')))
             totals = {a['team_id']: a for a in agg}
 
         raw = []
@@ -231,7 +232,7 @@ def teams_ranking_api(request):
                 'is_open': m['is_open'],
                 'members': m['members'],
                 'tasks': t.get('tasks') or 0,
-                'control_points': (t.get('control_points') or 0) if period == 'all' else None,
+                'control_points': t.get('control_points') or 0,
             })
         cache.set(cache_key, raw, 300)
 

@@ -196,7 +196,7 @@ que los compare.
 
 ---
 
-## Fase 2.5 — Visualización de estadísticas ⏳
+## Fase 2.5 — Visualización de estadísticas 🔧 (2.5.2 y 2.5.3 hechas; portada en Fase 3)
 
 Principio: organizar por la pregunta del visitante, no por el tipo de dato.
 Tres preguntas, tres formas distintas; solo la segunda lleva tabs.
@@ -208,9 +208,9 @@ Tres preguntas, tres formas distintas; solo la segunda lleva tabs.
 - ⏳ Los números salen del módulo único de la Fase 2, cacheados 5 min.
 
 ### 2.5.2 "¿Quién está contribuyendo?" → `/ranking/` (público)
-- ⏳ Página nueva en `frontend`, sin login. Mover aquí el widget AJAX que hoy
-  vive en `user_profile/templates/user.html` (pestañas Usuarios / Países /
-  Equipos). Un ranking que exige login no motiva.
+- ✅ Página `/ranking/` en `frontend` (`ranking.html`), sin login. El widget
+  AJAX salió de `user.html`; allí queda una tarjeta "Eres el #N de M" con
+  enlaces a la fila propia.
 - ⏳ Estructura:
   ```
   totales de plataforma (cabecera)
@@ -218,27 +218,25 @@ Tres preguntas, tres formas distintas; solo la segunda lleva tabs.
   tabla: # · nombre · CP · tareas · tiempo
   fila fija "tu posición #N" + botón "ir a mi fila" (si logueado)
   ```
-- ⏳ URL por tab y periodo: `/ranking/`, `/ranking/equipos/`, `/ranking/paises/`,
-  con `?periodo=30d|7d`. Enlazables desde overlay de resultado, diploma,
-  correos y área personal; `#me` o `?focus=me` lleva a la fila propia.
-- ⏳ Las tres tablas usan el mismo componente (columnas, empates, tratamiento de
-  perfiles ocultos) y los mismos filtros (verificados, `visible`).
-- ⏳ Periodos 7d/30d ordenables por CP y tiempo: añadir `controlPoints` y
-  `seconds` a `GeoAttemptsByUserByDay` (hoy solo tareas). Rellenar con el
-  comando de reconciliación de la Fase 1. Abre la puerta a retos semanales.
-- ⏳ Móvil: tabs como `ds-segmented`; la tabla pierde la columna de tiempo.
-- ⏳ Los enlaces "Estadísticas" de barra y pie apuntan aquí, no a un ancla de
-  la portada.
+- ✅ URL por tab y periodo: `/ranking/`, `/ranking/teams/`, `/ranking/countries/`
+  con `?period=all|month|week&ordering=cp|tasks|time` y `?focus=me` para
+  aterrizar en la fila propia (la página reescribe la URL al cambiar de estado).
+  Pendiente: enlazarla desde el overlay de resultado y los diplomas.
+- ✅ Las tres tablas comparten componente y población (verificados; ocultos
+  cuentan sin nombre).
+- ✅ Periodos 7d/30d ordenables por CP y tiempo: `controlPoints` y `seconds`
+  en `GeoAttemptsByUserByDay` (migración 0058), rellenados con
+  `reconcile_counters --apply` (434 filas). Países y equipos también dan CP por
+  periodo.
+- ✅ Móvil: la tabla pierde la columna de tiempo por debajo de 640 px.
+- ✅ Barra y pie enlazan "Ranking" → `/ranking/`. El pie enlaza `/contact` en
+  vez del formulario roto de portada.
 
 ### 2.5.3 "¿Cómo voy yo?" → área personal (`/user-profile/`)
-- ⏳ Sigue siendo un panel (números, racha, calendario, insignias, retos,
-  equipo), no una tabla. No se convierte en tab del ranking.
-- ⏳ Cada número personal lleva su puesto al lado y enlaza a su fila en
-  `/ranking/…?focus=me`.
-- ⏳ El widget de ranking desaparece de aquí, sustituido por una tarjeta
-  "Puesto 41 de 136 · ver ranking".
-- ⏳ Eliminar el contexto muerto y los tres `order_by` que cargan todos los
-  perfiles (ver 2.2).
+- ✅ Sigue siendo un panel; no es tab del ranking.
+- ✅ Las tarjetas de puesto enlazan a `/ranking/?ordering=…&focus=me`.
+- ✅ Widget sustituido por la tarjeta "Eres el #N de M por puntos de control".
+- ✅ Contexto muerto eliminado (Fase 2).
 
 ### 2.5.4 Lo que se queda donde está (contextual)
 - ⏳ Clasificación de un reto en su página de detalle; miembros en la página

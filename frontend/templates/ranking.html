@@ -1,0 +1,259 @@
+{% extends 'legal/_legal_base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block legal_title %}{% trans "Ranking" %}{% endblock %}
+
+{% block legal_content %}
+<style>
+    .legal-wrap { max-width: 1080px; }
+    .rk-totals { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 6px 0 22px; }
+    .rk-total { background: var(--bg-1); border: 1px solid var(--line-soft); border-radius: 10px; padding: 12px 14px; }
+    .rk-total .v { font-size: 24px; font-weight: 700; color: var(--ink-0); font-variant-numeric: tabular-nums; line-height: 1.2; }
+    .rk-total .k { font-size: 11px; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-2); margin-top: 2px; }
+    .rk-card { background: var(--bg-1); border: 1px solid var(--line-soft); border-radius: 12px; overflow: hidden; }
+    .rk-header-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+                     padding: 14px 18px; border-bottom: 1px solid var(--line-soft); background: var(--bg-2); }
+    #rk-header { font-weight: 600; font-size: 14px; color: var(--ink-0); }
+    .rk-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .rk-seg { display: inline-flex; border: 1px solid var(--line-soft); border-radius: 999px; overflow: hidden; background: var(--bg-1); }
+    .rk-seg a, .rk-seg button {
+        background: transparent !important; border: none !important; color: var(--ink-2) !important;
+        font-size: 0.78rem !important; font-weight: 600 !important; padding: 6px 13px !important;
+        cursor: pointer; border-radius: 0 !important; line-height: 1.4 !important; text-decoration: none;
+    }
+    .rk-seg .is-on { background: oklch(0.95 0.13 113 / 0.18) !important; color: var(--accent) !important; }
+    .rk-jump-btn { background: transparent !important; border: 1px solid var(--line-soft) !important; color: var(--ink-1) !important;
+                   border-radius: 999px !important; padding: 5px 12px !important; font-size: 0.78rem !important; cursor: pointer; }
+    .rk-jump-btn:hover { color: var(--accent) !important; border-color: var(--accent) !important; }
+    .legal-wrap table.ranking-table { margin: 0; border-collapse: collapse; width: 100%; font-size: 14px; }
+    .ranking-table th, .ranking-table td { padding: 10px 16px; text-align: left; border: 0; border-bottom: 1px solid var(--line-soft); color: var(--ink-1); white-space: nowrap; }
+    .ranking-table th { background: var(--bg-2); color: var(--accent); font-weight: 600; font-size: 12px; letter-spacing: .02em; }
+    .ranking-table tr:last-child td { border-bottom: none; }
+    .ranking-table tr.highlight-row td { background: oklch(0.95 0.13 113 / 0.10); }
+    .ranking-table tbody tr:hover td { background: oklch(1 0 0 / 0.04); }
+    .ranking-table th.rk-sortable { cursor: pointer; user-select: none; }
+    .ranking-table th.rk-sortable.is-sort::after { content: ' ▾'; }
+    .ranking-table th.rk-sortable:not(.is-sort) { color: var(--ink-2); }
+    .rk-row-avatar { display: inline-flex; width: 26px; height: 26px; border-radius: 50%; overflow: hidden; align-items: center; justify-content: center;
+                     background: var(--bg-3); margin-right: 8px; color: var(--ink-2); flex: 0 0 26px; }
+    .rk-row-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .rk-me { position: sticky; bottom: 0; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+             padding: 10px 18px; background: oklch(0.95 0.13 113 / 0.14); border-top: 1px solid var(--line-soft); font-size: 13px; color: var(--ink-0); backdrop-filter: blur(6px); }
+    .rk-me a { color: var(--accent); }
+    .rk-pager { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border-top: 1px solid var(--line-soft); }
+    .rk-pager-btn { background: transparent !important; border: 1px solid var(--line-soft) !important; color: var(--ink-1) !important;
+                    border-radius: 6px !important; padding: 3px 10px !important; font-size: 13px !important; cursor: pointer; }
+    .rk-pager-btn:disabled { opacity: .35; cursor: default; }
+    .rk-pager-info { font-size: 12px; color: var(--ink-2); }
+    .rk-note { font-size: 12px; color: var(--ink-2); margin: 12px 0 0; }
+    .rk-note a { color: var(--accent); }
+    @media (max-width: 640px) {
+        .ranking-table th:nth-child(6), .ranking-table td:nth-child(6) { display: none; }  /* time column */
+        .ranking-table th, .ranking-table td { padding: 8px 10px; }
+    }
+</style>
+
+<h1>{% trans "Ranking" %}</h1>
+<div class="legal-meta">{% trans "Who is lighting up the map. Only accounts with a verified e-mail count; hidden profiles keep their place without their name." %}</div>
+
+<div class="rk-totals">
+    <div class="rk-total"><div class="v">{{ totals.control_points }}</div><div class="k">{% trans "Control points placed" %}</div></div>
+    <div class="rk-total"><div class="v">{{ totals.tasks_done }}</div><div class="k">{% trans "Tasks completed" %}</div></div>
+    <div class="rk-total"><div class="v">{{ totals.participants }}</div><div class="k">{% trans "Participants" %}</div></div>
+    <div class="rk-total"><div class="v">{{ active_30 }}</div><div class="k">{% trans "Active in the last 30 days" %}</div></div>
+</div>
+
+<div class="rk-card" id="rk-card"
+     data-scope="{{ scope }}" data-period="{{ period }}" data-ordering="{{ ordering }}"
+     data-focus-me="{% if focus_me %}1{% else %}0{% endif %}"
+     data-authenticated="{% if user.is_authenticated %}1{% else %}0{% endif %}">
+    <div class="rk-header-row">
+        <span id="rk-header">{% trans "Global ranking" %}</span>
+        <div class="rk-controls">
+            <div class="rk-seg" id="rk-scope" role="tablist">
+                <a class="{% if scope == 'users' %}is-on{% endif %}" data-scope="users" href="{% url 'ranking' %}?period={{ period }}">{% trans "People" %}</a>
+                <a class="{% if scope == 'teams' %}is-on{% endif %}" data-scope="teams" href="{% url 'ranking_scope' 'teams' %}?period={{ period }}">{% trans "Teams" %}</a>
+                <a class="{% if scope == 'countries' %}is-on{% endif %}" data-scope="countries" href="{% url 'ranking_scope' 'countries' %}?period={{ period }}">{% trans "Countries" %}</a>
+            </div>
+            <div class="rk-seg" id="rk-period" role="tablist">
+                <a class="{% if period == 'all' %}is-on{% endif %}" data-period="all" href="?period=all">{% trans "All time" %}</a>
+                <a class="{% if period == 'month' %}is-on{% endif %}" data-period="month" href="?period=month">{% trans "Last 30 days" %}</a>
+                <a class="{% if period == 'week' %}is-on{% endif %}" data-period="week" href="?period=week">{% trans "Last 7 days" %}</a>
+            </div>
+            <button type="button" class="rk-jump-btn" id="rk-jump-me" hidden>{% trans "Jump to me" %}</button>
+        </div>
+    </div>
+
+    <div style="overflow-x:auto">
+        <table class="ranking-table" id="rk-table">
+            <thead id="rk-thead"></thead>
+            <tbody id="rk-tbody">
+                <tr><td colspan="6" style="text-align:center;padding:24px;color:var(--ink-2);">{% trans "Loading…" %}</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="rk-me" id="rk-me" hidden></div>
+
+    <div class="rk-pager" id="rk-pager" hidden>
+        <button type="button" class="rk-pager-btn" data-act="first">«</button>
+        <button type="button" class="rk-pager-btn" data-act="prev">‹</button>
+        <span class="rk-pager-info" id="rk-pager-info"></span>
+        <button type="button" class="rk-pager-btn" data-act="next">›</button>
+        <button type="button" class="rk-pager-btn" data-act="last">»</button>
+    </div>
+</div>
+
+{% if not user.is_authenticated %}
+<p class="rk-note">{% trans "Sign in to see your own position." %} <a href="/accounts/login?next={{ request.path|urlencode }}">{% trans "Sign in" %}</a></p>
+{% elif scope == 'teams' %}
+<p class="rk-note">{% trans "Teams are managed from your area." %} <a href="/user-profile/#team">{% trans "Your area" %}</a></p>
+{% endif %}
+
+<script>
+(function () {
+    'use strict';
+    var card = document.getElementById('rk-card');
+    var ENDPOINTS = { users: '/api/v1/ranking/', countries: '/api/v1/ranking/countries/', teams: '/api/v1/ranking/teams/' };
+    var PAGE_SIZE = 25;
+    var state = {
+        scope: card.dataset.scope, period: card.dataset.period, ordering: card.dataset.ordering || 'cp',
+        page: 1, total_pages: 1, my_rank: null
+    };
+    var thead = document.getElementById('rk-thead'), tbody = document.getElementById('rk-tbody');
+    var pager = document.getElementById('rk-pager'), info = document.getElementById('rk-pager-info');
+    var jumpBtn = document.getElementById('rk-jump-me'), header = document.getElementById('rk-header');
+    var meBar = document.getElementById('rk-me');
+    var authed = card.dataset.authenticated === '1';
+
+    var T = {
+        position_label: '{% trans "Your position" %}', country_label: '{% trans "Your country" %}', team_label: '{% trans "Your team" %}',
+        global_ranking: '{% trans "Global ranking" %}', page_of_total: '{% trans "Page {p} of {t}" %}',
+        no_data: '{% trans "Nothing to show yet" %}', error: '{% trans "Could not load ranking." %}', anon: '{% trans "Invisible user" %}',
+        col_user: '{% trans "User" %}', col_country: '{% trans "Country" %}', col_team: '{% trans "Team" %}', col_users: '{% trans "Users" %}',
+        col_members: '{% trans "Members" %}', col_tasks: '{% trans "Tasks" %}', col_cp: '{% trans "Control Points" %}', col_time: '{% trans "Time" %}',
+        col_cp_user: '{% trans "CP / user" %}', open_team: '{% trans "open" %}',
+        me_of: '{% trans "You are #{r} of {n} by {m}" %}', not_ranked: '{% trans "You have no contributions in this period yet." %}',
+        no_country: '{% trans "Pick your country in your profile and your tasks will count for it." %}', no_team: '{% trans "You are not in a team yet." %}',
+        m_cp: '{% trans "control points" %}', m_tasks: '{% trans "tasks" %}', m_time: '{% trans "time" %}', m_cp_per_user: '{% trans "CP per user" %}'
+    };
+    var COLS = {
+        users: [{key:null,label:'#'},{key:null,label:T.col_user},{key:null,label:T.col_country},{key:'tasks',label:T.col_tasks},{key:'cp',label:T.col_cp},{key:'time',label:T.col_time}],
+        countries: [{key:null,label:'#'},{key:null,label:T.col_country},{key:null,label:T.col_users},{key:'tasks',label:T.col_tasks},{key:'cp',label:T.col_cp},{key:'cp_per_user',label:T.col_cp_user}],
+        teams: [{key:null,label:'#'},{key:null,label:T.col_team},{key:null,label:T.col_members},{key:'tasks',label:T.col_tasks},{key:'cp',label:T.col_cp}]
+    };
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+    function fmt(n) { return (n || 0).toLocaleString(); }
+    function dash() { return '<span style="color:var(--ink-3);">—</span>'; }
+    function flag(code, name) { return '<img src="https://flagcdn.com/32x24/' + esc(code) + '.png" alt="' + esc(name) + '" style="width:24px;height:18px;margin-right:6px;vertical-align:-3px;">'; }
+    function metricLabel() { return T['m_' + state.ordering] || state.ordering; }
+
+    function userRow(r) {
+        var avatar = r.visible
+            ? (r.profile_pic_url ? '<span class="rk-row-avatar"><img src="' + esc(r.profile_pic_url) + '" alt=""></span>' : '<span class="rk-row-avatar"><i class="fa-solid fa-user-astronaut"></i></span>')
+            : '<span class="rk-row-avatar"><i class="fa-solid fa-eye-slash" style="font-size:12px;"></i></span>';
+        var name = r.visible ? esc(r.username) : '<span style="color:var(--ink-2);">' + T.anon + '</span>';
+        var country = (r.visible && r.country) ? flag(r.country_code, r.country) + esc(r.country) : '<span style="color:var(--ink-3);">-</span>';
+        return '<tr' + (r.is_you ? ' class="highlight-row" id="rk-row-me"' : '') + '><td>' + r.rank + '</td>'
+            + '<td><div style="display:flex;align-items:center;">' + avatar + name + '</div></td><td>' + country + '</td>'
+            + '<td>' + fmt(r.tasks) + '</td><td>' + (r.control_points == null ? dash() : fmt(r.control_points)) + '</td>'
+            + '<td>' + (r.time_pretty ? esc(r.time_pretty) : dash()) + '</td></tr>';
+    }
+    function countryRow(r, mine) {
+        return '<tr' + (mine && r.country_code === mine ? ' class="highlight-row" id="rk-row-me"' : '') + '><td>' + r.rank + '</td>'
+            + '<td>' + flag(r.country_code, r.country) + esc(r.country) + '</td><td>' + fmt(r.users) + '</td><td>' + fmt(r.tasks) + '</td>'
+            + '<td>' + (r.control_points == null ? dash() : fmt(r.control_points)) + '</td>'
+            + '<td>' + (r.cp_per_user == null ? dash() : r.cp_per_user.toLocaleString()) + '</td></tr>';
+    }
+    function teamRow(r, mine) {
+        var name = '<a href="/teams/' + encodeURIComponent(r.slug) + '/" style="color:inherit;text-decoration:underline;">' + esc(r.name) + '</a>'
+            + (r.is_open ? ' <span style="color:var(--ink-3);font-size:.75em;">(' + T.open_team + ')</span>' : '');
+        return '<tr' + (mine && r.slug === mine ? ' class="highlight-row" id="rk-row-me"' : '') + '><td>' + r.rank + '</td><td>' + name + '</td>'
+            + '<td>' + fmt(r.members) + '</td><td>' + fmt(r.tasks) + '</td><td>' + (r.control_points == null ? dash() : fmt(r.control_points)) + '</td></tr>';
+    }
+    function renderHead() {
+        thead.innerHTML = '<tr>' + COLS[state.scope].map(function (c) {
+            if (!c.key) return '<th>' + c.label + '</th>';
+            return '<th class="rk-sortable' + (c.key === state.ordering ? ' is-sort' : '') + '" data-key="' + c.key + '">' + c.label + '</th>';
+        }).join('') + '</tr>';
+    }
+    function cols() { return COLS[state.scope].length; }
+    function msg(html, color) { tbody.innerHTML = '<tr><td colspan="' + cols() + '" style="text-align:center;padding:24px;color:' + (color || 'var(--ink-2)') + ';">' + html + '</td></tr>'; }
+    function setMe(rank, total, emptyText) {
+        if (!authed) { meBar.hidden = true; return; }
+        meBar.hidden = false;
+        meBar.innerHTML = rank
+            ? '<span>' + T.me_of.replace('{r}', rank).replace('{n}', total || '?').replace('{m}', metricLabel()) + '</span>'
+            : '<span>' + emptyText + '</span>';
+        header.textContent = rank ? (T.position_label + ': #' + rank) : T.global_ranking;
+    }
+    function renderPager() {
+        if (state.scope !== 'users') { pager.hidden = true; return; }
+        pager.hidden = state.total_pages <= 1;
+        info.textContent = T.page_of_total.replace('{p}', state.page).replace('{t}', state.total_pages);
+        pager.querySelectorAll('.rk-pager-btn').forEach(function (b) {
+            var a = b.dataset.act; b.disabled = (a === 'first' || a === 'prev') ? state.page <= 1 : state.page >= state.total_pages;
+        });
+    }
+    function pushUrl() {
+        var u = new URL(location.href);
+        u.searchParams.set('period', state.period);
+        u.searchParams.set('ordering', state.ordering);
+        if (state.scope === 'users' && state.page > 1) u.searchParams.set('page', state.page); else u.searchParams.delete('page');
+        u.searchParams.delete('focus');
+        history.replaceState(null, '', u);
+    }
+    function load(opts) {
+        opts = opts || {};
+        renderHead(); msg('…');
+        var qs = '?ordering=' + encodeURIComponent(state.ordering) + '&period=' + encodeURIComponent(state.period);
+        if (state.scope === 'users') { qs += '&page=' + (opts.page || state.page) + '&page_size=' + PAGE_SIZE; if (opts.jumpToMe) qs += '&jump_to_me=1'; }
+        fetch(ENDPOINTS[state.scope] + qs, { credentials: 'same-origin' })
+            .then(function (r) { return r.ok ? r.json() : Promise.reject(r); })
+            .then(function (d) {
+                state.ordering = d.ordering || state.ordering; renderHead();
+                if (state.scope === 'users') {
+                    state.page = d.page; state.total_pages = d.total_pages; state.my_rank = d.my_rank;
+                    setMe(d.my_rank, d.total_users, T.not_ranked);
+                    jumpBtn.hidden = !d.my_rank;
+                    tbody.innerHTML = d.rows.length ? d.rows.map(userRow).join('') : '';
+                    if (!d.rows.length) msg(T.no_data);
+                } else if (state.scope === 'countries') {
+                    setMe(d.my_country_rank, d.total_countries, T.no_country); jumpBtn.hidden = true;
+                    tbody.innerHTML = d.rows.length ? d.rows.map(function (r) { return countryRow(r, d.my_country_code); }).join('') : '';
+                    if (!d.rows.length) msg(T.no_data);
+                } else {
+                    setMe(d.my_team_rank, d.total_teams, T.no_team); jumpBtn.hidden = true;
+                    tbody.innerHTML = d.rows.length ? d.rows.map(function (r) { return teamRow(r, d.my_team_slug); }).join('') : '';
+                    if (!d.rows.length) msg(T.no_data);
+                }
+                renderPager(); pushUrl();
+                if (opts.jumpToMe) { var me = document.getElementById('rk-row-me'); if (me) me.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+            })
+            .catch(function () { msg(T.error, 'oklch(0.78 0.16 25)'); });
+    }
+    document.getElementById('rk-period').querySelectorAll('a').forEach(function (a) {
+        a.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelectorAll('#rk-period a').forEach(function (o) { o.classList.toggle('is-on', o === a); });
+            state.period = a.dataset.period; state.page = 1; load();
+        });
+    });
+    thead.addEventListener('click', function (e) {
+        var th = e.target.closest('th.rk-sortable'); if (!th || th.dataset.key === state.ordering) return;
+        state.ordering = th.dataset.key; state.page = 1; load();
+    });
+    pager.querySelectorAll('.rk-pager-btn').forEach(function (b) {
+        b.addEventListener('click', function () {
+            var a = b.dataset.act, p = state.page;
+            if (a === 'first') p = 1; else if (a === 'prev') p = Math.max(1, p - 1); else if (a === 'next') p = Math.min(state.total_pages, p + 1); else p = state.total_pages;
+            if (p !== state.page) load({ page: p });
+        });
+    });
+    jumpBtn.addEventListener('click', function () { load({ jumpToMe: true }); });
+    var initialPage = parseInt(new URL(location.href).searchParams.get('page') || '1', 10) || 1;
+    load({ jumpToMe: authed && card.dataset.focusMe === '1', page: initialPage });
+})();
+</script>
+{% endblock %}

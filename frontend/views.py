@@ -525,3 +525,32 @@ def staff_stats_csv(request):
     for tot, reg, anon in zip(c['series'], c['series_registered'], c['series_anonymous']):
         w.writerow([tot['date'], tot['n'], reg['n'], anon['n'], signups.get(tot['date'], 0)])
     return resp
+
+
+# ── Public ranking page ───────────────────────────────────────────────
+RANKING_SCOPES = ('users', 'teams', 'countries')
+
+
+def ranking(request, scope='users'):
+    """Public leaderboard: people / teams / countries with a shared period
+    selector. Data comes from the existing ranking APIs; the header totals
+    from georeferencing.metrics. URL state: /ranking/<scope>/?period=&ordering=
+    and ?focus=me to land on the viewer's own row."""
+    from django.http import Http404
+    from georeferencing import metrics
+    if scope not in RANKING_SCOPES:
+        raise Http404
+    period = request.GET.get('period', 'all')
+    if period not in ('all', 'month', 'week'):
+        period = 'all'
+    ordering = request.GET.get('ordering', 'cp')
+    if ordering not in ('cp', 'tasks', 'time', 'cp_per_user'):
+        ordering = 'cp'
+    return render(request, 'ranking.html', {
+        'scope': scope,
+        'period': period,
+        'ordering': ordering,
+        'focus_me': request.GET.get('focus') == 'me',
+        'totals': metrics.project_totals(),
+        'active_30': metrics.active_users(30),
+    })

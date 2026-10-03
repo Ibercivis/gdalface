@@ -245,3 +245,25 @@ class StaffStatsTests(TestCase):
         self.assertEqual(lines[0], 'date,contributions,contributions_registered,contributions_anonymous,signups')
         self.assertEqual(len(lines), 31)
         self.assertTrue(lines[-1].endswith(',2,1,1,2'))  # today: 2 done (1 reg, 1 anon), 2 sign-ups
+
+
+class RankingPageTests(TestCase):
+    def test_public_and_scopes(self):
+        for url in ('/ranking/', '/ranking/teams/', '/ranking/countries/?period=week'):
+            r = self.client.get(url)
+            self.assertEqual(r.status_code, 200, url)
+            self.assertContains(r, 'id="rk-card"')
+        self.assertEqual(self.client.get('/ranking/bogus/').status_code, 404)
+
+    def test_state_is_passed_to_the_page(self):
+        r = self.client.get('/ranking/teams/?period=month&ordering=tasks&focus=me')
+        self.assertEqual(r.context['scope'], 'teams')
+        self.assertEqual(r.context['period'], 'month')
+        self.assertEqual(r.context['ordering'], 'tasks')
+        self.assertTrue(r.context['focus_me'])
+        self.assertContains(r, 'data-period="month"')
+
+    def test_topbar_links_to_ranking(self):
+        r = self.client.get('/')
+        self.assertContains(r, 'href="/ranking/"')
+        self.assertNotContains(r, 'href="/#statistics-section"')

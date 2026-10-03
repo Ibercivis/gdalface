@@ -16,6 +16,9 @@ urlpatterns = [
     path('contact', views.contact, name='contact'),
     path('manual/', views.manual, name='manual'),
     path('challenges/<int:pk>/', views.challenge_detail, name='challenge_detail'),
+    # Public ranking (people / teams / countries)
+    path('ranking/', views.ranking, name='ranking'),
+    path('ranking/<str:scope>/', views.ranking, name='ranking_scope'),
     # Staff-only control panel
     path('stats/', views.staff_stats, name='staff_stats'),
     path('stats/export.csv', views.staff_stats_csv, name='staff_stats_csv'),

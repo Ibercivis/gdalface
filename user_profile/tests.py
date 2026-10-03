@@ -95,7 +95,15 @@ class PeriodRankingApiTests(TestCase):
         self.assertEqual(data['ordering'], 'tasks')
         self.assertEqual(data['rows'][0]['username'], 'b')
         self.assertEqual(data['rows'][0]['tasks'], 7)
-        self.assertIsNone(data['rows'][0]['control_points'])
+        self.assertEqual(data['rows'][0]['control_points'], 0)  # per-day CP now tracked
+
+    def test_week_can_rank_by_control_points(self):
+        GeoAttemptsByUserByDay.objects.filter(user=self.a, date=date.today()).update(controlPoints=40)
+        GeoAttemptsByUserByDay.objects.filter(user=self.b, date=date.today()).update(controlPoints=9)
+        data = self.client.get('/api/v1/ranking/?period=week&ordering=cp').json()
+        self.assertEqual(data['ordering'], 'cp')
+        self.assertEqual(data['rows'][0]['username'], 'a')
+        self.assertEqual(data['rows'][0]['control_points'], 40)
 
     def test_month_includes_only_window(self):
         data = self.client.get('/api/v1/ranking/?period=month').json()
