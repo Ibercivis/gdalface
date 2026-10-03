@@ -48,7 +48,8 @@ TABLES = {
     'nadir':  ('nadir|mission|eq|{m}',  'nadir|frame|nadir|lat|nadir|lon|nadir|pdate|nadir|ptime'),
     'camera': ('camera|mission|eq|{m}', 'camera|frame|camera|camera|camera|fclt'),
     'mlcoord': ('mlcoord|mission|eq|{m}', 'mlcoord|frame|mlcoord|lat|mlcoord|lon'),
-    'frames': ('frames|mission|eq|{m}', 'frames|frame|frames|lat|frames|lon|frames|nlat|frames|nlon|frames|camera|frames|fclt|frames|pdate|frames|ptime'),
+    'frames': ('frames|mission|eq|{m}', 'frames|frame|frames|lat|frames|lon|frames|nlat|frames|nlon|frames|camera|frames|fclt|frames|pdate|frames|ptime|'
+                                         'frames|tilt|frames|feat|frames|cldp|frames|azi|frames|elev|frames|geon'),
 }
 
 
@@ -109,10 +110,11 @@ class NasaCache:
         self.log(f'  API {mission}/{table}: {len(data)} rows in {time.time() - t:.0f}s')
         return data
 
-    def fetch_all(self, missions, workers=6, force=False):
-        jobs = [(m, t) for m in missions for t in TABLES]
+    def fetch_all(self, missions, workers=6, force=False, refresh_tables=()):
+        jobs = [(m, t) for m in missions for t in TABLES
+                if force or t in refresh_tables or not os.path.exists(self.path(m, t))]
         with ThreadPoolExecutor(workers) as ex:
-            futs = {ex.submit(self.fetch, m, t, force): (m, t) for m, t in jobs}
+            futs = {ex.submit(self.fetch, m, t, force or t in refresh_tables): (m, t) for m, t in jobs}
             for f in as_completed(futs):
                 m, t = futs[f]
                 try:
