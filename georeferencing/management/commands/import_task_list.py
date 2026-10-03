@@ -330,6 +330,19 @@ class Command(BaseCommand):
             note=f'import_task_list: {ok} images imported ({bad} download failures, {len(failures)} unresolved, '
                  f'{dropped_day} daylight rows dropped, {len(mismatches)} csv/api mismatches), replicas={o["replicas"]}.',
             url=f'/admin/georeferencing/batch/{batch.id}/change/', created_by=owner)
+        # Challenge scope is evaluated live, but the cached image/task counts shown
+        # in the join modal and admin are not: refresh them for open challenges.
+        try:
+            from georeferencing.models import Challenge
+            refreshed = 0
+            for ch in Challenge.objects.all():
+                if ch.status != 'finished':
+                    ch.cached_image_count, ch.cached_task_count = ch.compute_counts()
+                    ch.save(update_fields=['cached_image_count', 'cached_task_count'])
+                    refreshed += 1
+            log(f'refreshed cached counts on {refreshed} open challenge(s)')
+        except Exception as e:
+            log(f'could not refresh challenge counts: {e}')
         log(f'DONE batch #{batch.id} {batch.name}: imported={ok} download_failed={bad} unresolved={len(failures)}')
 
         for pid, err in errors[:10]:
