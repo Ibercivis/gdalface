@@ -406,6 +406,25 @@ evento en `/stats/`.
   acercarse; capa de calor para ver dónde faltan manos. Guardar el GeoTIFF al
   enviar si algún día se quiere superponer la foto real (~2 MB/contribución).
 
+## Carga de fotos 2026-10-03 ✅
+
+- ✅ `import_task_list`: una llamada a la API por misión y tabla (160 tablas,
+  32 misiones, caché en `media/nasa_cache`), resolución local, contraste con el
+  CSV, descargas en paralelo, reejecución segura, IPv4 forzado.
+- ✅ Importadas 3573 fotos nuevas (×5 réplicas): ISS047-ISS056 1136 (36 de día
+  descartadas), ISS057 2112, ISS046 +8, "Easy ones" +347. Cero fallos de
+  descarga, cero sin resolver. 18 GB en `media/original`.
+- ✅ `enrich_images`: 2328 fotos antiguas completadas desde la caché (cámara
+  2326, nadir 2323, focal 400, centro catalogado 133, centro ML 52).
+- ✅ Retos nuevos: Europe / Spain / France 2026-27 (clonados), Poland y Brazil
+  2026-27 (solo región). Brazil tiene 24 fotos: pendiente de alimentarlo.
+- ⏳ **Catálogo NASA propio** (`NasaPhoto`): una fila por foto de cada misión
+  con nadir, centro catalogado, centro ML, hora, cámara, focal, fichero, sol,
+  y enlaces a nuestra imagen y a lo localizado. Comando de sincronización por
+  misión, informe por misión (CSV + panel), listas por región como consulta.
+  Completar las ~40 misiones que faltan (~200 llamadas, ~2,5 h en 2º plano).
+- ⏳ Las 36 fotos de día del zip quedan fuera a propósito.
+
 ## Pendiente de infraestructura — IPv6 sin salida (detectado 2026-10-03) ⏳
 
 El servidor tiene dirección y ruta IPv6 (`2001:41d0:306:28b4::/64`, default vía
