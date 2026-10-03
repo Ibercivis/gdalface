@@ -7,7 +7,7 @@
 <style>
     .lan-map { width: 100%; background: #05030a; border-radius: 12px; overflow: hidden; border: 1px solid var(--line-soft, rgba(255,255,255,.12)); }
     .lan-map .leaflet-container { background: #05030a; font-family: inherit; }
-    .lan-map .lan-lights { mix-blend-mode: screen; }
+    .leaflet-container .lan-lights { mix-blend-mode: screen; }  /* night-light tiles are opaque black: screen keeps only the light */
     .lan-map-cluster { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
         background: rgba(233,249,144,.18); border: 2px solid #e9f990; color: #fff; font-weight: 700; font-size: 12px; box-shadow: 0 0 10px rgba(233,249,144,.35); }
     .lan-map-popup .leaflet-popup-content-wrapper { background: #0f0b1c; color: #e8e8ec; border: 1px solid rgba(233,249,144,.25); border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,.5); }
