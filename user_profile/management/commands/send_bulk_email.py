@@ -195,7 +195,7 @@ class Command(BaseCommand):
 
         style = self.style.SUCCESS if not failed else self.style.WARNING
         self.stdout.write(style(f"Done. Sent: {sent}  Failed: {len(failed)}"))
-        if sent:
+        if sent and not test_email:
             # Mark the mailing on the staff panel charts so its effect can be read.
             try:
                 from georeferencing.models import StatsEvent
