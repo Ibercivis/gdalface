@@ -571,21 +571,7 @@ def ranking(request, scope='users'):
     })
 
 
-# ── Located-photos map ────────────────────────────────────────────────
-def located_map(request):
-    """Public map of every photo the community has located."""
-    from georeferencing.mapdata import located_geojson
-    challenge = None
-    if request.GET.get('challenge'):
-        challenge = Challenge.objects.filter(pk=request.GET['challenge']).first()
-    data = located_geojson(challenge)
-    return render(request, 'map.html', {
-        'meta': data['meta'],
-        'challenge': challenge,
-        'data_url': '/map/data.geojson' + (f'?challenge={challenge.id}' if challenge else ''),
-    })
-
-
+# ── Located-photos map data (homepage block, challenge detail, user area) ──
 def located_map_data(request):
     """GeoJSON for the map component. ?challenge=<id> filters; ?mine=1 marks
     the viewer's own photos (requires login)."""

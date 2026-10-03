@@ -582,7 +582,6 @@
         <div class="progress-panel" style="margin-top:18px">
             <div class="progress-label" style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
                 <span>{% trans "Photos located in this challenge" %}</span>
-                <a href="{% url 'located_map' %}?challenge={{ challenge.id }}" style="color:var(--accent,#e9f990);font-size:13px;text-decoration:none">{% trans "Open the full map" %} →</a>
             </div>
             <div id="challenge-map" class="lan-map" style="height:360px"></div>
         </div>

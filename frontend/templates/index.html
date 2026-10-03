@@ -867,10 +867,7 @@
                         <p class="text-center mb-4">{% trans "Every point is a night photo from the International Space Station located by the community. Click one to see it." %}</p>
                     </div>
                     <div class="col-12">
-                        <div id="home-map" class="lan-map" style="height:420px"></div>
-                        <div style="display:flex;justify-content:flex-end;margin-top:10px">
-                            <a href="{% url 'located_map' %}" class="ds-btn ds-btn--ghost ds-btn--sm">{% trans "Open the full map" %} <svg class="ds-icon"><use href="#ds-icon-chevron-right"/></svg></a>
-                        </div>
+                        <div id="home-map" class="lan-map" style="height:560px"></div>
                     </div>
                 </div>
 
@@ -923,7 +920,7 @@
     </div>
     <script>
         if (window.LAN && LAN.locatedMap) {
-            LAN.locatedMap('#home-map', { url: '{% url "located_map_data" %}', fit: false, center: [30, 10], zoom: 2, i18n: window.LAN_MAP_I18N, cluster: true });
+            LAN.locatedMap('#home-map', { url: '{% url "located_map_data" %}', fit: true, maxZoom: 3, i18n: window.LAN_MAP_I18N, cluster: true });
         }
     </script>
     

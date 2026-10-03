@@ -373,9 +373,7 @@ class LocatedMapTests(TestCase):
         self.assertTrue(r.json()['features'][0]['properties']['mine'])
 
     def test_pages_render(self):
-        r = self.client.get('/map/')
-        self.assertEqual(r.status_code, 200)
-        self.assertContains(r, 'id="located-map"')
+        self.assertEqual(self.client.get('/map/').status_code, 404)  # no standalone page: the homepage block is the map
         r = self.client.get('/')
         self.assertContains(r, 'id="home-map"')
         self.assertContains(r, 'href="/#map-section"')

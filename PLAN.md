@@ -389,16 +389,18 @@ evento en `/stats/`.
 
 ## Añadido 2026-10-03 — Mapa de fotos localizadas ✅
 
-- ✅ `/map/`: todas las fotos localizadas como puntos (centroide de sus puntos
-  de control), con agrupación, fondo oscuro + luces nocturnas VIIRS propias, y
-  popup con miniatura, fecha, nº de contribuciones, enlace a la NASA y aviso
-  si aún tiene tareas pendientes. Sin datos personales.
+- ✅ Mapa en la portada (`#map-section`, enlace "Mapa" en barra y pie): todas
+  las fotos localizadas como puntos (centroide de sus puntos de control), con
+  agrupación, fondo Esri Dark Gray + luces nocturnas (VIIRS propias / NASA
+  Black Marble, fundidas con `mix-blend-mode: screen`), y popup con miniatura,
+  fecha, nº de contribuciones, enlace a la NASA y aviso si aún tiene tareas
+  pendientes. Sin datos personales. Se descartó una página `/map/` aparte para
+  no mantener dos vistas de lo mismo.
 - ✅ Datos en `/map/data.geojson` (`georeferencing/mapdata.py`, caché 10 min),
   `?challenge=<id>` filtra por reto, `?mine=1` marca las propias.
-- ✅ Componente `located_map.js` reutilizado en portada (bloque "Lo que ya
-  hemos iluminado"), en el detalle de reto (recortado a su región, con la bbox
-  dibujada) y en el área personal (mis fotos resaltadas; sustituye al mapa
-  anterior y sus llamadas a Nominatim por cada popup).
+- ✅ Componente `located_map.js` reutilizado en el detalle de reto (recortado a
+  su región, con la bbox dibujada) y en el área personal (solo mis fotos;
+  sustituye al mapa anterior y sus llamadas a Nominatim por cada popup).
 - ✅ "Mapa" en barra y pie.
 - ⏳ Segunda vuelta: huella aproximada por foto (envolvente de sus puntos) al
   acercarse; capa de calor para ver dónde faltan manos. Guardar el GeoTIFF al
