@@ -418,11 +418,17 @@ evento en `/stats/`.
   2326, nadir 2323, focal 400, centro catalogado 133, centro ML 52).
 - ✅ Retos nuevos: Europe / Spain / France 2026-27 (clonados), Poland y Brazil
   2026-27 (solo región). Brazil tiene 24 fotos: pendiente de alimentarlo.
-- ⏳ **Catálogo NASA propio** (`NasaPhoto`): una fila por foto de cada misión
-  con nadir, centro catalogado, centro ML, hora, cámara, focal, fichero, sol,
-  y enlaces a nuestra imagen y a lo localizado. Comando de sincronización por
-  misión, informe por misión (CSV + panel), listas por región como consulta.
-  Completar las ~40 misiones que faltan (~200 llamadas, ~2,5 h en 2º plano).
+- 🔧 **Catálogo NASA propio** (`NasaPhoto`, migración 0060): una fila por foto
+  de cada misión con fichero, nadir, centro catalogado, centro ML, hora, cámara,
+  focal, inclinación, rasgos NASA, nubosidad, región, elevación solar (NASA y
+  calculada), noche (≤ −6°), nivel de dificultad A/B/C/D y enlace a nuestra
+  `Image` con tareas hechas/pendientes. Comandos: `fetch_nasa_cache` (tablas
+  por misión), `sync_nasa_catalog` (caché → tabla), `nasa_catalog_report`
+  (informe por misión, CSV), `import_from_catalog` (selección por misión /
+  noche / focal / nivel / región / sin ráfagas → `Image` + ficheros + tareas).
+  En curso: descarga de ISS001-ISS080 y sincronización. Pendiente: bloque en
+  el panel de control y clasificación de miniaturas (ciudades / estrellas /
+  limbo) con muestra revisada a mano.
 - ⏳ Las 36 fotos de día del zip quedan fuera a propósito.
 
 ## Pendiente de infraestructura — IPv6 sin salida (detectado 2026-10-03) ⏳

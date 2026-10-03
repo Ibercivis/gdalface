@@ -174,3 +174,32 @@ class CatalogSyncTests(TransactionTestCase):
         # re-sync is idempotent
         call_command('sync_nasa_catalog', '--cache-dir', cache, stdout=out)
         self.assertEqual(NasaPhoto.objects.count(), 4)
+
+
+class ImportFromCatalogTests(TransactionTestCase):
+    def test_selection_and_import(self):
+        from datetime import datetime, timezone as tz
+        from georeferencing.models import GeoAttempt, NasaPhoto
+        from georeferencing.management.commands import import_from_catalog as cmd
+        User.objects.create_user('s', 's@x.org', 'pw', is_staff=True)
+        mk = lambda fr, **kw: NasaPhoto.objects.create(mission='ISS060', frame=fr, has_large=True, filename=f'ISS060-E-{fr}.JPG', directory='ESC/large/ISS060',
+                                                       taken=datetime(2019, 8, 1, 23, 0, tzinfo=tz.utc), **kw)
+        mk(1, nadir_lat=-20.0, nadir_lon=-45.0, focal=85, night=True, tier='C')          # Brazil, selected
+        mk(2, nadir_lat=-20.1, nadir_lon=-45.1, focal=85, night=True, tier='C')          # same 0.5° cell → dedup
+        mk(3, nadir_lat=-20.0, nadir_lon=-45.0, focal=24, night=True, tier='D')          # wide → out
+        mk(4, nadir_lat=-20.0, nadir_lon=-45.0, focal=85, night=False, tier='C')         # day → out
+        mk(5, nadir_lat=48.0, nadir_lon=2.0, focal=85, night=True, tier='C')             # Paris → out
+        mk(6, nadir_lat=-10.0, nadir_lon=-50.0, center_lat=-10.2, center_lon=-50.3, focal=400, night=True, tier='A')
+        sel = cmd.select({'bbox': (-33.8, 5.3, -74.0, -34.8), 'night': True, 'min_focal': 50, 'tiers': ['A', 'B', 'C'], 'dedup': 0.5})
+        self.assertEqual(sorted(p.frame for p in sel), [1, 6])
+        out = StringIO()
+        with mock.patch.object(cmd, '_dl', return_value=True):
+            call_command('import_from_catalog', '--batch', 'Brazil', '--bbox', '-33.8', '5.3', '-74.0', '-34.8', '--night', '--min-focal', '50',
+                         '--tiers', 'A', 'B', 'C', '--dedup', '0.5', '--replicas', '3', stdout=out)
+        self.assertIn('imported=2', out.getvalue())
+        self.assertEqual(Image.objects.filter(batch__name='Brazil').count(), 2)
+        self.assertEqual(GeoAttempt.objects.count(), 6)
+        self.assertEqual(NasaPhoto.objects.filter(image__isnull=False).count(), 2)
+        self.assertEqual(NasaPhoto.objects.get(frame=1).pending_count, 3)
+        # already imported rows are excluded next time
+        self.assertEqual(sorted(p.frame for p in cmd.select({'bbox': (-33.8, 5.3, -74.0, -34.8), 'night': True})), [2, 3])  # 2 was deduped away, 3 is wide; both still unimported
