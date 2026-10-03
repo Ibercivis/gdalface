@@ -746,7 +746,7 @@
                         </div>
                         <div class="ds-kpi">
                             <div class="ds-kpi__value">{{ total_users|default:'—' }}</div>
-                            <div class="ds-kpi__label">{% trans "Active citizens" %}</div>
+                            <div class="ds-kpi__label">{% trans "Participants" %}</div>
                         </div>
                         <div class="ds-kpi">
                             <div class="ds-kpi__value">{{ images_with_georeference|default:'—' }}</div>
@@ -868,8 +868,8 @@
                                         <span><i class="fa-solid fa-list-check"></i>{{ batch.get_number_geoattempts }}</span>
                                     </div>
                                 </div>
-                                <div class="progress-circle" style="background: conic-gradient(#e9f990 {{ batch.get_percentage_remaining|unlocalize }}%, rgba(255,255,255,0.12) 0);" title="{% trans 'Completion' %}">
-                                    <span class="progress-text">{{ batch.get_percentage_remaining }}%</span>
+                                <div class="progress-circle" style="background: conic-gradient(#e9f990 {{ batch.get_percentage_done|unlocalize }}%, rgba(255,255,255,0.12) 0);" title="{% trans 'Completion' %}">
+                                    <span class="progress-text">{{ batch.get_percentage_done }}%</span>
                                 </div>
                             </div>
                         </div>

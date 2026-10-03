@@ -105,11 +105,11 @@ def general_context(user, profile, request=None):
     tasks = profile.geoattempts_done or 0
     time_spent = profile.time_spent or 0
 
-    from user_profile.models import UserProfile
-    contributors = UserProfile.objects.filter(controlPointsDone__gt=0)
-    total_contributors = contributors.count()
-    rank = (contributors.filter(controlPointsDone__gt=total_cp).count() + 1
-            if total_cp else None)
+    # Rank inside the verified population (georeferencing.metrics); the
+    # percentile is taken over population members with at least one CP.
+    from . import metrics
+    total_contributors = metrics.population().filter(controlPointsDone__gt=0).count()
+    rank = metrics.global_rank(profile, 'cp')['rank'] if total_cp else None
     percentile = _percentile(rank, total_contributors) if rank else None
 
     slug = global_tier(total_cp)

@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from user_profile.models import UserProfile
@@ -9,8 +9,11 @@ from .models import Team, TeamMembership
 User = get_user_model()
 
 
-def make_user(username, cp=0, tasks=0):
-    user = User.objects.create_user(username=username, password='x')
+def make_user(username, cp=0, tasks=0, verified=True):
+    user = User.objects.create_user(username=username, password='x', email=f'{username}@x.org')
+    if verified:
+        from allauth.account.models import EmailAddress
+        EmailAddress.objects.create(user=user, email=user.email, verified=True, primary=True)
     # A post_save signal may have created the profile already.
     profile, _ = UserProfile.objects.get_or_create(user=user)
     profile.controlPointsDone = cp
@@ -19,6 +22,10 @@ def make_user(username, cp=0, tasks=0):
     return user
 
 
+LOCMEM_CACHE = {'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+                            'LOCATION': 'teams-tests'}}
+
+@override_settings(CACHES=LOCMEM_CACHE)
 class TeamLifecycleTests(TestCase):
     def setUp(self):
         self.alice = make_user('alice', cp=100, tasks=10)
@@ -75,6 +82,9 @@ class TeamLifecycleTests(TestCase):
         self.assertContains(resp, 'Render Me')
 
 
+
+
+@override_settings(CACHES=LOCMEM_CACHE)
 class TeamsRankingApiTests(TestCase):
     def setUp(self):
         self.alice = make_user('alice', cp=100, tasks=10)

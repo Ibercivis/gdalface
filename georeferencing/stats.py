@@ -19,23 +19,18 @@ SCHEMA_VERSION = "1.0"
 SNAPSHOT_PATH = os.path.join(settings.MEDIA_ROOT, "stats.json")
 
 
-def _participants():
-    """Distinct users with a verified email — same definition as the homepage."""
-    from allauth.account.models import EmailAddress
-    return (EmailAddress.objects.filter(verified=True)
-            .values("user_id").distinct().count())
-
-
 def _public_activity_metrics():
-    """Non-sensitive activity counters shared with the staff dashboard."""
-    from datetime import timedelta
-    from .models import GeoAttempt
-    today = timezone.now().date()
+    """Public counters, all from georeferencing.metrics."""
+    from . import metrics
+    t = metrics.project_totals()
     return {
-        "contributions_total": GeoAttempt.objects.filter(status="DONE").count(),
-        "tasks_pending": GeoAttempt.objects.filter(status="PENDING").count(),
-        "active_users_7d": _active_users(today - timedelta(days=7)),
-        "active_users_30d": _active_users(today - timedelta(days=30)),
+        "participants": t["participants"],
+        "contributions_total": t["tasks_done"],
+        "control_points_total": t["control_points"],
+        "images_georeferenced": t["images_georeferenced"],
+        "tasks_pending": t["tasks_pending"],
+        "active_users_7d": metrics.active_users(7),
+        "active_users_30d": metrics.active_users(30),
     }
 
 
@@ -50,10 +45,7 @@ def build_stats():
             "url": identity.get("url", ""),
         },
         "generated_at": timezone.now().isoformat(),
-        "metrics": {
-            "participants": _participants(),
-            **_public_activity_metrics(),
-        },
+        "metrics": _public_activity_metrics(),
     }
 
 

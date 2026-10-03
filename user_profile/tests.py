@@ -3,7 +3,7 @@ from datetime import date, timedelta
 from allauth.account.models import EmailAddress
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from georeferencing.models import GeoAttemptsByUserByDay
 from user_profile.models import UserProfile
@@ -29,20 +29,28 @@ def make_user(username, cp=0, tasks=0, country='', visible=True, verified=True):
     return user
 
 
+LOCMEM_CACHE = {'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+                            'LOCATION': 'user-profile-tests'}}
+
+
+@override_settings(CACHES=LOCMEM_CACHE)
 class CountryRankingApiTests(TestCase):
     def setUp(self):
         cache.clear()
         self.a = make_user('a', cp=100, tasks=10, country='ES')
         self.b = make_user('b', cp=60, tasks=20, country='ES')
         self.c = make_user('c', cp=120, tasks=5, country='IT')
-        # Must not score: no country / invisible / unverified.
+        # Must not score: no country / unverified. Invisible users DO count
+        # for their country (they are never named, only aggregated).
         make_user('d', cp=999, tasks=99)
-        make_user('e', cp=999, tasks=99, country='FR', visible=False)
+        make_user('e', cp=50, tasks=1, country='FR', visible=False)
         make_user('f', cp=999, tasks=99, country='DE', verified=False)
 
     def test_aggregates_and_ordering_by_cp(self):
         data = self.client.get('/api/v1/ranking/countries/').json()
-        self.assertEqual(data['total_countries'], 2)
+        self.assertEqual(data['total_countries'], 3)
+        fr = next(r for r in data['rows'] if r['country_code'] == 'fr')
+        self.assertEqual((fr['control_points'], fr['users']), (50, 1))
         es = next(r for r in data['rows'] if r['country_code'] == 'es')
         it = next(r for r in data['rows'] if r['country_code'] == 'it')
         self.assertEqual(es['control_points'], 160)
@@ -67,6 +75,7 @@ class CountryRankingApiTests(TestCase):
         self.assertTrue(data['my_country_missing'])
 
 
+@override_settings(CACHES=LOCMEM_CACHE)
 class PeriodRankingApiTests(TestCase):
     def setUp(self):
         cache.clear()

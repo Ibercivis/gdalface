@@ -186,64 +186,25 @@ class PendingGeoAttemptView(APIView):
         serializer = GeoAttemptSerializer(geoattempt)
         data = dict(serializer.data)
 
-        # Append personal stats for authenticated users
+        # Personal stats for authenticated users (georeferencing.metrics:
+        # ranks inside the verified population, ties share a rank).
         if request.user.is_authenticated:
-            from django.db.models import Count
-            user = request.user
-            all_done = GeoAttempt.objects.filter(status='DONE')
-            user_done = all_done.filter(assignedUser=user)
-
-            # --- Tasks ---
-            tasks_done = user_done.count()
-            tasks_board = list(all_done.values('assignedUser').annotate(total=Count('id')).order_by('-total'))
-            tasks_rank = next((i + 1 for i, u in enumerate(tasks_board) if u['assignedUser'] == user.id), None)
-            tasks_to_next = (tasks_board[tasks_rank - 2]['total'] - tasks_done + 1) if tasks_rank and tasks_rank > 1 else 0
-            tasks_to_first = (tasks_board[0]['total'] - tasks_done) if tasks_rank and tasks_rank > 1 else 0
-
-            # --- Control points (per user, computed in Python) ---
-            all_cp_by_user = {}
-            for a in all_done.only('assignedUser_id', 'controlPoints'):
-                uid = a.assignedUser_id
-                if uid is None:
-                    continue
-                n = len(a.controlPoints) if a.controlPoints and isinstance(a.controlPoints, list) else 0
-                all_cp_by_user[uid] = all_cp_by_user.get(uid, 0) + n
-            my_cp = all_cp_by_user.get(user.id, 0)
-            cp_board = sorted(all_cp_by_user.items(), key=lambda x: -x[1])
-            cp_rank = next((i + 1 for i, (uid, _) in enumerate(cp_board) if uid == user.id), None)
-            cp_to_next = (cp_board[cp_rank - 2][1] - my_cp + 1) if cp_rank and cp_rank > 1 else 0
-            cp_to_first = (cp_board[0][1] - my_cp) if cp_rank and cp_rank > 1 else 0
-
-            # --- Time (hours) ---
-            all_time_by_user = {}
-            for a in all_done.filter(finishedDateTime__isnull=False, assignedDateTime__isnull=False).only(
-                    'assignedUser_id', 'finishedDateTime', 'assignedDateTime'):
-                uid = a.assignedUser_id
-                if uid is None:
-                    continue
-                secs = (a.finishedDateTime - a.assignedDateTime).total_seconds()
-                if secs > 0:
-                    all_time_by_user[uid] = all_time_by_user.get(uid, 0) + secs
-            my_secs = all_time_by_user.get(user.id, 0)
-            my_hours = round(my_secs / 3600, 1)
-            time_board = sorted(all_time_by_user.items(), key=lambda x: -x[1])
-            time_rank = next((i + 1 for i, (uid, _) in enumerate(time_board) if uid == user.id), None)
-            time_to_next_h = round((time_board[time_rank - 2][1] - my_secs + 60) / 3600, 1) if time_rank and time_rank > 1 else 0
-            time_to_first_h = round((time_board[0][1] - my_secs) / 3600, 1) if time_rank and time_rank > 1 else 0
-
+            from . import metrics
+            profile, _ = UserProfile.objects.get_or_create(user=request.user)
+            r = metrics.all_ranks(profile)
             data['user_stats'] = {
-                'tasks_done': tasks_done,
-                'tasks_rank': tasks_rank,
-                'tasks_to_next': tasks_to_next,
-                'tasks_to_first': tasks_to_first,
-                'control_points': my_cp,
-                'cp_rank': cp_rank,
-                'cp_to_next': cp_to_next,
-                'cp_to_first': cp_to_first,
-                'hours': my_hours,
-                'time_rank': time_rank,
-                'time_to_next': time_to_next_h,
-                'time_to_first': time_to_first_h,
+                'tasks_done': r['tasks']['value'],
+                'tasks_rank': r['tasks']['rank'],
+                'tasks_to_next': r['tasks']['to_next'],
+                'tasks_to_first': r['tasks']['to_first'],
+                'control_points': r['cp']['value'],
+                'cp_rank': r['cp']['rank'],
+                'cp_to_next': r['cp']['to_next'],
+                'cp_to_first': r['cp']['to_first'],
+                'hours': round(r['time']['value'] / 3600, 1),
+                'time_rank': r['time']['rank'],
+                'time_to_next': round(r['time']['to_next'] / 3600, 1),
+                'time_to_first': round(r['time']['to_first'] / 3600, 1),
             }
 
         return Response(data)
@@ -558,31 +519,13 @@ class GeoAttemptIndividualView(APIView):
                         'tasks': user_profile.geoattempts_done,
                         'time_seconds': int(user_profile.time_spent),
                     }
-                    ahead = UserProfile.objects.filter(
-                        controlPointsDone__gt=user_profile.controlPointsDone,
-                    ).count()
+                    from . import metrics
                     prev_cp = max(user_profile.controlPointsDone - cp_added, 0)
-                    prev_ahead = UserProfile.objects.filter(
-                        controlPointsDone__gt=prev_cp,
-                    ).count()
                     result['rank'] = {
-                        'global': ahead + 1,
-                        'previous_global': prev_ahead + 1,
+                        'global': metrics.global_rank(user_profile, 'cp')['rank'],
+                        'previous_global': metrics.global_rank(user_profile, 'cp', value=prev_cp)['rank'],
                     }
-                    # Streak: consecutive days backwards from today with at least 1 attempt
-                    from datetime import timedelta as _td
-                    day = timezone.now().date()
-                    streak = 0
-                    for _ in range(366):  # bounded sweep
-                        rec = GeoAttemptsByUserByDay.objects.filter(
-                            user=geoattemp.assignedUser, date=day,
-                        ).first()
-                        if rec and rec.numberGeoAttempts > 0:
-                            streak += 1
-                            day = day - _td(days=1)
-                        else:
-                            break
-                    result['streak_days'] = streak
+                    result['streak_days'] = metrics.streak(geoattemp.assignedUser)[0]
                     # Challenge section (only if enrolled and CPs added)
                     if cp_added and enrollment is not None:
                         from django.db.models import Sum
@@ -783,18 +726,13 @@ class GeoAttemptsCalendarView(APIView):
         # Get the current logged-in user
         user = request.user
         
-        # Current date
-        current_date = datetime.now()
-        
-        # Start date: one year back from today
-        start_date = datetime(current_date.year - 1, current_date.month, current_date.day)
-        
-        # End date: end of the current month
-        end_date = datetime(current_date.year, current_date.month + 1, 1) - timedelta(days=1)
-        if current_date.month == 12:  # Handle December case
-            end_date = datetime(current_date.year + 1, 1, 1) - timedelta(days=1)
-            
-        print(f"Calendar range: {start_date} to {end_date}")
+        # Range: 12 months back from today up to the end of the current month.
+        # (Computed with date arithmetic so Feb 29 and December do not crash.)
+        today = timezone.now().date()
+        start_date = datetime(today.year, today.month, today.day) - timedelta(days=365)
+        first_next_month = (datetime(today.year + 1, 1, 1) if today.month == 12
+                            else datetime(today.year, today.month + 1, 1))
+        end_date = first_next_month - timedelta(days=1)
         
         # Generate all days in the range
         all_days = [
@@ -900,6 +838,14 @@ class ChallengeListView(APIView):
         return Response({'challenges': data, 'grouped': grouped})
 
 
+def _is_visible(user):
+    """UserProfile.visible, defaulting to True when the profile is missing."""
+    try:
+        return bool(user.userprofile.visible)
+    except UserProfile.DoesNotExist:
+        return True
+
+
 class ChallengeDetailView(APIView):
     permission_classes = [AllowAny]
 
@@ -918,10 +864,13 @@ class ChallengeDetailView(APIView):
         leaderboard = []
         my_rank = None
         my_cp = None
+        leaderboard_qs = leaderboard_qs.select_related('user__userprofile')
         for i, p in enumerate(leaderboard_qs[:50], start=1):
+            is_you = request.user.is_authenticated and p.user_id == request.user.id
             row = {
                 'rank': i,
-                'username': p.user.username,
+                # Invisible profiles keep their rank but not their name.
+                'username': p.user.username if (_is_visible(p.user) or is_you) else None,
                 'cp_count': p.cached_cp_count,
                 'is_active': p.left_at is None,
             }
@@ -957,7 +906,7 @@ class ChallengeDetailView(APIView):
             if nxt:
                 my_gap = {
                     'cp_needed': nxt.cached_cp_count - (my_cp or 0) + 1,
-                    'username': nxt.user.username,
+                    'username': nxt.user.username if _is_visible(nxt.user) else None,
                 }
         data['my_gap'] = my_gap
         return Response(data)
@@ -1175,10 +1124,11 @@ class MyChallengeView(APIView):
         )
         leader_payload = None
         if leader:
+            is_you = leader.user_id == request.user.id
             leader_payload = {
-                'username': leader.user.username,
+                'username': leader.user.username if (_is_visible(leader.user) or is_you) else None,
                 'cp_count': leader.cached_cp_count,
-                'is_you': leader.user_id == request.user.id,
+                'is_you': is_you,
             }
 
         return Response({

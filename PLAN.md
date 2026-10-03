@@ -128,10 +128,14 @@ va primero.
 - ✅ 103 tareas `ASSIGNED` con más de 6 h: falsa alarma. El job corre cada hora
   y la foto se tomó justo antes de la ejecución. El panel usa ahora 7 h.
   Además, "saltar" o enviar sobre una tarea ya liberada devuelve 409.
-- ✅ Snapshot público parado desde 2026-09-28: worker y scheduler corren y el
-  job encolado a mano funciona. El cron de medianoche no se disparó el 2 ni el
-  3 de octubre; causa sin determinar. Red de seguridad añadida: el job horario
-  regenera el snapshot si tiene más de 24 h.
+- ✅ Snapshot público parado desde 2026-09-28. **Causa encontrada**: los tests
+  de países y equipos llamaban a `cache.clear()`, que en RedisCache es un
+  `FLUSHDB` de la base 3 completa, donde también vive el registro de
+  rq-scheduler. Cada pasada de tests borraba los trabajos programados. Todos
+  los TestCase usan ahora LocMemCache y `schedule_tasks` no se ejecuta bajo el
+  test runner. Red de seguridad además: el job horario regenera el snapshot si
+  tiene más de 24 h. Si vuelve a pasar: `manage.py migrate` re-registra los
+  trabajos.
 - ✅ El tutorial nunca emitía `completed`: driver.js ya ha vaciado `state` cuando
   llama a `onDestroyed`, así que `activeIndex` era `undefined` y todo acababa
   como `dismissed` en el paso 1. `tutorial.js` recuerda ahora el último paso
@@ -143,11 +147,18 @@ pendientes del historial de inscripción.
 
 ---
 
-## Fase 2 — Una definición por métrica ⏳
+## Fase 2 — Una definición por métrica 🔧
+
+Estado 2026-10-03: módulo `georeferencing/metrics.py` creado y consumido por
+portada, área personal, estadísticas de la ficha de tarea, overlay, diplomas y
+JSON público. Decisión tomada: los perfiles ocultos **cuentan siempre y no se
+nombran nunca** (antes países los excluía). Equipos aplican el filtro de
+verificados. Pendiente: `/ranking/` como consumidor de referencia (Fase 2.5) y
+los tests de igualdad entre superficies.
 
 ### 2.1 Módulo único (`georeferencing/stats.py`)
-- ⏳ Funciones puras y documentadas, usadas por portada, área personal,
-  rankings, diplomas, `/stats/` y `/.well-known/stats.json`:
+- ✅ Funciones puras y documentadas (`georeferencing/metrics.py`), usadas por
+  portada, área personal, rankings, diplomas y `/.well-known/stats.json`:
   - `contributions(user=None, since=None)` → GeoAttempt DONE.
   - `control_points(...)`, `time_spent(...)`.
   - `participants()` → usuarios con email verificado (la única definición de
@@ -155,32 +166,29 @@ pendientes del historial de inscripción.
   - `active_users(days)` → distinct en `GeoAttemptsByUserByDay`.
   - `global_rank(user, metric)` → verificados, `>` estricto + 1, empates
     comparten puesto.
-- ⏳ Cachear los agregados globales 5 min en Redis (hoy la portada recorre toda
-  la tabla de GeoAttempt en cada visita).
+- ✅ Agregados globales cacheados 5 min en Redis.
 
 ### 2.2 Sustituir cálculos locales
-- ⏳ `frontend/views.index` (bucle Python sobre `controlPoints`, duración).
-- ⏳ `user_profile/views.user_view`: eliminar el contexto muerto
+- ✅ `frontend/views.index` (bucle Python sobre `controlPoints`, duración).
+- ✅ `user_profile/views.user_view`: eliminado el contexto muerto
   (`unified_ranking`, `avg_*`, los tres `order_by` que cargan todos los
   perfiles) y usar el módulo.
-- ⏳ `georeferencing/views.PendingGeoAttemptView` (`user_stats`): quitar el
-  "competidor anónimo" (`assignedUser=None`) del ranking de tareas.
-- ⏳ Overlay de resultado: `rank.global` con la misma regla que `/api/v1/ranking/`.
-- ⏳ Diplomas: `total_contributors` y rango con la misma regla.
-- ⏳ Rankings de países y equipos: aplicar el mismo filtro de verificados y
-  `visible` que el ranking de usuarios.
+- ✅ `georeferencing/views.PendingGeoAttemptView` (`user_stats`): sin el
+  "competidor anónimo"; rangos sobre la población verificada.
+- ✅ Overlay de resultado: `rank.global` con la misma regla que `/api/v1/ranking/`.
+- ✅ Diplomas: `total_contributors` y rango con la misma regla.
+- ✅ Rankings de países y equipos: misma población (verificados; ocultos
+  cuentan sin nombrarse).
 
 ### 2.3 Privacidad
-- ⏳ `/api/v1/challenges/<pk>/` devuelve top-50 con nombres aunque
-  `visible=False`. Filtrar o eliminar el campo.
-- ⏳ `MyChallengeView.leader`, `my_gap` en detalle de reto y `/verify/<code>/`
-  muestran usuarios ocultos. Anonimizar.
+- ✅ `/api/v1/challenges/<pk>/` top-50: nombre `null` si el perfil es oculto.
+- ✅ `MyChallengeView.leader` y `my_gap` anonimizados. `/verify/<code>/` se
+  deja: el código lo comparte el propio titular, mostrar su nombre es el fin.
 
 ### 2.4 Pequeños fallos de cálculo
-- ⏳ Calendario (`GeoAttemptsCalendarView`): falla en diciembre
-  (`month+1`) y el 29 de febrero.
-- ⏳ Racha: unificar la tolerancia a "hoy vacío" entre overlay y área personal.
-- ⏳ `Batch.get_percentage_remaining` devuelve % hecho; renombrar.
+- ✅ Calendario (`GeoAttemptsCalendarView`): aritmética de fechas segura.
+- ✅ Racha: `metrics.streak` compartida por overlay y área personal.
+- ✅ `Batch.get_percentage_remaining` → `get_percentage_done`.
 
 **Criterio de salida:** el mismo número para "tareas", "CP" y "usuarios" en
 portada, área personal, ranking, diploma y JSON público, verificado con un test

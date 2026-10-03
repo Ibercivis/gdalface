@@ -196,21 +196,27 @@ def teams_ranking_api(request):
                               filter=Q(memberships__left_at__isnull=True)),
             )
         }
+        # Same population as every other ranking (georeferencing.metrics):
+        # only members with a verified e-mail score for their team.
+        from georeferencing.metrics import verified_user_ids
+        verified = verified_user_ids()
         if period == 'all':
+            active_verified = Q(memberships__left_at__isnull=True,
+                                memberships__user_id__in=verified)
             agg = (Team.objects
                    .values('id')
                    .annotate(
                        tasks=Sum('memberships__user__userprofile__geoattempts_done',
-                                 filter=Q(memberships__left_at__isnull=True)),
+                                 filter=active_verified),
                        control_points=Sum('memberships__user__userprofile__controlPointsDone',
-                                          filter=Q(memberships__left_at__isnull=True)),
+                                          filter=active_verified),
                    ))
             totals = {a['id']: a for a in agg}
         else:
             from user_profile.views import _period_start
             start = _period_start(period)
             agg = (GeoAttemptsByUserByDay.objects
-                   .filter(date__gte=start,
+                   .filter(date__gte=start, user_id__in=verified,
                            user__team_memberships__left_at__isnull=True)
                    .values(team_id=F('user__team_memberships__team_id'))
                    .annotate(tasks=Sum('numberGeoAttempts')))

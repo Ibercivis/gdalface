@@ -44,77 +44,20 @@ def index(request):
     # Get all batches to display them on the homepage
     batchs = Batch.objects.all()
     
-    # Calculating project statistics
-    # Total users — only those who confirmed their email (allauth verified).
-    from allauth.account.models import EmailAddress
-    total_users = EmailAddress.objects.filter(verified=True).values('user_id').distinct().count()
-    
-    # Total tasks and completed tasks
-    total_tasks = GeoAttempt.objects.count()
-    completed_tasks = GeoAttempt.objects.filter(status='DONE').count()
-    
-    # Total images and images with completed georeferencing
-    total_images = Image.objects.count()
-    images_with_georeference = Image.objects.filter(
-        id__in=GeoAttempt.objects.filter(status='DONE').values('image')
-    ).distinct().count()
-    
-    # Total control points
-    total_control_points = 0
-    try:
-        # Obtenemos los geoattempts completados que tienen puntos de control
-        completed_attempts = GeoAttempt.objects.filter(
-            status='DONE',
-            controlPoints__isnull=False
-        )
-        
-        # Sumamos la cantidad de puntos de control en cada intento
-        for attempt in completed_attempts:
-            # controlPoints es un JSONField que puede contener una lista de puntos
-            if attempt.controlPoints and isinstance(attempt.controlPoints, list):
-                total_control_points += len(attempt.controlPoints)
-    except Exception as e:
-        # Log the error but continue with total_control_points = 0
-        print(f"Error calculating total control points: {str(e)}")
-    
-    # Total minutes spent on tasks
-    total_minutes = 0
-    try:
-        # Calculate total time using the correct fields (finishedDateTime - assignedDateTime)
-        finished_attempts = GeoAttempt.objects.filter(
-            status='DONE',
-            finishedDateTime__isnull=False,
-            assignedDateTime__isnull=False
-        )
-        
-        # Create a duration expression
-        duration_expr = ExpressionWrapper(
-            F('finishedDateTime') - F('assignedDateTime'),
-            output_field=fields.DurationField()
-        )
-        
-        # Calculate total duration in seconds
-        result = finished_attempts.annotate(
-            duration=duration_expr
-        ).aggregate(
-            total_seconds=Sum('duration')
-        )
-        
-        if result['total_seconds']:
-            # Convert to minutes
-            total_minutes = int(result['total_seconds'].total_seconds() / 60)
-        
-    except Exception as e:
-        # Log the error but continue with total_minutes = 0
-        print(f"Error calculating total minutes: {str(e)}")
-    
-    # Average tasks per user
-    avg_tasks_per_user = 0
-    if total_users > 0:
-        avg_tasks_per_user = round(completed_tasks / total_users, 1)
-    
-    # Human-readable total time. The raw value is in minutes; convert to a
-    # compact "Xd Yh" / "Yh Zm" / "Zm" string for display.
+    # Project statistics — single definitions live in georeferencing.metrics.
+    from georeferencing import metrics
+    totals = metrics.project_totals()
+    total_users = totals['participants']
+    total_tasks = totals['tasks_total']
+    completed_tasks = totals['tasks_done']
+    total_images = totals['images_total']
+    images_with_georeference = totals['images_georeferenced']
+    total_control_points = totals['control_points']
+    total_minutes = totals['seconds'] // 60
+    avg_tasks_per_user = totals['avg_tasks_per_participant']
+    completion_pct = totals['completion_pct']
+
+    # Human-readable total time: compact "Xd Yh" / "Yh Zm" / "Zm".
     def _format_minutes(mins):
         if not mins:
             return '0m'
@@ -126,11 +69,6 @@ def index(request):
         if m and not days: parts.append(f'{m}m')
         return ' '.join(parts) or '<1m'
     total_time_formatted = _format_minutes(total_minutes)
-
-    # Completion percentage (project-level), used as a headline metric.
-    completion_pct = round(
-        (completed_tasks / total_tasks) * 100, 1,
-    ) if total_tasks else 0
 
     # Visible challenges on the home page: anything not yet finished, plus
     # finished ones that ended in the last 30 days for transparency.
@@ -409,9 +347,13 @@ def challenge_detail(request, pk):
                     default=None,
                 )
                 if ahead:
+                    try:
+                        ahead_visible = bool(ahead.user.userprofile.visible)
+                    except Exception:
+                        ahead_visible = True
                     my_gap = {
                         'cp_needed': ahead.cached_cp_count - my_enrollment.cached_cp_count + 1,
-                        'username': ahead.user.username,
+                        'username': ahead.user.username if ahead_visible else None,
                     }
 
     total_cp = ch.total_cp()

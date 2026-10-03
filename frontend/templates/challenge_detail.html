@@ -604,9 +604,15 @@
                 {% if my_gap and not my_enrollment.left_at and time_state == 'running' %}
                 <div style="margin-top:10px;font-size:0.9rem;color:var(--ink-1,#e7e3ff);">
                     <i class="fa-solid fa-angles-up" style="color:#e9f990;margin-right:6px;"></i>
+                    {% if my_gap.username %}
                     {% blocktrans trimmed with cp=my_gap.cp_needed username=my_gap.username %}
                     Only {{ cp }} CP to overtake {{ username }}!
                     {% endblocktrans %}
+                    {% else %}
+                    {% blocktrans trimmed with cp=my_gap.cp_needed %}
+                    Only {{ cp }} CP to climb one place!
+                    {% endblocktrans %}
+                    {% endif %}
                 </div>
                 {% endif %}
             </div>
