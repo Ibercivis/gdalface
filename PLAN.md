@@ -446,9 +446,24 @@ evento en `/stats/`.
   apenas. Decisión: cargar A (validación) y B (centro ML, 60.757 nocturnas
   aprovechables sin cargar, 7.334 sin ráfagas); C aparcado hasta que la
   herramienta muestre la zona probable.
-- ⏳ Piloto pendiente de visto bueno: 300 de nivel A (misiones ≥ ISS030, al
-  azar) + nivel B de ISS066 (988) e ISS045 (1208) sin ráfagas. Seguimiento en
-  el bloque "Batch health" del panel (saltos/hecha, sin tocar, precisión A).
+- 🔧 **Piloto cargado el 2026-10-03** (aprobado): batch "Validation A", 300
+  fotos de nivel A (misiones ≥ ISS030, al azar, una por celda de 1°); batch
+  "ISS066", nivel B sin ráfagas (~988); batch "ISS045", nivel B sin ráfagas
+  (~1208). Todas nocturnas, focal ≥ 50 mm, 5 réplicas.
+
+  **Revisión: 2026-10-17** (dos semanas), en `/stats/` → "Batch health":
+  - ¿Se trabajan? `Done 7d` > 0 y `Untouched` bajando en los tres batches.
+  - ¿Se abandonan? `Skips / done` por debajo de 2 en A y B (los de nivel C de
+    la mañana están entre 4 y 6). Si B supera 3, el centro ML no está
+    ayudando lo suficiente: revisar cómo se presenta en la herramienta.
+  - ¿Acierta la gente? `Accuracy` en "Validation A": mediana de km entre el
+    centroide de la comunidad y el centro NASA. Referencia esperada: < 30 km.
+    Si sale > 100 km, hay un problema de herramienta o de instrucciones, no
+    de voluntarios.
+  - Comparar con los batches antiguos en la misma tabla (ISS046, ISS057).
+  Si los tres criterios se cumplen: siguiente tanda de B (ISS072, ISS047,
+  ISS065) con la misma regla, 1000-1500 fotos cada una, y dejar la cola en
+  pocas semanas de trabajo.
 - ⏳ Repartidor: servir A y B primero a quien empieza; C a quien tiene recorrido.
 - ⏳ Las 36 fotos de día del zip quedan fuera a propósito.
 
