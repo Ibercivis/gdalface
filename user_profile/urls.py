@@ -20,10 +20,16 @@ Usage:
     to route requests to the user_profile app.
 """
 from django.urls import path
-from .views import user_view, edit_profile, delete_account
+from .views import (
+    user_view, edit_profile, delete_account,
+    diploma_general, diploma_challenge,
+)
 
 urlpatterns = [
     path('', user_view, name='user'),
     path('edit/', edit_profile, name='edit_profile'),
     path('delete/', delete_account, name='delete_account'),
+    path('diploma/', diploma_general, name='diploma_general'),
+    path('diploma/challenge/<int:challenge_id>/', diploma_challenge,
+         name='diploma_challenge'),
 ]

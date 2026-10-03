@@ -1,0 +1,216 @@
+{% load static %}
+{% load i18n %}
+{% load allauth account %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lost At Night | {% trans "Sign out" %}</title>
+    <link rel="icon" href="{% static 'img/logo-lost.png' %}" type="image/png">
+    <link href="{% static 'css/main.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
+    <style>
+        html, body { margin: 0; padding: 0; min-height: 100vh; }
+        body { background: oklch(0.10 0.02 285); color: var(--ink-1); font-family: var(--font-ui); }
+
+        .ds-login {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+        .ds-login__brand {
+            padding: 48px 48px 32px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-right: 1px solid var(--line);
+            position: relative;
+            background: linear-gradient(135deg, oklch(0.16 0.045 290), oklch(0.12 0.04 285));
+        }
+        .ds-login__form-col {
+            padding: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .ds-login__form-inner {
+            width: 100%;
+            max-width: 360px;
+        }
+
+        .ds-brand-mark {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--ink-0);
+        }
+        .ds-brand-mark__bubble {
+            width: 44px; height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .ds-brand-mark__bubble img { display: block; width: 100%; height: 100%; object-fit: contain; }
+        .ds-brand-mark__name {
+            font-size: 14px; font-weight: 700; line-height: 1.1; color: var(--ink-0);
+        }
+
+        .ds-quote {
+            position: relative;
+            padding-left: 16px;
+            border-left: 2px solid var(--accent);
+            font-size: 22px; line-height: 1.45;
+            color: var(--ink-0);
+            font-weight: 500;
+            max-width: 460px;
+            margin: 0;
+        }
+        .ds-quote__cite {
+            display: block;
+            margin-top: 16px;
+            font-size: 13px;
+            color: var(--ink-2);
+            font-weight: 400;
+        }
+
+        .ds-login__legal {
+            display: flex; gap: 16px; font-size: 12px; color: var(--ink-2);
+        }
+        .ds-login__legal a { color: var(--ink-2); text-decoration: none; }
+        .ds-login__legal a:hover { color: var(--ink-0); }
+
+        .ds-login h1 {
+            font-size: 28px; font-weight: 700; color: var(--ink-0);
+            margin: 0 0 6px; letter-spacing: -0.01em;
+        }
+        .ds-login__sub { color: var(--ink-1); margin: 0 0 28px; font-size: 14px; line-height: 1.5; }
+
+        .ds-logout-icon {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 64px; height: 64px;
+            border-radius: 50%;
+            background:
+                radial-gradient(circle at 50% 35%, oklch(0.95 0.13 113 / 0.15) 0%, transparent 70%),
+                var(--bg-2);
+            border: 1px solid var(--line);
+            color: var(--accent);
+            margin-bottom: 18px;
+        }
+        .ds-logout-icon svg { width: 28px; height: 28px; }
+
+        .ds-logout-actions {
+            display: flex; flex-direction: column; gap: 10px; margin-top: 8px;
+        }
+        .ds-logout-actions .ds-btn {
+            width: 100%;
+            height: 46px;
+            font-size: 14px;
+            justify-content: center;
+            gap: 10px;
+        }
+        .ds-logout-actions .ds-btn svg { width: 16px; height: 16px; transition: transform 160ms; }
+        .ds-logout-actions .ds-btn--primary:hover svg { transform: translateX(3px); }
+
+        .ds-create {
+            text-align: center; font-size: 13px; color: var(--ink-1);
+            padding-top: 16px;
+            margin-top: 24px;
+            border-top: 1px solid var(--line-soft);
+        }
+        .ds-create a { color: var(--accent); text-decoration: none; font-weight: 600; }
+        .ds-create a:hover { color: var(--ink-0); }
+
+        @media (max-width: 900px) {
+            .ds-login { grid-template-columns: 1fr; }
+            .ds-login__brand {
+                border-right: none;
+                border-bottom: 1px solid var(--line);
+                min-height: auto;
+                padding: 32px 24px;
+            }
+            .ds-quote { font-size: 18px; margin: 24px 0; }
+            .ds-login__form-col { padding: 32px 24px; }
+        }
+    </style>
+</head>
+<body>
+    {% include '_ds_icons.html' %}
+
+    <div class="ds-stars" style="z-index:0; opacity:0.5;"></div>
+
+    <div class="ds-login">
+        <div class="ds-login__brand">
+            <a href="/" class="ds-brand-mark">
+                <span class="ds-brand-mark__bubble"><img src="{% static 'img/logo-lost.png' %}" alt=""></span>
+                <span class="ds-brand-mark__name">Lost at<br>Night</span>
+            </a>
+
+            <blockquote class="ds-quote">
+                {% trans "“Every match you submit helps measure light pollution where satellites cannot reach.”" %}
+                <span class="ds-quote__cite">— Dr. Alejandro Sánchez de Miguel · IAA-CSIC</span>
+            </blockquote>
+
+            <div class="ds-login__legal">
+                <a href="/">{% trans "About" %}</a>
+                <a href="/#contact-section">{% trans "Contact" %}</a>
+                <a href="https://github.com/Ibercivis/gdalface" target="_blank" rel="noopener">GitHub</a>
+            </div>
+        </div>
+
+        <div class="ds-login__form-col">
+            <div class="ds-login__form-inner" style="text-align:center;">
+                <span class="ds-logout-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                        <path d="M16 17l5-5-5-5"/>
+                        <path d="M21 12H9"/>
+                    </svg>
+                </span>
+                <h1>{% trans "Ready to leave?" %}</h1>
+                <p class="ds-login__sub">
+                    {% if user.is_authenticated %}
+                        {% blocktrans with u=user.username %}You’re signed in as <b>{{ u }}</b>. Sign out and we’ll see you next time.{% endblocktrans %}
+                    {% else %}
+                        {% trans "You are not signed in." %}
+                    {% endif %}
+                </p>
+
+                {% if user.is_authenticated %}
+                {% url 'account_logout' as logout_url %}
+                <form method="post" action="{{ logout_url }}" style="margin:0;">
+                    {% csrf_token %}
+                    {{ redirect_field }}
+                    <div class="ds-logout-actions">
+                        <button type="submit" class="ds-btn ds-btn--primary ds-btn--lg">
+                            {% trans "Sign out" %}
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                        </button>
+                        <a href="/" class="ds-btn ds-btn--secondary ds-btn--lg">
+                            {% trans "Cancel" %}
+                        </a>
+                    </div>
+                </form>
+                {% else %}
+                <div class="ds-logout-actions">
+                    <a href="{% url 'account_login' %}" class="ds-btn ds-btn--primary ds-btn--lg">
+                        {% trans "Sign in" %}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                    </a>
+                </div>
+                {% endif %}
+
+                <div class="ds-create">
+                    {% trans "Changed your mind?" %} <a href="/">{% trans "Back to home" %}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -356,3 +356,196 @@ body.ds-app {
     font-size: 10px !important;
 }
 .leaflet-control-attribution a { color: var(--accent) !important; }
+
+/* ──────────── PAGINATOR + RANKING/LEADERBOARD COMPONENTS ────────────
+   Shared between /user-profile/ (global ranking) and /challenges/<id>/
+   (per-challenge leaderboard). Anything page-specific (header rows,
+   right padding, sort indicators on table headers) lives in the page. */
+.rk-jump-btn {
+    background: var(--bg-3) !important;
+    border: 1px solid var(--line) !important;
+    color: var(--ink-1) !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    padding: 6px 14px !important;
+    border-radius: 999px !important;
+    cursor: pointer !important;
+    line-height: 1 !important;
+    box-shadow: none !important;
+    transform: none !important;
+    transition: background 120ms, color 120ms, border-color 120ms;
+}
+.rk-jump-btn:hover {
+    background: var(--accent) !important;
+    color: var(--accent-ink) !important;
+    border-color: transparent !important;
+}
+
+.rk-pager {
+    display: flex; gap: 6px;
+    justify-content: center; align-items: center;
+    margin-top: 14px; padding: 12px 0 22px;
+    border-top: 1px solid var(--line-soft);
+}
+.rk-pager-btn {
+    background: var(--bg-2) !important;
+    border: 1px solid var(--line) !important;
+    color: var(--ink-1) !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    padding: 6px 12px !important;
+    border-radius: 8px !important;
+    min-width: 36px;
+    cursor: pointer !important;
+    line-height: 1 !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+.rk-pager-btn:hover { color: var(--accent) !important; border-color: var(--accent) !important; }
+.rk-pager-btn:disabled { opacity: 0.4; cursor: not-allowed !important; }
+.rk-pager-info {
+    font-size: 12px;
+    color: var(--ink-2);
+    padding: 0 10px;
+    font-family: var(--font-mono);
+}
+
+/* User avatar pill used in ranking rows. Falls back to astronaut icon. */
+.rk-row-avatar {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    margin-right: 8px;
+    background: radial-gradient(circle at 50% 35%,
+                  oklch(0.95 0.13 113 / 0.18) 0%, transparent 70%),
+                var(--bg-3);
+    border: 1px solid var(--line);
+    color: var(--ink-1);
+    flex-shrink: 0;
+    overflow: hidden;
+}
+.rk-row-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.rk-row-avatar i { font-size: 14px; }
+.rk-row-avatar.is-invisible {
+    background: oklch(0.18 0.05 290 / 0.6);
+    border-color: oklch(0.55 0.18 25 / 0.4);
+    color: oklch(0.78 0.16 25);
+}
+
+/* ──────────── COMPACT SLIDER PANELS (gettask) ────────────
+   Shared styles for the canvas-overlay panel (#canvas-sliders) and the
+   map-overlay panel (.ds-map-adjust). Goal: keep both visible without
+   eating canvas/map space. Skinny tracks, tiny labels, reset moved to
+   the header so the body is just rows. */
+.ds-canvas-sliders__head,
+.ds-map-adjust__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 4px 6px 4px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink-2);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid var(--line-soft);
+}
+.ds-canvas-sliders__head > span:first-child,
+.ds-map-adjust__head > span:first-child {
+    display: inline-flex; align-items: center; gap: 6px;
+}
+.ds-canvas-sliders__body,
+.ds-map-adjust__body { padding: 6px 8px; }
+
+/* Each row: label + slider + value, tight vertical rhythm. */
+.ds-canvas-sliders__body > div,
+.ds-map-adjust__body > div { font-size: 11px; }
+.ds-canvas-sliders__body span,
+.ds-map-adjust__body span { font-size: 11px !important; color: var(--ink-2); }
+
+/* Inline reset in panel header. */
+.ds-panel-reset {
+    display: inline-flex;
+    align-items: center; justify-content: center;
+    gap: 4px;
+    height: 20px;
+    padding: 0 6px;
+    background: transparent;
+    border: 1px solid var(--line-soft);
+    border-radius: 4px;
+    color: var(--ink-2);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: color 120ms, border-color 120ms;
+}
+.ds-panel-reset:hover { color: var(--accent); border-color: var(--accent); }
+.ds-panel-reset .ds-icon { width: 11px; height: 11px; }
+
+/* Skinny range sliders inside both panel bodies. Track 4px, thumb 12px. */
+.ds-canvas-sliders__body input[type=range],
+.ds-map-adjust__body input[type=range] {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    background: transparent;
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+}
+.ds-canvas-sliders__body input[type=range]::-webkit-slider-runnable-track,
+.ds-map-adjust__body input[type=range]::-webkit-slider-runnable-track {
+    height: 4px;
+    background: var(--line-soft);
+    border-radius: 2px;
+}
+.ds-canvas-sliders__body input[type=range]::-webkit-slider-thumb,
+.ds-map-adjust__body input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    margin-top: -4px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg-1);
+    box-shadow: 0 0 0 1px var(--line);
+    cursor: grab;
+}
+.ds-canvas-sliders__body input[type=range]::-webkit-slider-thumb:active,
+.ds-map-adjust__body input[type=range]::-webkit-slider-thumb:active { cursor: grabbing; }
+.ds-canvas-sliders__body input[type=range]::-moz-range-track,
+.ds-map-adjust__body input[type=range]::-moz-range-track {
+    height: 4px; background: var(--line-soft); border-radius: 2px; border: 0;
+}
+.ds-canvas-sliders__body input[type=range]::-moz-range-thumb,
+.ds-map-adjust__body input[type=range]::-moz-range-thumb {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg-1);
+    box-shadow: 0 0 0 1px var(--line);
+    cursor: grab;
+}
+
+/* Georeferenced layer slider — distinct cyan to set the "result" layer
+   apart from the base map opacity / image filter rows above. */
+#georef-slider-row span:first-child {
+    color: oklch(0.78 0.13 220) !important;
+    font-weight: 600;
+}
+#georef-slider-row input[type=range]::-webkit-slider-thumb {
+    background: oklch(0.78 0.13 220);
+}
+#georef-slider-row input[type=range]::-moz-range-thumb {
+    background: oklch(0.78 0.13 220);
+}
+#georef-slider-row input[type=range]::-webkit-slider-runnable-track {
+    background: oklch(0.78 0.13 220 / 0.25);
+}
+#georef-slider-row input[type=range]::-moz-range-track {
+    background: oklch(0.78 0.13 220 / 0.25);
+}

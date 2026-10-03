@@ -140,9 +140,15 @@
 
         var leaderHtml = '';
         if (leader && !leader.is_you) {
+            var medalSvg = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" '
+                + 'stroke="currentColor" stroke-width="1.6" stroke-linecap="round" '
+                + 'stroke-linejoin="round" style="flex-shrink:0;">'
+                + '<circle cx="12" cy="15" r="6"/>'
+                + '<path d="M8.5 3l3.5 6 3.5-6"/>'
+                + '<path d="M8.5 3l-2 4M15.5 3l2 4"/></svg>';
             leaderHtml =
                 '<span class="cb-leader" title="' + escapeHtml(t.leader) + ': ' + escapeHtml(leader.username) + ' · ' + fmt(leader.cp_count) + ' CP">'
-                + '🥇 <b>' + escapeHtml(leader.username) + '</b></span>';
+                + medalSvg + '<b>' + escapeHtml(leader.username) + '</b></span>';
         }
 
         slot.classList.toggle('cb-paused', !!ch.is_paused);

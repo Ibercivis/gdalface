@@ -1,0 +1,37 @@
+{% extends 'legal/_legal_base.html' %}
+{% load i18n %}
+
+{% block legal_title %}{% trans "Cookies policy" %}{% endblock %}
+
+{% block legal_content %}
+<h1>{% trans "Cookies policy" %}</h1>
+<p class="legal-meta">{% trans "Information about the cookies and similar technologies used by Lost at Night." %}</p>
+
+<h2>{% trans "What is a cookie?" %}</h2>
+<p>{% trans "A cookie is a small text file stored by your browser. We use cookies to keep your session active, remember your preferences, and — only if you opt in — to measure aggregate usage of the site." %}</p>
+
+<h2>{% trans "Categories" %}</h2>
+<h3>{% trans "Strictly necessary (always active)" %}</h3>
+<table>
+    <tr><th>{% trans "Cookie" %}</th><th>{% trans "Origin" %}</th><th>{% trans "Duration" %}</th><th>{% trans "Purpose" %}</th></tr>
+    <tr><td><code>sessionid</code></td><td>{% trans "Lost at Night" %}</td><td>{% trans "Session" %}</td><td>{% trans "Keeps you signed in." %}</td></tr>
+    <tr><td><code>csrftoken</code></td><td>{% trans "Lost at Night" %}</td><td>1 {% trans "year" %}</td><td>{% trans "Cross-site request forgery protection." %}</td></tr>
+    <tr><td><code>messages</code></td><td>{% trans "Lost at Night" %}</td><td>{% trans "Session" %}</td><td>{% trans "Flash messages (errors, confirmations)." %}</td></tr>
+</table>
+
+<h3>{% trans "Functional (consent required)" %}</h3>
+<table>
+    <tr><th>{% trans "Cookie" %}</th><th>{% trans "Origin" %}</th><th>{% trans "Duration" %}</th><th>{% trans "Purpose" %}</th></tr>
+    <tr><td><code>django_language</code></td><td>{% trans "Lost at Night" %}</td><td>1 {% trans "year" %}</td><td>{% trans "Remembers the language you selected." %}</td></tr>
+    <tr><td><code>lan_consent</code></td><td>{% trans "Lost at Night" %}</td><td>1 {% trans "year" %}</td><td>{% trans "Stores your cookie banner preferences so we don't ask again." %}</td></tr>
+</table>
+
+<h3>{% trans "Analytics (consent required)" %}</h3>
+<p>{% trans "Currently disabled. If we add aggregated analytics in the future, the provider and its purpose will appear here and require your explicit opt-in via the cookie banner." %}</p>
+
+<h2>{% trans "Managing your preferences" %}</h2>
+<p>{% trans "You can change your cookie preferences at any time by clicking the cookie button at the bottom-right of any page, or by clearing the cookies for this site in your browser settings." %}</p>
+
+<h2>{% trans "Third-party services" %}</h2>
+<p>{% trans "When you load a task page, your browser fetches map tiles from OpenStreetMap and reverse-geocodes coordinates via Nominatim. Those providers may receive your IP address. Lost at Night has no commercial relationship with them; refer to their respective policies for details." %}</p>
+{% endblock %}

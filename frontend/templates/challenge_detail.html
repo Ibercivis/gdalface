@@ -9,8 +9,8 @@
     <title>Lost At Night | {{ challenge.name }}</title>
     {% include '_google_analytics.html' %}
     {% bootstrap_css %}
-    <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
-    <link rel="alternate icon" href="{% static 'img/LogoLostAtNight.png' %}" type="image/png">
+    <link rel="icon" href="{% static 'img/logo-lost.png' %}" type="image/png">
+    <link rel="alternate icon" href="{% static 'img/logo-lost.png' %}" type="image/png">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
         integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <link href="{% static 'css/main.css' %}" rel="stylesheet" type="text/css">
@@ -156,6 +156,20 @@
         }
         .btn-action.ghost:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.6); color: #fff; }
         .btn-action[disabled] { opacity: 0.6; cursor: not-allowed; transform: none !important; }
+        /* main.css has a global `button { … !important }` rule that overrides the
+           <button> "Leave" control (but not the <a> "Contribute"). Re-assert the
+           styling here, scoped + !important, so both buttons match in size and the
+           Leave button keeps its outline (ghost) look. */
+        .hero-actions .btn-action { padding: 10px 22px !important; font-size: 14px !important; border-radius: 10px !important; font-weight: 600 !important; }
+        .hero-actions .btn-action.primary { background: #e9f990 !important; color: #2c1158 !important; border: none !important; }
+        .hero-actions .btn-action.ghost { background: transparent !important; border: 1px solid rgba(255,255,255,0.4) !important; color: #ffffff !important; }
+        .hero-actions .btn-action.ghost:hover { background: rgba(255,255,255,0.1) !important; border-color: rgba(255,255,255,0.6) !important; color: #fff !important; }
+        /* Compact ghost button used for "Leave challenge" — matches the
+           dimensions of .enrolled-tag so the pair reads as one row. */
+        .btn-action.ghost.compact {
+            padding: 8px 14px;
+            font-size: 13px;
+        }
         .enrolled-tag {
             display: inline-flex;
             align-items: center;
@@ -470,8 +484,13 @@
                         <span class="enrolled-tag">
                             <i class="fa-solid fa-check"></i> {% trans "You are enrolled" %}
                         </span>
+                        {% if challenge.status == 'active' %}
+                        <a class="btn-action primary push-right" href="/gettask{% if challenge.batch_id %}/{{ challenge.batch_id }}{% endif %}">
+                            <i class="fa-solid fa-location-dot"></i> {% trans "Contribute" %}
+                        </a>
+                        {% endif %}
                         {% if challenge.status != 'finished' %}
-                        <button id="leave-btn" class="btn-action ghost push-right">
+                        <button id="leave-btn" class="btn-action ghost{% if challenge.status != 'active' %} push-right{% endif %}">
                             <i class="fa-solid fa-right-from-bracket"></i> {% trans "Leave challenge" %}
                         </button>
                         {% endif %}
@@ -582,66 +601,178 @@
                     </div>
                     {% endif %}
                 </div>
+                {% if my_gap and not my_enrollment.left_at and time_state == 'running' %}
+                <div style="margin-top:10px;font-size:0.9rem;color:var(--ink-1,#e7e3ff);">
+                    <i class="fa-solid fa-angles-up" style="color:#e9f990;margin-right:6px;"></i>
+                    {% blocktrans trimmed with cp=my_gap.cp_needed username=my_gap.username %}
+                    Only {{ cp }} CP to overtake {{ username }}!
+                    {% endblocktrans %}
+                </div>
+                {% endif %}
             </div>
         </div>
         {% endif %}
 
         <!-- LEADERBOARD -->
-        <div class="leaderboard-card">
-            <div class="leaderboard-header">
-                <i class="fa-solid fa-ranking-star"></i> {% trans "Leaderboard" %}
+        <div class="leaderboard-card" id="lb-card">
+            <div class="leaderboard-header lb-header-row">
+                <span><i class="fa-solid fa-ranking-star"></i> {% trans "Leaderboard" %}</span>
+                {% if user.is_authenticated %}
+                <button type="button" class="rk-jump-btn" id="lb-jump-me" hidden>
+                    {% trans "Jump to me" %}
+                </button>
+                {% endif %}
             </div>
-            <table class="leaderboard-table">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>{% trans "User" %}</th>
-                        <th class="num">{% trans "Control points" %}</th>
-                        <th class="num" style="width:120px;">{% trans "Status" %}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for p in participants %}
-                    <tr {% if user.is_authenticated and p.user_id == user.id %}class="you-row"{% endif %}>
-                        {% if forloop.counter == 1 %}
-                            <td class="rank-cell gold">1</td>
-                        {% elif forloop.counter == 2 %}
-                            <td class="rank-cell silver">2</td>
-                        {% elif forloop.counter == 3 %}
-                            <td class="rank-cell bronze">3</td>
-                        {% else %}
-                            <td class="rank-cell">{{ forloop.counter }}</td>
-                        {% endif %}
-                        <td>
-                            <span class="lb-user">
-                                <span class="lb-avatar">
-                                    {% if p.user.userprofile.profile_pic %}
-                                        <img src="{{ p.user.userprofile.profile_pic.url }}" alt="">
-                                    {% else %}
-                                        <i class="fa-solid fa-user-astronaut"></i>
-                                    {% endif %}
-                                </span>
-                                <span>{{ p.user.username }}</span>
-                                {% if user.is_authenticated and p.user_id == user.id %}
-                                    <small style="color: rgba(233,249,144,0.85); margin-left:4px;">({% trans "you" %})</small>
-                                {% endif %}
-                            </span>
-                        </td>
-                        <td class="num">{{ p.cached_cp_count }}</td>
-                        <td class="num">
-                            {% if p.left_at %}
-                                <span class="badge-pill left">{% trans "left" %}</span>
-                            {% else %}
-                                <span class="badge-pill active">{% trans "active" %}</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr><td colspan="4" class="empty-state">{% trans "No participants yet — be the first one!" %}</td></tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <div class="lb-table-wrap">
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>{% trans "User" %}</th>
+                            <th class="num">{% trans "Control points" %}</th>
+                            <th class="num" style="width:120px;">{% trans "Status" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lb-tbody">
+                        <tr><td colspan="4" class="empty-state" style="padding:24px;text-align:center;color:var(--ink-2);">
+                            {% trans "Loading…" %}
+                        </td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="rk-pager" id="lb-pager" hidden>
+                <button type="button" class="rk-pager-btn" data-act="first">«</button>
+                <button type="button" class="rk-pager-btn" data-act="prev">‹</button>
+                <span class="rk-pager-info" id="lb-pager-info"></span>
+                <button type="button" class="rk-pager-btn" data-act="next">›</button>
+                <button type="button" class="rk-pager-btn" data-act="last">»</button>
+            </div>
         </div>
+
+        <style>
+            .lb-header-row {
+                display: flex; align-items: center; justify-content: space-between;
+                gap: 12px; flex-wrap: wrap;
+            }
+            /* No right-padding on the wrapper — the card has no internal padding
+               and the rows should extend to its edges (matching the header). */
+        </style>
+
+        <script>
+        (function () {
+            'use strict';
+            var ENDPOINT = '/api/v1/challenges/{{ challenge.id }}/leaderboard/';
+            var PAGE_SIZE = 20;
+            var state = { page: 1, total_pages: 1, my_rank: null };
+            var tbody = document.getElementById('lb-tbody');
+            var pager = document.getElementById('lb-pager');
+            var info  = document.getElementById('lb-pager-info');
+            var jumpBtn = document.getElementById('lb-jump-me');
+            var T = {
+                jump_to_me:    '{% trans "Jump to me" %}',
+                page_of_total: '{% trans "Page {p} of {t}" %}',
+                empty:         '{% trans "No participants yet — be the first one!" %}',
+                error:         '{% trans "Could not load leaderboard." %}',
+                you:           '{% trans "you" %}',
+                anon:          '{% trans "Invisible user" %}',
+                active:        '{% trans "active" %}',
+                left:          '{% trans "left" %}'
+            };
+
+            function escapeHtml(s) {
+                return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+                    return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c];
+                });
+            }
+            function fmtInt(n) { return (n || 0).toLocaleString(); }
+
+            function rankCell(rank) {
+                var cls = 'rank-cell';
+                if (rank === 1) cls += ' gold';
+                else if (rank === 2) cls += ' silver';
+                else if (rank === 3) cls += ' bronze';
+                return '<td class="' + cls + '">' + rank + '</td>';
+            }
+
+            function rowHtml(row) {
+                var trClass = row.is_you ? ' class="you-row"' : '';
+                var avatar;
+                if (row.visible) {
+                    avatar = row.profile_pic_url
+                        ? '<span class="rk-row-avatar"><img src="' + escapeHtml(row.profile_pic_url) + '" alt=""></span>'
+                        : '<span class="rk-row-avatar"><i class="fa-solid fa-user-astronaut"></i></span>';
+                } else {
+                    avatar = '<span class="rk-row-avatar is-invisible"><i class="fa-solid fa-eye-slash"></i></span>';
+                }
+                var name = row.visible
+                    ? escapeHtml(row.username)
+                    : '<span style="color:var(--ink-2);">' + T.anon + '</span>';
+                var youTag = row.is_you
+                    ? ' <small style="color:rgba(233,249,144,0.85);margin-left:4px;">(' + T.you + ')</small>'
+                    : '';
+                var statusBadge = row.is_active
+                    ? '<span class="badge-pill active">' + T.active + '</span>'
+                    : '<span class="badge-pill left">' + T.left + '</span>';
+                return '<tr' + trClass + '>'
+                    + rankCell(row.rank)
+                    + '<td><span class="lb-user">' + avatar + '<span>' + name + '</span>' + youTag + '</span></td>'
+                    + '<td class="num">' + fmtInt(row.cp_count) + '</td>'
+                    + '<td class="num">' + statusBadge + '</td>'
+                    + '</tr>';
+            }
+
+            function renderPager() {
+                pager.hidden = state.total_pages <= 1;
+                info.textContent = T.page_of_total.replace('{p}', state.page).replace('{t}', state.total_pages);
+                pager.querySelectorAll('.rk-pager-btn').forEach(function (b) {
+                    var act = b.dataset.act;
+                    b.disabled = (act === 'first' || act === 'prev')
+                        ? state.page <= 1
+                        : state.page >= state.total_pages;
+                });
+            }
+
+            function fetchPage(opts) {
+                opts = opts || {};
+                var qs = '?page=' + (opts.page || state.page) + '&page_size=' + PAGE_SIZE;
+                if (opts.jumpToMe) qs += '&jump_to_me=1';
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--ink-2);">…</td></tr>';
+                fetch(ENDPOINT + qs, { credentials: 'same-origin' })
+                    .then(function (r) { return r.ok ? r.json() : Promise.reject(r); })
+                    .then(function (data) {
+                        state.page = data.page;
+                        state.total_pages = data.total_pages;
+                        state.my_rank = data.my_rank;
+                        if (state.my_rank && jumpBtn) jumpBtn.hidden = false;
+                        if (!data.rows.length) {
+                            tbody.innerHTML = '<tr><td colspan="4" class="empty-state" style="padding:24px;text-align:center;">' + T.empty + '</td></tr>';
+                        } else {
+                            tbody.innerHTML = data.rows.map(rowHtml).join('');
+                        }
+                        renderPager();
+                    })
+                    .catch(function () {
+                        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:24px;color:oklch(0.78 0.16 25);">' + T.error + '</td></tr>';
+                    });
+            }
+
+            pager.querySelectorAll('.rk-pager-btn').forEach(function (b) {
+                b.addEventListener('click', function () {
+                    var act = b.dataset.act;
+                    var p = state.page;
+                    if (act === 'first') p = 1;
+                    else if (act === 'prev') p = Math.max(1, p - 1);
+                    else if (act === 'next') p = Math.min(state.total_pages, p + 1);
+                    else if (act === 'last') p = state.total_pages;
+                    if (p !== state.page) fetchPage({ page: p });
+                });
+            });
+            if (jumpBtn) jumpBtn.addEventListener('click', function () { fetchPage({ jumpToMe: true }); });
+
+            // Initial load: jump to me if authenticated.
+            fetchPage({ jumpToMe: {% if user.is_authenticated %}true{% else %}false{% endif %} });
+        })();
+        </script>
     </div>
     {% include '_footer.html' %}
     <script>
@@ -650,18 +781,31 @@
             return fetch('/api/v1/challenges/{{ challenge.id }}/'+act+'/', {
                 method:'POST', credentials:'same-origin',
                 headers:{'X-CSRFToken':getCookie('csrftoken')||'','Content-Type':'application/json'}
+            }).then(function (r) {
+                return r.json().then(function (body) { return { ok: r.ok, body: body }; })
+                    .catch(function () { return { ok: r.ok, body: null }; });
             });
         }
         var jb = document.getElementById('join-btn');
         if (jb) jb.addEventListener('click', function(){
             jb.disabled=true;
-            postAct('join').then(function(r){ if(r.ok) location.reload(); else { alert('Could not join'); jb.disabled=false; }});
+            postAct('join').then(function(res){
+                if (res.ok && typeof window.LAN_showJoinedModal === 'function') {
+                    window.LAN_showJoinedModal(res.body || {});
+                } else if (res.ok) { location.reload(); }
+                else { alert('Could not join'); jb.disabled=false; }
+            });
         });
         var lb = document.getElementById('leave-btn');
         if (lb) lb.addEventListener('click', function(){
             if(!confirm('{% trans "Leave this challenge? Your contributions are preserved." %}')) return;
             lb.disabled=true;
-            postAct('leave').then(function(r){ if(r.ok) location.reload(); else { alert('Could not leave'); lb.disabled=false; }});
+            postAct('leave').then(function(res){
+                if (res.ok && typeof window.LAN_showLeftModal === 'function') {
+                    window.LAN_showLeftModal(res.body || {});
+                } else if (res.ok) { location.reload(); }
+                else { alert('Could not leave'); lb.disabled=false; }
+            });
         });
 
         document.querySelectorAll('.triple-bar').forEach(function (bar) {

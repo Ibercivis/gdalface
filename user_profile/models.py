@@ -38,13 +38,48 @@ class UserProfile(models.Model):
     user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
     bio = models.TextField(blank=True)
     profile_pic = models.ImageField(upload_to='profile_pics', blank=True)
-    geoattempts_done = models.IntegerField(default=0)
-    time_spent = models.PositiveBigIntegerField(default=0)
+    geoattempts_done = models.IntegerField(default=0, db_index=True)
+    time_spent = models.PositiveBigIntegerField(default=0, db_index=True)
     cheating = models.IntegerField(default=0)
-    controlPointsDone = models.PositiveBigIntegerField(default=0)
+    controlPointsDone = models.PositiveBigIntegerField(default=0, db_index=True)
     country = CountryField(blank=True, null=True, verbose_name=_("Country"))
     location = models.CharField(max_length=100, blank=True, verbose_name=_("City"))
     visible = models.BooleanField(default=True, verbose_name=_("Visible in rankings"), help_text=_("If disabled, your profile will not appear in public rankings"))
 
+    # ── GDPR consent tracking ────────────────────────────────────────────
+    privacy_accepted_at = models.DateTimeField(null=True, blank=True, verbose_name=_("Privacy policy accepted at"))
+    privacy_policy_version = models.CharField(max_length=20, blank=True, verbose_name=_("Privacy policy version"))
+
+    newsletter_subscribed = models.BooleanField(default=False, verbose_name=_("Subscribed to newsletter"))
+    newsletter_subscribed_at = models.DateTimeField(null=True, blank=True, verbose_name=_("Newsletter subscribed at"))
+    newsletter_unsubscribed_at = models.DateTimeField(null=True, blank=True, verbose_name=_("Newsletter unsubscribed at"))
+    newsletter_token = models.CharField(max_length=48, blank=True, db_index=True, verbose_name=_("Newsletter unsubscribe token"))
+
+    cookies_analytics_consent = models.BooleanField(default=False, verbose_name=_("Analytics cookies consent"))
+    cookies_functional_consent = models.BooleanField(default=False, verbose_name=_("Functional cookies consent"))
+    cookies_consent_at = models.DateTimeField(null=True, blank=True, verbose_name=_("Cookies consent given at"))
+
+    # ── Diploma verification ─────────────────────────────────────────────
+    # Unique token printed on the user's general (all-time) diploma; backs the
+    # public /verify/<code>/ page. Generated lazily on first download.
+    diploma_code = models.CharField(max_length=48, blank=True, db_index=True, verbose_name=_("Diploma verification code"))
+
     def __str__(self):
         return str(self.user.email) # pylint: disable=no-member
+
+    def ensure_diploma_code(self):
+        """Generate the general-diploma verification token if missing and persist it.
+        Uses hex (no '-'/'_') so the code survives copy-paste from the PDF."""
+        if not self.diploma_code:
+            import secrets
+            self.diploma_code = secrets.token_hex(16)
+            if self.pk:
+                self.save(update_fields=['diploma_code'])
+        return self.diploma_code
+
+    def ensure_newsletter_token(self):
+        """Generate a token if missing — used when subscribing or for unsubscribe links."""
+        if not self.newsletter_token:
+            import secrets
+            self.newsletter_token = secrets.token_urlsafe(32)
+        return self.newsletter_token

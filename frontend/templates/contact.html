@@ -41,26 +41,81 @@
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-body">
-                        <form action="#" method="post" class="contact-form">
+                        {% if messages %}
+                            {% for m in messages %}
+                                <div class="alert alert-{% if m.tags == 'error' %}danger{% else %}{{ m.tags|default:'info' }}{% endif %}" role="alert">
+                                    {{ m }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        <form action="" method="post" class="contact-form" id="contact-form" data-k="{{ js_key }}">
                             {% csrf_token %}
+                            {# Honeypot — humans don't see/fill 'website'. CSS keeps it
+                               out of the visual layout but the input is still in the DOM
+                               so naive bots auto-fill it. #}
+                            <div class="hp-field" aria-hidden="true">
+                                <label for="website">Website</label>
+                                <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" value="">
+                            </div>
+                            {# Time-trap: signed issue timestamp. Server discards
+                               anything submitted in <3s or >6h, or with a bad signature. #}
+                            <input type="hidden" name="started_at" value="{{ started_at_value }}">
+                            {# Filled by the inline script below from data-k. Bots that
+                               scrape the HTML and POST without running JS leave it empty. #}
+                            <input type="hidden" name="form_token" id="form_token" value="">
                             <div class="mb-3">
                                 <label for="name" class="form-label">{% trans "Your Name" %}</label>
-                                <input type="text" class="form-control" id="name" name="name" required>
+                                <input type="text" class="form-control" id="name" name="name"
+                                       value="{{ form_data.name|default:'' }}" required>
                             </div>
                             <div class="mb-3">
                                 <label for="email" class="form-label">{% trans "Email Address" %}</label>
-                                <input type="email" class="form-control" id="email" name="email" required>
+                                <input type="email" class="form-control" id="email" name="email"
+                                       value="{{ form_data.email|default:'' }}" required>
                             </div>
                             <div class="mb-3">
                                 <label for="subject" class="form-label">{% trans "Subject" %}</label>
-                                <input type="text" class="form-control" id="subject" name="subject" required>
+                                <input type="text" class="form-control" id="subject" name="subject"
+                                       value="{{ form_data.subject|default:'' }}" required>
                             </div>
                             <div class="mb-3">
                                 <label for="message" class="form-label">{% trans "Message" %}</label>
-                                <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+                                <textarea class="form-control" id="message" name="message" rows="5" required>{{ form_data.message|default:'' }}</textarea>
                             </div>
+                            {% if turnstile_site_key %}
+                            {% get_current_language as LANGUAGE_CODE %}
+                            <div class="cf-turnstile mb-3" data-sitekey="{{ turnstile_site_key }}"
+                                 data-language="{{ LANGUAGE_CODE|default:'auto' }}"></div>
+                            {% endif %}
+                            <noscript>
+                                <div class="alert alert-warning" role="alert">
+                                    {% trans "Please enable JavaScript to send the form." %}
+                                </div>
+                            </noscript>
                             <button type="submit" class="btn btn-primary">{% trans "Send Message" %}</button>
                         </form>
+                        <script>
+                            (function () {
+                                var f = document.getElementById('contact-form');
+                                var t = document.getElementById('form_token');
+                                if (f && t) { t.value = f.getAttribute('data-k') || ''; }
+                            })();
+                        </script>
+                        {% if turnstile_site_key %}
+                        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+                        {% endif %}
+                        <style>
+                            /* Off-screen but still in the DOM. Use multiple
+                               techniques so a bot can't easily detect it. */
+                            .hp-field {
+                                position: absolute !important;
+                                left: -10000px !important;
+                                top: auto !important;
+                                width: 1px !important;
+                                height: 1px !important;
+                                overflow: hidden !important;
+                            }
+                        </style>
                     </div>
                 </div>
             </div>
@@ -71,7 +126,7 @@
                     <p class="mb-4">{% trans "Cities at Night Project" %}<br>{% trans "International Space Station Imagery Analysis" %}</p>
 
                     <h4><i class="fas fa-envelope me-2"></i>{% trans "Email Us" %}</h4>
-                    <p class="mb-4">contact@lostatnight.org</p>
+                    <p class="mb-4">info@ibercivis.es</p>
 
                     <h4><i class="fas fa-globe me-2"></i>{% trans "Social Media" %}</h4>
                     <div class="social-links">

@@ -1,0 +1,85 @@
+{% extends "diploma_base.html" %}
+{% load i18n %}
+
+{# Variant B · "Dossier" — diploma general (overall contribution). #}
+
+{% block body %}
+  {# ───────── LEFT COLUMN · editorial content ───────── #}
+  <div class="col-left">
+    <div class="kicker">{% trans "Certificate of Contribution" %}</div>
+    <h1 class="title">{% trans "Diploma." %}</h1>
+    <div class="accent-rule"></div>
+
+    <div class="lead">{% trans "Presented to" %}</div>
+    <div class="name">{{ display_name }}</div>
+
+    <p class="statement">
+      {% blocktrans trimmed %}
+        For their valuable contribution to <b>Lost at Night</b>, helping locate and
+        georeference night-time photographs of the Earth taken by astronauts aboard
+        the International Space Station — an initiative of <b>Ibercivis</b>.
+      {% endblocktrans %}
+    </p>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="v">{{ control_points }}</div>
+        <div class="l">{% trans "Control points" %}</div>
+      </div>
+      <div class="stat">
+        <div class="v">{{ tasks }}</div>
+        <div class="l">{% trans "Tasks" %}</div>
+      </div>
+      <div class="stat">
+        <div class="v">{{ time_pretty }}</div>
+        <div class="l">{% trans "Time" %}</div>
+      </div>
+      {% if rank %}
+      <div class="stat">
+        <div class="v">#{{ rank }}</div>
+        <div class="l">
+          {% blocktrans trimmed %}of {{ total_contributors }}{% endblocktrans %}
+          {% if percentile %} · {% blocktrans trimmed %}top {{ percentile }}%{% endblocktrans %}{% endif %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {# ───────── RIGHT COLUMN · technical sidebar ───────── #}
+  <div class="col-right">
+    <div class="patch-card">
+      {% include "_seal_svg.html" with color=tier_meta.color metal=tier_meta.metal stars=tier_meta.stars label=tier_meta.label size=152 uid=tier_meta.slug %}
+      <div class="tier-chip"
+           style="color: {{ tier_meta.color }}; border: 1px solid {{ tier_meta.color }};">
+        <span class="tier-dot" style="background: {{ tier_meta.color }};"></span>
+        {{ tier_meta.label }} {% trans "Contributor" %}
+      </div>
+    </div>
+
+    <table class="meta-table">
+      <tr>
+        <td class="label">{% trans "Type" %}</td>
+        <td class="value">{% trans "Overall contribution" %}</td>
+      </tr>
+      <tr>
+        <td class="label">{% trans "Tier" %}</td>
+        <td class="value" style="color: {{ tier_meta.color }};">{{ tier_meta.label }}</td>
+      </tr>
+      {% if joined %}
+      <tr>
+        <td class="label">{% trans "Joined" %}</td>
+        <td class="value">{{ joined|date:"Y-m-d" }}</td>
+      </tr>
+      {% endif %}
+      <tr>
+        <td class="label">{% trans "Language" %}</td>
+        <td class="value">{{ LANGUAGE_CODE|upper }}</td>
+      </tr>
+      <tr>
+        <td class="label">{% trans "Filed" %}</td>
+        <td class="value">{{ issued_at|date:"d M Y" }}</td>
+      </tr>
+    </table>
+  </div>
+{% endblock %}

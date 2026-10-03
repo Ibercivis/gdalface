@@ -1,0 +1,268 @@
+{% load i18n %}<!DOCTYPE html>
+{% comment %}
+   diploma_base.html — chrome común a diploma_general y diploma_challenge.
+   Variant B · "Dossier" — split editorial con sidebar técnica.
+   Renderizado con WeasyPrint a A4 landscape.
+
+   Context esperado:
+     - LANGUAGE_CODE
+     - logo_uri           (file://… o data:… de Lost at Night)
+     - ibercivis_logo_uri (file://… o data:… de Ibercivis)
+     - flag_uri           (bandera UE, opcional)
+     - iss_uri            (silueta ISS, opcional)
+     - issued_at          (datetime)
+     - dossier_id         (string)
+     - qr_svg             (SVG inline ya renderizado por la librería qrcode)
+     - verify_url         (string)
+     - display_name       (string)
+{% endcomment %}
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+<meta charset="utf-8">
+<title>Lost at Night — {% trans "Diploma" %}</title>
+
+{% comment %}Fuentes embebidas. Coloca los .ttf en static/fonts/ibm-plex/ y configura
+   WeasyPrint con FontConfiguration para que las encuentre. Descarga desde
+   https://github.com/IBM/plex/tree/master/IBM-Plex-Sans (versión TTF).{% endcomment %}
+<style>
+  @font-face {
+    font-family: 'IBM Plex Sans';
+    font-weight: 400;
+    src: url('{{ STATIC_URL }}fonts/ibm-plex/IBMPlexSans-Regular.ttf') format('truetype');
+  }
+  @font-face {
+    font-family: 'IBM Plex Sans';
+    font-weight: 500;
+    src: url('{{ STATIC_URL }}fonts/ibm-plex/IBMPlexSans-Medium.ttf') format('truetype');
+  }
+  @font-face {
+    font-family: 'IBM Plex Sans';
+    font-weight: 600;
+    src: url('{{ STATIC_URL }}fonts/ibm-plex/IBMPlexSans-SemiBold.ttf') format('truetype');
+  }
+  @font-face {
+    font-family: 'IBM Plex Sans';
+    font-weight: 700;
+    src: url('{{ STATIC_URL }}fonts/ibm-plex/IBMPlexSans-Bold.ttf') format('truetype');
+  }
+  @font-face {
+    font-family: 'IBM Plex Mono';
+    font-weight: 400;
+    src: url('{{ STATIC_URL }}fonts/ibm-plex/IBMPlexMono-Regular.ttf') format('truetype');
+  }
+  @font-face {
+    font-family: 'IBM Plex Mono';
+    font-weight: 500;
+    src: url('{{ STATIC_URL }}fonts/ibm-plex/IBMPlexMono-Medium.ttf') format('truetype');
+  }
+
+  @page { size: A4 landscape; margin: 0; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    width: 297mm; height: 210mm;
+    font-family: 'IBM Plex Sans', 'DejaVu Sans', sans-serif;
+    color: #ECE7FF;
+    background-color: #0c0a1e;
+    background-image:
+      radial-gradient(900px 520px at -8% 35%, rgba(124,92,255,0.28), transparent 70%),
+      radial-gradient(700px 500px at 105% 110%, rgba(64,196,255,0.12), transparent 70%),
+      linear-gradient(158deg, #0c0a1e 0%, #150f33 56%, #0a0818 100%);
+    position: relative;
+  }
+
+  /* ───────── Background decoration ───────── */
+  .stars { position: absolute; inset: 0; opacity: 0.5; pointer-events: none; }
+  .stars i { position: absolute; width: 2px; height: 2px; border-radius: 50%;
+    background: #fff; box-shadow: 0 0 3px #fff; }
+  .iss { position: absolute; right: 16mm; bottom: 14mm; width: 52mm;
+    opacity: 0.10; transform: rotate(-8deg); }
+
+  /* ───────── Frame + lime corner brackets ───────── */
+  .frame { position: absolute; inset: 9mm; border: 1.5px solid rgba(185,167,255,0.40); border-radius: 7px; }
+  .frame::before { content: ""; position: absolute; inset: 3.2mm; border: 1px solid rgba(185,167,255,0.18); border-radius: 5px; }
+  .corner { position: absolute; width: 16mm; height: 16mm; border: 0 solid #E9F990; }
+  .corner.tl { top: 7mm; left: 7mm; border-top-width: 2.5px; border-left-width: 2.5px; border-top-left-radius: 7px; }
+  .corner.tr { top: 7mm; right: 7mm; border-top-width: 2.5px; border-right-width: 2.5px; border-top-right-radius: 7px; }
+  .corner.bl { bottom: 7mm; left: 7mm; border-bottom-width: 2.5px; border-left-width: 2.5px; border-bottom-left-radius: 7px; }
+  .corner.br { bottom: 7mm; right: 7mm; border-bottom-width: 2.5px; border-right-width: 2.5px; border-bottom-right-radius: 7px; }
+
+  /* ───────── Padding & flex shell ───────── */
+  .content { position: absolute; inset: 0; padding: 11mm 22mm 11mm; display: flex; flex-direction: column; }
+  /* WeasyPrint doesn't apply the default flex `align-items: stretch` to these
+     block children, so they shrink-wrap and leave the right side empty. Force
+     each row to span the full content width. */
+  .content > * { width: 100%; }
+
+  /* ───────── Classification strip ───────── */
+  .classification {
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8.5px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: #a99fd0; padding-bottom: 2.5mm;
+    border-bottom: 1px solid rgba(185,167,255,0.20);
+  }
+  .classification .tag { color: #E9F990; }
+
+  /* ───────── Co-brand header ───────── */
+  header.brand {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-top: 5mm;
+  }
+  .brand-left { display: flex; align-items: center; gap: 6mm; }
+  .lockup { display: flex; align-items: center; gap: 3mm; }
+  .lockup img { height: 11mm; }
+  .lockup .wordmark { font-size: 17px; font-weight: 700; letter-spacing: 0.01em; color: #fff; line-height: 1; }
+  .lockup .wordmark small { display: block; font-size: 8.5px; font-weight: 500; letter-spacing: 0.32em; text-transform: uppercase; color: #b9a7ff; margin-top: 2px; font-family: 'IBM Plex Mono', monospace; }
+  .lockup-divider { width: 1px; height: 10mm; background: rgba(185,167,255,0.40); }
+  .flag { height: 8mm; opacity: 0.9; border-radius: 2px; }
+
+  /* ───────── Body split (1.6 : 1) ─────────
+     Flex (not grid): WeasyPrint collapses grid `fr` tracks to content width,
+     which left the right third of the page empty. Flex-grow fills it. */
+  .body {
+    flex: 1;
+    display: flex;
+    gap: 14mm;
+    padding-top: 7mm;
+    padding-bottom: 4mm;
+  }
+
+  /* ───────── Left column ───────── */
+  .col-left { flex: 1.6 1 0; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+  .kicker { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: 0.40em; text-transform: uppercase; color: #b9a7ff; font-weight: 500; }
+  .title { font-family: 'IBM Plex Sans', sans-serif; font-size: 56px; font-weight: 600; letter-spacing: -0.025em; color: #fff; margin: 2mm 0 3mm; line-height: 0.96; }
+  .accent-rule { width: 20mm; height: 2px; border-radius: 2px; background: #E9F990; margin-bottom: 4mm; }
+  .lead { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #a99fd0; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 1.5mm; }
+  .name { font-family: 'IBM Plex Sans', sans-serif; font-size: 36px; font-weight: 600; color: #E9F990; letter-spacing: -0.015em; line-height: 1.05; }
+  .statement { font-size: 13px; line-height: 1.55; color: #d8d2f2; margin-top: 5mm; max-width: 140mm; text-wrap: pretty; }
+  .statement b { color: #fff; font-weight: 600; }
+
+  /* ───────── Stat grid (bordered) ───────── */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4mm;
+    margin-top: 7mm;
+    padding: 3mm 0;
+    border-top: 1px solid rgba(185,167,255,0.20);
+    border-bottom: 1px solid rgba(185,167,255,0.20);
+  }
+  .stat { text-align: center; }
+  .stat .v { font-family: 'IBM Plex Mono', monospace; font-size: 22px; font-weight: 600; color: #fff; line-height: 1.15; }
+  .stat .l { font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: #a99fd0; margin-top: 1mm; }
+
+  /* ───────── Right column · sidebar ───────── */
+  .col-right { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 3mm; }
+  .patch-card {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 3mm;
+    border: 1px solid rgba(185,167,255,0.20);
+    border-radius: 6px;
+    background: rgba(255,255,255,0.015);
+  }
+  .tier-chip {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 1.6mm 4mm; border-radius: 999px;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.05em;
+    white-space: nowrap; margin-top: 3mm;
+    background: rgba(255,255,255,0.04);
+  }
+  .tier-dot { width: 9px; height: 9px; border-radius: 50%; }
+
+  .meta-table { width: 100%; border-collapse: collapse; margin-top: 2mm; }
+  .meta-table td { padding: 1.2mm 0; border-bottom: 1px solid rgba(185,167,255,0.20); font-family: 'IBM Plex Mono', monospace; }
+  .meta-table td.label { color: #a99fd0; letter-spacing: 0.14em; text-transform: uppercase; font-size: 8.5px; font-weight: 500; width: 28mm; }
+  .meta-table td.value { color: #d8d2f2; font-size: 10.5px; }
+
+  /* ───────── Footer ───────── */
+  footer.foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 8mm; }
+  .sign .line { width: 58mm; border-bottom: 1px solid rgba(185,167,255,0.45); margin-bottom: 1.6mm; }
+  .sign .who { font-size: 12px; font-weight: 700; color: #fff; }
+  .sign .role { font-size: 9.5px; color: #a99fd0; letter-spacing: 0.06em; }
+  .issue { text-align: center; font-family: 'IBM Plex Sans', sans-serif; }
+  .issue .k { font-size: 9.5px; color: #a99fd0; letter-spacing: 0.18em; text-transform: uppercase; }
+  .issue .d { color: #d8d2f2; font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: 13px; margin-top: 2px; }
+  .verify { display: flex; align-items: center; gap: 3.5mm; }
+  .verify .qr { width: 24mm; height: 24mm; background: #fff; padding: 1.6mm; border-radius: 5px; }
+  .verify .qr svg { width: 100%; height: 100%; display: block; }
+  .verify .vmeta { font-size: 8.5px; color: #a99fd0; max-width: 40mm; line-height: 1.4; }
+  .verify .vmeta .vc { font-family: 'IBM Plex Mono', monospace; color: #d8d2f2; word-break: break-all; }
+
+  /* ───────── Provisional banner (challenge only) ───────── */
+  .provisional {
+    position: absolute; top: 14mm; left: 50%; transform: translateX(-50%);
+    font-family: 'IBM Plex Mono', monospace; font-size: 9.5px;
+    letter-spacing: 0.28em; text-transform: uppercase;
+    color: #ffd45e; border: 1px solid rgba(255,212,94,0.5); border-radius: 999px;
+    padding: 1.4mm 5mm; background: rgba(255,212,94,0.05);
+  }
+</style>
+</head>
+<body>
+  {# decorative starfield #}
+  <div class="stars">
+    <i style="top:12%;left:9%"></i><i style="top:22%;left:78%"></i><i style="top:31%;left:24%"></i>
+    <i style="top:18%;left:54%"></i><i style="top:64%;left:14%"></i><i style="top:73%;left:88%"></i>
+    <i style="top:42%;left:91%"></i><i style="top:82%;left:43%"></i><i style="top:8%;left:38%"></i>
+    <i style="top:55%;left:67%"></i><i style="top:88%;left:72%"></i><i style="top:38%;left:6%"></i>
+  </div>
+
+  {% if iss_uri %}<img class="iss" src="{{ iss_uri }}" alt="">{% endif %}
+
+  <div class="frame"></div>
+  <div class="corner tl"></div><div class="corner tr"></div>
+  <div class="corner bl"></div><div class="corner br"></div>
+
+  {% block provisional %}{% endblock %}
+
+  <div class="content">
+    {# ───────── Classification strip ───────── #}
+    <div class="classification">
+      <span class="tag">● {% trans "Citizen Science · Contribution Record" %}</span>
+      <span>{% trans "Dossier №" %} {{ dossier_id }}</span>
+      <span>{% trans "Filed" %} {{ issued_at|date:"d M Y" }}</span>
+    </div>
+
+    {# ───────── Co-brand header ───────── #}
+    <header class="brand">
+      <div class="brand-left">
+        <div class="lockup">
+          {% if logo_uri %}<img src="{{ logo_uri }}" alt="">{% endif %}
+          <span class="wordmark">Lost at Night<small>{% trans "Citizen Science" %}</small></span>
+        </div>
+        <div class="lockup-divider"></div>
+        <div class="lockup">
+          {% if ibercivis_logo_uri %}<img src="{{ ibercivis_logo_uri }}" alt="" style="height:9mm">{% endif %}
+        </div>
+      </div>
+      {% if flag_uri %}<img class="flag" src="{{ flag_uri }}" alt="">{% endif %}
+    </header>
+
+    {# ───────── Body grid ───────── #}
+    <div class="body">
+      {% block body %}{% endblock %}
+    </div>
+
+    {# ───────── Footer ───────── #}
+    <footer class="foot">
+      <div class="sign">
+        <div class="line"></div>
+        <div class="who">Lost at Night · Ibercivis</div>
+        <div class="role">{% trans "Astronaut photography georeferencing" %}</div>
+      </div>
+      <div class="issue">
+        <div class="k">{% trans "Issued on" %}</div>
+        <div class="d">{{ issued_at|date:"d M Y" }}</div>
+      </div>
+      <div class="verify">
+        <div class="qr">{{ qr_svg|safe }}</div>
+        <div class="vmeta">
+          {% trans "Verify the authenticity of this diploma:" %}<br>
+          <span class="vc">{{ verify_url }}</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

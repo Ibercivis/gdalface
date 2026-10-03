@@ -1,0 +1,157 @@
+{% extends "admin/change_form.html" %}
+{% load static %}
+
+{% block extrahead %}
+{{ block.super }}
+<link rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""/>
+<link rel="stylesheet"
+      href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css"/>
+<style>
+    #challenge-bbox-map {
+        height: 380px; width: 100%;
+        max-width: 760px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin: 8px 0 16px;
+    }
+    .bbox-help {
+        font-size: 11px; color: #666; margin: 4px 0 12px;
+        max-width: 760px;
+    }
+    .bbox-help code { background: #f3f3f3; padding: 1px 4px; border-radius: 3px; }
+    .bbox-clear-btn {
+        display: inline-block;
+        margin: 4px 0 12px;
+        padding: 4px 10px;
+        background: #dc3545; color: #fff;
+        border: none; border-radius: 4px;
+        cursor: pointer; font-size: 12px;
+    }
+    .bbox-clear-btn:hover { background: #b02a37; }
+</style>
+{% endblock %}
+
+{% block field_sets %}
+{{ block.super }}
+
+<fieldset class="module aligned">
+    <h2>Bounding-box map</h2>
+    <div class="form-row">
+        <div>
+            <p class="bbox-help">
+                Click the rectangle tool on the map and drag to draw a region.
+                The four lat/lon fields above will be updated. To remove the
+                bbox use the trash tool or the button below. The bbox can
+                wrap the antimeridian (e.g. drag across the Pacific) — the
+                challenge filter handles it correctly.
+            </p>
+            <div id="challenge-bbox-map"></div>
+            <button type="button" class="bbox-clear-btn" id="bbox-clear-btn">Clear bbox</button>
+        </div>
+    </div>
+</fieldset>
+{% endblock %}
+
+{% block admin_change_form_document_ready %}
+{{ block.super }}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+<script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+<script>
+(function () {
+    'use strict';
+
+    function getInput(name) {
+        return document.querySelector('input[name="' + name + '"]');
+    }
+    function getVal(name) {
+        var el = getInput(name);
+        if (!el) return null;
+        var v = parseFloat(el.value);
+        return isFinite(v) ? v : null;
+    }
+    function setVal(name, v) {
+        var el = getInput(name);
+        if (!el) return;
+        el.value = (v == null) ? '' : v.toFixed(6);
+    }
+
+    var minLat = getInput('bbox_min_lat');
+    var maxLat = getInput('bbox_max_lat');
+    var minLon = getInput('bbox_min_lon');
+    var maxLon = getInput('bbox_max_lon');
+    var mapEl  = document.getElementById('challenge-bbox-map');
+    if (!mapEl || !minLat) return;
+
+    var map = L.map(mapEl, { worldCopyJump: true }).setView([20, 0], 2);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '&copy; OpenStreetMap',
+    }).addTo(map);
+
+    var drawnItems = new L.FeatureGroup();
+    map.addLayer(drawnItems);
+
+    function drawCurrent() {
+        drawnItems.clearLayers();
+        var lo = getVal('bbox_min_lat');
+        var la = getVal('bbox_max_lat');
+        var lon0 = getVal('bbox_min_lon');
+        var lon1 = getVal('bbox_max_lon');
+        if (lo == null || la == null || lon0 == null || lon1 == null) return;
+        // Note: if lon0 > lon1 the bbox wraps the antimeridian — Leaflet
+        // can't draw a wrapping rectangle natively, so we'd need two
+        // overlapping shapes. For the admin we just draw the obvious one
+        // and accept the visual imprecision.
+        var b = L.latLngBounds([[lo, lon0], [la, lon1]]);
+        var rect = L.rectangle(b, { color: '#0d6efd', weight: 2, fillOpacity: 0.18 });
+        drawnItems.addLayer(rect);
+        try { map.fitBounds(b, { maxZoom: 6, padding: [30, 30] }); } catch (e) {}
+    }
+
+    var drawControl = new L.Control.Draw({
+        draw: {
+            polyline: false, polygon: false, circle: false,
+            marker: false, circlemarker: false,
+            rectangle: { shapeOptions: { color: '#0d6efd' } },
+        },
+        edit: { featureGroup: drawnItems, edit: false, remove: true },
+    });
+    map.addControl(drawControl);
+
+    function rectangleToFields(layer) {
+        var b = layer.getBounds();
+        setVal('bbox_min_lat', b.getSouth());
+        setVal('bbox_max_lat', b.getNorth());
+        setVal('bbox_min_lon', b.getWest());
+        setVal('bbox_max_lon', b.getEast());
+    }
+
+    map.on(L.Draw.Event.CREATED, function (e) {
+        drawnItems.clearLayers();
+        drawnItems.addLayer(e.layer);
+        rectangleToFields(e.layer);
+    });
+    map.on(L.Draw.Event.DELETED, function () {
+        setVal('bbox_min_lat', null);
+        setVal('bbox_max_lat', null);
+        setVal('bbox_min_lon', null);
+        setVal('bbox_max_lon', null);
+    });
+
+    document.getElementById('bbox-clear-btn').addEventListener('click', function () {
+        drawnItems.clearLayers();
+        setVal('bbox_min_lat', null);
+        setVal('bbox_max_lat', null);
+        setVal('bbox_min_lon', null);
+        setVal('bbox_max_lon', null);
+    });
+
+    drawCurrent();
+})();
+</script>
+{% endblock %}

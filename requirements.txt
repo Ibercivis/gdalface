@@ -6,6 +6,7 @@ beautifulsoup4==4.12.3
 blessed==1.20.0
 boto3==1.37.4
 botocore==1.37.4
+brotli==1.2.0
 certifi==2024.8.30
 cffi==1.17.1
 charset-normalizer==3.4.0
@@ -13,6 +14,7 @@ click==8.1.7
 croniter==1.4.1
 crontab==1.0.1
 cryptography==43.0.1
+cssselect2==0.9.0
 dill==0.3.9
 Django==4.2.16
 django-allauth==65.0.2
@@ -20,11 +22,11 @@ django-bootstrap-v5==1.0.11
 django-countries==7.6.1
 django-picklefield==3.2
 django-rq==2.10.2
-django-rq-scheduler==2023.9.0
 django-ses==4.4.0
 djangorestframework==3.15.2
 drf-yasg==1.21.7
 fontawesomefree==6.6.0
+fonttools==4.63.0
 freezegun==1.5.1
 haversine==2.9.0
 idna==3.10
@@ -37,10 +39,12 @@ pillow==10.4.0
 platformdirs==4.3.6
 psycopg2-binary==2.9.10
 pycparser==2.22
+pydyf==0.12.1
 PyJWT==2.9.0
 pylint==3.3.1
 pylint-django==2.6.1
 pylint-plugin-utils==0.8.2
+pyphen==0.17.2
 python-dateutil==2.9.0.post0
 python-decouple==3.8
 pytz==2024.2
@@ -50,9 +54,12 @@ requests==2.32.3
 rq==1.16.2
 rq-scheduler==0.13.1
 s3transfer==0.11.3
+segno==1.6.6
 six==1.16.0
 soupsieve==2.6
 sqlparse==0.5.1
+tinycss2==1.5.1
+tinyhtml5==2.1.0
 tomli==2.0.2
 tomlkit==0.13.2
 types-python-dateutil==2.9.0.20241003
@@ -60,3 +67,6 @@ typing_extensions==4.12.2
 uritemplate==4.1.1
 urllib3==1.26.20
 wcwidth==0.2.13
+weasyprint==68.1
+webencodings==0.5.1
+zopfli==0.4.1

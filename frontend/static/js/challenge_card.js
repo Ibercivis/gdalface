@@ -86,12 +86,18 @@
         renderTimePills();
         renderProgress();
 
+        function readJson(r) {
+            return r.json().then(function (b) { return { ok: r.ok, body: b }; })
+                .catch(function () { return { ok: r.ok, body: null }; });
+        }
         document.querySelectorAll('[data-challenge-join]').forEach(function (btn) {
             btn.addEventListener('click', function () {
                 var id = btn.dataset.challengeJoin;
                 btn.disabled = true;
-                postChallenge('join', id).then(function (r) {
-                    if (r.ok) window.location.reload();
+                postChallenge('join', id).then(readJson).then(function (res) {
+                    if (res.ok && typeof window.LAN_showJoinedModal === 'function') {
+                        window.LAN_showJoinedModal(res.body || {});
+                    } else if (res.ok) { window.location.reload(); }
                     else { alert('Could not join challenge.'); btn.disabled = false; }
                 }).catch(function () {
                     alert('Network error.'); btn.disabled = false;
@@ -104,8 +110,10 @@
                 var id = btn.dataset.challengeLeave;
                 if (!confirm('Leave this challenge? Your contributions are preserved.')) return;
                 btn.disabled = true;
-                postChallenge('leave', id).then(function (r) {
-                    if (r.ok) window.location.reload();
+                postChallenge('leave', id).then(readJson).then(function (res) {
+                    if (res.ok && typeof window.LAN_showLeftModal === 'function') {
+                        window.LAN_showLeftModal(res.body || {});
+                    } else if (res.ok) { window.location.reload(); }
                     else { alert('Could not leave.'); btn.disabled = false; }
                 }).catch(function () {
                     alert('Network error.'); btn.disabled = false;

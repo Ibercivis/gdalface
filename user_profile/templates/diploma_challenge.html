@@ -1,0 +1,104 @@
+{% extends "diploma_base.html" %}
+{% load i18n %}
+
+{# Variant B · "Dossier" — diploma de challenge. #}
+
+{% block provisional %}
+  {% if provisional %}
+    <div class="provisional">{% trans "Provisional — challenge in progress" %}</div>
+  {% endif %}
+{% endblock %}
+
+{% block body %}
+  {# ───────── LEFT COLUMN · editorial content ───────── #}
+  <div class="col-left">
+    <div class="kicker">{% trans "Challenge Diploma" %}</div>
+    <h1 class="title" style="font-size: 48px;">{{ challenge.name }}</h1>
+
+    <div style="display:flex; align-items:center; gap:3mm; margin-top: 2mm;
+                font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+                letter-spacing: 0.14em; color: #a99fd0; text-transform: uppercase;">
+      <span>{{ challenge.start_at|date:"d M Y" }}</span>
+      <span style="color:#E9F990;">—</span>
+      <span>{{ challenge.end_at|date:"d M Y" }}</span>
+    </div>
+
+    <div class="accent-rule" style="margin-top: 5mm;"></div>
+
+    <div class="lead">{% trans "Awarded to" %}</div>
+    <div class="name">{{ display_name }}</div>
+
+    <p class="statement">
+      {% blocktrans trimmed with start=challenge.start_at|date:"d M Y" end=challenge.end_at|date:"d M Y" %}
+        For taking part in this <b>Lost at Night</b> challenge, held from
+        <b>{{ start }}</b> to <b>{{ end }}</b>, georeferencing astronaut photography of
+        the Earth at night.
+      {% endblocktrans %}
+    </p>
+
+    <div class="stats" style="grid-template-columns: repeat(3, 1fr);">
+      <div class="stat">
+        <div class="v">{{ control_points }}</div>
+        <div class="l">{% trans "Your control points" %}</div>
+      </div>
+      <div class="stat">
+        <div class="v">#{{ rank }}</div>
+        <div class="l">{% blocktrans trimmed %}of {{ n_participants }} participants{% endblocktrans %}</div>
+      </div>
+      {% if percentile %}
+      <div class="stat">
+        <div class="v">{% blocktrans trimmed %}top {{ percentile }}%{% endblocktrans %}</div>
+        <div class="l">{% trans "Standing" %}</div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {# ───────── RIGHT COLUMN · sidebar ───────── #}
+  <div class="col-right">
+    <div class="patch-card">
+      {% include "_seal_svg.html" with color=medal_meta.color metal=medal_meta.metal stars=medal_meta.stars label=medal_meta.label size=152 uid=medal_meta.slug %}
+      <div class="tier-chip"
+           style="color: {{ medal_meta.color }}; border: 1px solid {{ medal_meta.color }};">
+        <span class="tier-dot" style="background: {{ medal_meta.color }};"></span>
+        {% if rank <= 3 %}{{ medal_meta.label }} · {% endif %}{% trans "Rank" %} #{{ rank }} {% trans "of" %} {{ n_participants }}
+      </div>
+    </div>
+
+    {% if collective_meta %}
+    <div style="padding: 3mm; border: 1px solid rgba(185,167,255,0.20); border-radius: 6px;
+                background: rgba(255,255,255,0.015); text-align: center;">
+      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 8.5px;
+                  letter-spacing: 0.22em; text-transform: uppercase; color: #a99fd0;
+                  margin-bottom: 1.5mm;">
+        {% trans "Community result" %}
+      </div>
+      <div style="font-size: 11px; color: #d8d2f2;">
+        <span class="tier-dot" style="display: inline-block; background: {{ collective_meta.color }}; margin-right: 6px; vertical-align: middle;"></span>
+        {% blocktrans trimmed with tier=collective_meta.label %}
+          Reached <b style="color: {{ collective_meta.color }};">{{ tier }}</b> tier
+        {% endblocktrans %}
+      </div>
+    </div>
+    {% endif %}
+
+    <table class="meta-table">
+      <tr>
+        <td class="label">{% trans "Type" %}</td>
+        <td class="value">{% trans "Challenge" %}</td>
+      </tr>
+      <tr>
+        <td class="label">{% trans "Challenge" %}</td>
+        <td class="value">{{ challenge.name }}</td>
+      </tr>
+      <tr>
+        <td class="label">{% trans "Tier" %}</td>
+        <td class="value" style="color: {{ medal_meta.color }};">{{ medal_meta.label }}</td>
+      </tr>
+      <tr>
+        <td class="label">{% trans "Filed" %}</td>
+        <td class="value">{{ issued_at|date:"d M Y" }}</td>
+      </tr>
+    </table>
+  </div>
+{% endblock %}

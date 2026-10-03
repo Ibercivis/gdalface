@@ -1,0 +1,98 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Lost At Night | {% trans "Diploma verification" %}</title>
+  {% if ok %}
+  {# Open Graph / Twitter cards so a shared verify link unfurls as an achievement. #}
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ request.build_absolute_uri }}">
+  {% if ctx.kind == 'challenge' %}
+  <meta property="og:title" content="{% blocktrans trimmed with name=ctx.display_name medal=ctx.medal_meta.label challenge=ctx.challenge.name %}{{ name }} earned {{ medal }} in the {{ challenge }} challenge — Lost at Night{% endblocktrans %}">
+  {% else %}
+  <meta property="og:title" content="{% blocktrans trimmed with name=ctx.display_name tier=ctx.tier_meta.label %}{{ name }} reached {{ tier }} tier on Lost at Night{% endblocktrans %}">
+  {% endif %}
+  <meta property="og:description" content="{% blocktrans trimmed with cp=ctx.control_points %}{{ cp }} control points helping scientists map light pollution from ISS night photos. Verified citizen-science diploma.{% endblocktrans %}">
+  <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'img/logo-lost.png' %}">
+  <meta name="twitter:card" content="summary">
+  {% endif %}
+  <link rel="icon" href="{% static 'img/logo-lost.png' %}" type="image/png">
+  <link href="{% static 'css/main.css' %}" rel="stylesheet" type="text/css">
+  <link href="{% static 'css/design-system.css' %}" rel="stylesheet" type="text/css">
+  <style>
+    body {
+      background: oklch(0.10 0.02 285) !important; background-image: none !important;
+      color: var(--ink-1); font-family: var(--font-ui);
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      margin: 0; padding: 24px;
+    }
+    .vf-card {
+      max-width: 520px; width: 100%;
+      background: oklch(0.16 0.045 290 / 0.9); border: 1px solid var(--line);
+      border-radius: 16px; padding: 32px; text-align: center;
+    }
+    .vf-badge { width: 56px; height: 56px; border-radius: 50%; display: inline-flex;
+      align-items: center; justify-content: center; font-size: 28px; margin-bottom: 14px; }
+    .vf-ok  { background: rgba(118,233,160,0.14); color: #76e9a0; }
+    .vf-bad { background: rgba(255,120,120,0.14); color: #ff8a8a; }
+    .vf-title { font-size: 1.35rem; font-weight: 800; color: var(--ink-0); margin: 0 0 6px; }
+    .vf-sub { color: var(--ink-2); margin: 0 0 22px; font-size: 0.95rem; }
+    .vf-seal { margin: 4px auto 10px; }
+    .vf-name { font-size: 1.5rem; font-weight: 800; color: var(--accent); margin: 6px 0 2px; }
+    .vf-what { color: var(--ink-1); margin: 0 0 18px; }
+    .vf-stats { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
+    .vf-stat { background: var(--bg-2); border: 1px solid var(--line); border-radius: 12px; padding: 10px 16px; min-width: 92px; }
+    .vf-stat .v { font-size: 1.2rem; font-weight: 800; color: var(--ink-0); }
+    .vf-stat .l { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); margin-top: 2px; }
+    .vf-foot { margin-top: 22px; font-size: 0.8rem; color: var(--ink-3); }
+    .vf-chip { display: inline-flex; align-items: center; gap: 7px; padding: 5px 14px; border-radius: 999px; font-size: 0.85rem; font-weight: 700; margin-top: 6px; }
+    .vf-dot { width: 10px; height: 10px; border-radius: 50%; }
+    a.vf-link { color: var(--accent); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="vf-card">
+    {% if ok %}
+      <div class="vf-badge vf-ok">✓</div>
+      <h1 class="vf-title">{% trans "Genuine diploma" %}</h1>
+      <p class="vf-sub">{% trans "This certificate was issued by Lost at Night." %}</p>
+
+      {% if ctx.kind == 'challenge' %}
+        <div class="vf-seal">{% include "_seal_svg.html" with color=ctx.medal_meta.color metal=ctx.medal_meta.metal stars=ctx.medal_meta.stars label=ctx.medal_meta.label size=120 uid="vf" %}
+        <div class="vf-name">{{ ctx.display_name }}</div>
+        <p class="vf-what">{% blocktrans trimmed with name=ctx.challenge.name %}participated in the “{{ name }}” challenge{% endblocktrans %}</p>
+        <div class="vf-stats">
+          <div class="vf-stat"><div class="v">{{ ctx.control_points }}</div><div class="l">{% trans "Control points" %}</div></div>
+          <div class="vf-stat"><div class="v">#{{ ctx.rank }}</div><div class="l">{% blocktrans trimmed %}of {{ ctx.n_participants }}{% endblocktrans %}</div></div>
+        </div>
+        {% if ctx.collective_meta %}
+          <div class="vf-chip" style="background: rgba(255,255,255,0.05); color:{{ ctx.collective_meta.color }}; border:1px solid {{ ctx.collective_meta.color }};">
+            <span class="vf-dot" style="background:{{ ctx.collective_meta.color }};"></span>
+            {% blocktrans trimmed with tier=ctx.collective_meta.label %}Community reached {{ tier }}{% endblocktrans %}
+          </div>
+        {% endif %}
+      {% else %}
+        <div class="vf-seal">{% include "_seal_svg.html" with color=ctx.tier_meta.color metal=ctx.tier_meta.metal stars=ctx.tier_meta.stars label=ctx.tier_meta.label size=120 uid="vf" %}
+        <div class="vf-name">{{ ctx.display_name }}</div>
+        <p class="vf-what">{% blocktrans trimmed with tier=ctx.tier_meta.label %}{{ tier }} Contributor to Lost at Night{% endblocktrans %}</p>
+        <div class="vf-stats">
+          <div class="vf-stat"><div class="v">{{ ctx.control_points }}</div><div class="l">{% trans "Control points" %}</div></div>
+          <div class="vf-stat"><div class="v">{{ ctx.tasks }}</div><div class="l">{% trans "Tasks" %}</div></div>
+          {% if ctx.rank %}<div class="vf-stat"><div class="v">#{{ ctx.rank }}</div><div class="l">{% blocktrans trimmed %}of {{ ctx.total_contributors }}{% endblocktrans %}</div></div>{% endif %}
+        </div>
+      {% endif %}
+
+      <div class="vf-foot">{% trans "Verified on" %} {{ ctx.issued_at|date:"d M Y" }}</div>
+    {% else %}
+      <div class="vf-badge vf-bad">✕</div>
+      <h1 class="vf-title">{% trans "Diploma not found" %}</h1>
+      <p class="vf-sub">{% trans "This verification code does not match any diploma issued by Lost at Night." %}</p>
+      <div class="vf-foot"><a class="vf-link" href="/">{% trans "Back to Lost at Night" %} →</a></div>
+    {% endif %}
+  </div>
+</body>
+</html>

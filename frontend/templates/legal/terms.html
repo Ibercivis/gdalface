@@ -1,0 +1,39 @@
+{% extends 'legal/_legal_base.html' %}
+{% load i18n %}
+
+{% block legal_title %}{% trans "Terms of use" %}{% endblock %}
+
+{% block legal_content %}
+<h1>{% trans "Terms of use" %}</h1>
+<p class="legal-meta">{% trans "Lost at Night — citizen-science platform for measuring light pollution from the International Space Station." %}</p>
+
+<h2>{% trans "1. Acceptance" %}</h2>
+<p>{% trans "By creating an account or contributing to Lost at Night you accept these terms. If you do not agree, please do not use the service." %}</p>
+
+<h2>{% trans "2. Nature of the service" %}</h2>
+<p>{% trans "Lost at Night is a non-profit research platform. Volunteers help locate and georeference astronaut photographs of Earth taken at night, in order to study artificial light pollution. The service is provided free of charge, on a best-effort basis, with no service-level guarantees." %}</p>
+
+<h2>{% trans "3. Your contributions" %}</h2>
+<p>{% trans "When you submit control points, georeference an image, or otherwise contribute, you grant us a perpetual, worldwide, royalty-free, non-exclusive licence to use those contributions for scientific research, education, and dissemination purposes. Your contributions remain attributable to your username unless you have disabled public visibility." %}</p>
+
+<h2>{% trans "4. Acceptable use" %}</h2>
+<ul>
+    <li>{% trans "Do not submit deliberately incorrect georeferences." %}</li>
+    <li>{% trans "Do not impersonate other users or scrape personal data." %}</li>
+    <li>{% trans "Do not abuse the API beyond reasonable limits." %}</li>
+    <li>{% trans "Do not upload illegal content as your profile picture or biography." %}</li>
+</ul>
+<p>{% trans "We may suspend or delete accounts that breach these rules." %}</p>
+
+<h2>{% trans "5. Intellectual property" %}</h2>
+<p>{% trans "ISS imagery is provided by NASA and is in the public domain. The Lost at Night software is open source (GPLv3). Aggregated and derived datasets produced by the project may be released under open licences such as CC BY-SA." %}</p>
+
+<h2>{% trans "6. Liability" %}</h2>
+<p>{% trans "The service is provided “as is”, without warranty of any kind. To the maximum extent permitted by law, the operator is not liable for incidental or consequential damages arising from use of the platform." %}</p>
+
+<h2>{% trans "7. Termination" %}</h2>
+<p>{% trans "You may delete your account at any time from the user profile page. Pseudonymised scientific contributions will be retained for research purposes." %}</p>
+
+<h2>{% trans "8. Governing law" %}</h2>
+<p>{% trans "These terms are governed by Spanish law. Disputes shall be submitted to the courts of Zaragoza, Spain, without prejudice to mandatory consumer protection laws." %}</p>
+{% endblock %}

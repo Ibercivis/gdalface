@@ -69,6 +69,7 @@ INSTALLED_APPS = [
 
     # My apps
     'user_profile',
+    'teams',
 
 ]
 
@@ -205,11 +206,24 @@ RQ_QUEUES = {
     'lost_scheduler': {
         'HOST': 'localhost',
         'PORT': 6379,
-        'DB': 0,
+        # DB 3 (not 0): this Redis is shared by several projects. DB 0 was shared
+        # with openred/measures, whose rqscheduler clobbered the *unnamespaced*
+        # `rq:scheduler:scheduled_jobs` registry, silently dropping our scheduled
+        # jobs (stats snapshot, update_assigned). DB 1 = another project's cache,
+        # DB 2 = observatorio. DB 3 was empty — gives us an isolated keyspace.
+        'DB': 3,
         'DEFAULT_TIMEOUT': 1200,
     }
 }
 RQ_SHOW_ADMIN_LINK = True # Show the Django RQ admin link in the admin panel
+
+# Identity broadcast in the public stats contract (/.well-known/stats.json).
+# Each project overrides these so dashboards can tell snapshots apart.
+PROJECT_STATS_IDENTITY = {
+    'id': 'lostatnight',
+    'name': 'Lost at Night',
+    'url': 'https://lostatnight.org',
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -282,3 +296,58 @@ AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY', default='')
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='')
 # Default recipient email - convertido a tupla
 DEFAULT_TO_EMAIL = (config('DEFAULT_TO_EMAIL', default='contact@lostatnight.org'),)
+
+# ── Cache ─────────────────────────────────────────────────────────────
+# Shared Redis cache (DB 3, same isolated keyspace as django-rq). Before this
+# was defined Django fell back to LocMemCache, which is per-process: with 4
+# gunicorn workers every cached ranking was computed 4×. The contact-form
+# rate limit *needs* a shared store, so this is required, not optional.
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': 'redis://localhost:6379/3',
+        'KEY_PREFIX': 'lostatnight',
+    }
+}
+
+# ── Contact form anti-spam ────────────────────────────────────────────
+# Cloudflare Turnstile (https://dash.cloudflare.com → Turnstile). Optional:
+# when both keys are empty the widget is not rendered and no verification is
+# done — the honeypot / signed-timestamp / JS-token / rate-limit layers still
+# apply. Set both in .env to enable.
+TURNSTILE_SITE_KEY = config('TURNSTILE_SITE_KEY', default='')
+TURNSTILE_SECRET_KEY = config('TURNSTILE_SECRET_KEY', default='')
+# Max contact submissions per client IP per hour (excess is silently dropped).
+CONTACT_RATE_LIMIT = config('CONTACT_RATE_LIMIT', default=5, cast=int)
+# Fastest plausible human fill time, seconds. Faster submits are bots.
+CONTACT_MIN_SECONDS = 3
+# Messages with this many URLs or more are dropped.
+CONTACT_MAX_URLS = 3
+
+# ── Logging ───────────────────────────────────────────────────────────
+# Django's default config only routes ``django.*`` loggers. Project loggers
+# (``frontend``: contact-form spam drops, ``georeferencing``…) need an explicit
+# handler or INFO lines vanish. stderr is captured by supervisord into
+# /var/log/lostatnight-gunicorn.err.log.
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'std': {'format': '%(asctime)s %(levelname)s %(name)s: %(message)s'},
+    },
+    'handlers': {
+        'console': {'class': 'logging.StreamHandler', 'formatter': 'std'},
+    },
+    'loggers': {
+        'frontend': {'handlers': ['console'], 'level': 'INFO', 'propagate': False},
+    },
+}
+
+# ── GDPR ──────────────────────────────────────────────────────────────
+# Bumped whenever the privacy policy receives a substantive update.
+PRIVACY_POLICY_VERSION = '2026-05-02'
+
+# Custom signup form with privacy + newsletter checkboxes and consent timestamps.
+ACCOUNT_FORMS = {
+    'signup': 'user_profile.forms.CustomSignupForm',
+}

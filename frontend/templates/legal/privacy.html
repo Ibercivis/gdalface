@@ -1,0 +1,75 @@
+{% extends 'legal/_legal_base.html' %}
+{% load i18n %}
+
+{% block legal_title %}{% trans "Privacy policy" %}{% endblock %}
+
+{% block legal_content %}
+<h1>{% trans "Privacy policy" %}</h1>
+<p class="legal-meta">
+    {% blocktrans with v=policy_version %}Version {{ v }}.{% endblocktrans %}
+    {% trans "Lost at Night is a citizen-science project developed by Fundación Ibercivis within the framework of the Plan-B project. The principal investigator is Alejandro Sánchez de Miguel (CSIC)." %}
+</p>
+
+<h2>{% trans "1. Who we are" %}</h2>
+<p>{% blocktrans %}<strong>Data controller:</strong> Fundación Ibercivis (NIF G-99409492), C/ Mariano Esquillor s/n, 50018 Zaragoza, Spain. Contact: <a href="mailto:ethics@ibercivis.es">ethics@ibercivis.es</a>.{% endblocktrans %}</p>
+
+<h2>{% trans "2. What data we process" %}</h2>
+<ul>
+    <li>{% trans "Account data: email address, username, hashed password." %}</li>
+    <li>{% trans "Profile data (optional): country, city, biography, profile picture." %}</li>
+    <li>{% trans "Activity data: control points contributed, time spent, batches and challenges joined." %}</li>
+    <li>{% trans "Consent records: timestamps for privacy policy acceptance, newsletter subscription, and cookie preferences." %}</li>
+    <li>{% trans "Technical logs: IP address (truncated), browser metadata, retained for at most 30 days." %}</li>
+</ul>
+
+<h2>{% trans "3. Purpose and legal basis" %}</h2>
+<table>
+    <tr><th>{% trans "Purpose" %}</th><th>{% trans "Legal basis (GDPR Art. 6)" %}</th></tr>
+    <tr><td>{% trans "Account management and authentication" %}</td><td>{% trans "Performance of contract (6.1.b)" %}</td></tr>
+    <tr><td>{% trans "Storing your scientific contributions" %}</td><td>{% trans "Public interest research / consent (6.1.e / 6.1.a)" %}</td></tr>
+    <tr><td>{% trans "Newsletter and project updates" %}</td><td>{% trans "Consent (6.1.a) — opt-in only" %}</td></tr>
+    <tr><td>{% trans "Analytics cookies" %}</td><td>{% trans "Consent (6.1.a) — opt-in only" %}</td></tr>
+    <tr><td>{% trans "Security and abuse prevention" %}</td><td>{% trans "Legitimate interest (6.1.f)" %}</td></tr>
+</table>
+
+<h2>{% trans "4. Retention" %}</h2>
+<ul>
+    <li>{% trans "Account data: until you request deletion." %}</li>
+    <li>{% trans "Scientific contributions (control points): pseudonymised and retained indefinitely after account deletion, since they cannot be reasonably attributed to you once disassociated." %}</li>
+    <li>{% trans "Server logs: 30 days maximum." %}</li>
+    <li>{% trans "Consent records: kept while your account is active and for 3 additional years for accountability (GDPR Art. 5.2)." %}</li>
+</ul>
+
+<h2>{% trans "5. Recipients and processors" %}</h2>
+<p>{% trans "We share your personal data only with the following service providers, all of which act as data processors under written agreements:" %}</p>
+<ul>
+    <li>{% trans "Hosting provider (server infrastructure, EU)." %}</li>
+    <li>{% trans "Email delivery service for transactional emails (verification, password reset) and the optional newsletter." %}</li>
+    <li>{% trans "OpenStreetMap Nominatim (reverse geocoding of ISS image coordinates) — your IP address is shared only when the map widget is loaded." %}</li>
+</ul>
+
+<h2>{% trans "6. International transfers" %}</h2>
+<p>{% trans "All processors are based within the European Economic Area (EEA). If a transfer outside the EEA becomes necessary, we will rely on Standard Contractual Clauses or other safeguards under GDPR Art. 46." %}</p>
+
+<h2>{% trans "7. Your rights" %}</h2>
+<p>{% trans "Under GDPR Articles 15–22 you may:" %}</p>
+<ul>
+    <li>{% trans "Access the personal data we hold about you." %}</li>
+    <li>{% trans "Rectify inaccurate or incomplete data." %}</li>
+    <li>{% trans "Request deletion of your account and associated personal data." %}</li>
+    <li>{% trans "Restrict or object to processing." %}</li>
+    <li>{% trans "Port your data in a machine-readable format." %}</li>
+    <li>{% trans "Withdraw consent at any time (effective from withdrawal, without affecting prior processing)." %}</li>
+    <li>{% trans "Lodge a complaint with the Spanish Data Protection Agency (AEPD)." %}</li>
+</ul>
+<p>{% blocktrans %}You can exercise most rights directly from your profile page or by writing to <a href="mailto:ethics@ibercivis.es">ethics@ibercivis.es</a>.{% endblocktrans %}</p>
+
+<h2>{% trans "8. Automated decisions" %}</h2>
+<p>{% trans "We do not take any decisions about you based solely on automated processing." %}</p>
+
+<h2>{% trans "9. Minors" %}</h2>
+<p>{% trans "Lost at Night is open to volunteers aged 14 and over. If you are under 14, please ask a parent or guardian to register on your behalf." %}</p>
+
+<h2>{% trans "10. Updates to this policy" %}</h2>
+<p>{% trans "When we make substantive changes we will update the version number above and ask you to re-confirm your consent." %}</p>
+{% endblock %}

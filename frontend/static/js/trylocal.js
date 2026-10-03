@@ -306,13 +306,21 @@
                     window.LAN.tryLocalLayer = tryLocalLayer;
                     window.LAN.applyMapFilters();
 
-                    // Opacity slider in the map control panel
+                    // Opacity slider in the map control panel. Shares the
+                    // 'georef-slider-row' id with the Try-server flow so the
+                    // distinct cyan styling applies, and inserts at the
+                    // dyn-layers anchor so it sits next to VIIRS / SDGSAT.
                     if (LAN.opacitySlidersDiv && LAN.makeSliderRow) {
-                        var ex = document.getElementById('trylocal-slider-row');
+                        var ex = document.getElementById('georef-slider-row')
+                              || document.getElementById('trylocal-slider-row');
                         if (ex) ex.remove();
-                        LAN.opacitySlidersDiv.appendChild(
-                            LAN.makeSliderRow('Georeferenced', tryLocalLayer, 0.8, 'trylocal-slider-row')
-                        );
+                        var anchor = document.getElementById('dyn-layers-sep');
+                        var row = LAN.makeSliderRow('Georeferenced', tryLocalLayer, 0.8, 'georef-slider-row');
+                        if (anchor) {
+                            LAN.opacitySlidersDiv.insertBefore(row, anchor);
+                        } else {
+                            LAN.opacitySlidersDiv.appendChild(row);
+                        }
                     }
 
                     hideLoading();

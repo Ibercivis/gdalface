@@ -1,6 +1,6 @@
 {% load static %}
 {% load bootstrap5 %}
-{% load i18n %}
+{% load i18n l10n %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,8 +9,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lost At Night</title>
     <!-- Añadiendo favicon -->
-    <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
-    <link rel="alternate icon" href="{% static 'img/LogoLostAtNight.png' %}" type="image/png">
+    <link rel="icon" href="{% static 'img/logo-lost.png' %}" type="image/png">
+    <link rel="alternate icon" href="{% static 'img/logo-lost.png' %}" type="image/png">
     <!-- Fin de favicon -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
     {% bootstrap_css %}
@@ -22,7 +22,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <link href="{% static 'css/main.css' %}" rel="stylesheet" type="text/css">
-    <link href="{% static 'css/challenges.css' %}?v=2.1" rel="stylesheet" type="text/css">
+    <link href="{% static 'css/challenges.css' %}?v=2.2" rel="stylesheet" type="text/css">
     <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
@@ -714,7 +714,7 @@
             <div class="ds-stars"></div>
             <div class="ds-hero__inner">
                 <div>
-                    <img src="{% static 'img/LogoLostAtNight.png' %}" alt="Lost at Night" class="ds-hero__logo">
+                    <img src="{% static 'img/logo-lost.png' %}" alt="Lost at Night" class="ds-hero__logo">
                     <h1 class="ds-hero__title">
                         {% if user.is_authenticated %}
                             {% blocktrans with name=user.username %}Welcome back, <span class="accent">{{ name }}</span>.{% endblocktrans %}
@@ -726,7 +726,11 @@
                         {% trans "Help map Earth's lights from space and combat light pollution" %}
                     </p>
                     <div class="ds-hero__ctas">
-                        <a href="/gettask" class="ds-btn ds-btn--primary ds-btn--lg">
+                        <a href="/#challenges-section" class="ds-btn ds-btn--primary ds-btn--lg">
+                            <svg class="ds-icon"><use href="#ds-icon-trophy"/></svg>
+                            {% trans "Join a challenge" %}
+                        </a>
+                        <a href="/gettask" class="ds-btn ds-btn--ghost ds-btn--lg">
                             {% trans "Contribute now" %}
                             <svg class="ds-icon"><use href="#ds-icon-chevron-right"/></svg>
                         </a>
@@ -864,7 +868,7 @@
                                         <span><i class="fa-solid fa-list-check"></i>{{ batch.get_number_geoattempts }}</span>
                                     </div>
                                 </div>
-                                <div class="progress-circle" style="background: conic-gradient(#e9f990 {{ batch.get_percentage_remaining }}%, rgba(255,255,255,0.12) 0);" title="{% trans 'Completion' %}">
+                                <div class="progress-circle" style="background: conic-gradient(#e9f990 {{ batch.get_percentage_remaining|unlocalize }}%, rgba(255,255,255,0.12) 0);" title="{% trans 'Completion' %}">
                                     <span class="progress-text">{{ batch.get_percentage_remaining }}%</span>
                                 </div>
                             </div>
@@ -890,7 +894,7 @@
                             </div>
                             <div class="hero-side">
                                 <div class="completion-circle">
-                                    <div class="completion-ring" style="background: conic-gradient(#e9f990 {{ completion_pct }}%, rgba(255,255,255,0.12) 0);">
+                                    <div class="completion-ring" style="background: conic-gradient(#e9f990 {{ completion_pct|unlocalize }}%, rgba(255,255,255,0.12) 0);">
                                         <span class="completion-pct">{{ completion_pct }}%</span>
                                     </div>
                                     <div class="completion-label">{% trans "Tasks completed" %}</div>

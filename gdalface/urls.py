@@ -42,6 +42,27 @@ urlpatterns = [
     path('api/v1/', include('georeferencing.urls')),  # Adjust the path to your app's API
     path('accounts/', include('allauth.urls')),  # Add this for allauth
     path('user-profile/', include('user_profile.urls')),  # Add this for user_profile
+    # GDPR / consent endpoints (declared in user_profile.views).
+    path('api/v1/cookies-consent/',
+         __import__('user_profile.views', fromlist=['cookies_consent_api']).cookies_consent_api,
+         name='cookies_consent_api'),
+    path('api/v1/ranking/',
+         __import__('user_profile.views', fromlist=['ranking_api']).ranking_api,
+         name='ranking_api'),
+    path('api/v1/ranking/countries/',
+         __import__('user_profile.views', fromlist=['country_ranking_api']).country_ranking_api,
+         name='country_ranking_api'),
+    path('api/v1/ranking/teams/',
+         __import__('teams.views', fromlist=['teams_ranking_api']).teams_ranking_api,
+         name='teams_ranking_api'),
+    path('teams/', include('teams.urls')),
+    path('newsletter/unsubscribe/<str:token>/',
+         __import__('user_profile.views', fromlist=['newsletter_unsubscribe']).newsletter_unsubscribe,
+         name='newsletter_unsubscribe'),
+    # Public diploma verification page (QR target).
+    path('verify/<str:code>/',
+         __import__('user_profile.views', fromlist=['diploma_verify']).diploma_verify,
+         name='diploma_verify'),
 
     # Swagger and Redoc paths
     re_path(r'^swagger(?P<format>\.json|\.yaml)$',
@@ -58,6 +79,11 @@ urlpatterns = [
         api_schema_view.with_ui('redoc', cache_timeout=0),
         name='schema-redoc',
         ),
+
+    # Public project-stats contract for external dashboards (pull, daily snapshot).
+    path('.well-known/stats.json',
+         __import__('frontend.views', fromlist=['project_stats']).project_stats,
+         name='project_stats'),
 
     # Frontend path
     path('', include('frontend.urls')),

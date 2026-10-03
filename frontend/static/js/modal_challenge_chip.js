@@ -36,7 +36,12 @@
         }
         var ch = enrollment.challenge;
         var rank = enrollment.my_rank;
-        var html = '🏆 <a href="/challenges/' + ch.id + '/">' + escapeHtml(ch.name) + '</a>';
+        var trophySvg = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" '
+            + 'stroke="currentColor" stroke-width="1.6" stroke-linecap="round" '
+            + 'stroke-linejoin="round" style="color:var(--accent);vertical-align:-2px;margin-right:5px;">'
+            + '<path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4z"/>'
+            + '<path d="M17 4h3v2a3 3 0 0 1-3 3M7 4H4v2a3 3 0 0 0 3 3"/></svg>';
+        var html = trophySvg + '<a href="/challenges/' + ch.id + '/">' + escapeHtml(ch.name) + '</a>';
         if (rank) html += ' · #' + rank;
         chip.innerHTML = html;
         chip.hidden = false;

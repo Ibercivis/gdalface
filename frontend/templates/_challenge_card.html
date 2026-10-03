@@ -3,7 +3,11 @@
 Reusable challenge card. Shared by index.html and challenges_list.html.
 Required context: `ch` (Challenge instance). Optional: `enrolled_challenge_id`, `user`.
 {% endcomment %}
-{% with total=ch.total_cp gold=ch.target_gold %}
+{% comment %}
+Prefer the annotated values from the queryset (set in frontend.views.index).
+Fall back to the live methods only when not annotated (e.g. challenge_detail).
+{% endcomment %}
+{% with total=ch.total_cp_annot|default:ch.total_cp gold=ch.target_gold %}
 <article class="ds-ch-row{% if ch.id == enrolled_challenge_id %} is-enrolled{% endif %}"
          id="challenge-{{ ch.id }}"
          data-status="{{ ch.status }}"
@@ -29,7 +33,7 @@ Required context: `ch` (Challenge instance). Optional: `enrolled_challenge_id`, 
             {% endif %}
             <span class="mono ds-text-2">{{ total }}/{{ gold }} CP</span>
             <span class="ds-text-3">·</span>
-            <span class="ds-text-2">{{ ch.participants.count }} {% trans "participants" %}</span>
+            <span class="ds-text-2">{{ ch.participants_count|default:ch.participants.count }} {% trans "participants" %}</span>
         </div>
         <div class="ds-ch-row__progress">
             <div class="ds-progress" style="min-width:0;flex:1;">
@@ -49,6 +53,13 @@ Required context: `ch` (Challenge instance). Optional: `enrolled_challenge_id`, 
             <span class="ds-pill ds-pill--warn">{% trans "Paused" %}</span>
         {% elif ch.status == 'finished' %}
             <span class="ds-pill ds-pill--neutral">{% trans "Complete" %}</span>
+        {% endif %}
+
+        {% if ch.status != 'finished' %}
+            <a href="{% url 'challenge_detail' ch.id %}" class="ds-btn ds-btn--secondary ds-btn--sm">
+                {% trans "Details" %}
+                <svg class="ds-icon ds-icon--sm"><use href="#ds-icon-chevron-right"/></svg>
+            </a>
         {% endif %}
 
         {% if ch.id == enrolled_challenge_id %}

@@ -9,8 +9,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lost At Night - User Profile</title>
     <!-- Añadiendo favicon -->
-    <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
-    <link rel="alternate icon" href="{% static 'img/LogoLostAtNight.png' %}" type="image/png">
+    <link rel="icon" href="{% static 'img/logo-lost.png' %}" type="image/png">
+    <link rel="alternate icon" href="{% static 'img/logo-lost.png' %}" type="image/png">
     <!-- Fin de favicon -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
     {% bootstrap_css %}
@@ -77,7 +77,12 @@
             overflow: hidden;
             border-radius: 50%;
             border: 1px solid var(--line);
-            background-color: var(--bg-2);
+            background:
+                radial-gradient(circle at 50% 35%,
+                    oklch(0.95 0.13 113 / 0.12) 0%,
+                    transparent 70%),
+                var(--bg-2);
+            box-shadow: inset 0 0 0 1px oklch(0 0 0 / 0.25);
         }
 
         .avatar {
@@ -93,11 +98,15 @@
         .avatar-fallback {
             position: absolute;
             inset: 0;
-            display: flex;
+            display: flex !important;
             align-items: center;
             justify-content: center;
-            font-size: 64px;
-            color: var(--ink-2);
+            font-size: 92px;
+            color: var(--ink-1);
+            opacity: 0.85;
+            line-height: 1;
+            /* Compensate the FA astronaut glyph's intrinsic vertical bias */
+            padding-top: 6px;
         }
 
         .profile-details {
@@ -779,6 +788,11 @@
                     <div class="ds-kpi-card__delta">&nbsp;</div>
                 </div>
                 <div class="ds-kpi-card">
+                    <div class="ds-kpi-card__label">{% trans "Current streak" %}</div>
+                    <div class="ds-kpi-card__value">{% if streak_current %}<i class="fas fa-fire" style="color:var(--accent);font-size:0.8em;"></i> {% endif %}{% blocktrans trimmed count days=streak_current %}{{ days }} day{% plural %}{{ days }} days{% endblocktrans %}</div>
+                    <div class="ds-kpi-card__delta accent">{% blocktrans with best=streak_best %}Best: {{ best }}{% endblocktrans %}</div>
+                </div>
+                <div class="ds-kpi-card">
                     <div class="ds-kpi-card__label">{% trans "Cheating flag" %}</div>
                     <div class="ds-kpi-card__value">{{ che|default:0 }}</div>
                     <div class="ds-kpi-card__delta">&nbsp;</div>
@@ -855,6 +869,65 @@
         </div>
 
         
+        <!-- Badges & diplomas -->
+        <style>
+            .badge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 16px; }
+            .badge-card { background: var(--bg-1, rgba(255,255,255,0.04)); border: 1px solid var(--line, rgba(185,167,255,0.18));
+                border-radius: 16px; padding: 18px 14px 16px; text-align: center; display: flex; flex-direction: column; align-items: center; }
+            .badge-card.is-general { border-color: rgba(233,249,144,0.45); }
+            .badge-seal { display: block; line-height: 0; margin-bottom: 8px; transition: transform .15s ease; }
+            .badge-seal:hover { transform: translateY(-2px) scale(1.03); }
+            .badge-tier { font-size: 0.78rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; }
+            .badge-title { font-size: 0.98rem; font-weight: 700; color: #fff; margin: 3px 0 2px; line-height: 1.2; }
+            .badge-meta { font-size: 0.8rem; color: var(--ink-2, #b6aede); }
+            .badge-chip { display: inline-flex; align-items: center; gap: 6px; margin-top: 7px; padding: 3px 10px;
+                border-radius: 999px; font-size: 0.72rem; font-weight: 700; }
+            .badge-chip .dot { width: 8px; height: 8px; border-radius: 50%; }
+            .badge-prov { margin-top: 6px; font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase;
+                color: #ffd45e; border: 1px solid rgba(255,212,94,0.5); border-radius: 999px; padding: 2px 9px; }
+            .badge-actions { margin-top: auto; padding-top: 12px; display: flex; gap: 8px; align-items: center; justify-content: center; }
+            .badge-actions .preview { font-size: 0.8rem; color: var(--ink-2, #b6aede); text-decoration: underline; }
+        </style>
+        <div class="contribution-section mt-4">
+            <div class="section-heading personal-contrib-heading">
+                <span><i class="fas fa-award"></i> {% trans "Your badges & diplomas" %}</span>
+            </div>
+            <div class="badge-grid">
+                <!-- General all-time badge -->
+                <div class="badge-card is-general">
+                    <a class="badge-seal" href="{% url 'diploma_general' %}?inline=1" target="_blank" rel="noopener" title="{% trans 'Preview' %}">
+                        {% include "_seal_svg.html" with color=general_badge.tier_meta.color metal=general_badge.tier_meta.metal stars=general_badge.tier_meta.stars label=general_badge.tier_meta.label size=92 uid="gen" %}
+                    </a>
+                    <div class="badge-tier" style="color:{{ general_badge.tier_meta.color }};">{{ general_badge.tier_meta.label }}</div>
+                    <div class="badge-title">{% trans "Overall contribution" %}</div>
+                    <div class="badge-meta">{% blocktrans trimmed count cp=general_badge.control_points %}{{ cp }} control point{% plural %}{{ cp }} control points{% endblocktrans %}</div>
+                    <div class="badge-actions">
+                        <a class="ds-btn ds-btn--primary" href="{% url 'diploma_general' %}"><i class="fas fa-download"></i> {% trans "Diploma" %}</a>
+                    </div>
+                </div>
+                <!-- Per-challenge badges -->
+                {% for row in my_enrollments %}
+                <div class="badge-card">
+                    <a class="badge-seal" href="{% url 'diploma_challenge' challenge_id=row.challenge.id %}?inline=1" target="_blank" rel="noopener" title="{% trans 'Preview' %}">
+                        {% include "_seal_svg.html" with color=row.medal_meta.color metal=row.medal_meta.metal stars=row.medal_meta.stars label=row.medal_meta.label size=92 uid=row.challenge.id %}
+                    </a>
+                    <div class="badge-tier" style="color:{{ row.medal_meta.color }};">{{ row.medal_meta.label }}</div>
+                    <div class="badge-title">{{ row.challenge.name }}</div>
+                    <div class="badge-meta">{% blocktrans trimmed with rank=row.rank cp=row.enrollment.cached_cp_count %}Rank #{{ rank }} · {{ cp }} CP{% endblocktrans %}</div>
+                    {% if row.collective_meta %}
+                    <div class="badge-chip" style="background: rgba(255,255,255,0.05); color:{{ row.collective_meta.color }}; border:1px solid {{ row.collective_meta.color }};">
+                        <span class="dot" style="background:{{ row.collective_meta.color }};"></span>{{ row.collective_meta.label }}
+                    </div>
+                    {% endif %}
+                    {% if row.provisional %}<div class="badge-prov">{% trans "Provisional" %}</div>{% endif %}
+                    <div class="badge-actions">
+                        <a class="ds-btn ds-btn--primary" href="{% url 'diploma_challenge' challenge_id=row.challenge.id %}"><i class="fas fa-download"></i> {% trans "Diploma" %}</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
         <!-- Your challenges -->
         {% if my_enrollments %}
         <div class="contribution-section mt-4">
@@ -897,98 +970,489 @@
         </div>
         {% endif %}
 
-        <!-- Ranking table unificada -->
+        <!-- My team -->
+        <div class="contribution-section mt-4">
+            <div class="section-heading personal-contrib-heading">
+                <span><i class="fas fa-people-group"></i> {% trans "My team" %}</span>
+            </div>
+            {% if my_team %}
+            <div class="ranking-card" style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+                <div>
+                    <a href="{% url 'team_detail' slug=my_team.team.slug %}" style="color:#fff;font-weight:700;font-size:1.1rem;text-decoration:underline;">
+                        {{ my_team.team.name }}
+                    </a>
+                    <div style="color:var(--ink-2);font-size:0.85rem;margin-top:4px;">
+                        {% if my_team.role == 'owner' %}<i class="fa-solid fa-crown" style="color:var(--accent);"></i> {% trans "You own this team." %}{% endif %}
+                        {% trans "Invite code:" %} <code style="color:var(--accent);">{{ my_team.team.invite_code }}</code>
+                    </div>
+                </div>
+                <form method="post" action="{% url 'team_leave' %}"
+                      onsubmit="return confirm('{% trans "Leave this team?" %}');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-light btn-sm">{% trans "Leave team" %}</button>
+                </form>
+            </div>
+            {% else %}
+            <div class="ranking-card" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+                <div>
+                    <div style="font-weight:600;margin-bottom:8px;">{% trans "Join a team" %}</div>
+                    <p style="color:var(--ink-2);font-size:0.85rem;">{% trans "Got an invite code from a classroom, club or group of friends? Enter it here — or pick an open team from the Teams ranking below." %}</p>
+                    <form method="post" action="{% url 'team_join' %}" class="d-flex" style="gap:8px;">
+                        {% csrf_token %}
+                        <input type="text" name="invite_code" class="form-control form-control-sm" maxlength="16"
+                               placeholder="{% trans 'Invite code' %}" style="max-width:160px;">
+                        <button type="submit" class="btn btn-primary btn-sm">{% trans "Join" %}</button>
+                    </form>
+                </div>
+                <div>
+                    <div style="font-weight:600;margin-bottom:8px;">{% trans "Create a team" %}</div>
+                    <p style="color:var(--ink-2);font-size:0.85rem;">{% trans "Start your own and compete together in the team ranking." %}</p>
+                    <form method="post" action="{% url 'team_create' %}" class="d-flex" style="gap:8px;flex-wrap:wrap;">
+                        {% csrf_token %}
+                        <input type="text" name="name" class="form-control form-control-sm" maxlength="60" minlength="3" required
+                               placeholder="{% trans 'Team name' %}" style="max-width:200px;">
+                        <button type="submit" class="btn btn-primary btn-sm">{% trans "Create" %}</button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        <style>
+            @media (max-width: 640px) {
+                .contribution-section .ranking-card[style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+            }
+        </style>
+
+        <!-- Ranking table unificada (users / countries / teams) -->
         <div class="ranking-section">
             <div class="ranking-card" style="grid-column: 1 / -1;">
-                <div class="ranking-header">
-                    {% blocktrans with pos=user_task_position %}Ranking (Your position: #{{ pos }} in tasks){% endblocktrans %}
+                <div class="ranking-header rk-header-row">
+                    <span id="rk-header">{% trans "Global ranking" %}</span>
+                    <div class="rk-controls">
+                        <div class="rk-seg" id="rk-scope" role="tablist">
+                            <button type="button" class="rk-seg-btn is-on" data-scope="users">{% trans "Users" %}</button>
+                            <button type="button" class="rk-seg-btn" data-scope="countries">{% trans "Countries" %}</button>
+                            <button type="button" class="rk-seg-btn" data-scope="teams">{% trans "Teams" %}</button>
+                        </div>
+                        <div class="rk-seg" id="rk-period" role="tablist">
+                            <button type="button" class="rk-seg-btn is-on" data-period="all">{% trans "All time" %}</button>
+                            <button type="button" class="rk-seg-btn" data-period="month">{% trans "Last 30 days" %}</button>
+                            <button type="button" class="rk-seg-btn" data-period="week">{% trans "Last 7 days" %}</button>
+                        </div>
+                        <button type="button" class="rk-jump-btn" id="rk-jump-me" hidden>
+                            {% trans "Jump to me" %}
+                        </button>
+                    </div>
                 </div>
-                <div style="overflow-x: auto;">
-                    <table class="ranking-table">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>{% trans "User" %}</th>
-                                <th>{% trans "Country" %}</th>
-                                <th>{% trans "Tasks" %} <span class="small">({% trans "Pos" %})</span></th>
-                                <th>{% trans "Control Points" %} <span class="small">({% trans "Pos" %})</span></th>
-                                <th>{% trans "Time" %} <span class="small">({% trans "Pos" %})</span></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for user_data in unified_ranking %}
-                                <tr {% if user_data.username == user.username %}class="highlight-row"{% endif %}>
-                                    <td>{{ forloop.counter }}</td>
-                                    <td>
-                                        <div style="display: flex; align-items: center;">
-                                            {% if user_data.profile.visible or user_data.username == user.username %}
-                                                {% if user_data.profile.profile_pic %}
-                                                    <img src="{{ user_data.profile.profile_pic.url }}" alt="Profile of {{ user_data.username }}" 
-                                                        style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px; object-fit: cover;">
-                                                {% else %}
-                                                    <div style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px; 
-                                                            background-color: #6a1b54; display: flex; align-items: center; justify-content: center;">
-                                                        <i class="fas fa-user" style="font-size: 12px; color: #fff;"></i>
-                                                    </div>
-                                                {% endif %}
-                                                {{ user_data.username }}
-                                            {% else %}
-                                                <div style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px; 
-                                                        background-color: #4b2e83; display: flex; align-items: center; justify-content: center;">
-                                                    <i class="fas fa-eye-slash" style="font-size: 12px; color: #ff9090;"></i>
-                                                </div>
-                                                <span style="color: rgba(255, 255, 255, 0.6);">{% trans "Invisible user" %}</span>
-                                            {% endif %}
-                                        </div>
-                                    </td>
-                                    <td>
-                                        {% if user_data.profile.visible or user_data.username == user.username %}
-                                            {% if user_data.profile.country %}
-                                                <div style="display: flex; align-items: center;">
-                                                    <img src="https://flagcdn.com/32x24/{{ user_data.profile.country.code|lower }}.png" 
-                                                        alt="{{ user_data.profile.country.name }}" 
-                                                        style="width: 24px; height: 18px; margin-right: 5px;">
-                                                    {{ user_data.profile.country.name }}
-                                                </div>
-                                            {% else %}
-                                                -
-                                            {% endif %}
-                                        {% else %}
-                                            <span style="color: rgba(255, 255, 255, 0.6);">-</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {{ user_data.tasks }}
-                                        {% if user_data.tasks_position %}
-                                            <span class="badge rounded-pill" style="background-color: #7639ba; font-size: 0.7rem; margin-left: 5px;">#{{ user_data.tasks_position }}</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {{ user_data.points }}
-                                        {% if user_data.points_position %}
-                                            <span class="badge rounded-pill" style="background-color: #7639ba; font-size: 0.7rem; margin-left: 5px;">#{{ user_data.points_position }}</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {{ user_data.time_spent }}
-                                        {% if user_data.time_position %}
-                                            <span class="badge rounded-pill" style="background-color: #7639ba; font-size: 0.7rem; margin-left: 5px;">#{{ user_data.time_position }}</span>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                            {% endfor %}
+
+                {% if user.is_authenticated and not profile.country %}
+                <div class="rk-nudge" id="rk-country-nudge" hidden>
+                    <i class="fa-solid fa-flag"></i>
+                    {% trans "Your country doesn't score yet — pick it in your profile and every task you do will count for it." %}
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#editProfileModal">{% trans "Choose my country" %}</a>
+                </div>
+                {% endif %}
+
+                <div class="rk-table-wrap">
+                    <div style="overflow-x: auto;">
+                    <table class="ranking-table" id="rk-table">
+                        <thead id="rk-thead"></thead>
+                        <tbody id="rk-tbody">
+                            <tr><td colspan="6" style="text-align:center;padding:24px;color:var(--ink-2);">
+                                {% trans "Loading…" %}
+                            </td></tr>
                         </tbody>
                     </table>
                 </div>
+
+                </div>
+
+                <div class="rk-pager" id="rk-pager" hidden>
+                    <button type="button" class="rk-pager-btn" data-act="first">«</button>
+                    <button type="button" class="rk-pager-btn" data-act="prev">‹</button>
+                    <span class="rk-pager-info" id="rk-pager-info"></span>
+                    <button type="button" class="rk-pager-btn" data-act="next">›</button>
+                    <button type="button" class="rk-pager-btn" data-act="last">»</button>
+                </div>
             </div>
         </div>
+
+        <style>
+            /* Page-specific: header row layout, right padding, sortable headers.
+               Shared paginator/avatar/jump-btn styles live in design-system.css. */
+            .rk-header-row {
+                display: flex; align-items: center; justify-content: space-between;
+                gap: 12px; flex-wrap: wrap;
+            }
+            .rk-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+            .rk-seg {
+                display: inline-flex; border: 1px solid var(--line, rgba(185,167,255,0.25));
+                border-radius: 999px; overflow: hidden; background: var(--bg-1, rgba(255,255,255,0.04));
+            }
+            .rk-seg-btn {
+                /* Beat main.css's global button override (solid bg + padding). */
+                background: transparent !important; border: none !important;
+                color: var(--ink-2, #b6aede) !important;
+                font-size: 0.78rem !important; font-weight: 600 !important;
+                padding: 5px 12px !important; cursor: pointer; border-radius: 0 !important;
+                line-height: 1.4 !important;
+            }
+            .rk-seg-btn.is-on {
+                background: oklch(0.95 0.13 113 / 0.18) !important;
+                color: var(--accent, #e9f990) !important;
+            }
+            .rk-nudge {
+                margin: 10px 0 2px; padding: 8px 12px; border-radius: 8px;
+                background: oklch(0.95 0.13 113 / 0.08);
+                border: 1px solid oklch(0.95 0.13 113 / 0.25);
+                color: var(--ink-1, #e7e3ff); font-size: 0.85rem;
+            }
+            .rk-nudge a { color: var(--accent, #e9f990); text-decoration: underline; margin-left: 4px; }
+            .rk-nudge i { margin-right: 6px; color: var(--accent, #e9f990); }
+            .rk-table-wrap { padding-right: 28px; }
+            @media (max-width: 540px) {
+                .rk-table-wrap { padding-right: 0; }
+            }
+            #rk-table th.rk-sortable { cursor: pointer; user-select: none; }
+            #rk-table th.rk-sortable.is-sort { color: var(--accent); }
+            #rk-table th.rk-sortable.is-sort::after { content: ' ▾'; font-size: 0.85em; }
+        </style>
+
+        <script>
+        (function () {
+            'use strict';
+            var ENDPOINTS = {
+                users:     '/api/v1/ranking/',
+                countries: '/api/v1/ranking/countries/',
+                teams:     '/api/v1/ranking/teams/'
+            };
+            var PAGE_SIZE = 20;
+            var state = {
+                scope: 'users', ordering: 'cp', period: 'all',
+                page: 1, total_pages: 1, my_rank: null
+            };
+
+            var thead = document.getElementById('rk-thead');
+            var tbody = document.getElementById('rk-tbody');
+            var pager = document.getElementById('rk-pager');
+            var info  = document.getElementById('rk-pager-info');
+            var jumpBtn = document.getElementById('rk-jump-me');
+            var header  = document.getElementById('rk-header');
+            var nudge   = document.getElementById('rk-country-nudge');
+
+            var ORDERING_LABELS = {
+                cp:    '{% trans "control points" %}',
+                tasks: '{% trans "tasks" %}',
+                time:  '{% trans "time" %}',
+                cp_per_user: '{% trans "CP per user" %}'
+            };
+            var T = {
+                position_label: '{% trans "Your position" %}',
+                country_label:  '{% trans "Your country" %}',
+                team_label:     '{% trans "Your team" %}',
+                global_ranking: '{% trans "Global ranking" %}',
+                page_of_total:  '{% trans "Page {p} of {t}" %}',
+                no_data:        '{% trans "Nothing to show yet" %}',
+                error:          '{% trans "Could not load ranking." %}',
+                anon:           '{% trans "Invisible user" %}',
+                col_user:       '{% trans "User" %}',
+                col_country:    '{% trans "Country" %}',
+                col_team:       '{% trans "Team" %}',
+                col_users:      '{% trans "Users" %}',
+                col_members:    '{% trans "Members" %}',
+                col_tasks:      '{% trans "Tasks" %}',
+                col_cp:         '{% trans "Control Points" %}',
+                col_time:       '{% trans "Time" %}',
+                col_cp_user:    '{% trans "CP / user" %}',
+                open_team:      '{% trans "open" %}'
+            };
+
+            // Column model per scope: key → sortable metric (null = static).
+            var COLS = {
+                users: [
+                    { key: null,    label: '#' },
+                    { key: null,    label: T.col_user },
+                    { key: null,    label: T.col_country },
+                    { key: 'tasks', label: T.col_tasks },
+                    { key: 'cp',    label: T.col_cp },
+                    { key: 'time',  label: T.col_time }
+                ],
+                countries: [
+                    { key: null,          label: '#' },
+                    { key: null,          label: T.col_country },
+                    { key: null,          label: T.col_users },
+                    { key: 'tasks',       label: T.col_tasks },
+                    { key: 'cp',          label: T.col_cp },
+                    { key: 'cp_per_user', label: T.col_cp_user }
+                ],
+                teams: [
+                    { key: null,    label: '#' },
+                    { key: null,    label: T.col_team },
+                    { key: null,    label: T.col_members },
+                    { key: 'tasks', label: T.col_tasks },
+                    { key: 'cp',    label: T.col_cp }
+                ]
+            };
+
+            function escapeHtml(s) {
+                return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+                    return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c];
+                });
+            }
+            function fmtInt(n) { return (n || 0).toLocaleString(); }
+            function dash() { return '<span style="color:var(--ink-3);">—</span>'; }
+            function bpos(n) {
+                return '<span class="badge rounded-pill" style="background-color:#7639ba;font-size:0.7rem;margin-left:5px;">#' + n + '</span>';
+            }
+            // Rolling periods only have per-day task counts; every other metric
+            // is unavailable and rendered as a dash.
+            function metricAvailable(key) {
+                return state.period === 'all' || key === 'tasks';
+            }
+
+            function flagImg(code, name) {
+                return '<img src="https://flagcdn.com/32x24/' + escapeHtml(code) + '.png" '
+                    + 'alt="' + escapeHtml(name) + '" style="width:24px;height:18px;margin-right:5px;">';
+            }
+
+            function userRowHtml(row, sortField) {
+                var avatar;
+                if (row.visible) {
+                    if (row.profile_pic_url) {
+                        avatar = '<span class="rk-row-avatar"><img src="' + escapeHtml(row.profile_pic_url) + '" alt=""></span>';
+                    } else {
+                        avatar = '<span class="rk-row-avatar"><i class="fa-solid fa-user-astronaut"></i></span>';
+                    }
+                } else {
+                    avatar = '<span class="rk-row-avatar is-invisible"><i class="fa-solid fa-eye-slash" style="font-size:12px;"></i></span>';
+                }
+                var nameCell = row.visible
+                    ? escapeHtml(row.username || '')
+                    : '<span style="color:var(--ink-2);">' + T.anon + '</span>';
+
+                var countryCell;
+                if (row.visible && row.country) {
+                    countryCell = '<div style="display:flex;align-items:center;">'
+                        + flagImg(row.country_code, row.country) + escapeHtml(row.country)
+                        + '</div>';
+                } else {
+                    countryCell = '<span style="color:var(--ink-3);">-</span>';
+                }
+
+                var tasksCell = fmtInt(row.tasks) + (sortField === 'tasks' ? bpos(row.rank) : '');
+                var cpCell   = metricAvailable('cp')
+                    ? fmtInt(row.control_points) + (sortField === 'cp' ? bpos(row.rank) : '')
+                    : dash();
+                var timeCell = metricAvailable('time')
+                    ? escapeHtml(row.time_pretty || '') + (sortField === 'time' ? bpos(row.rank) : '')
+                    : dash();
+
+                var rowClass = row.is_you ? ' class="highlight-row"' : '';
+                return '<tr' + rowClass + '>'
+                    + '<td>' + row.rank + '</td>'
+                    + '<td><div style="display:flex;align-items:center;">' + avatar + nameCell + '</div></td>'
+                    + '<td>' + countryCell + '</td>'
+                    + '<td>' + tasksCell + '</td>'
+                    + '<td>' + cpCell + '</td>'
+                    + '<td>' + timeCell + '</td>'
+                    + '</tr>';
+            }
+
+            function countryRowHtml(row, myCode) {
+                var isMine = myCode && row.country_code === myCode;
+                return '<tr' + (isMine ? ' class="highlight-row"' : '') + '>'
+                    + '<td>' + row.rank + '</td>'
+                    + '<td><div style="display:flex;align-items:center;">'
+                        + flagImg(row.country_code, row.country) + escapeHtml(row.country)
+                        + '</div></td>'
+                    + '<td>' + fmtInt(row.users) + '</td>'
+                    + '<td>' + fmtInt(row.tasks) + '</td>'
+                    + '<td>' + (row.control_points == null ? dash() : fmtInt(row.control_points)) + '</td>'
+                    + '<td>' + (row.cp_per_user == null ? dash() : row.cp_per_user.toLocaleString()) + '</td>'
+                    + '</tr>';
+            }
+
+            function teamRowHtml(row, mySlug) {
+                var isMine = mySlug && row.slug === mySlug;
+                var name = '<a href="/teams/' + encodeURIComponent(row.slug) + '/" '
+                    + 'style="color:inherit;text-decoration:underline;">' + escapeHtml(row.name) + '</a>'
+                    + (row.is_open ? ' <span style="color:var(--ink-3);font-size:0.75em;">(' + T.open_team + ')</span>' : '');
+                return '<tr' + (isMine ? ' class="highlight-row"' : '') + '>'
+                    + '<td>' + row.rank + '</td>'
+                    + '<td>' + name + '</td>'
+                    + '<td>' + fmtInt(row.members) + '</td>'
+                    + '<td>' + fmtInt(row.tasks) + '</td>'
+                    + '<td>' + (row.control_points == null ? dash() : fmtInt(row.control_points)) + '</td>'
+                    + '</tr>';
+            }
+
+            function renderHead() {
+                var cells = COLS[state.scope].map(function (c) {
+                    if (!c.key || !metricAvailable(c.key)) {
+                        return '<th>' + c.label + '</th>';
+                    }
+                    var cls = 'rk-sortable' + (c.key === state.ordering ? ' is-sort' : '');
+                    return '<th class="' + cls + '" data-key="' + c.key + '">' + c.label + '</th>';
+                });
+                thead.innerHTML = '<tr>' + cells.join('') + '</tr>';
+            }
+
+            function colCount() { return COLS[state.scope].length; }
+
+            function setHeader(rankLabel, rank) {
+                if (!header) return;
+                if (rank) {
+                    var lab = ORDERING_LABELS[state.ordering] || state.ordering;
+                    header.textContent = rankLabel + ': #' + rank + ' (' + lab + ')';
+                } else {
+                    header.textContent = T.global_ranking;
+                }
+            }
+
+            function showLoading() {
+                tbody.innerHTML = '<tr><td colspan="' + colCount() + '" style="text-align:center;padding:24px;color:var(--ink-2);">…</td></tr>';
+            }
+            function showEmpty() {
+                tbody.innerHTML = '<tr><td colspan="' + colCount() + '" style="text-align:center;padding:24px;color:var(--ink-2);">' + T.no_data + '</td></tr>';
+            }
+            function showError() {
+                tbody.innerHTML = '<tr><td colspan="' + colCount() + '" style="text-align:center;padding:24px;color:oklch(0.78 0.16 25);">' + T.error + '</td></tr>';
+            }
+
+            function renderPager() {
+                if (state.scope !== 'users') { pager.hidden = true; return; }
+                pager.hidden = state.total_pages <= 1;
+                info.textContent = T.page_of_total
+                    .replace('{p}', state.page)
+                    .replace('{t}', state.total_pages);
+                pager.querySelectorAll('.rk-pager-btn').forEach(function (b) {
+                    var act = b.dataset.act;
+                    b.disabled = (act === 'first' || act === 'prev')
+                        ? state.page <= 1
+                        : state.page >= state.total_pages;
+                });
+            }
+
+            function fetchPage(opts) {
+                opts = opts || {};
+                renderHead();
+                showLoading();
+                if (nudge) nudge.hidden = true;
+
+                var qs = '?ordering=' + encodeURIComponent(state.ordering)
+                       + '&period=' + encodeURIComponent(state.period);
+                if (state.scope === 'users') {
+                    qs += '&page=' + (opts.page || state.page) + '&page_size=' + PAGE_SIZE;
+                    if (opts.jumpToMe) qs += '&jump_to_me=1';
+                }
+
+                fetch(ENDPOINTS[state.scope] + qs, { credentials: 'same-origin' })
+                    .then(function (r) { return r.ok ? r.json() : Promise.reject(r); })
+                    .then(function (data) {
+                        // The server may coerce the ordering (e.g. rolling
+                        // periods only rank by tasks) — adopt what it used.
+                        state.ordering = data.ordering;
+                        renderHead();
+
+                        if (state.scope === 'users') {
+                            state.page = data.page;
+                            state.total_pages = data.total_pages;
+                            state.my_rank = data.my_rank;
+                            setHeader(T.position_label, data.my_rank);
+                            if (jumpBtn) jumpBtn.hidden = !data.my_rank;
+                            if (!data.rows.length) { showEmpty(); }
+                            else {
+                                tbody.innerHTML = data.rows.map(function (r) {
+                                    return userRowHtml(r, state.ordering);
+                                }).join('');
+                            }
+                        } else if (state.scope === 'countries') {
+                            setHeader(T.country_label, data.my_country_rank);
+                            if (jumpBtn) jumpBtn.hidden = true;
+                            if (nudge) nudge.hidden = !data.my_country_missing;
+                            if (!data.rows.length) { showEmpty(); }
+                            else {
+                                tbody.innerHTML = data.rows.map(function (r) {
+                                    return countryRowHtml(r, data.my_country_code);
+                                }).join('');
+                            }
+                        } else {
+                            setHeader(T.team_label, data.my_team_rank);
+                            if (jumpBtn) jumpBtn.hidden = true;
+                            if (!data.rows.length) { showEmpty(); }
+                            else {
+                                tbody.innerHTML = data.rows.map(function (r) {
+                                    return teamRowHtml(r, data.my_team_slug);
+                                }).join('');
+                            }
+                        }
+                        renderPager();
+                    })
+                    .catch(function () { showError(); });
+            }
+
+            // Scope and period segmented controls.
+            function segHandler(container, attr, onChange) {
+                container.querySelectorAll('.rk-seg-btn').forEach(function (b) {
+                    b.addEventListener('click', function () {
+                        if (b.classList.contains('is-on')) return;
+                        container.querySelectorAll('.rk-seg-btn').forEach(function (o) {
+                            o.classList.toggle('is-on', o === b);
+                        });
+                        onChange(b.dataset[attr]);
+                    });
+                });
+            }
+            segHandler(document.getElementById('rk-scope'), 'scope', function (scope) {
+                state.scope = scope;
+                state.page = 1;
+                state.ordering = (state.period === 'all') ? 'cp' : 'tasks';
+                fetchPage();
+            });
+            segHandler(document.getElementById('rk-period'), 'period', function (period) {
+                state.period = period;
+                state.page = 1;
+                state.ordering = (period === 'all') ? 'cp' : 'tasks';
+                fetchPage();
+            });
+
+            // Column header click → switch ordering and reload page 1.
+            thead.addEventListener('click', function (e) {
+                var th = e.target.closest('th.rk-sortable');
+                if (!th || th.dataset.key === state.ordering) return;
+                state.ordering = th.dataset.key;
+                state.page = 1;
+                fetchPage();
+            });
+
+            // Pager buttons (users scope only).
+            pager.querySelectorAll('.rk-pager-btn').forEach(function (b) {
+                b.addEventListener('click', function () {
+                    var act = b.dataset.act;
+                    var p = state.page;
+                    if (act === 'first') p = 1;
+                    else if (act === 'prev') p = Math.max(1, p - 1);
+                    else if (act === 'next') p = Math.min(state.total_pages, p + 1);
+                    else if (act === 'last') p = state.total_pages;
+                    if (p !== state.page) fetchPage({ page: p });
+                });
+            });
+            if (jumpBtn) jumpBtn.addEventListener('click', function () {
+                fetchPage({ jumpToMe: true });
+            });
+
+            // Initial load: jump to me if authenticated.
+            fetchPage({ jumpToMe: {% if user.is_authenticated %}true{% else %}false{% endif %} });
+        })();
+        </script>
     </div>
     
     {% include '_footer.html' %}
 
+    {{ visited_places|json_script:"visited-places-data" }}
     <script>
     (function() {
-        const places = {{ visited_places|safe }};
+        const places = JSON.parse(document.getElementById('visited-places-data').textContent);
 
         const visitedMap = L.map('visited-map', {zoomControl: true, scrollWheelZoom: false}).setView([20, 0], 2);
 
@@ -1108,6 +1572,24 @@
                                 </label>
                                 {% if profile_form.visible.help_text %}
                                 <small class="ep-help">{{ profile_form.visible.help_text }}</small>
+                                {% endif %}
+                            </div>
+                            <div class="ep-field ep-field--full">
+                                <label class="ep-checkbox-row">
+                                    {{ profile_form.newsletter_subscribed }}
+                                    <span>{{ profile_form.newsletter_subscribed.label }}</span>
+                                </label>
+                                {% if profile_form.newsletter_subscribed.help_text %}
+                                <small class="ep-help">{{ profile_form.newsletter_subscribed.help_text }}</small>
+                                {% endif %}
+                                {% if profile.newsletter_subscribed and profile.newsletter_subscribed_at %}
+                                    <small class="ep-help">
+                                        {% blocktrans with d=profile.newsletter_subscribed_at|date:"Y-m-d" %}Subscribed on {{ d }}.{% endblocktrans %}
+                                    </small>
+                                {% elif profile.newsletter_unsubscribed_at %}
+                                    <small class="ep-help">
+                                        {% blocktrans with d=profile.newsletter_unsubscribed_at|date:"Y-m-d" %}You unsubscribed on {{ d }}.{% endblocktrans %}
+                                    </small>
                                 {% endif %}
                             </div>
                             <div class="ep-field ep-field--full">

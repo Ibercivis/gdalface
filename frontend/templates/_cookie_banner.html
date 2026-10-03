@@ -1,0 +1,367 @@
+{% load i18n %}
+{% comment %}
+Cookie consent banner. Three categories:
+  - Strictly necessary (always on, no consent)
+  - Functional         (lan_consent.functional)
+  - Analytics          (lan_consent.analytics)
+
+Persists in `lan_consent` cookie (1y) for anonymous users; for authenticated
+users we additionally POST to /api/v1/cookies-consent/ so the choice gets
+written to UserProfile (cookies_*_consent + cookies_consent_at).
+
+Other JS modules can read `window.LAN.cookieConsent` to decide whether
+to load analytics/etc.
+{% endcomment %}
+
+<style>
+.lan-cookie {
+    position: fixed; left: 50%; bottom: 24px;
+    transform: translateX(-50%);
+    z-index: 100050;
+    width: calc(100% - 32px);
+    max-width: 520px;
+    background: oklch(0.16 0.045 290 / 0.98);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 22px 24px 20px;
+    color: var(--ink-1);
+    font-family: var(--font-ui); font-size: 13px;
+    line-height: 1.6;
+    box-shadow: 0 18px 50px oklch(0 0 0 / 0.55), 0 0 0 1px oklch(0 0 0 / 0.4);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
+.lan-cookie__head {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 12px;
+}
+.lan-cookie__icon {
+    flex-shrink: 0;
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: oklch(0.95 0.13 113 / 0.18);
+    color: var(--accent);
+    display: inline-flex; align-items: center; justify-content: center;
+}
+.lan-cookie__icon svg { width: 20px; height: 20px; }
+.lan-cookie__title {
+    font-size: 15px; font-weight: 700; color: var(--ink-0);
+    margin: 0; line-height: 1.3;
+}
+.lan-cookie__lede {
+    margin: 0 0 18px; color: var(--ink-1);
+}
+.lan-cookie__lede a { color: var(--accent); text-decoration: underline; }
+.lan-cookie__lede a:hover { color: var(--ink-0); }
+
+.lan-cookie__actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+.lan-cookie__actions[data-stage="initial"] {
+    grid-template-columns: 1fr 1fr 1.4fr;
+}
+.lan-cookie__btn {
+    height: 38px !important;
+    padding: 0 14px !important;
+    border-radius: 9px !important;
+    font-size: 12.5px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    border: 1px solid var(--line) !important;
+    background: var(--bg-3) !important;
+    color: var(--ink-0) !important;
+    transition: filter 120ms, background 120ms, border-color 120ms !important;
+    box-shadow: none !important;
+    transform: none !important;
+    line-height: 1 !important;
+}
+.lan-cookie__btn:hover {
+    background: var(--bg-4) !important;
+    border-color: var(--accent) !important;
+}
+.lan-cookie__btn--primary {
+    background: var(--accent) !important;
+    color: var(--accent-ink) !important;
+    border-color: transparent !important;
+}
+.lan-cookie__btn--primary:hover {
+    filter: brightness(1.06) !important;
+    background: var(--accent) !important;
+}
+
+.lan-cookie__panel {
+    margin-top: 4px;
+}
+.lan-cookie__row {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px 14px;
+    background: oklch(0.12 0.04 290 / 0.6);
+    border: 1px solid var(--line-soft);
+    border-radius: 10px;
+    margin-bottom: 8px;
+}
+.lan-cookie__row-text { flex: 1; min-width: 0; }
+.lan-cookie__row-title {
+    font-size: 13px; font-weight: 600; color: var(--ink-0);
+    margin: 0 0 2px;
+}
+.lan-cookie__row-desc {
+    font-size: 12px; color: var(--ink-1); margin: 0; line-height: 1.5;
+}
+.lan-cookie__row-locked {
+    font-size: 11px; color: var(--ink-3);
+    margin-left: 8px;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    flex-shrink: 0;
+    align-self: center;
+}
+
+/* Toggle switch */
+.lan-toggle {
+    position: relative;
+    display: inline-block;
+    width: 38px; height: 22px;
+    flex-shrink: 0;
+    align-self: center;
+}
+.lan-toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+.lan-toggle__slider {
+    position: absolute; inset: 0;
+    background: var(--bg-4);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 160ms;
+}
+.lan-toggle__slider::before {
+    content: '';
+    position: absolute;
+    left: 2px; top: 2px;
+    width: 16px; height: 16px;
+    background: var(--ink-1);
+    border-radius: 50%;
+    transition: transform 160ms, background 160ms;
+}
+.lan-toggle input:checked + .lan-toggle__slider {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+.lan-toggle input:checked + .lan-toggle__slider::before {
+    background: var(--accent-ink);
+    transform: translateX(16px);
+}
+.lan-toggle input:focus-visible + .lan-toggle__slider {
+    box-shadow: 0 0 0 3px oklch(0.95 0.13 113 / 0.3);
+}
+
+/* Floating "manage cookies" handle once banner has been dismissed. */
+.lan-cookie-fab {
+    position: fixed; right: 14px; bottom: 14px;
+    z-index: 100040;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: oklch(0.18 0.05 290 / 0.92) !important;
+    border: 1px solid var(--line) !important;
+    color: var(--ink-2) !important;
+    padding: 0 !important;
+    display: none;
+    align-items: center; justify-content: center;
+    cursor: pointer !important;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 14px oklch(0 0 0 / 0.4);
+    transition: color 120ms, border-color 120ms;
+}
+.lan-cookie-fab:hover { color: var(--accent) !important; border-color: var(--accent) !important; }
+.lan-cookie-fab svg { width: 18px; height: 18px; }
+
+@media (max-width: 540px) {
+    .lan-cookie {
+        left: 8px; right: 8px; bottom: 8px;
+        width: auto; transform: none;
+        padding: 18px 18px 16px;
+    }
+    .lan-cookie__actions[data-stage="initial"] {
+        grid-template-columns: 1fr 1fr; grid-auto-rows: minmax(38px, auto);
+    }
+    .lan-cookie__actions[data-stage="initial"] .lan-cookie__btn--primary {
+        grid-column: span 2;
+    }
+}
+</style>
+
+<div id="lan-cookie" class="lan-cookie" role="dialog" aria-labelledby="lan-cookie-title" hidden>
+    <div class="lan-cookie__head">
+        <div class="lan-cookie__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3a9 9 0 1 0 9 9 4 4 0 0 1-5-5 4 4 0 0 1-4-4z"/>
+                <circle cx="9" cy="10" r="0.7" fill="currentColor"/>
+                <circle cx="15" cy="14" r="0.7" fill="currentColor"/>
+                <circle cx="11" cy="16" r="0.7" fill="currentColor"/>
+            </svg>
+        </div>
+        <h3 class="lan-cookie__title" id="lan-cookie-title">{% trans "Your cookie preferences" %}</h3>
+    </div>
+
+    <p class="lan-cookie__lede">
+        {% blocktrans %}We use strictly-necessary cookies to keep the site working. With your consent we may also store functional preferences (language, banner state) and, in the future, anonymous analytics. Read the <a href="/cookies/">cookies policy</a>.{% endblocktrans %}
+    </p>
+
+    <div class="lan-cookie__actions" data-stage="initial">
+        <button type="button" class="lan-cookie__btn" data-action="essentials">
+            {% trans "Essentials only" %}
+        </button>
+        <button type="button" class="lan-cookie__btn" data-action="customise">
+            {% trans "Customise" %}
+        </button>
+        <button type="button" class="lan-cookie__btn lan-cookie__btn--primary" data-action="accept-all">
+            {% trans "Accept all" %}
+        </button>
+    </div>
+
+    <div class="lan-cookie__panel" data-stage="customise" hidden>
+        <div class="lan-cookie__row">
+            <div class="lan-cookie__row-text">
+                <p class="lan-cookie__row-title">{% trans "Strictly necessary" %}</p>
+                <p class="lan-cookie__row-desc">{% trans "Required for sign-in, security and basic functionality. Always on." %}</p>
+            </div>
+            <span class="lan-cookie__row-locked">{% trans "Always on" %}</span>
+        </div>
+
+        <div class="lan-cookie__row">
+            <div class="lan-cookie__row-text">
+                <p class="lan-cookie__row-title">{% trans "Functional" %}</p>
+                <p class="lan-cookie__row-desc">{% trans "Remembers your language and your cookie banner choice." %}</p>
+            </div>
+            <label class="lan-toggle">
+                <input type="checkbox" id="lan-cookie-functional">
+                <span class="lan-toggle__slider"></span>
+            </label>
+        </div>
+
+        <div class="lan-cookie__row">
+            <div class="lan-cookie__row-text">
+                <p class="lan-cookie__row-title">{% trans "Analytics" %}</p>
+                <p class="lan-cookie__row-desc">{% trans "Aggregated, anonymous statistics. Currently disabled." %}</p>
+            </div>
+            <label class="lan-toggle">
+                <input type="checkbox" id="lan-cookie-analytics">
+                <span class="lan-toggle__slider"></span>
+            </label>
+        </div>
+
+        <div class="lan-cookie__actions" style="margin-top:14px; grid-template-columns:1fr;">
+            <button type="button" class="lan-cookie__btn lan-cookie__btn--primary" data-action="save">
+                {% trans "Save my choices" %}
+            </button>
+        </div>
+    </div>
+</div>
+
+<button id="lan-cookie-fab" class="lan-cookie-fab" type="button" aria-label="{% trans 'Cookie preferences' %}">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3a9 9 0 1 0 9 9 4 4 0 0 1-5-5 4 4 0 0 1-4-4z"/>
+        <circle cx="9" cy="10" r="0.7" fill="currentColor"/>
+        <circle cx="15" cy="14" r="0.7" fill="currentColor"/>
+        <circle cx="11" cy="16" r="0.7" fill="currentColor"/>
+    </svg>
+</button>
+
+<script>
+(function () {
+    'use strict';
+    var COOKIE_NAME = 'lan_consent';
+    var COOKIE_TTL_DAYS = 365;
+
+    function getCookie(name) {
+        var m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+        return m ? decodeURIComponent(m[1]) : '';
+    }
+    function setCookie(name, value, days) {
+        var d = new Date(); d.setTime(d.getTime() + days * 86400000);
+        document.cookie = name + '=' + encodeURIComponent(value)
+            + ';expires=' + d.toUTCString() + ';path=/;SameSite=Lax';
+    }
+    function getCsrf() { return getCookie('csrftoken'); }
+
+    function readConsent() {
+        var raw = getCookie(COOKIE_NAME);
+        if (!raw) return null;
+        try { return JSON.parse(raw); } catch (e) { return null; }
+    }
+    function writeConsent(obj) {
+        obj.ts = new Date().toISOString();
+        setCookie(COOKIE_NAME, JSON.stringify(obj), COOKIE_TTL_DAYS);
+        window.LAN = window.LAN || {};
+        window.LAN.cookieConsent = obj;
+        try {
+            fetch('/api/v1/cookies-consent/', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrf(),
+                },
+                body: JSON.stringify(obj),
+            }).catch(function(){});
+        } catch (e) {}
+    }
+
+    var banner = document.getElementById('lan-cookie');
+    var fab = document.getElementById('lan-cookie-fab');
+    if (!banner || !fab) return;
+
+    var initialActions = banner.querySelector('[data-stage="initial"]');
+    var customisePanel = banner.querySelector('[data-stage="customise"]');
+    var fnInput = document.getElementById('lan-cookie-functional');
+    var anInput = document.getElementById('lan-cookie-analytics');
+
+    function show() { banner.hidden = false; fab.style.display = 'none'; }
+    function hide() { banner.hidden = true;  fab.style.display = 'inline-flex'; }
+
+    function applyAndClose(consent) {
+        writeConsent(consent);
+        hide();
+    }
+
+    initialActions.addEventListener('click', function (e) {
+        var act = e.target.dataset.action;
+        if (act === 'essentials') {
+            applyAndClose({ functional: false, analytics: false });
+        } else if (act === 'accept-all') {
+            applyAndClose({ functional: true, analytics: true });
+        } else if (act === 'customise') {
+            initialActions.hidden = true;
+            customisePanel.hidden = false;
+        }
+    });
+
+    customisePanel.addEventListener('click', function (e) {
+        if (e.target.dataset.action === 'save') {
+            applyAndClose({
+                functional: !!(fnInput && fnInput.checked),
+                analytics:  !!(anInput && anInput.checked),
+            });
+        }
+    });
+
+    fab.addEventListener('click', function () {
+        var c = readConsent() || {};
+        if (fnInput) fnInput.checked = !!c.functional;
+        if (anInput) anInput.checked = !!c.analytics;
+        initialActions.hidden = false;
+        customisePanel.hidden = true;
+        show();
+    });
+
+    var existing = readConsent();
+    window.LAN = window.LAN || {};
+    window.LAN.cookieConsent = existing;
+    if (!existing) {
+        setTimeout(show, 600);
+    } else {
+        fab.style.display = 'inline-flex';
+    }
+})();
+</script>

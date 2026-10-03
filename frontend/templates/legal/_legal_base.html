@@ -1,0 +1,81 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lost At Night | {% block legal_title %}{% endblock %}</title>
+    <link rel="icon" href="{% static 'img/logo-lost.png' %}" type="image/png">
+    <link href="{% static 'css/main.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'css/design-system.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
+    <style>
+        body {
+            background: oklch(0.10 0.02 285) !important;
+            background-image: none !important;
+            color: var(--ink-1);
+            font-family: var(--font-ui);
+        }
+        .legal-wrap {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 48px 24px 80px;
+            line-height: 1.65;
+        }
+        .legal-wrap h1 {
+            font-size: 32px; font-weight: 700; color: var(--ink-0);
+            margin: 0 0 8px; letter-spacing: -0.01em;
+        }
+        .legal-meta {
+            color: var(--ink-2); font-size: 13px; margin-bottom: 32px;
+            padding-bottom: 16px; border-bottom: 1px solid var(--line-soft);
+        }
+        .legal-wrap h2 {
+            font-size: 20px; font-weight: 600; color: var(--ink-0);
+            margin: 32px 0 12px;
+        }
+        .legal-wrap h3 {
+            font-size: 16px; font-weight: 600; color: var(--ink-1);
+            margin: 24px 0 8px;
+        }
+        .legal-wrap p,
+        .legal-wrap ul,
+        .legal-wrap ol { color: var(--ink-1); margin: 0 0 14px; }
+        .legal-wrap li { margin-bottom: 6px; }
+        .legal-wrap a { color: var(--accent); text-decoration: underline; }
+        .legal-wrap a:hover { color: var(--ink-0); }
+        .legal-wrap code {
+            background: var(--bg-2); padding: 2px 6px; border-radius: 4px;
+            font-family: var(--font-mono); font-size: 12px; color: var(--ink-0);
+        }
+        .legal-wrap table {
+            width: 100%; border-collapse: collapse; margin: 14px 0 24px;
+            font-size: 13px;
+        }
+        .legal-wrap th, .legal-wrap td {
+            border: 1px solid var(--line-soft); padding: 8px 12px; text-align: left;
+        }
+        .legal-wrap th { background: var(--bg-2); color: var(--ink-0); font-weight: 600; }
+        .legal-back {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 13px; color: var(--ink-2); text-decoration: none;
+            margin-bottom: 24px;
+        }
+        .legal-back:hover { color: var(--accent); }
+    </style>
+</head>
+<body>
+    {% include '_topbar.html' %}
+    <div class="legal-wrap">
+        <a class="legal-back" href="/">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg>
+            {% trans "Back to home" %}
+        </a>
+        {% block legal_content %}{% endblock %}
+    </div>
+    {% include '_footer.html' %}
+</body>
+</html>

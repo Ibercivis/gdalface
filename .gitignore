@@ -171,3 +171,6 @@ media/
 .env
 staticfiles/
 frontend/templates/_google_analytics.html
+
+# Local screenshots / handoff material
+Capturas Web-*.zip

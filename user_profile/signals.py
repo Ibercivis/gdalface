@@ -25,16 +25,11 @@ def create_user_profile(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     """
-    Signal to save the UserProfile instance when the User is saved.
-    
-    Args:
-        sender: The model class that sent the signal.
-        instance: The actual instance being saved.
-        **kwargs: Additional keyword arguments.
+    Ensure a UserProfile exists whenever a User is saved.
+
+    Deliberately does NOT re-save instance.userprofile: that cached copy can
+    be stale, and re-saving it on every User.save() (e.g. the last_login
+    update at login) silently overwrites counters/fields written by other
+    processes in the meantime.
     """
-    # Aseguramos que el perfil existe antes de guardarlo
-    try:
-        instance.userprofile.save()
-    except UserProfile.DoesNotExist:
-        # Si el perfil no existe, lo creamos
-        UserProfile.objects.create(user=instance)
+    UserProfile.objects.get_or_create(user=instance)

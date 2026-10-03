@@ -1,0 +1,32 @@
+{% extends 'legal/_legal_base.html' %}
+{% load i18n %}
+
+{% block legal_title %}{% trans "Legal notice" %}{% endblock %}
+
+{% block legal_content %}
+<h1>{% trans "Legal notice" %}</h1>
+<p class="legal-meta">{% trans "Required information under Spanish Law 34/2002 on services of the information society (LSSI-CE)." %}</p>
+
+<h2>{% trans "Operator" %}</h2>
+<ul>
+    <li><strong>{% trans "Name:" %}</strong> Fundación Ibercivis</li>
+    <li><strong>{% trans "Address:" %}</strong> C/ Mariano Esquillor s/n, 50018 Zaragoza, {% trans "Spain" %}</li>
+    <li><strong>{% trans "Email:" %}</strong> <a href="mailto:info@ibercivis.es">info@ibercivis.es</a></li>
+    <li><strong>{% trans "Privacy queries:" %}</strong> <a href="mailto:ethics@ibercivis.es">ethics@ibercivis.es</a></li>
+</ul>
+
+<h2>{% trans "Scientific partners" %}</h2>
+<p>{% trans "Lost at Night is developed by Fundación Ibercivis within the framework of the Plan-B project. The principal investigator is Alejandro Sánchez de Miguel (CSIC)." %}</p>
+
+<h2>{% trans "Funding" %}</h2>
+<p>{% trans "This project has received funding from the European Union under the Horizon Europe Programme, Grant Agreement No. 101135308 (PLAN-B). Research and Innovation Action | HORIZON-CL6-2023-BIODIV-01." %}</p>
+
+<h2>{% trans "Source code" %}</h2>
+<p>{% blocktrans %}The Lost at Night software is open source. Source repository: <a href="https://github.com/Ibercivis/gdalface" target="_blank" rel="noopener">github.com/Ibercivis/gdalface</a>.{% endblocktrans %}</p>
+
+<h2>{% trans "Image rights" %}</h2>
+<p>{% trans "Astronaut photography of Earth used on this platform is provided by NASA and is in the public domain (Astronaut Photography of Earth Database — eol.jsc.nasa.gov)." %}</p>
+
+<h2>{% trans "Applicable law and jurisdiction" %}</h2>
+<p>{% trans "Use of this site is governed by Spanish law. Any disputes that cannot be amicably resolved shall be submitted to the courts of Zaragoza, Spain, without prejudice to mandatory consumer protection rules." %}</p>
+{% endblock %}

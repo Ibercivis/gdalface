@@ -1,0 +1,673 @@
+{% extends 'legal/_legal_base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block legal_title %}Manual{% endblock %}
+
+{% block legal_content %}
+<style>
+    /* Manual-specific tweaks: wider content, sticky TOC, inline image
+       placeholders that visually distinguish themselves from prose. */
+    .legal-wrap { max-width: 920px; }
+    .manual-toc {
+        margin: 0 0 32px;
+        padding: 16px 20px;
+        background: var(--bg-2);
+        border: 1px solid var(--line-soft);
+        border-radius: 10px;
+    }
+    .manual-toc h2 {
+        font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em;
+        color: var(--ink-3); margin: 0 0 10px; font-weight: 600;
+    }
+    .manual-toc ol { columns: 2; column-gap: 28px; padding-left: 20px; margin: 0; }
+    .manual-toc li { margin-bottom: 4px; break-inside: avoid; }
+    .manual-toc a { color: var(--ink-1); }
+    .manual-toc a:hover { color: var(--accent); }
+    @media (max-width: 600px) { .manual-toc ol { columns: 1; } }
+
+    .manual-img {
+        display: block;
+        margin: 14px 0 18px;
+        padding: 32px 16px;
+        background: var(--bg-2);
+        border: 1px dashed var(--line);
+        border-radius: 8px;
+        font-size: 12px;
+        color: var(--ink-3);
+        text-align: center;
+        font-family: var(--font-mono);
+    }
+    .manual-img b { color: var(--ink-1); font-weight: 500; display: block; margin-bottom: 4px; }
+
+    .manual-fig {
+        margin: 14px 0 18px;
+        padding: 0;
+        background: var(--bg-2);
+        border: 1px solid var(--line-soft);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .manual-fig img {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+    .manual-fig figcaption {
+        padding: 8px 12px;
+        font-size: 12px;
+        color: var(--ink-3);
+        border-top: 1px solid var(--line-soft);
+        background: var(--bg-2);
+    }
+
+    /* Inline SVG flow diagram (sec 2.1). Uses currentColor + design-system
+       variables so it inherits the rest of the page. */
+    .manual-flow { padding: 28px 16px; }
+    .manual-flow svg { width: 100%; height: auto; display: block; }
+    .manual-flow .ff-box { fill: var(--bg-1); stroke: var(--line-soft); stroke-width: 1; }
+    .manual-flow .ff-num {
+        fill: var(--accent);
+        font-family: var(--font-mono);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+    }
+    .manual-flow .ff-icon {
+        stroke: var(--ink-1);
+        fill: none;
+        stroke-width: 1.6;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+    .manual-flow .ff-icon-fill { fill: var(--ink-1); }
+    .manual-flow .ff-label {
+        fill: var(--ink-1);
+        font-family: var(--font-ui);
+        font-size: 13px;
+        font-weight: 500;
+        text-anchor: middle;
+    }
+    .manual-flow .ff-conn { stroke: var(--line); fill: none; stroke-width: 1.5; }
+    .manual-flow .ff-conn-head { fill: var(--line); }
+    .manual-flow .ff-cp-dot {
+        fill: var(--accent);
+        stroke: var(--bg-1);
+        stroke-width: 1.5;
+    }
+    .manual-flow .ff-loop {
+        stroke: var(--accent);
+        fill: none;
+        stroke-width: 1.5;
+        stroke-dasharray: 5 4;
+        opacity: 0.9;
+    }
+    .manual-flow .ff-loop-head { fill: var(--accent); }
+    .manual-flow .ff-loop-badge {
+        fill: var(--bg-1);
+        stroke: var(--accent);
+        stroke-width: 1;
+    }
+    .manual-flow .ff-loop-label {
+        fill: var(--accent);
+        font-family: var(--font-mono);
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-anchor: middle;
+    }
+
+    .manual-callout {
+        margin: 16px 0;
+        padding: 12px 16px;
+        background: oklch(0.95 0.13 113 / 0.08);
+        border-left: 3px solid var(--accent);
+        border-radius: 6px;
+        font-size: 13px;
+        color: var(--ink-1);
+    }
+    .manual-callout--warn {
+        background: oklch(0.4 0.18 25 / 0.08);
+        border-left-color: oklch(0.65 0.18 25);
+    }
+
+    .legal-wrap h2 { scroll-margin-top: 80px; }
+    .legal-wrap h2 a.anchor {
+        color: var(--ink-3); text-decoration: none; font-weight: 400;
+        margin-left: 8px; opacity: 0; transition: opacity 120ms;
+    }
+    .legal-wrap h2:hover a.anchor { opacity: 1; }
+
+    .manual-kv {
+        display: grid;
+        grid-template-columns: 180px 1fr;
+        gap: 6px 16px;
+        font-size: 13px;
+        margin: 12px 0;
+    }
+    .manual-kv dt { color: var(--ink-2); font-family: var(--font-mono); }
+    .manual-kv dd { margin: 0; color: var(--ink-1); }
+</style>
+
+<h1>Manual</h1>
+<p class="legal-meta">
+    Everything you need to know to participate in <b>Lost at Night</b> — the
+    flow, the controls, the science, the privacy stance, the FAQs.
+</p>
+
+<nav class="manual-toc" aria-label="Table of contents">
+    <h2>Contents</h2>
+    <ol>
+        <li><a href="#what">What is Lost at Night?</a></li>
+        <li><a href="#participating">Participating</a></li>
+        <li><a href="#batches">Batches</a></li>
+        <li><a href="#challenges">Challenges</a></li>
+        <li><a href="#stats">Personal stats &amp; ranking</a></li>
+        <li><a href="#anti-cheat">Anti-cheat</a></li>
+        <li><a href="#privacy">Privacy &amp; what we store</a></li>
+        <li><a href="#science">The science behind it</a></li>
+        <li><a href="#account">Account &amp; data</a></li>
+        <li><a href="#open-source">Open source / API</a></li>
+        <li><a href="#funding">Funding &amp; team</a></li>
+        <li><a href="#faq">FAQ &amp; troubleshooting</a></li>
+    </ol>
+</nav>
+
+<h2 id="what">1. What is Lost at Night? <a class="anchor" href="#what">#</a></h2>
+<p>
+    Lost at Night is a citizen-science platform that crowd-sources the
+    georeferencing of astronaut photographs of Earth taken at night from
+    the International Space Station (ISS). Each photo arrives with rich
+    metadata (camera, focal length, expedition number, the spacecraft's
+    nadir point) but no precise ground footprint. Volunteers like you
+    align it to a known map, producing a dataset that scientists can use
+    to study artificial light at night — its growth, spectral
+    composition and ecological impact.
+</p>
+
+<figure class="manual-fig">
+    <img src="{% static 'img/manual/manual-hero.webp' %}" alt="Composite — ISS night photo on the left, georeferenced overlay on a world map on the right." width="1760" height="990" loading="lazy">
+</figure>
+
+<p>
+    The raw image archive comes from NASA's <i>Astronaut Photography of
+    Earth Database</i> (eol.jsc.nasa.gov). Once a photo has been
+    georeferenced enough times by independent contributors, the resulting
+    polygons feed back into research — most notably the work of the
+    Plan-B project on global light pollution.
+</p>
+
+<h2 id="participating">2. Participating <a class="anchor" href="#participating">#</a></h2>
+
+<h3>2.1 The 5-step flow</h3>
+<p>
+    Each task asks you to align a single ISS photograph to a real-world
+    map by placing matching <b>control points</b> (CPs).
+</p>
+<ol>
+    <li>Click <b>Get task</b> — you receive a random pending image.</li>
+    <li>Find a recognisable feature (coastline, river, big lit cluster) and click on it <b>on the canvas</b>.</li>
+    <li>Click the <b>same feature on the map</b>. The pair is now a control point.</li>
+    <li>Press <b>Try</b> to preview the warp.</li>
+    <li><b>Repeat steps 2–4</b> until you have at least three pairs (seven recommended) and the warp looks right; then press <b>Submit</b>.</li>
+</ol>
+
+<figure class="manual-fig manual-flow">
+    <svg viewBox="0 0 1000 250" xmlns="http://www.w3.org/2000/svg" role="img"
+         aria-label="Five-step flow: Get task, CP on image, CP on map, Try, Submit. Steps 2–4 loop until the warp is right.">
+
+        <!-- 01 — Get task (random task = dice) -->
+        <g transform="translate(10, 20)">
+            <rect class="ff-box" width="160" height="160" rx="10"/>
+            <text class="ff-num" x="14" y="24">01</text>
+            <g transform="translate(64, 56)">
+                <rect class="ff-icon" x="0" y="0" width="32" height="32" rx="5"/>
+                <circle class="ff-icon-fill" cx="8"  cy="8"  r="1.8"/>
+                <circle class="ff-icon-fill" cx="24" cy="8"  r="1.8"/>
+                <circle class="ff-icon-fill" cx="16" cy="16" r="1.8"/>
+                <circle class="ff-icon-fill" cx="8"  cy="24" r="1.8"/>
+                <circle class="ff-icon-fill" cx="24" cy="24" r="1.8"/>
+            </g>
+            <text class="ff-label" x="80" y="138">Get task</text>
+        </g>
+
+        <line class="ff-conn" x1="172" y1="100" x2="208" y2="100"/>
+        <polygon class="ff-conn-head" points="208,96 215,100 208,104"/>
+
+        <!-- 02 — CP on image (photo + accent dot) -->
+        <g transform="translate(215, 20)">
+            <rect class="ff-box" width="160" height="160" rx="10"/>
+            <text class="ff-num" x="14" y="24">02</text>
+            <g transform="translate(64, 56)">
+                <rect class="ff-icon" x="0" y="4" width="32" height="24" rx="3"/>
+                <path class="ff-icon" d="M0 22 L9 13 L17 20 L25 12 L32 18"/>
+                <circle class="ff-cp-dot" cx="20" cy="12" r="3.5"/>
+            </g>
+            <text class="ff-label" x="80" y="138">CP on image</text>
+        </g>
+
+        <line class="ff-conn" x1="377" y1="100" x2="413" y2="100"/>
+        <polygon class="ff-conn-head" points="413,96 420,100 413,104"/>
+
+        <!-- 03 — CP on map (graticule + accent dot) -->
+        <g transform="translate(420, 20)">
+            <rect class="ff-box" width="160" height="160" rx="10"/>
+            <text class="ff-num" x="14" y="24">03</text>
+            <g transform="translate(64, 56)">
+                <rect class="ff-icon" x="0" y="4" width="32" height="24" rx="3"/>
+                <path class="ff-icon" d="M11 4 L11 28 M21 4 L21 28 M0 12 L32 12 M0 22 L32 22"/>
+                <circle class="ff-cp-dot" cx="16" cy="16" r="3.5"/>
+            </g>
+            <text class="ff-label" x="80" y="138">CP on map</text>
+        </g>
+
+        <line class="ff-conn" x1="582" y1="100" x2="618" y2="100"/>
+        <polygon class="ff-conn-head" points="618,96 625,100 618,104"/>
+
+        <!-- 04 — Try (play) -->
+        <g transform="translate(625, 20)">
+            <rect class="ff-box" width="160" height="160" rx="10"/>
+            <text class="ff-num" x="14" y="24">04</text>
+            <g transform="translate(64, 56)">
+                <circle class="ff-icon" cx="16" cy="16" r="14"/>
+                <polygon class="ff-icon-fill" points="13,9 13,23 24,16"/>
+            </g>
+            <text class="ff-label" x="80" y="138">Try</text>
+        </g>
+
+        <line class="ff-conn" x1="787" y1="100" x2="823" y2="100"/>
+        <polygon class="ff-conn-head" points="823,96 830,100 823,104"/>
+
+        <!-- 05 — Submit (check-circle) -->
+        <g transform="translate(830, 20)">
+            <rect class="ff-box" width="160" height="160" rx="10"/>
+            <text class="ff-num" x="14" y="24">05</text>
+            <g transform="translate(64, 56)">
+                <circle class="ff-icon" cx="16" cy="16" r="14"/>
+                <path class="ff-icon" d="M9 16 L14 21 L23 11"/>
+            </g>
+            <text class="ff-label" x="80" y="138">Submit</text>
+        </g>
+
+        <!-- Loop 4 → 2: steps 2–4 are iterative until the warp looks right -->
+        <path class="ff-loop" d="M 705 180 C 705 235, 295 235, 295 188"/>
+        <polygon class="ff-loop-head" points="290,188 295,180 300,188"/>
+        <rect class="ff-loop-badge" x="473" y="216" width="54" height="16" rx="8"/>
+        <text class="ff-loop-label" x="500" y="227">REPEAT</text>
+    </svg>
+</figure>
+
+<h3>2.2 Canvas controls (left side)</h3>
+<dl class="manual-kv">
+    <dt>Drag</dt>             <dd>Pan the image inside the canvas.</dd>
+    <dt>Wheel / pinch</dt>    <dd>Zoom in / out (focus follows the cursor).</dd>
+    <dt>Alt + drag</dt>       <dd>Rotate the image. Useful for photos taken at extreme tilt.</dd>
+    <dt>Click (single)</dt>   <dd>Drop a control point at the cursor.</dd>
+    <dt>Trash icon</dt>       <dd>In the right-hand point list, removes that CP from canvas + map.</dd>
+    <dt>Hover a point</dt>    <dd>Tooltip with px/py and the linked lat/lon if already paired.</dd>
+</dl>
+
+<figure class="manual-fig">
+    <img src="{% static 'img/manual/manual-canvas-actions.webp' %}" alt="Three side-by-side captures of the canvas — pan, rotate and dropping a control point." width="1760" height="990" loading="lazy">
+</figure>
+
+<h3>2.3 Map controls (right side)</h3>
+<dl class="manual-kv">
+    <dt>Drag / wheel</dt>     <dd>Standard Leaflet pan + zoom.</dd>
+    <dt>Layer switcher</dt>   <dd>OSM, Satellite (Google), VIIRS night-lights, SDGSAT EU/UK.</dd>
+    <dt>Opacity sliders</dt>  <dd>Each active layer has a slider in the bottom-left control panel.</dd>
+    <dt>Click</dt>            <dd>Drops the second half of a CP — only enabled <b>after</b> dropping on the canvas first. Otherwise you'll see the "Wrong place!" alert.</dd>
+</dl>
+
+<figure class="manual-fig">
+    <img src="{% static 'img/manual/manual-map-layers.webp' %}" alt="Map with the layer switcher open showing OSM, Satellite and VIIRS options." width="1760" height="990" loading="lazy">
+</figure>
+
+<h3>2.4 Image adjustments</h3>
+<p>
+    The right edge of the canvas hosts three sliders for visual prep —
+    they don't change the submitted data, only your ability to see it.
+</p>
+<dl class="manual-kv">
+    <dt>Brightness</dt>  <dd>Linear shift. Boosts dim regions but compresses bright clusters.</dd>
+    <dt>Contrast</dt>    <dd>Stretches the histogram. Helps separate city lights from background sky.</dd>
+    <dt>Gamma</dt>       <dd>Non-linear correction. Use γ &gt; 1 to <b>brighten dark areas</b> (rural roads, faint coastline) without saturating bright urban centres. γ ≈ 2.0 is a good starting point.</dd>
+</dl>
+
+<div class="manual-callout">
+    <b>Tip:</b> if the photo looks "all bright cluster, nothing around it",
+    raise gamma <i>before</i> brightness — the relative contrast is
+    preserved and the dim coastline you need for CPs becomes visible.
+</div>
+
+<figure class="manual-fig">
+    <img src="{% static 'img/manual/manual-gamma-before-after.webp' %}" alt="Same photo side-by-side — γ=1.0 vs γ=2.0." width="1760" height="990" loading="lazy">
+</figure>
+
+<h3>2.5 Map overlay filters</h3>
+<p>
+    On the map, two overlays carry a 0–1 brightness slider each (the
+    same CSS-filter trick we apply to the canvas):
+</p>
+<dl class="manual-kv">
+    <dt>VIIRS</dt>            <dd>Global yearly composite of nighttime radiance from NASA Black Marble. Use it to pick out major lit regions when navigating.</dd>
+    <dt>SDGSAT EU/UK</dt>     <dd>Higher-resolution composite over Europe. Useful as ground-truth reference when working on European photos.</dd>
+</dl>
+
+<figure class="manual-fig">
+    <img src="{% static 'img/manual/manual-viirs-vs-sdgsat.webp' %}" alt="Same map area with VIIRS overlay vs SDGSAT overlay." width="1760" height="990" loading="lazy">
+</figure>
+
+<h3>2.6 Control points — best practice</h3>
+<dl class="manual-kv">
+    <dt>Minimum</dt>          <dd>3 (enforced — TPS needs ≥3 to solve).</dd>
+    <dt>Recommended</dt>      <dd>7–10 well distributed.</dd>
+    <dt>Hard ceiling</dt>     <dd>None, but past ~30 the warp degrades visibly and Try slows down (Gauss is O(n³)).</dd>
+</dl>
+
+<p>Bad point patterns to avoid:</p>
+<ul>
+    <li>Two points within a few pixels of each other (the linear system gets singular).</li>
+    <li>All points clumped in one quadrant — extrapolation to the rest of the photo gets wild.</li>
+    <li>A point on a feature that's actually ambiguous (e.g. two similar river bends).</li>
+    <li>A point in the visible <i>edge of the photo</i> that no longer corresponds to ground (lens vignetting).</li>
+</ul>
+
+<figure class="manual-fig">
+    <img src="{% static 'img/manual/manual-cp-distribution.webp' %}" alt="Two thumbnails — clumpy CP distribution (left, ✗) vs CPs at corners and centre (right, ✓)." width="1760" height="990" loading="lazy">
+</figure>
+
+<h3>2.7 Try — the algorithm</h3>
+<p>
+    The "Try" button runs the warp <b>entirely in your browser</b>.
+    No server round-trip, no GDAL — pure JavaScript:
+</p>
+<ol>
+    <li>Build a <b>Thin Plate Spline</b> (TPS) interpolant from your control points. Kernel <code>U(r²) = r²·log(r²)</code>, with Tikhonov regularisation λ = 1e-6 on the diagonal to keep the system well-conditioned.</li>
+    <li>Solve the (N+3)×(N+3) linear system using Gaussian elimination with partial pivoting — once for latitude, once for longitude.</li>
+    <li>Sample a 16×16 grid of (px, py) points across the image and evaluate the TPS at each → 256 (lat, lon) pairs.</li>
+    <li>Find the bounding box of those 256 points → output canvas size in Mercator aspect ratio.</li>
+    <li>Each grid cell becomes 2 textured triangles drawn onto the canvas with an exact affine transform per triangle.</li>
+    <li>The canvas is converted to a data URL and dropped onto the Leaflet map as <code>L.imageOverlay</code>.</li>
+</ol>
+
+<div class="manual-callout manual-callout--warn">
+    <b>Limitation:</b> TPS is a global interpolant — every CP affects every
+    pixel. Outside the convex hull of your CPs the function extrapolates,
+    which can produce wild distortions at the photo corners. Place at
+    least one CP near each edge of the lit area to constrain the warp.
+</div>
+
+<figure class="manual-fig">
+    <img src="{% static 'img/manual/manual-tps-warp.webp' %}" alt="Source ISS image and resulting warped overlay on the map." width="1760" height="990" loading="lazy">
+</figure>
+
+<h3>2.8 Submit</h3>
+<p>
+    When you press Submit, the control points are sent to the backend
+    and stored as a JSON list on the <code>GeoAttempt</code> row. The
+    server then:
+</p>
+<ul>
+    <li>Verifies you spent at least 10 seconds on the task (anti-cheat).</li>
+    <li>Updates your personal counters: total CPs, tasks done, time spent.</li>
+    <li>If you're enrolled in an active challenge that applies to this image, adds your CPs to its cached counter.</li>
+    <li>Records today's contribution in your daily heatmap.</li>
+    <li>Returns a rich payload that drives the post-submit overlay you see (deltas, totals, rank shift, streak, challenge progress).</li>
+</ul>
+
+<p>
+    Each <code>Image</code> has a <b>replicas</b> field (default 5) — that
+    many independent users must submit before the image is considered
+    georeferenced. After that, the image stops appearing in anyone's
+    pending pool.
+</p>
+
+<h2 id="batches">3. Batches <a class="anchor" href="#batches">#</a></h2>
+<p>
+    A <b>batch</b> is a thematic group of images — typically a campaign
+    (e.g. "Asia at night, summer 2024") or an expedition. Admins create
+    a batch by feeding it a list of NASA image codes; a background job
+    downloads the originals, generates thumbnails and creates one
+    <code>GeoAttempt</code> per replica slot.
+</p>
+<p>
+    On the home page each batch shows a progress ring and a "Get a task
+    in this batch" button. The URL <code>/gettask/&lt;batch_id&gt;</code>
+    restricts the random task draw to that batch only. With no batch in
+    the URL (just <code>/gettask</code>) you get tasks from anywhere.
+</p>
+
+<figure class="manual-fig">
+    <img src="{% static 'img/manual/manual-batches-grid.webp' %}" alt="Home batch grid with completion rings." width="1760" height="990" loading="lazy">
+</figure>
+
+<h2 id="challenges">4. Challenges <a class="anchor" href="#challenges">#</a></h2>
+<p>
+    Challenges turn the platform into a shared goal. A challenge is a
+    time-bounded objective — bronze, silver and gold CP targets — that
+    a community of contributors works towards together.
+</p>
+
+<dl class="manual-kv">
+    <dt>Targets</dt>          <dd>Default 1,000 / 2,000 / 3,000 CPs (admin-tunable).</dd>
+    <dt>Time window</dt>      <dd>Each challenge has a <code>start_at</code> / <code>end_at</code>.</dd>
+    <dt>Scope</dt>            <dd>Optional batch (challenge counts only CPs from that batch) <i>and / or</i> a spatial bounding box drawn on a Leaflet map in the admin. Both filters intersect.</dd>
+    <dt>Joining</dt>          <dd>Free; auto-leaves any other active enrollment so you only count for one at a time.</dd>
+    <dt>Leaving</dt>          <dd>Available from the challenge detail page or any challenge card. Your previously-earned CPs are kept.</dd>
+    <dt>Strict filter</dt>    <dd>If you're enrolled in a challenge with a bbox/batch and you try to do tasks that don't match → an explanation modal lets you go view another challenge or pick another batch.</dd>
+</dl>
+
+<figure class="manual-fig">
+    <img src="{% static 'img/manual/manual-challenge-gauge.webp' %}" alt="Triple-bar progress gauge with bronze, silver and gold tick markers." width="1760" height="990" loading="lazy">
+</figure>
+
+<h2 id="stats">5. Personal stats &amp; ranking <a class="anchor" href="#stats">#</a></h2>
+<p>
+    Your profile page (<code>/user-profile/</code>) shows:
+</p>
+<ul>
+    <li>Lifetime CPs, tasks completed, time spent.</li>
+    <li>Your share of the project totals (in % bars).</li>
+    <li>Daily contribution heatmap (last 12 months).</li>
+    <li>A map of "places you've visited" — first CP coordinate of each completed attempt.</li>
+    <li>Active challenges and your CPs / rank within each.</li>
+    <li>The global ranking, AJAX-paginated and centred on your row by default.</li>
+</ul>
+
+<div class="manual-callout">
+    <b>Email-verified only:</b> the global ranking includes only users who
+    confirmed their email — to keep bots and stale signups out of the
+    leaderboard.
+</div>
+
+<figure class="manual-fig">
+    <img src="{% static 'img/manual/manual-profile-stats.webp' %}" alt="Profile dashboard with heatmap, share bars and ranking table." width="1760" height="990" loading="lazy">
+</figure>
+
+<h2 id="anti-cheat">6. Anti-cheat <a class="anchor" href="#anti-cheat">#</a></h2>
+<p>
+    The platform is built on trust, but a couple of cheap heuristics
+    keep obvious scripted abuse out:
+</p>
+<ul>
+    <li><b>Submission speed</b>: a Submit faster than 10 seconds since the task was ASSIGNED is rejected with HTTP 400. The user's <code>cheating</code> counter increments and admins can review.</li>
+    <li><b>Replication</b>: each image needs N independent contributors. A single bad-faith user cannot push false data into the final dataset.</li>
+    <li><b>Email verification</b> is mandatory; throwaway accounts can't even appear in the ranking.</li>
+    <li><b>Honeypot</b> on the contact form to catch spam bots.</li>
+    <li>No passive tracking, fingerprinting or anti-VPN measures — the platform respects privacy.</li>
+</ul>
+
+<h2 id="privacy">7. Privacy &amp; what we store <a class="anchor" href="#privacy">#</a></h2>
+<p>
+    Short version (the <a href="/privacy/">privacy policy</a> is the
+    legal source of truth):
+</p>
+<dl class="manual-kv">
+    <dt>Account data</dt>        <dd>Email, username, hashed password. Until you delete the account.</dd>
+    <dt>Profile (optional)</dt>  <dd>Country, city, biography, profile picture.</dd>
+    <dt>Activity</dt>            <dd>Control points, time spent, batches and challenges joined. Stays as pseudonymised data after account deletion (legal basis: GDPR Art. 89, scientific research).</dd>
+    <dt>Consent records</dt>     <dd>Timestamps for privacy-policy acceptance, newsletter opt-in, cookie preferences.</dd>
+    <dt>Server logs</dt>         <dd>30 days max, IPs truncated.</dd>
+</dl>
+
+<p>You can:</p>
+<ul>
+    <li><b>Toggle visibility</b> in rankings (your row is anonymised but still counts towards totals).</li>
+    <li><b>Subscribe / unsubscribe</b> from the newsletter at any time.</li>
+    <li><b>Delete your account</b> from the profile page (irreversible — but pseudonymised contributions stay).</li>
+</ul>
+
+<h2 id="science">8. The science behind it <a class="anchor" href="#science">#</a></h2>
+<p>
+    Lost at Night is part of the <b>Plan-B</b> project, funded by the
+    European Union under Horizon Europe (Grant Agreement 101135308).
+    The principal investigator is <b>Alejandro Sánchez de Miguel</b>
+    (CSIC). The platform is operated by Fundación Ibercivis.
+</p>
+
+<h3>Algorithms in plain language</h3>
+<dl class="manual-kv">
+    <dt>TPS warp</dt>            <dd>Thin Plate Spline interpolation — minimises the bending energy of an imaginary thin metal plate forced through your control points. Bookstein 1989. Used in medical imaging and shape analysis; well-suited to small numbers of irregularly placed CPs.</dd>
+    <dt>Triangle textures</dt>   <dd>Once we have a TPS evaluation grid, each cell of the grid is split into two triangles and drawn with an affine transform per triangle. Affine is exact for triangles, so the warped image is piecewise-correct.</dd>
+    <dt>Reverse geocode</dt>     <dd>OpenStreetMap Nominatim — given a lat/lon we look up the nearest place name to display "Saint-Lambert, Canada" alongside the photo ID.</dd>
+    <dt>Server pipeline (legacy)</dt>  <dd>The old "Try (server)" button still exists for admin debugging — it runs <code>gdal_translate</code>, <code>gdalwarp -tps</code> and <code>gdal2tiles.py</code> on disk. Browser TPS replaces it for normal users.</dd>
+</dl>
+
+<h3>Output</h3>
+<p>
+    Aggregated, replication-validated control points feed into research
+    publications and open datasets. Future releases under
+    <code>CC BY-SA</code>; citation guidelines will be added here when
+    the first dataset is published.
+</p>
+
+<h2 id="account">9. Account &amp; data <a class="anchor" href="#account">#</a></h2>
+<dl class="manual-kv">
+    <dt>Sign up</dt>             <dd>Email + password. Email verification is mandatory before you can contribute meaningfully (your CPs count, but you don't appear in the ranking until verified).</dd>
+    <dt>Edit profile</dt>        <dd>From <code>/user-profile/</code>. Inline modal — change country, biography, picture, ranking visibility, newsletter opt-in.</dd>
+    <dt>Delete account</dt>      <dd>From <code>/user-profile/delete/</code>. Anonymises (sets <code>assignedUser=null</code>) on all your <code>GeoAttempt</code> rows so the scientific data persists, then deletes the user row.</dd>
+    <dt>Export data</dt>         <dd><i>Coming soon.</i> Will return a JSON of everything we hold about you (Art. 20 portability).</dd>
+</dl>
+
+<h2 id="open-source">10. Open source / API <a class="anchor" href="#open-source">#</a></h2>
+<p>
+    The platform is open source — the entire stack is on GitHub:
+    <a href="https://github.com/Ibercivis/gdalface" target="_blank" rel="noopener">github.com/Ibercivis/gdalface</a>.
+</p>
+<dl class="manual-kv">
+    <dt>Backend</dt>          <dd>Django + PostgreSQL + django-rq (workers).</dd>
+    <dt>Frontend</dt>         <dd>Vanilla JS, Leaflet (map), Fabric.js (canvas), Bootstrap 5 (legacy CSS), custom design system on top.</dd>
+    <dt>Workers</dt>          <dd>Image download from NASA, GDAL pipeline, scheduled cleanups (e.g. abandoned task recovery after 6 h).</dd>
+    <dt>Public API</dt>       <dd>
+        <code>/api/v1/geoattempt-pending/</code> — fetch a random task<br>
+        <code>/api/v1/challenges/</code>, <code>/challenges/&lt;id&gt;/</code> — challenge state<br>
+        <code>/api/v1/challenges/&lt;id&gt;/leaderboard/?page=N</code> — paginated leaderboard<br>
+        <code>/api/v1/ranking/?ordering=cp&amp;page=N</code> — global ranking
+    </dd>
+    <dt>Issues / PRs</dt>     <dd>Welcome at the GitHub repo. For sensitive reports email <a href="mailto:ethics@ibercivis.es">ethics@ibercivis.es</a>.</dd>
+</dl>
+
+<h2 id="funding">11. Funding &amp; team <a class="anchor" href="#funding">#</a></h2>
+<dl class="manual-kv">
+    <dt>Funding</dt>          <dd>European Union — Horizon Europe Programme — Grant Agreement No. 101135308 (PLAN-B). Research and Innovation Action / HORIZON-CL6-2023-BIODIV-01.</dd>
+    <dt>Operator</dt>         <dd>Fundación Ibercivis (Zaragoza, Spain).</dd>
+    <dt>Principal investigator</dt> <dd>Alejandro Sánchez de Miguel — Consejo Superior de Investigaciones Científicas (CSIC).</dd>
+    <dt>Imagery</dt>          <dd>NASA Astronaut Photography of Earth Database — public domain.</dd>
+</dl>
+
+<h2 id="faq">12. FAQ &amp; troubleshooting <a class="anchor" href="#faq">#</a></h2>
+
+<h3>What if I make a mistake?</h3>
+<p>
+    Before pressing Submit you can edit anything: drag a CP to a new
+    position, click the trash icon on a row in the point list to remove
+    it, or use the Skip button to release the task back to the pool
+    without submitting. After Submit the task moves to the next replica
+    slot — the system relies on independent contributors agreeing on
+    the right answer, so a one-off mistake won't pollute the dataset.
+</p>
+
+<h3>Do my contributions count if I'm not signed in?</h3>
+<p>
+    Yes — the image still gets your control points and they advance the
+    replica counter. They just don't accrue to a personal stats page
+    (because there's no account to attach them to) and they don't count
+    for any challenge.
+</p>
+
+<h3>Why does an image stop appearing in my pool?</h3>
+<p>
+    Two reasons: (a) the image already received <code>replicas</code>
+    DONE submissions from other users — its job is finished; or (b) you
+    personally already submitted a DONE for that image (we never serve
+    the same image twice to the same user).
+</p>
+
+<h3>What happens to my data if I delete my account?</h3>
+<p>
+    Your account row, profile and authentication credentials are
+    deleted. Your <code>GeoAttempt</code> rows survive but with
+    <code>assignedUser = NULL</code> — the scientific contribution stays
+    attributed to "anonymous", which is allowed under GDPR Art. 89
+    (research) once the data is no longer reasonably attributable to
+    you. The same applies to your daily-contribution counters.
+</p>
+
+<h3>Why am I seeing "Filtering for [Challenge name]" warnings?</h3>
+<p>
+    You're enrolled in a challenge that restricts the pool of available
+    images (by batch and / or by a geographic region the admin drew on
+    a map). If a batch URL doesn't intersect with that constraint, you
+    get a 0-results modal that points you to your challenge page or to
+    "Pick another batch". You can leave the challenge from its detail
+    page if you want different tasks.
+</p>
+
+<h3>The image looks impossible — pure black except a city, can I skip?</h3>
+<p>
+    Yes. Skip pushes it back to PENDING for someone else (the
+    <code>skipped</code> counter increments for analytics). Don't force
+    a guess; quality &gt; quantity. Try raising gamma first though —
+    sometimes the coastline is there, just two stops underexposed.
+</p>
+
+<h3>Can I run the tutorial again?</h3>
+<p>
+    Yes — click the graduation cap icon at the top-right of the task
+    page and the 7-step Driver.js tour replays.
+</p>
+
+<h3>How do I report a bug?</h3>
+<p>
+    Either open an issue on GitHub
+    (<a href="https://github.com/Ibercivis/gdalface/issues" target="_blank" rel="noopener">github.com/Ibercivis/gdalface/issues</a>)
+    or send an email to <a href="mailto:info@ibercivis.es">info@ibercivis.es</a>.
+    Privacy / ethics concerns: <a href="mailto:ethics@ibercivis.es">ethics@ibercivis.es</a>.
+</p>
+
+<h3>Mobile?</h3>
+<p>
+    The task interface is laid out for desktop / tablet — control-point
+    accuracy benefits from a precise pointer. The map and canvas do
+    accept touch on phones, but we don't currently optimise the layout
+    below ~700 px wide. Mobile-first design is on the backlog.
+</p>
+
+<h3>Browser support?</h3>
+<p>
+    Modern Chrome, Firefox and Safari (≥ 15.4 for our OKLCH colour
+    palette). Older browsers will degrade gracefully — the design
+    system uses fallback colours where possible.
+</p>
+
+<h3>Connectivity drops mid-task — do I lose progress?</h3>
+<p>
+    Your control points stay in the page (in browser memory) so you can
+    finish locally. Once you reconnect, Submit will reach the backend.
+    If you close the tab without submitting, the task stays in
+    <code>ASSIGNED</code> status until a scheduled cleanup releases it
+    back to PENDING after 6 hours of inactivity.
+</p>
+
+{% endblock %}

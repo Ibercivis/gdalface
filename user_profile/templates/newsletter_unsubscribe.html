@@ -1,0 +1,71 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <title>Lost At Night | {% trans "Unsubscribe" %}</title>
+    <link rel="icon" href="{% static 'img/logo-lost.png' %}" type="image/png">
+    <link href="{% static 'css/main.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'css/design-system.css' %}" rel="stylesheet" type="text/css">
+    <style>
+        body {
+            background: oklch(0.10 0.02 285) !important;
+            background-image: none !important;
+            color: var(--ink-1);
+            font-family: var(--font-ui);
+            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0; padding: 24px;
+        }
+        .ub-card {
+            max-width: 460px; width: 100%;
+            background: oklch(0.16 0.045 290 / 0.85);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 36px 32px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        .ub-card h1 {
+            font-size: 22px; font-weight: 700; color: var(--ink-0);
+            margin: 0 0 12px;
+        }
+        .ub-card p { color: var(--ink-1); line-height: 1.55; margin: 0 0 20px; }
+        .ub-card .ub-icon {
+            width: 56px; height: 56px;
+            border-radius: 50%;
+            background: oklch(0.95 0.13 113 / 0.18);
+            color: var(--accent);
+            display: inline-flex; align-items: center; justify-content: center;
+            margin-bottom: 16px;
+        }
+        .ub-card .ub-icon svg { width: 28px; height: 28px; }
+        .ub-card a { color: var(--accent); text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="ub-card">
+        <div class="ub-icon">
+            {% if unknown %}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="9"/>
+                    <path d="M12 8v4M12 16h.01"/>
+                </svg>
+            {% else %}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12l5 5L20 7"/>
+                </svg>
+            {% endif %}
+        </div>
+        {% if unknown %}
+            <h1>{% trans "Link not recognised" %}</h1>
+            <p>{% trans "This unsubscribe link is no longer valid. You may already be unsubscribed, or the link expired after use." %}</p>
+        {% else %}
+            <h1>{% trans "You've been unsubscribed" %}</h1>
+            <p>{% trans "You won't receive newsletters from Lost at Night anymore. You can re-subscribe at any time from your profile page." %}</p>
+        {% endif %}
+        <a href="/">{% trans "Back to home" %}</a>
+    </div>
+</body>
+</html>

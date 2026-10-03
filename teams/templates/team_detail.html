@@ -1,0 +1,162 @@
+{% load static %}
+{% load bootstrap5 %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ team.name }} - Lost At Night</title>
+    <link rel="icon" href="{% static 'img/logo-lost.png' %}" type="image/png">
+    {% include '_google_analytics.html' %}
+    {% bootstrap_css %}
+    <link href="{% static 'css/main.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    {% bootstrap_javascript %}
+    <style>
+        .team-wrap { max-width: 980px; margin: 0 auto; padding: 90px 16px 40px; }
+        .team-card {
+            background: oklch(0.22 0.05 295 / 0.55);
+            border: 1px solid oklch(0.95 0.13 113 / 0.12);
+            border-radius: 14px;
+            padding: 22px 24px;
+            color: #fff;
+            margin-bottom: 18px;
+        }
+        .team-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+        .team-title { font-size: 1.6rem; font-weight: 700; margin: 0; }
+        .team-desc { color: var(--ink-2, #cfcfe5); margin: 8px 0 0; max-width: 60ch; }
+        .team-rank-pill {
+            background: #7639ba; border-radius: 999px; padding: 6px 14px;
+            font-weight: 700; white-space: nowrap;
+        }
+        .team-stats { display: flex; gap: 24px; flex-wrap: wrap; margin-top: 16px; }
+        .team-stat b { display: block; font-size: 1.3rem; }
+        .team-stat span { color: var(--ink-2, #cfcfe5); font-size: 0.85rem; }
+        .team-invite {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: oklch(0.18 0.04 295); border: 1px dashed oklch(0.95 0.13 113 / 0.35);
+            border-radius: 8px; padding: 6px 12px; font-family: monospace; font-size: 1.05rem;
+        }
+        .team-table { width: 100%; color: #fff; border-collapse: collapse; }
+        .team-table th, .team-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid oklch(1 0 0 / 0.07); }
+        .team-table th { color: var(--ink-2, #cfcfe5); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; }
+        .team-table tr.highlight-row { background: oklch(0.95 0.13 113 / 0.08); }
+        .team-actions form { display: inline; }
+    </style>
+</head>
+
+<body>
+    {% include '_topbar.html' %}
+
+    <div class="team-wrap">
+        {% if messages %}
+            {% for m in messages %}
+                <div class="alert alert-{% if m.tags == 'error' %}danger{% else %}{{ m.tags|default:'info' }}{% endif %}" role="alert">{{ m }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="team-card">
+            <div class="team-head">
+                <div>
+                    <h1 class="team-title"><i class="fa-solid fa-people-group" style="color:var(--accent,#e9f990);margin-right:10px;"></i>{{ team.name }}</h1>
+                    {% if team.description %}<p class="team-desc">{{ team.description }}</p>{% endif %}
+                    <p class="team-desc" style="font-size:0.85rem;">
+                        {% if team.is_open %}{% trans "Open team — anyone can join." %}{% else %}{% trans "Invite-only team." %}{% endif %}
+                    </p>
+                </div>
+                <div class="team-rank-pill">{% blocktrans with rank=rank %}Rank #{{ rank }}{% endblocktrans %}</div>
+            </div>
+
+            <div class="team-stats">
+                <div class="team-stat"><b>{{ stats.members|default:0 }}</b><span>{% trans "Members" %}</span></div>
+                <div class="team-stat"><b>{{ stats.tasks|default:0 }}</b><span>{% trans "Tasks" %}</span></div>
+                <div class="team-stat"><b>{{ stats.control_points|default:0 }}</b><span>{% trans "Control Points" %}</span></div>
+            </div>
+
+            <div class="team-actions" style="margin-top:18px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+                {% if user.is_authenticated %}
+                    {% if is_member %}
+                        <span class="team-invite" title="{% trans 'Share this code so others can join' %}">
+                            <i class="fa-solid fa-key"></i> {{ team.invite_code }}
+                        </span>
+                        <form method="post" action="{% url 'team_leave' %}"
+                              onsubmit="return confirm('{% trans "Leave this team?" %}');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-light btn-sm">{% trans "Leave team" %}</button>
+                        </form>
+                    {% elif team.is_open %}
+                        <form method="post" action="{% url 'team_join' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="slug" value="{{ team.slug }}">
+                            <button type="submit" class="btn btn-primary btn-sm">{% trans "Join this team" %}</button>
+                        </form>
+                        {% if my_membership %}
+                            <span style="color:var(--ink-2,#cfcfe5);font-size:0.85rem;">
+                                {% blocktrans with current=my_membership.team.name %}You will leave {{ current }} when you join.{% endblocktrans %}
+                            </span>
+                        {% endif %}
+                    {% else %}
+                        <form method="post" action="{% url 'team_join' %}" class="d-flex" style="gap:8px;">
+                            {% csrf_token %}
+                            <input type="text" name="invite_code" class="form-control form-control-sm"
+                                   placeholder="{% trans 'Invite code' %}" style="max-width:160px;">
+                            <button type="submit" class="btn btn-primary btn-sm">{% trans "Join" %}</button>
+                        </form>
+                    {% endif %}
+                {% else %}
+                    <a href="{% url 'account_login' %}?next={{ request.path|urlencode }}" class="btn btn-primary btn-sm">
+                        {% trans "Sign in to join" %}
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="team-card">
+            <h2 style="font-size:1.1rem;margin-bottom:14px;">{% trans "Members" %}</h2>
+            <div style="overflow-x:auto;">
+                <table class="team-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>{% trans "User" %}</th>
+                            <th>{% trans "Tasks" %}</th>
+                            <th>{% trans "Control Points" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for m in members %}
+                        <tr{% if m.is_you %} class="highlight-row"{% endif %}>
+                            <td>{{ forloop.counter }}</td>
+                            <td>
+                                {% if m.visible %}
+                                    {{ m.username }}
+                                    {% if m.membership.role == 'owner' %}
+                                        <i class="fa-solid fa-crown" style="color:var(--accent,#e9f990);font-size:0.75rem;margin-left:4px;" title="{% trans 'Team owner' %}"></i>
+                                    {% endif %}
+                                {% else %}
+                                    <span style="color:var(--ink-2,#cfcfe5);"><i class="fa-solid fa-eye-slash" style="font-size:0.8rem;"></i> {% trans "Invisible user" %}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ m.tasks|default:0 }}</td>
+                            <td>{{ m.control_points|default:0 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" style="text-align:center;color:var(--ink-2,#cfcfe5);padding:20px;">{% trans "No members yet" %}</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="text-end">
+            <a href="/user-profile/" class="text-white" style="text-decoration:underline;">{% trans "Back to my profile" %} →</a>
+        </div>
+    </div>
+
+    {% include '_footer.html' %}
+</body>
+</html>
