@@ -3,7 +3,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" crossorigin="">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" crossorigin=""></script>
-<script src="{% static 'js/located_map.js' %}?v=1"></script>
+<script src="{% static 'js/located_map.js' %}?v=2"></script>
 <style>
     .lan-map { width: 100%; background: #05030a; border-radius: 12px; overflow: hidden; border: 1px solid var(--line-soft, rgba(255,255,255,.12)); }
     .lan-map .leaflet-container { background: #05030a; font-family: inherit; }
@@ -31,7 +31,7 @@
     window.LAN_MAP_I18N = {
         contributions: "{% trans 'contributions' %}", contribution: "{% trans 'contribution' %}", points: "{% trans 'control points' %}",
         taken: "{% trans 'Taken' %}", nasa: "{% trans 'Original at NASA' %}", pending: "{% trans 'Still needs more eyes' %}",
-        mine: "{% trans 'You located this one' %}", lights: "{% trans 'Night lights (VIIRS)' %}", photos: "{% trans 'Located photos' %}",
+        mine: "{% trans 'You located this one' %}", lights: "{% trans 'Night lights (VIIRS)' %}", black_marble: "{% trans 'NASA Black Marble' %}", photos: "{% trans 'Located photos' %}",
         empty: "{% trans 'Nothing located here yet.' %}"
     };
 </script>

@@ -9,7 +9,7 @@
     var DEFAULT_T = {
         contributions: 'contributions', contribution: 'contribution', points: 'control points',
         taken: 'Taken', nasa: 'Original at NASA', pending: 'Still needs more eyes', mine: 'You located this one',
-        lights: 'Night lights (VIIRS)', photos: 'Located photos', empty: 'Nothing located here yet.'
+        lights: 'Night lights (VIIRS)', black_marble: 'NASA Black Marble', photos: 'Located photos', empty: 'Nothing located here yet.'
     };
 
     function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
@@ -47,10 +47,15 @@
             doubleClickZoom: interactive, boxZoom: interactive, keyboard: interactive, attributionControl: true,
             worldCopyJump: true,
         }).setView(opts.center || [25, 10], opts.zoom || 2);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; OSM', maxZoom: 18 }).addTo(map);
-        var labels = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png', { maxZoom: 18, pane: 'shadowPane' });
+        // Basemap: Esri World Dark Gray (no API key, attribution required). CARTO's
+        // free tiles answer "API key required" to browsers from unregistered domains.
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, OpenStreetMap contributors', maxZoom: 16 }).addTo(map);
+        var labels = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 16, pane: 'shadowPane' });
         var lights = L.tileLayer('https://lostatnight.org/viirs_tiles/{z}/{x}/{y}.png', { maxZoom: 8, opacity: 0.85, attribution: 'VIIRS' });
+        var blackMarble = L.tileLayer('https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_Black_Marble/default/2016-01-01/GoogleMapsCompatible_Level8/{z}/{y}/{x}.png', {
+            maxZoom: 8, opacity: 0.9, attribution: 'NASA GIBS Black Marble' });
         if (opts.lights !== false) lights.addTo(map);
         labels.addTo(map);
 
@@ -60,7 +65,7 @@
                     return L.divIcon({ className: '', iconSize: [34, 34], html: '<div class="lan-map-cluster">' + n + '</div>' }); } })
             : L.layerGroup();
         group.addTo(map);
-        if (interactive) L.control.layers(null, (function () { var o = {}; o[T.lights] = lights; o[T.photos] = group; return o; })(), { collapsed: true }).addTo(map);
+        if (interactive) L.control.layers(null, (function () { var o = {}; o[T.lights] = lights; o[T.black_marble] = blackMarble; o[T.photos] = group; return o; })(), { collapsed: true }).addTo(map);
 
         if (opts.bbox) {
             L.rectangle(opts.bbox, { color: '#e9f990', weight: 1.5, dashArray: '6 4', fill: true, fillOpacity: 0.04 }).addTo(map);
