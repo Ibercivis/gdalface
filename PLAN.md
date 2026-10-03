@@ -71,7 +71,7 @@ mostraban puntos que no existían. 1552 contribuciones afectadas.
 - ⏳ Quitar el `print(request.data)` solo cuando exista un log estructurado de
   envíos; hoy es la única copia de seguridad del dato.
 
-## Fase 1 — Integridad de datos 🔧 (queda 1.3 y el historial de inscripción)
+## Fase 1 — Integridad de datos 🔧 (queda 1.3)
 
 Sin esto, cualquier estadística que mostremos es discutible. No admite debate y
 va primero.
@@ -100,9 +100,15 @@ va primero.
   sin guardar historial, así que un usuario que salió y volvió (caso real:
   Germany → Europe 27 min → Germany) no se puede reconstruir. El valor vivo
   sigue siendo el de referencia para retos.
-- ⏳ Añadir historial de inscripción (`ChallengeEnrollmentPeriod`: participant,
-  joined_at, left_at) escrito por join/leave. Con eso la regla es exacta y
-  `--challenges` puede pasar a ser el comportamiento por defecto.
+- ✅ Historial de inscripción `ChallengeEnrollmentPeriod` (participant,
+  joined_at, left_at, backfilled), escrito por unirse / salir / salida
+  automática al cambiar de reto. La regla de reconciliación suma sobre esos
+  periodos. Migración 0057 rellenó 76 periodos desde los datos antiguos
+  (marcados `backfilled`) y cerró 2 inscripciones heredadas abiertas.
+- ⏳ Los 17 participantes con deriva en retos ya finalizados se quedan como
+  están: su historial real no se puede reconstruir y hay diplomas emitidos.
+  Para retos nuevos (periodos no `backfilled`) `--challenges` es exacto; pasar
+  a aplicarlo por defecto cuando el primer reto nuevo termine sin discrepancias.
 - ✅ Dry-run por defecto, `--apply` para escribir. Ejecutado en producción el
   2026-10-03: 20 perfiles y 22 filas diarias corregidas (siempre a la baja, 1-3
   tareas: dobles envíos). Deriva restante 0. Anotado como evento en `/stats/`.

@@ -276,14 +276,18 @@ class ReconcileCountersTests(TestCase):
         self.assertIn('daily_changed=0 daily_created=0 daily_deleted=0', out2)
 
     def test_task_counts_for_one_enrollment_only(self):
-        # Legacy data: enrollment in C never closed, user later joined C2.
+        # User moved from C to C2 36 h ago: C's period closed, C2's open.
+        from georeferencing.models import ChallengeEnrollmentPeriod
+        from georeferencing.reconcile import expected_participant_cp
         now = timezone.now()
         ch2 = Challenge.objects.create(name='C2', batch=self.batch, start_at=now - timedelta(days=5),
                                        end_at=now + timedelta(days=5))
-        p2 = ChallengeParticipant.objects.create(challenge=ch2, user=self.u, left_at=now)
-        ChallengeParticipant.objects.filter(pk=p2.pk).update(joined_at=now - timedelta(hours=36))
-        self.part.refresh_from_db(); p2.refresh_from_db()
-        from georeferencing.reconcile import expected_participant_cp
+        ChallengeParticipant.objects.filter(pk=self.part.pk).update(left_at=now - timedelta(hours=36))
+        p2 = ChallengeParticipant.objects.create(challenge=ch2, user=self.u)
+        ChallengeEnrollmentPeriod.objects.create(participant=self.part, joined_at=now - timedelta(days=2),
+                                                 left_at=now - timedelta(hours=36))
+        ChallengeEnrollmentPeriod.objects.create(participant=p2, joined_at=now - timedelta(hours=36))
+        self.part.refresh_from_db()
         # The 4-point task finished 1 day ago is after joining C2 → counts for C2, not C.
         self.assertEqual(expected_participant_cp(self.part), 0)
         self.assertEqual(expected_participant_cp(p2), 4 + 6)  # C2 has no bbox: both images
@@ -309,3 +313,69 @@ class SnapshotSafetyNetTests(TestCase):
                 old['generated_at'] = (timezone.now() - timedelta(hours=30)).isoformat()
                 json.dump(old, open(path, 'w'))
                 self.assertTrue(tasks.refresh_snapshot_if_stale())        # stale → rewritten
+
+
+class EnrollmentPeriodTests(TestCase):
+    """join / leave / re-join write ChallengeEnrollmentPeriod rows and the
+    reconciliation rule sums CP over those periods."""
+
+    def setUp(self):
+        staff = User.objects.create_user('s', 's@example.org', 'pw', is_staff=True)
+        self.u = User.objects.create_user('u', 'u@example.org', 'pw')
+        self.batch = Batch.objects.create(name='B', user=staff)
+        self.img = Image.objects.create(name='a.JPG', batch=self.batch, photoCenterPoint='40,-3')
+        now = timezone.now()
+        self.c1 = Challenge.objects.create(name='C1', start_at=now - timedelta(days=10), end_at=now + timedelta(days=10))
+        self.c2 = Challenge.objects.create(name='C2', start_at=now - timedelta(days=10), end_at=now + timedelta(days=10))
+        self.client.force_login(self.u)
+
+    def _join(self, ch):
+        return self.client.post(reverse('challenge-join', args=[ch.pk]))
+
+    def _leave(self, ch):
+        return self.client.post(reverse('challenge-leave', args=[ch.pk]))
+
+    def _periods(self, ch):
+        from georeferencing.models import ChallengeEnrollmentPeriod
+        return list(ChallengeEnrollmentPeriod.objects.filter(
+            participant__challenge=ch, participant__user=self.u).values_list('joined_at', 'left_at'))
+
+    def test_join_leave_rejoin_keeps_history(self):
+        self.assertEqual(self._join(self.c1).status_code, 200)
+        self.assertEqual(len(self._periods(self.c1)), 1)
+        self.assertIsNone(self._periods(self.c1)[0][1])
+        self.assertEqual(self._leave(self.c1).status_code, 200)
+        self.assertIsNotNone(self._periods(self.c1)[0][1])
+        self.assertEqual(self._join(self.c1).status_code, 200)   # revive
+        p = self._periods(self.c1)
+        self.assertEqual(len(p), 2)
+        self.assertIsNotNone(p[0][1]); self.assertIsNone(p[1][1])
+
+    def test_joining_another_challenge_closes_previous_period(self):
+        self._join(self.c1)
+        self._join(self.c2)
+        self.assertIsNotNone(self._periods(self.c1)[0][1])
+        self.assertIsNone(self._periods(self.c2)[0][1])
+
+    def test_reconcile_counts_each_stint_separately(self):
+        from georeferencing.models import ChallengeEnrollmentPeriod
+        from georeferencing.reconcile import expected_participant_cp
+        now = timezone.now()
+        p1 = ChallengeParticipant.objects.create(challenge=self.c1, user=self.u, left_at=now)
+        # Two stints in C1: days -8..-6 and -3..-1, with a C2 stint in between.
+        ChallengeEnrollmentPeriod.objects.create(participant=p1, joined_at=now - timedelta(days=8), left_at=now - timedelta(days=6))
+        ChallengeEnrollmentPeriod.objects.create(participant=p1, joined_at=now - timedelta(days=3), left_at=now - timedelta(days=1))
+        p2 = ChallengeParticipant.objects.create(challenge=self.c2, user=self.u, left_at=now - timedelta(days=3))
+        ChallengeEnrollmentPeriod.objects.create(participant=p2, joined_at=now - timedelta(days=6), left_at=now - timedelta(days=3))
+
+        def done(days_ago, n):
+            GeoAttempt.objects.create(image=self.img, status='DONE', assignedUser=self.u,
+                                      finishedDateTime=now - timedelta(days=days_ago),
+                                      controlPoints=[{'lat': 1, 'lon': 1}] * n)
+        done(7, 3)   # C1 first stint
+        done(5, 5)   # C2
+        done(4, 7)   # C2
+        done(2, 11)  # C1 second stint
+        done(0.5, 13)  # after leaving everything → nobody
+        self.assertEqual(expected_participant_cp(p1), 14)
+        self.assertEqual(expected_participant_cp(p2), 12)

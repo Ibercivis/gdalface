@@ -1064,17 +1064,22 @@ class ChallengeJoinView(APIView):
             other = ChallengeParticipant.objects.select_for_update().filter(
                 user=request.user, left_at__isnull=True,
             ).exclude(challenge=ch).first()
+            now = timezone.now()
             if other:
-                other.left_at = timezone.now()
+                other.left_at = now
                 other.save(update_fields=['left_at'])
+                other.close_periods(now)
 
             # Create or revive enrollment for the target challenge.
             enrollment, created = ChallengeParticipant.objects.select_for_update().get_or_create(
                 challenge=ch, user=request.user,
             )
-            if not created and enrollment.left_at is not None:
+            if created:
+                enrollment.start_period(enrollment.joined_at)
+            elif enrollment.left_at is not None:
                 enrollment.left_at = None
                 enrollment.save(update_fields=['left_at'])
+                enrollment.start_period(now)  # new stint; history kept
 
         return Response({
             'ok': True,
@@ -1113,9 +1118,12 @@ class ChallengeLeaveView(APIView):
             challenge=ch, user=request.user, left_at__isnull=True,
         ).first()
         cp_kept = existing.cached_cp_count if existing else 0
+        now = timezone.now()
         n = ChallengeParticipant.objects.filter(
             challenge=ch, user=request.user, left_at__isnull=True,
-        ).update(left_at=timezone.now())
+        ).update(left_at=now)
+        if existing:
+            existing.close_periods(now)
         return Response({
             'ok': True,
             'left': n > 0,

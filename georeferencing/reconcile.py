@@ -54,28 +54,24 @@ def expected_daily_counts():
 
 def participant_tasks(participant, challenge=None):
     """DONE tasks that count for this enrollment: by the participant, finished
-    inside both the challenge window and the enrollment window, on an image
-    that matches the challenge (batch ∩ bbox). This is THE rule; the submit
-    endpoint credits live under the same conditions."""
-    from .models import ChallengeParticipant
+    inside the challenge window AND inside one of the participant's enrollment
+    periods (ChallengeEnrollmentPeriod), on an image matching the challenge
+    (batch ∩ bbox). This is THE rule; the submit endpoint credits live under
+    the same conditions. Falls back to joined_at/left_at if no period exists."""
     ch = challenge or participant.challenge
-    lo = max(participant.joined_at, ch.start_at)
-    hi = min(participant.left_at or ch.end_at, ch.end_at)
-    # Joining another challenge implicitly ends this enrollment (the live
-    # endpoint credits a single enrollment per task; legacy rows may still
-    # have left_at=NULL while a later enrollment exists).
-    next_join = (ChallengeParticipant.objects
-                 .filter(user_id=participant.user_id, joined_at__gt=participant.joined_at)
-                 .exclude(pk=participant.pk)
-                 .order_by('joined_at').values_list('joined_at', flat=True).first())
-    if next_join and next_join < hi:
-        hi = next_join
-    if lo >= hi:
-        return done_queryset().none()
+    periods = list(participant.periods.values_list('joined_at', 'left_at'))
+    if not periods:
+        periods = [(participant.joined_at, participant.left_at)]
+    window = Q(pk__in=[])
+    for joined, left in periods:
+        lo = max(joined, ch.start_at)
+        hi = min(left or ch.end_at, ch.end_at)
+        if lo < hi:
+            window |= Q(finishedDateTime__gte=lo, finishedDateTime__lt=hi)
     return (done_queryset()
-            .filter(assignedUser_id=participant.user_id,
-                    finishedDateTime__gte=lo, finishedDateTime__lt=hi,
-                    image__in=ch.matching_images()))
+            .filter(assignedUser_id=participant.user_id)
+            .filter(window)
+            .filter(image__in=ch.matching_images()))
 
 
 def expected_participant_cp(participant, challenge=None):

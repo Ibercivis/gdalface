@@ -389,6 +389,21 @@ class ChallengeParticipant(models.Model):
     def is_active(self):
         return self.left_at is None
 
+    # ── Enrollment history ───────────────────────────────────────────
+    # joined_at/left_at only describe the *current* stint. Re-joining revives
+    # this row, so the exact set of periods lives in ChallengeEnrollmentPeriod.
+    def open_period(self):
+        return self.periods.filter(left_at__isnull=True).order_by('-joined_at').first()
+
+    def start_period(self, at=None):
+        at = at or timezone.now()
+        self.close_periods(at)
+        return self.periods.create(joined_at=at)
+
+    def close_periods(self, at=None):
+        at = at or timezone.now()
+        return self.periods.filter(left_at__isnull=True).update(left_at=at)
+
     def ensure_verify_code(self):
         """Generate the diploma verification token if missing and persist it.
         Uses hex (no '-'/'_') so the code survives copy-paste from the PDF."""
@@ -402,6 +417,30 @@ class ChallengeParticipant(models.Model):
     def __str__(self):
         state = 'left' if self.left_at else 'active'
         return f'{self.user} -> {self.challenge} ({state}, {self.cached_cp_count} cp)'
+
+
+class ChallengeEnrollmentPeriod(models.Model):
+    """
+    One row per stint of a user inside a challenge. Written by join / leave /
+    auto-leave; never edited by hand. `reconcile_counters` sums control points
+    over these windows, so re-joining a challenge no longer loses history.
+    Rows created by the 0056 backfill are flagged: they approximate the single
+    joined_at/left_at that existed before and may miss intermediate stints.
+    """
+    participant = models.ForeignKey(
+        ChallengeParticipant, on_delete=models.CASCADE, related_name='periods',
+    )
+    joined_at = models.DateTimeField(db_index=True)
+    left_at = models.DateTimeField(blank=True, null=True)
+    backfilled = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['joined_at']
+        indexes = [models.Index(fields=['participant', 'left_at'])]
+
+    def __str__(self):
+        end = f'{self.left_at:%Y-%m-%d %H:%M}' if self.left_at else 'open'
+        return f'{self.participant} [{self.joined_at:%Y-%m-%d %H:%M} → {end}]'
 
 
 class DiplomaDownload(models.Model):
