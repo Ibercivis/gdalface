@@ -498,6 +498,26 @@ Consecuencias observadas: descargas de imágenes a 4/min en vez de 90/min, y los
 - ⏳ Tras el arreglo, quitar el parche local y aplicar el mismo criterio (o
   ninguno) en `tasks.py`.
 
+## Glosario de estados (para no perder la información)
+
+- **Imagen en cola**: tiene al menos una tarea `PENDING`; puede tocarle a
+  cualquiera que pulse Participar (filtrada por su reto si está inscrito).
+- **Imagen completada**: sus `replicas` tareas están `DONE` (hoy 5).
+- **Imagen aparcada**: `replicas = 0`. Sigue en la base de datos con sus
+  ficheros, sin tareas pendientes, nunca se sirve. Motivos: fotograma de
+  ráfaga redundante (`park_bursts`), registro NASA inconsistente (nivel X),
+  votos de salto "no es de noche / sin ciudad / imagen mala" (`park_by_votes`,
+  aún en modo informe). El trabajo hecho o asignado nunca se borra al aparcar.
+  Reversible: devolver réplicas y crear tareas. Se ve en "Batch health" →
+  columna Parked.
+- **Nivel (tier) del catálogo**: A centro catalogado · B centro ML · C solo
+  nadir con focal ≥ 50 mm · D solo nadir con gran angular/oblicua · X registro
+  catalogado inconsistente (centro a > 2.500 km del nadir) · '' sin coordenadas.
+- **Ráfaga**: fotogramas consecutivos de la misma misión y focal con < 20 s
+  entre ellos; se conserva uno cada medio encuadre (36 mm / focal × 420 km).
+- **Noche**: elevación solar calculada ≤ −6° (campo `sun_elev` en el catálogo;
+  el umbral es una decisión, el valor se guarda).
+
 ## Pendiente a 2026-10-03 (cierre del día)
 
 Decisiones: IPv6 del servidor · reto permanente (propuesta: no) · aparcar las

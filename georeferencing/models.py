@@ -82,6 +82,12 @@ class Image(models.Model):
     largeImageURL = models.URLField( blank = True, null = True)
     smallImageURL = models.URLField( blank = True, null = True)
     batch = models.ForeignKey('Batch', on_delete=models.CASCADE, blank=True, null=True)
+    # How many independent georeferencings we want for this image (one task each).
+    # replicas == 0 means the image is PARKED: it stays in the database with its
+    # files, but it gets no pending tasks and is never served (burst frames,
+    # inconsistent NASA records, crowd-voted "not night / no city"). Work already
+    # done on a parked image is kept. Un-park by setting replicas back and creating
+    # tasks. See park_bursts, park_by_votes and PLAN.md.
     replicas = models.IntegerField(default=5)
 
     @staticmethod
