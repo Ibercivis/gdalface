@@ -50,11 +50,13 @@ Notas de trabajo. Actualizado: 2026-10-03.
   de la clase + ranking entre colegios).
 - Requisitos: portátil/tableta por pareja, navegador, wifi. 15 min de
   preparación con el profesor la semana anterior.
-- **Menores**: ≥ 14 pueden registrarse (mejor antes, en casa, con el enlace del
-  equipo del colegio); < 14 sin cuenta, con **código de sesión** que atribuye el
-  trabajo al equipo del colegio sin datos personales. Añadir edad mínima (14)
-  a privacidad y términos. El código de sesión también evita los 10–15 min de
-  verificación de correo en clase.
+- **Decisión (3 oct): los alumnos se registran.** Sesiones con alumnado de 14
+  o más, que puede consentir por sí mismo. Registro **antes de la sesión**, en
+  casa, con el enlace de invitación del equipo del colegio, para no perder
+  10–15 min de verificación de correo en clase y para que lo hecho en el aula
+  les cuente desde el primer minuto (puntos, ranking, diploma, equipo).
+  Añadir edad mínima (14) a privacidad y términos. Sin código de sesión
+  anónimo: se valoró y se descartó.
 - Cada colegio, un batch regional de niveles A y B (desde el catálogo), 150–200
   fotos; los primeros 5 minutos deciden si la clase engancha.
 - Reto "Colegios 2026" con fecha de cierre; ranking de equipos = clasificación
@@ -63,8 +65,9 @@ Notas de trabajo. Actualizado: 2026-10-03.
   por primera vez, la mitad de lo hecho hasta hoy), 80–120 registros si ≥ 14,
   10–25 que siguen en casa (5–10 % de retención típica) → doblar la comunidad
   activa. Plan: 2 pilotos en octubre, 8 entre noviembre y diciembre.
-- Pendiente de producto (en orden): código de sesión → batch regional por
-  colegio → diploma de equipo → frase de edad en legal.
+- Pendiente de producto (en orden): batch regional por colegio (desde el
+  catálogo) → diploma de equipo → frase de edad en legal → kit del profesor
+  (guion de 60 min + 8 diapositivas).
 
 ## Reddit
 
