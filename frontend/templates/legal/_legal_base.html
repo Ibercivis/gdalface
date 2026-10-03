@@ -47,6 +47,12 @@
         .legal-wrap li { margin-bottom: 6px; }
         .legal-wrap a { color: var(--accent); text-decoration: underline; }
         .legal-wrap a:hover { color: var(--ink-0); }
+        /* Buttons rendered as links must keep their own colours. */
+        .legal-wrap a.ds-btn, .legal-wrap a.ds-pill { text-decoration: none; }
+        .legal-wrap a.ds-btn--primary, .legal-wrap a.ds-btn--primary:hover { color: var(--accent-ink); }
+        .legal-wrap a.ds-btn--secondary, .legal-wrap a.ds-btn--ghost { color: var(--ink-1); }
+        .legal-wrap a.ds-btn--secondary:hover, .legal-wrap a.ds-btn--ghost:hover { color: var(--ink-0); }
+        .legal-wrap a.ds-pill--accent { color: var(--accent-ink); }
         .legal-wrap code {
             background: var(--bg-2); padding: 2px 6px; border-radius: 4px;
             font-family: var(--font-mono); font-size: 12px; color: var(--ink-0);

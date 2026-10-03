@@ -53,9 +53,12 @@
             attribution: 'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, OpenStreetMap contributors', maxZoom: 16 }).addTo(map);
         var labels = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}', {
             maxZoom: 16, pane: 'shadowPane' });
-        var lights = L.tileLayer('https://lostatnight.org/viirs_tiles/{z}/{x}/{y}.png', { maxZoom: 8, opacity: 0.85, attribution: 'VIIRS' });
+        // Night-light tiles are opaque black where there is no light; blended with
+        // "screen" the black disappears and only the lights are added on top.
+        var lights = L.tileLayer('https://lostatnight.org/viirs_tiles/{z}/{x}/{y}.png', {
+            maxZoom: 8, maxNativeZoom: 8, attribution: 'VIIRS', className: 'lan-lights' });
         var blackMarble = L.tileLayer('https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_Black_Marble/default/2016-01-01/GoogleMapsCompatible_Level8/{z}/{y}/{x}.png', {
-            maxZoom: 8, opacity: 0.9, attribution: 'NASA GIBS Black Marble' });
+            maxZoom: 8, maxNativeZoom: 8, attribution: 'NASA GIBS Black Marble', className: 'lan-lights' });
         if (opts.lights !== false) lights.addTo(map);
         labels.addTo(map);
 
