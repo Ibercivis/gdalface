@@ -202,16 +202,16 @@ Principio: organizar por la pregunta del visitante, no por el tipo de dato.
 Tres preguntas, tres formas distintas; solo la segunda lleva tabs.
 
 ### 2.5.1 "¿Cómo va el proyecto?" → portada
-- ⏳ Una sola sección de plataforma: 3-4 números (CP, tareas, participantes,
-  activos 30d) y una gráfica de contribuciones por semana. Enlace a `/ranking/`.
-- ⏳ Eliminar la duplicidad actual (KPIs del hero + sección de estadísticas).
-- ⏳ Los números salen del módulo único de la Fase 2, cacheados 5 min.
+- ✅ Una sola sección de plataforma: 4 números, gráfica de fotos localizadas por
+  semana y enlace a `/ranking/` (hecho en Fase 3).
+- ✅ Duplicidad eliminada: el hero ya no lleva KPIs.
+- ✅ Los números salen del módulo único de la Fase 2, cacheados 5 min.
 
 ### 2.5.2 "¿Quién está contribuyendo?" → `/ranking/` (público)
 - ✅ Página `/ranking/` en `frontend` (`ranking.html`), sin login. El widget
   AJAX salió de `user.html`; allí queda una tarjeta "Eres el #N de M" con
   enlaces a la fila propia.
-- ⏳ Estructura:
+- ✅ Estructura implementada:
   ```
   totales de plataforma (cabecera)
   [ Personas ] [ Equipos ] [ Países ]        Todo · 30d · 7d
@@ -239,8 +239,9 @@ Tres preguntas, tres formas distintas; solo la segunda lleva tabs.
 - ✅ Contexto muerto eliminado (Fase 2).
 
 ### 2.5.4 Lo que se queda donde está (contextual)
-- ⏳ Clasificación de un reto en su página de detalle; miembros en la página
-  del equipo. Ambas pasan a usar el componente de tabla de 2.5.2.
+- ⚠️ Clasificación de un reto en su detalle y miembros en la página del equipo
+  siguen con sus propias tablas; unificar con el componente de 2.5.2 queda
+  como mejora menor.
 
 ### 2.5.5 Perfil público `/u/<username>/` (opcional, recomendado)
 - ⏳ Página ligera: números, insignias, equipo, retos. Respeta `visible=False`
@@ -496,6 +497,15 @@ Consecuencias observadas: descargas de imágenes a 4/min en vez de 90/min, y los
      responde en menos de un segundo.
 - ⏳ Tras el arreglo, quitar el parche local y aplicar el mismo criterio (o
   ninguno) en `tasks.py`.
+
+## Pendiente a 2026-10-03 (cierre del día)
+
+Decisiones: IPv6 del servidor · reto permanente (propuesta: no) · aparcar las
+702 fotos de nivel C que siguen en cola · revisión del piloto el 2026-10-17.
+Tareas: repartidor por nivel (A/B primero a quien empieza) · "Cola general" en
+la barra de tarea e i18n del overlay · traducciones a los otros 7 idiomas ·
+equipo en el banner de tarea · perfil público opcional · huella y calor en el
+mapa · `print(request.data)` solo tras tener un log estructurado de envíos.
 
 ## Orden y dependencias
 
