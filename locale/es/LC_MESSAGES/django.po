@@ -623,7 +623,7 @@ msgstr "No quedan fotos que cuenten para tus retos"
 msgid ""
 "Leave the challenge from its page to keep locating photos from the general "
 "queue."
-msgstr ""
+msgstr "Sal del reto desde su página para seguir localizando fotos de la cola general."
 
 #: frontend/templates/gettask.html:69
 msgid "An active challenge is waiting for you"
@@ -963,7 +963,7 @@ msgstr[1] ""
 msgid ""
 "No challenge is open right now: every photo you locate goes to the general "
 "queue."
-msgstr ""
+msgstr "Ahora mismo no hay ningún reto abierto: cada foto que localices va a la cola general."
 
 #: frontend/templates/index.html:775
 msgid "Our Mission"
@@ -1020,7 +1020,7 @@ msgstr ""
 msgid ""
 "A challenge is a shared goal with a deadline: a region or a set of photos "
 "the community locates together. Join one and your contributions count for it."
-msgstr ""
+msgstr "Un reto es un objetivo compartido con fecha límite: una región o un conjunto de fotos que la comunidad localiza en equipo. Únete a uno y tus contribuciones contarán para él."
 
 #: frontend/templates/index.html:825
 msgid "No challenge is open right now."
@@ -1030,7 +1030,7 @@ msgstr "Ahora mismo no hay ningún reto abierto."
 msgid ""
 "You can still participate: every photo you locate goes to the general queue. "
 "New challenges are announced here and in the newsletter."
-msgstr ""
+msgstr "Puedes participar igualmente: cada foto que localices va a la cola general. Los nuevos retos se anuncian aquí y en el boletín."
 
 #: frontend/templates/index.html:834
 msgid "Active"
@@ -1758,7 +1758,7 @@ msgstr ""
 msgid ""
 "Who is lighting up the map. Only accounts with a verified e-mail count; "
 "hidden profiles keep their place without their name."
-msgstr ""
+msgstr "Quién está iluminando el mapa. Solo cuentan las cuentas con correo verificado; los perfiles ocultos conservan su puesto sin mostrar el nombre."
 
 #: frontend/templates/ranking.html:64
 msgid "Active in the last 30 days"
