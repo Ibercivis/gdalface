@@ -388,9 +388,9 @@ $(document).ready(function () {
                     }
                 })
             });
-            $('#Skip').on('click', function () {
-                // Reload page
-                // We release the task
+            // Skip: ask why in one click (the reason performs the skip). The
+            // answer is a crowd label for the photo; "no reason" is always offered.
+            function doSkip(reason) {
                 $.ajax({
                     url: '/api/v1/geoattempt-individual/' + geoatempt_id + '/',
                     type: 'PATCH',
@@ -399,7 +399,7 @@ $(document).ready(function () {
                         'X-CSRFToken': csrftoken,
                         'Content-Type': 'application/json'
                     },
-                    data: JSON.stringify({ "status": "PENDING" }),
+                    data: JSON.stringify({ "status": "PENDING", "skip_reason": reason || 'none' }),
                     success: function (response) {
                         location.reload();
                     },
@@ -409,6 +409,24 @@ $(document).ready(function () {
                             (T.error_generic || 'An error occurred.') + ' (' + response.status + ')<br />' + response.responseText);
                     }
                 });
+            }
+            window.LAN_doSkip = doSkip;
+            $('#Skip').on('click', function () {
+                var T = window.LAN_I18N || {};
+                var reasons = [
+                    ['not_night', T.skip_not_night || 'Not a night photo'],
+                    ['no_city',   T.skip_no_city   || 'No city lights visible'],
+                    ['too_hard',  T.skip_too_hard  || 'Too hard to locate'],
+                    ['bad_image', T.skip_bad_image || 'Problem with the image'],
+                ];
+                var html = '<p style="margin:0 0 12px;color:var(--ink-2);font-size:13px;">' + (T.skip_intro || 'Tell us why, it helps us pick better photos.') + '</p>'
+                    + '<div style="display:grid;gap:8px;">'
+                    + reasons.map(function (r) {
+                        return '<button type="button" class="ds-btn ds-btn--secondary ds-btn--md" style="justify-content:flex-start" onclick="LAN_doSkip(\'' + r[0] + '\')">' + r[1] + '</button>';
+                    }).join('')
+                    + '<button type="button" class="ds-btn ds-btn--ghost ds-btn--md" onclick="LAN_doSkip(\'none\')">' + (T.skip_no_reason || 'Just skip') + '</button>'
+                    + '</div>';
+                showAlert(T.skip_title || 'Skip this photo', html);
             });
             const static_url = "/media/original/"; // Static URL
             const imageUrl = static_url + image_name; // Image URL

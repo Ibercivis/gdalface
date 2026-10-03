@@ -16,7 +16,7 @@ from .forms import PrettyJSONWidget
 from .models import (
     Batch, Image, GeoAttempt, GeoAttemptsByUserByDay, TutorialEvent,
     Challenge, ChallengeParticipant, FailedImage, DiplomaDownload, StatsEvent,
-    ChallengeEnrollmentPeriod,
+    ChallengeEnrollmentPeriod, SkipReason,
 )
 from .tasks import download_image, generate_from_list
 
@@ -503,6 +503,17 @@ class ChallengeEnrollmentPeriodAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request):
         return False  # written by join/leave only
+
+
+@admin.register(SkipReason)
+class SkipReasonAdmin(admin.ModelAdmin):
+    list_display = ('created_at', 'image', 'reason', 'user')
+    list_filter = ('reason',)
+    search_fields = ('image__name', 'user__username')
+    readonly_fields = ('image', 'geoattempt', 'user', 'reason', 'created_at')
+
+    def has_add_permission(self, request):
+        return False
 
 
 @admin.register(StatsEvent)

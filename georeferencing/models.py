@@ -650,3 +650,32 @@ class NasaPhoto(models.Model):
 
     def __str__(self):
         return self.nasa_id
+
+
+class SkipReason(models.Model):
+    """
+    Why a volunteer skipped a task. One click on the Skip chooser; optional
+    ("no reason" is allowed). Aggregated per image it is a crowd-sourced content
+    label (not night / no city lights / too hard / broken image) that feeds the
+    catalogue and the auto-parking rule.
+    """
+    REASONS = (
+        ('not_night', _('Not a night photo')),
+        ('no_city', _('No city lights visible')),
+        ('too_hard', _('Too hard to locate')),
+        ('bad_image', _('Problem with the image')),
+        ('none', _('No reason given')),
+    )
+    PARKING_REASONS = ('not_night', 'no_city', 'bad_image')
+
+    image = models.ForeignKey('Image', on_delete=models.CASCADE, related_name='skip_reasons')
+    geoattempt = models.ForeignKey('GeoAttempt', null=True, blank=True, on_delete=models.SET_NULL, related_name='skip_reasons')
+    user = models.ForeignKey(get_user_model(), null=True, blank=True, on_delete=models.SET_NULL, related_name='skip_reasons')
+    reason = models.CharField(max_length=12, choices=REASONS, default='none')
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        indexes = [models.Index(fields=['image', 'reason'])]
+
+    def __str__(self):
+        return f'{self.image_id} {self.reason} {self.created_at:%Y-%m-%d}'

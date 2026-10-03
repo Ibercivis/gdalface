@@ -464,6 +464,13 @@ evento en `/stats/`.
   Si los tres criterios se cumplen: siguiente tanda de B (ISS072, ISS047,
   ISS065) con la misma regla, 1000-1500 fotos cada una, y dejar la cola en
   pocas semanas de trabajo.
+- ✅ **Motivo de salto** (2026-10-03): al pulsar Saltar se elige en un clic
+  "no es de noche / no se ven ciudades / demasiado difícil / problema con la
+  imagen / saltar sin más" (`SkipReason`). Se ve por batch en "Batch health".
+  `park_by_votes` aparca fotos con ≥ 2 votos de no-noche / sin-ciudad /
+  imagen-mala y sin trabajo hecho; **en modo informe** hasta la revisión del
+  2026-10-17: entonces mirar los votos y, si son coherentes, pasarlo a
+  `--apply` y programarlo semanal.
 - ⏳ Repartidor: servir A y B primero a quien empieza; C a quien tiene recorrido.
 - ⏳ Las 36 fotos de día del zip quedan fuera a propósito.
 

@@ -371,8 +371,11 @@ def _batch_health(now):
             la = sum(p[0] for p in pts) / len(pts); lo = sum(p[1] for p in pts) / len(pts)
             cla, clo = centre[g.image_id]
             errs.append(math.hypot(cla - la, (clo - lo) * math.cos(math.radians(la))) * 111)
+        from .models import SkipReason
+        reasons = dict(SkipReason.objects.filter(image_id__in=ids).values_list('reason').annotate(n=Count('id')).order_by())
         out.append({
             'id': b.id, 'name': b.name, 'created': b.createdDateTime.date().isoformat(),
+            'reasons': reasons,
             'images': len(ids), 'parked': sum(1 for _, r in imgs if r == 0),
             'pending': sum(a['pend'] for a in agg.values()), 'done': done,
             'done_7d': GeoAttempt.objects.filter(image_id__in=ids, status='DONE', finishedDateTime__gte=now - timedelta(days=7)).count(),

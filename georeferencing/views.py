@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from .serializers import GeoAttemptSerializer, ImageSerializer, MiniGeoAttemptSerializer
 from .models import (
+    SkipReason,
     GeoAttempt, Image, Batch, GeoAttemptsByUserByDay, TutorialEvent,
     Challenge, ChallengeParticipant,
 )
@@ -589,7 +590,13 @@ class GeoAttemptIndividualView(APIView):
                 if os.path.exists(tile_dir):
                     shutil.rmtree(tile_dir)
                 # Come back to pending status
-                print('Come back to pending status')
+                # Optional crowd label: why was it skipped? (SkipReason)
+                reason = request.data.get('skip_reason') or 'none'
+                if reason not in dict(SkipReason.REASONS):
+                    reason = 'none'
+                SkipReason.objects.create(
+                    image=geoattemp.image, geoattempt=geoattemp,
+                    user=request.user if request.user.is_authenticated else None, reason=reason)
                 # We are doing it mainly for control panel
                 geoattemp.skipped += 1
                 geoattemp.assignedDateTime = None

@@ -391,3 +391,34 @@ class MyChallengeFinishedTests(TestCase):
         data = self.client.get(reverse('challenge-mine')).json()
         self.assertFalse(data['enrolled'])
         self.assertEqual(data['reason'], 'challenge finished')
+
+
+class SkipReasonTests(TestCase):
+    def test_skip_records_reason_and_votes_can_park(self):
+        from io import StringIO
+        from django.core.management import call_command
+        from georeferencing.models import SkipReason
+        staff = User.objects.create_user('s', 's@example.org', 'pw', is_staff=True)
+        u = User.objects.create_user('u', 'u@example.org', 'pw')
+        img = Image.objects.create(name='x.JPG', batch=Batch.objects.create(name='B', user=staff))
+        ga = GeoAttempt.objects.create(image=img, status='ASSIGNED', assignedUser=u, assignedDateTime=timezone.now())
+        GeoAttempt.objects.create(image=img, status='PENDING')
+        self.client.force_login(u)
+        r = self.client.patch(reverse('geoattempt-individual', args=[ga.pk]), {'status': 'PENDING', 'skip_reason': 'not_night'},
+                              content_type='application/json')
+        self.assertEqual(r.status_code, 200)
+        sr = SkipReason.objects.get()
+        self.assertEqual((sr.reason, sr.user, sr.image), ('not_night', u, img))
+        # anonymous skip with an unknown reason is still a skip, labelled "none"
+        ga2 = GeoAttempt.objects.create(image=img, status='ASSIGNED', assignedDateTime=timezone.now())
+        self.client.logout()
+        self.client.patch(reverse('geoattempt-individual', args=[ga2.pk]), {'status': 'PENDING', 'skip_reason': 'bogus'}, content_type='application/json')
+        self.assertEqual(SkipReason.objects.filter(reason='none', user__isnull=True).count(), 1)
+        # one more "no_city" vote → 2 parking votes → park_by_votes parks it
+        SkipReason.objects.create(image=img, reason='no_city')
+        out = StringIO(); call_command('park_by_votes', stdout=out)
+        self.assertIn('candidates=1', out.getvalue())
+        self.assertGreater(GeoAttempt.objects.filter(image=img, status='PENDING').count(), 0)
+        call_command('park_by_votes', '--apply', stdout=out)
+        img.refresh_from_db()
+        self.assertEqual((img.replicas, GeoAttempt.objects.filter(image=img, status='PENDING').count()), (0, 0))
