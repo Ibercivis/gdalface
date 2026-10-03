@@ -54,17 +54,24 @@
             thanks_body:         "{% trans 'Your control points have been submitted successfully.' %}",
             // Empty / conflict
             all_done_title:      "{% trans 'All done here' %}",
-            all_done_heading:    "{% trans 'No more tasks available here' %}",
-            all_done_body:       "{% trans 'Either every image in this batch has been georeferenced enough times, or there are no pending tasks at the moment. Thank you for contributing!' %}",
-            challenge_active:    "{% trans 'Challenge filter active' %}",
-            no_match_one:        "{% trans 'No tasks match the constraints of your active challenge' %}",
-            no_match_many:       "{% trans 'No tasks match the constraints of your active challenges' %}",
-            in_this_batch:       "{% trans 'in this batch.' %}",
-            leave_to_change:     "{% trans 'You can leave the challenge from its page if you want different tasks.' %}",
+            all_done_heading:    "{% trans 'No more tasks available right now' %}",
+            all_done_body:       "{% trans 'Every available photo has been located enough times, or there are no pending tasks at the moment. Thank you for contributing!' %}",
+            challenge_active:    "{% trans 'Your challenge has no tasks left' %}",
+            no_match_one:        "{% trans 'There are no photos left that count for your challenge' %}",
+            no_match_many:       "{% trans 'There are no photos left that count for your challenges' %}",
+            leave_to_change:     "{% trans 'Leave the challenge from its page to keep locating photos from the general queue.' %}",
             // Buttons
-            btn_pick_batch:      "{% trans 'Pick another batch' %}",
+            btn_view_challenge:  "{% trans 'View challenge' %}",
+            btn_browse_challenges: "{% trans 'Browse challenges' %}",
             btn_go_home:         "{% trans 'Go home' %}",
-            btn_go_batches:      "{% trans 'Go to batches' %}"
+            // Challenge banner promo
+            promo_one:           "{% trans 'An active challenge is waiting for you' %}",
+            promo_many:          "{% trans '{n} active challenges are waiting for you' %}",
+            promo_one_anon:      "{% trans 'An active challenge is going on' %}",
+            promo_many_anon:     "{% trans '{n} active challenges are going on' %}",
+            cta_join:            "{% trans 'Join one' %}",
+            cta_sign_in:         "{% trans 'Sign in' %}",
+            general_queue:       "{% trans 'General queue' %}"
         });
     </script>
 </head>

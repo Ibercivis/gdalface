@@ -267,3 +267,30 @@ class RankingPageTests(TestCase):
         r = self.client.get('/')
         self.assertContains(r, 'href="/ranking/"')
         self.assertNotContains(r, 'href="/#statistics-section"')
+
+
+class HomepageStructureTests(TestCase):
+    def test_single_entry_point_no_batches_no_contact_form(self):
+        r = self.client.get('/')
+        self.assertEqual(r.status_code, 200)
+        html = r.content.decode()
+        self.assertNotIn('id="batch-section"', html)
+        self.assertNotIn('Available Batches', html)
+        self.assertNotIn('id="contact-section"', html)
+        self.assertNotIn('href="/#batch-section"', html)
+        self.assertIn('id="challenges-section"', html)          # always rendered
+        self.assertIn('No challenge is open right now', html)   # empty state
+        self.assertIn('id="statistics-section"', html)
+        self.assertIn('href="/ranking/"', html)
+        self.assertEqual(html.count('class="ds-kpi__value"'), 0)  # numbers live in one place only
+        self.assertIn('ds-nav-toggle', html)                    # mobile menu
+
+    def test_hero_hint_counts_open_challenges(self):
+        from datetime import timedelta
+        from django.utils import timezone
+        from georeferencing.models import Challenge
+        now = timezone.now()
+        Challenge.objects.create(name='Open', start_at=now - timedelta(days=1), end_at=now + timedelta(days=5))
+        r = self.client.get('/')
+        self.assertEqual(r.context['open_challenges'], 1)
+        self.assertNotContains(r, 'No challenge is open right now')

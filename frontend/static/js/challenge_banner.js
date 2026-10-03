@@ -218,16 +218,21 @@
     function showPromoOrClear(slot, isAuth) {
         return fetchActiveCount().then(function (n) {
             if (!n) { clearSlot(slot); return; }
+            var T = window.LAN_I18N || {};
+            function txt(one, many) {
+                var s = n === 1 ? (T[one] || one) : (T[many] || many);
+                return s.replace('{n}', '<b>' + n + '</b>');
+            }
             if (isAuth) {
                 renderPromo(slot, {
-                    text: '<b>' + n + '</b> active challenge' + (n === 1 ? '' : 's') + ' available',
-                    cta: 'Join one',
-                    href: '/challenges/',
+                    text: txt('promo_one', 'promo_many'),
+                    cta: T.cta_join || 'Join one',
+                    href: '/#challenges-section',
                 });
             } else {
                 renderPromo(slot, {
-                    text: '<b>' + n + '</b> active challenge' + (n === 1 ? '' : 's') + ' going on',
-                    cta: 'Sign in',
+                    text: txt('promo_one_anon', 'promo_many_anon'),
+                    cta: T.cta_sign_in || 'Sign in',
                     href: '/accounts/login/?next=/gettask',
                 });
             }

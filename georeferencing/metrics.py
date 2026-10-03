@@ -169,3 +169,26 @@ def streak(user, tolerate_today=True):
         current += 1
         i -= 1
     return current, best
+
+
+def weekly_contributions(weeks=12, use_cache=True):
+    """[{'week': 'YYYY-MM-DD' (Monday), 'n': contributions}] for the last `weeks`
+    weeks including the current one. Project-wide, anonymous included."""
+    key = f'metrics:weekly:{weeks}:v1'
+    data = cache.get(key) if use_cache else None
+    if data is not None:
+        return data
+    from django.db.models.functions import TruncWeek
+    from .models import GeoAttempt
+    today = timezone.now().date()
+    this_monday = today - timedelta(days=today.weekday())
+    start = this_monday - timedelta(weeks=weeks - 1)
+    rows = (GeoAttempt.objects.filter(status='DONE', finishedDateTime__date__gte=start)
+            .annotate(w=TruncWeek('finishedDateTime')).values('w')
+            .annotate(n=Count('id')).order_by())
+    counts = {r['w'].date() if hasattr(r['w'], 'date') else r['w']: r['n'] for r in rows}
+    data = [{'week': (start + timedelta(weeks=i)).isoformat(),
+             'n': counts.get(start + timedelta(weeks=i), 0)} for i in range(weeks)]
+    if use_cache:
+        cache.set(key, data, CACHE_TTL)
+    return data

@@ -41,9 +41,6 @@ def index(request):
         return HttpResponseNotAllowed(['GET'])
     # Get the user
     user = request.user
-    # Get all batches to display them on the homepage
-    batchs = Batch.objects.all()
-    
     # Project statistics — single definitions live in georeferencing.metrics.
     from georeferencing import metrics
     totals = metrics.project_totals()
@@ -69,6 +66,7 @@ def index(request):
         if m and not days: parts.append(f'{m}m')
         return ' '.join(parts) or '<1m'
     total_time_formatted = _format_minutes(total_minutes)
+    weekly = metrics.weekly_contributions(12)
 
     # Visible challenges on the home page: anything not yet finished, plus
     # finished ones that ended in the last 30 days for transparency.
@@ -95,7 +93,6 @@ def index(request):
     # Prepare context
     context = {
         'user': user,
-        'batchs': batchs,
         # Adding statistics to the context
         'total_users': total_users,
         'total_tasks': total_tasks,
@@ -108,6 +105,9 @@ def index(request):
         'total_time_formatted': total_time_formatted,
         'completion_pct': completion_pct,
         'visible_challenges': visible_challenges,
+        'open_challenges': sum(1 for ch in visible_challenges if ch.status in ('active', 'upcoming', 'paused')),
+        'weekly': weekly,
+        'weekly_max': max([w['n'] for w in weekly] + [1]),
         'enrolled_challenge_id': enrolled_challenge_id,
     }
     return render(request, 'index.html', context)

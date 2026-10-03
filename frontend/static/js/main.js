@@ -1328,8 +1328,8 @@ $(document).ready(function () {
             if (response.status === 409 && body.challenge_conflict) {
                 var manyChallenges = (body.challenges || []).length !== 1;
                 var noMatchTxt = manyChallenges
-                    ? (T.no_match_many || 'No tasks match the constraints of your active challenges')
-                    : (T.no_match_one  || 'No tasks match the constraints of your active challenge');
+                    ? (T.no_match_many || 'There are no photos left that count for your challenges')
+                    : (T.no_match_one  || 'There are no photos left that count for your challenge');
                 var firstCh = (body.challenges || [])[0];
                 var nameHtml = '';
                 if (firstCh) {
@@ -1342,20 +1342,19 @@ $(document).ready(function () {
                 }
                 actionsHtml += '<a href="/#challenges-section" class="ds-btn ds-btn--secondary">'
                     + (T.btn_browse_challenges || 'Browse challenges') + '</a>'
-                    + '<a href="/#batch-section" class="ds-btn ds-btn--ghost">'
-                    + (T.btn_pick_batch || 'Pick another batch') + '</a>'
+                    + '<a href="/" class="ds-btn ds-btn--ghost">'
+                    + (T.btn_go_home || 'Go home') + '</a>'
                     + '</div>';
                 var html = ''
                     + '<p>'
                     + noMatchTxt
                     + nameHtml
-                    + ' ' + (T.in_this_batch || 'in this batch.')
-                    + '</p>'
+                    + '.</p>'
                     + '<p style="margin:10px 0 14px;color:var(--ink-2);font-size:12.5px;">'
                     + (T.leave_to_change || 'You can leave the challenge from its page if you want different tasks.')
                     + '</p>'
                     + actionsHtml;
-                showAlert(T.challenge_active || 'Challenge filter active', html);
+                showAlert(T.challenge_active || 'Your challenge has no tasks left', html);
                 return;
             }
 
@@ -1371,8 +1370,8 @@ $(document).ready(function () {
                     + (T.all_done_body || 'Either every image in this batch has been georeferenced enough times, or there are no pending tasks at the moment. Thank you for contributing!')
                     + '</p>'
                     + '<div style="display:inline-flex;flex-wrap:wrap;gap:8px;justify-content:center;">'
-                    + '<a href="/#batch-section" class="ds-btn ds-btn--primary">'
-                    + (T.btn_pick_batch || 'Pick another batch') + '</a>'
+                    + '<a href="/#challenges-section" class="ds-btn ds-btn--primary">'
+                    + (T.btn_browse_challenges || 'Browse challenges') + '</a>'
                     + '<a href="/" class="ds-btn ds-btn--ghost">'
                     + (T.btn_go_home || 'Go home') + '</a>'
                     + '</div>'
@@ -1384,8 +1383,8 @@ $(document).ready(function () {
             // Network error (no response) or 5xx.
             var msg = body.error || (T.error_generic || 'An error occurred.');
             showAlert(T.error_title || 'Error',
-                msg + '<br /><br /><a href="/#batch-section" class="ds-btn ds-btn--primary ds-btn--sm">'
-                + (T.btn_go_batches || 'Go to batches') + '</a>');
+                msg + '<br /><br /><a href="/" class="ds-btn ds-btn--primary ds-btn--sm">'
+                + (T.btn_go_home || 'Go home') + '</a>');
         }
 
     });

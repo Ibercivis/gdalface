@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-03 09:29+0000\n"
+"POT-Creation-Date: 2026-10-03 09:35+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,7 +34,7 @@ msgid "participants"
 msgstr "участники"
 
 #: frontend/templates/_challenge_card.html:53
-#: frontend/templates/gettask.html:221 frontend/templates/index.html:831
+#: frontend/templates/gettask.html:228 frontend/templates/index.html:848
 msgid "Paused"
 msgstr "Приостановлено"
 
@@ -156,29 +156,29 @@ msgstr ""
 msgid "Quick Links"
 msgstr "Быстрые ссылки"
 
-#: frontend/templates/_footer.html:185 frontend/templates/_topbar.html:240
+#: frontend/templates/_footer.html:185 frontend/templates/_topbar.html:258
 msgid "Home"
 msgstr "Главная"
 
-#: frontend/templates/_footer.html:186 frontend/templates/_topbar.html:242
-msgid "Batches"
-msgstr "Пакеты"
-
-#: frontend/templates/_footer.html:187 frontend/templates/_topbar.html:244
-#: frontend/templates/index.html:860
+#: frontend/templates/_footer.html:186 frontend/templates/_topbar.html:262
+#: frontend/templates/index.html:748 frontend/templates/index.html:828
 msgid "Participate"
 msgstr "Участвовать"
 
-#: frontend/templates/_footer.html:188 frontend/templates/_topbar.html:241
-#: frontend/templates/index.html:810 frontend/templates/index.html:938
+#: frontend/templates/_footer.html:187 frontend/templates/_topbar.html:259
+#: frontend/templates/index.html:817
 msgid "Challenges"
 msgstr "Испытания"
 
-#: frontend/templates/_footer.html:189 frontend/templates/_topbar.html:243
+#: frontend/templates/_footer.html:188 frontend/templates/_topbar.html:261
 #: frontend/templates/ranking.html:5 frontend/templates/ranking.html:57
-#| msgid "Rank"
 msgid "Ranking"
 msgstr "Место"
+
+#: frontend/templates/_footer.html:189 frontend/templates/_topbar.html:260
+#: frontend/templates/ranking.html:76 user_profile/templates/user.html:1038
+msgid "Teams"
+msgstr ""
 
 #: frontend/templates/_footer.html:190
 msgid "Manual"
@@ -194,8 +194,7 @@ msgstr "Видеоруководство"
 msgid "Contact"
 msgstr "Контакты"
 
-#: frontend/templates/_footer.html:218 frontend/templates/gettask.html:561
-#: frontend/templates/index.html:1025
+#: frontend/templates/_footer.html:218 frontend/templates/gettask.html:568
 msgid "Developed by <b>Ibercivis</b>"
 msgstr "Разработано <b>Ibercivis</b>"
 
@@ -224,103 +223,107 @@ msgstr "Правовая информация"
 msgid "© 2025 Lost at Night. All rights reserved."
 msgstr "© 2025 Lost at Night. Все права защищены."
 
-#: frontend/templates/_topbar.html:205 frontend/templates/_topbar.html:255
-#: frontend/templates/gettask.html:226 georeferencing/models.py:544
+#: frontend/templates/_topbar.html:219 frontend/templates/_topbar.html:273
+#: frontend/templates/gettask.html:233 georeferencing/models.py:544
 #: user_profile/templates/diploma_challenge.html:88
 #: user_profile/templates/diploma_challenge.html:91
 #: user_profile/templates/user.html:941
 msgid "Challenge"
 msgstr "Испытание"
 
-#: frontend/templates/_topbar.html:207
+#: frontend/templates/_topbar.html:221
 #: user_profile/templates/diploma_general.html:71
 msgid "Joined"
 msgstr "Вы присоединились"
 
-#: frontend/templates/_topbar.html:208
+#: frontend/templates/_topbar.html:222
 msgid "You’re in!"
 msgstr "Вы в игре!"
 
-#: frontend/templates/_topbar.html:209
+#: frontend/templates/_topbar.html:223
 #, python-brace-format
 msgid "You’re in {name}"
 msgstr "Вы в {name}"
 
-#: frontend/templates/_topbar.html:210
+#: frontend/templates/_topbar.html:224
 msgid "Your previous active challenge was automatically left."
 msgstr "Ваш предыдущий активный challenge автоматически закрыт."
 
-#: frontend/templates/_topbar.html:211
+#: frontend/templates/_topbar.html:225
 #: frontend/templates/challenge_detail.html:524 georeferencing/diplomas.py:45
 msgid "Bronze"
 msgstr "Бронза"
 
-#: frontend/templates/_topbar.html:212
+#: frontend/templates/_topbar.html:226
 #: frontend/templates/challenge_detail.html:525 georeferencing/diplomas.py:44
 msgid "Silver"
 msgstr "Серебро"
 
-#: frontend/templates/_topbar.html:213
+#: frontend/templates/_topbar.html:227
 #: frontend/templates/challenge_detail.html:526
 #: frontend/templates/challenge_detail.html:568 georeferencing/diplomas.py:43
 msgid "Gold"
 msgstr "Золото"
 
-#: frontend/templates/_topbar.html:214
+#: frontend/templates/_topbar.html:228
 msgid "Batch"
 msgstr "Пакет:"
 
-#: frontend/templates/_topbar.html:215
+#: frontend/templates/_topbar.html:229
 msgid "Region defined"
 msgstr "Регион задан"
 
-#: frontend/templates/_topbar.html:216
+#: frontend/templates/_topbar.html:230
 msgid "images"
 msgstr "Изображения:"
 
-#: frontend/templates/_topbar.html:217 frontend/templates/ranking.html:139
+#: frontend/templates/_topbar.html:231 frontend/templates/ranking.html:139
 msgid "tasks"
 msgstr "задач"
 
-#: frontend/templates/_topbar.html:218
+#: frontend/templates/_topbar.html:232 frontend/templates/gettask.html:65
 msgid "View challenge"
 msgstr "Посмотреть испытание"
 
-#: frontend/templates/_topbar.html:219
+#: frontend/templates/_topbar.html:233
 msgid "Start contributing"
 msgstr "Начать вносить вклад"
 
-#: frontend/templates/_topbar.html:221
+#: frontend/templates/_topbar.html:235
 #: frontend/templates/challenge_detail.html:599
 msgid "Left"
 msgstr "Вы вышли"
 
-#: frontend/templates/_topbar.html:222
+#: frontend/templates/_topbar.html:236
 msgid "You’ve left the challenge"
 msgstr "Вы вышли из challenge"
 
-#: frontend/templates/_topbar.html:223
+#: frontend/templates/_topbar.html:237
 #, python-brace-format
 msgid "Your {n} CPs are kept; you can rejoin any time."
 msgstr "Ваши {n} CP сохраняются; вы можете вернуться в любой момент."
 
-#: frontend/templates/_topbar.html:224
+#: frontend/templates/_topbar.html:238 frontend/templates/gettask.html:66
 msgid "Browse challenges"
 msgstr "Просмотр испытаний"
 
-#: frontend/templates/_topbar.html:225 frontend/templates/gettask.html:67
+#: frontend/templates/_topbar.html:239 frontend/templates/gettask.html:67
 msgid "Go home"
 msgstr "На главную"
 
-#: frontend/templates/_topbar.html:263 frontend/templates/gettask.html:230
+#: frontend/templates/_topbar.html:253
+msgid "Menu"
+msgstr ""
+
+#: frontend/templates/_topbar.html:281 frontend/templates/gettask.html:237
 #: frontend/templates/ranking.html:111
 msgid "Your area"
 msgstr "Ваш район"
 
-#: frontend/templates/_topbar.html:274 frontend/templates/ranking.html:109
-#: templates/account/login.html:10 templates/account/login.html:340
-#: templates/account/logout.html:203 templates/account/password_reset.html:260
-#: templates/account/signup.html:471
+#: frontend/templates/_topbar.html:292 frontend/templates/gettask.html:74
+#: frontend/templates/ranking.html:109 templates/account/login.html:10
+#: templates/account/login.html:340 templates/account/logout.html:203
+#: templates/account/password_reset.html:260 templates/account/signup.html:471
 msgid "Sign in"
 msgstr "Войти"
 
@@ -361,7 +364,7 @@ msgid "Log in to join"
 msgstr "Войдите, чтобы присоединиться"
 
 #: frontend/templates/challenge_detail.html:517
-#: frontend/templates/gettask.html:222
+#: frontend/templates/gettask.html:229
 msgid "Group progress"
 msgstr "Прогресс группы"
 
@@ -370,7 +373,7 @@ msgid "Total CPs"
 msgstr "Всего КТ"
 
 #: frontend/templates/challenge_detail.html:542
-#: frontend/templates/index.html:749 frontend/templates/ranking.html:63
+#: frontend/templates/index.html:880 frontend/templates/ranking.html:63
 msgid "Participants"
 msgstr "Участники"
 
@@ -399,7 +402,7 @@ msgid "Your performance"
 msgstr "Личный кабинет"
 
 #: frontend/templates/challenge_detail.html:585
-#: frontend/templates/gettask.html:219 user_profile/templates/user.html:944
+#: frontend/templates/gettask.html:226 user_profile/templates/user.html:944
 msgid "Your rank"
 msgstr "Ваш рейтинг"
 
@@ -423,7 +426,7 @@ msgid "Only %(cp)s CP to climb one place!"
 msgstr ""
 
 #: frontend/templates/challenge_detail.html:625
-#: frontend/templates/gettask.html:224
+#: frontend/templates/gettask.html:231
 msgid "Leaderboard"
 msgstr "Рейтинг"
 
@@ -492,27 +495,27 @@ msgstr "осталось"
 msgid "Leave this challenge? Your contributions are preserved."
 msgstr "Покинуть это испытание? Ваши вклады сохраняются."
 
-#: frontend/templates/contact.html:35 frontend/templates/index.html:947
+#: frontend/templates/contact.html:35
 msgid "Contact Us"
 msgstr "Свяжитесь с нами"
 
-#: frontend/templates/contact.html:36 frontend/templates/index.html:948
+#: frontend/templates/contact.html:36
 msgid "Have questions about Lost at Night? We'd love to hear from you!"
 msgstr "Есть вопросы о Lost at Night? Мы будем рады вашему сообщению!"
 
-#: frontend/templates/contact.html:67 frontend/templates/index.html:957
+#: frontend/templates/contact.html:67
 msgid "Your Name"
 msgstr "Ваше имя"
 
-#: frontend/templates/contact.html:72 frontend/templates/index.html:961
+#: frontend/templates/contact.html:72
 msgid "Email Address"
 msgstr "Адрес электронной почты"
 
-#: frontend/templates/contact.html:77 frontend/templates/index.html:965
+#: frontend/templates/contact.html:77
 msgid "Subject"
 msgstr "Тема"
 
-#: frontend/templates/contact.html:82 frontend/templates/index.html:969
+#: frontend/templates/contact.html:82
 msgid "Message"
 msgstr "Сообщение"
 
@@ -520,7 +523,7 @@ msgstr "Сообщение"
 msgid "Please enable JavaScript to send the form."
 msgstr "Включите JavaScript, чтобы отправить форму."
 
-#: frontend/templates/contact.html:95 frontend/templates/index.html:972
+#: frontend/templates/contact.html:95
 msgid "Send Message"
 msgstr "Отправить сообщение"
 
@@ -585,13 +588,17 @@ msgid "All done here"
 msgstr "Здесь всё готово"
 
 #: frontend/templates/gettask.html:58
-msgid "No more tasks available here"
+#| msgid "No more tasks available here"
+msgid "No more tasks available right now"
 msgstr "Здесь больше нет заданий"
 
 #: frontend/templates/gettask.html:59
+#| msgid ""
+#| "Either every image in this batch has been georeferenced enough times, or "
+#| "there are no pending tasks at the moment. Thank you for contributing!"
 msgid ""
-"Either every image in this batch has been georeferenced enough times, or "
-"there are no pending tasks at the moment. Thank you for contributing!"
+"Every available photo has been located enough times, or there are no pending "
+"tasks at the moment. Thank you for contributing!"
 msgstr ""
 "Все изображения этого батча уже геореференсированы нужное число раз, либо в "
 "данный момент нет заданий. Спасибо за участие!Все изображения этого батча "
@@ -599,110 +606,129 @@ msgstr ""
 "Спасибо за участие!"
 
 #: frontend/templates/gettask.html:60
-msgid "Challenge filter active"
-msgstr "Фильтр challenge активен"
+#| msgid "Your challenges"
+msgid "Your challenge has no tasks left"
+msgstr "Ваши испытания"
 
 #: frontend/templates/gettask.html:61
-msgid "No tasks match the constraints of your active challenge"
-msgstr "Нет заданий, удовлетворяющих условиям вашего активного challenge"
+msgid "There are no photos left that count for your challenge"
+msgstr ""
 
 #: frontend/templates/gettask.html:62
-msgid "No tasks match the constraints of your active challenges"
-msgstr "Нет заданий, удовлетворяющих условиям ваших активных challenges"
+msgid "There are no photos left that count for your challenges"
+msgstr ""
 
 #: frontend/templates/gettask.html:63
-msgid "in this batch."
-msgstr "в этом батче."
+msgid ""
+"Leave the challenge from its page to keep locating photos from the general "
+"queue."
+msgstr ""
 
-#: frontend/templates/gettask.html:64
-msgid "You can leave the challenge from its page if you want different tasks."
-msgstr "Если хотите другие задания — можно выйти из challenge на его странице."
+#: frontend/templates/gettask.html:69
+msgid "An active challenge is waiting for you"
+msgstr ""
 
-#: frontend/templates/gettask.html:66
-msgid "Pick another batch"
-msgstr "Выбрать другой батч"
+#: frontend/templates/gettask.html:70
+#, python-brace-format
+msgid "{n} active challenges are waiting for you"
+msgstr ""
 
-#: frontend/templates/gettask.html:68
-msgid "Go to batches"
-msgstr "К пакетам"
+#: frontend/templates/gettask.html:71
+msgid "An active challenge is going on"
+msgstr ""
 
-#: frontend/templates/gettask.html:220
+#: frontend/templates/gettask.html:72
+#, python-brace-format
+msgid "{n} active challenges are going on"
+msgstr ""
+
+#: frontend/templates/gettask.html:73
+#| msgid "Joined"
+msgid "Join one"
+msgstr "Вы присоединились"
+
+#: frontend/templates/gettask.html:75
+#| msgid "General"
+msgid "General queue"
+msgstr "Общее"
+
+#: frontend/templates/gettask.html:227
 #: user_profile/templates/diploma_challenge.html:64
 #: user_profile/templates/user.html:807 user_profile/templates/user.html:812
 #: user_profile/templates/user.html:817
 msgid "of"
 msgstr "из"
 
-#: frontend/templates/gettask.html:223
+#: frontend/templates/gettask.html:230
 msgid "Leader"
 msgstr "Лидер"
 
-#: frontend/templates/gettask.html:225
+#: frontend/templates/gettask.html:232
 msgid "You are leading!"
 msgstr "Вы лидируете!"
 
-#: frontend/templates/gettask.html:242
+#: frontend/templates/gettask.html:249
 msgid "Replay tutorial"
 msgstr "Повторить обучение"
 
-#: frontend/templates/gettask.html:336
+#: frontend/templates/gettask.html:343
 msgid "Unknown"
 msgstr "Неизвестно"
 
-#: frontend/templates/gettask.html:369
+#: frontend/templates/gettask.html:376
 msgid "Date"
 msgstr "Дата:"
 
-#: frontend/templates/gettask.html:370
+#: frontend/templates/gettask.html:377
 msgid "Focal length"
 msgstr "Фокусное расстояние:"
 
-#: frontend/templates/gettask.html:371
+#: frontend/templates/gettask.html:378
 msgid "Location"
 msgstr "Местоположение:"
 
-#: frontend/templates/gettask.html:371
+#: frontend/templates/gettask.html:378
 msgid "looking up…"
 msgstr "поиск…"
 
-#: frontend/templates/gettask.html:372
+#: frontend/templates/gettask.html:379
 msgid "Nadir point"
 msgstr "Надирная точка:"
 
-#: frontend/templates/gettask.html:373
+#: frontend/templates/gettask.html:380
 msgid "Photo center"
 msgstr "Центр фото:"
 
-#: frontend/templates/gettask.html:374
+#: frontend/templates/gettask.html:381
 msgid "Photo center (ML)"
 msgstr "Центр фото (ML):"
 
-#: frontend/templates/gettask.html:380
+#: frontend/templates/gettask.html:387
 msgid "ISS Expedition"
 msgstr "Экспедиция МКС"
 
-#: frontend/templates/gettask.html:393
+#: frontend/templates/gettask.html:400
 msgid "Your stats"
 msgstr "Ваша статистика"
 
-#: frontend/templates/gettask.html:401
+#: frontend/templates/gettask.html:408
 msgid "Total"
 msgstr "Всего"
 
-#: frontend/templates/gettask.html:402
+#: frontend/templates/gettask.html:409
 #: user_profile/templates/diploma_challenge.html:64
 msgid "Rank"
 msgstr "Место"
 
-#: frontend/templates/gettask.html:403
+#: frontend/templates/gettask.html:410
 msgid "To next"
 msgstr "До следующего"
 
-#: frontend/templates/gettask.html:404
+#: frontend/templates/gettask.html:411
 msgid "To #1"
 msgstr "До №1"
 
-#: frontend/templates/gettask.html:409 frontend/templates/ranking.html:135
+#: frontend/templates/gettask.html:416 frontend/templates/ranking.html:135
 #: teams/templates/team_detail.html:76 teams/templates/team_detail.html:126
 #: user_profile/templates/diploma_general.html:31
 #: user_profile/templates/diploma_verify.html:84
@@ -710,15 +736,15 @@ msgstr "До №1"
 msgid "Tasks"
 msgstr "Задачи"
 
-#: frontend/templates/gettask.html:416
+#: frontend/templates/gettask.html:423
 msgid "Control pts"
 msgstr "Контр. точки"
 
-#: frontend/templates/gettask.html:423
+#: frontend/templates/gettask.html:430
 msgid "Hours"
 msgstr "Часы"
 
-#: frontend/templates/gettask.html:438
+#: frontend/templates/gettask.html:445
 #, python-format
 msgid ""
 "You're participating anonymously — <a href=\"%(url)s\">create an account</a> "
@@ -727,67 +753,67 @@ msgstr ""
 "Вы участвуете анонимно — <a href=\"%(url)s\">создайте аккаунт</a>, чтобы "
 "сохранить прогресс и попасть в рейтинг."
 
-#: frontend/templates/gettask.html:443
+#: frontend/templates/gettask.html:450
 msgid "Dismiss"
 msgstr "Закрыть"
 
-#: frontend/templates/gettask.html:445
+#: frontend/templates/gettask.html:452
 msgid "Start locating"
 msgstr "Начать локализацию"
 
-#: frontend/templates/gettask.html:458
+#: frontend/templates/gettask.html:465
 msgid "Georeferencing!"
 msgstr "Геопривязка!"
 
-#: frontend/templates/gettask.html:478
+#: frontend/templates/gettask.html:485
 msgid "OK"
 msgstr "OK"
 
-#: frontend/templates/gettask.html:491
+#: frontend/templates/gettask.html:498
 msgid "Show photo metadata"
 msgstr "Показать метаданные фото"
 
-#: frontend/templates/gettask.html:501
+#: frontend/templates/gettask.html:508
 msgid "Image adjustments"
 msgstr "Настройка изображения"
 
-#: frontend/templates/gettask.html:502 frontend/templates/gettask.html:504
+#: frontend/templates/gettask.html:509 frontend/templates/gettask.html:511
 msgid "Reset"
 msgstr "Сбросить"
 
-#: frontend/templates/gettask.html:509
+#: frontend/templates/gettask.html:516
 msgid "Brightness"
 msgstr "Яркость"
 
-#: frontend/templates/gettask.html:514
+#: frontend/templates/gettask.html:521
 msgid "Contrast"
 msgstr "Контраст"
 
-#: frontend/templates/gettask.html:519
+#: frontend/templates/gettask.html:526
 msgid "Gamma"
 msgstr "Гамма"
 
-#: frontend/templates/gettask.html:524
+#: frontend/templates/gettask.html:531
 msgid "Saturation"
 msgstr "Насыщенность"
 
-#: frontend/templates/gettask.html:553
+#: frontend/templates/gettask.html:560
 msgid "Try Server"
 msgstr "Тестовый сервер"
 
-#: frontend/templates/gettask.html:554
+#: frontend/templates/gettask.html:561
 msgid "Submit"
 msgstr "Отправить"
 
-#: frontend/templates/gettask.html:555
+#: frontend/templates/gettask.html:562
 msgid "Skip"
 msgstr "Пропустить"
 
-#: frontend/templates/gettask.html:574
+#: frontend/templates/gettask.html:581
 msgid "Welcome to Lost At Night!"
 msgstr "Добро пожаловать в Lost At Night!"
 
-#: frontend/templates/gettask.html:575
+#: frontend/templates/gettask.html:582
 msgid ""
 "This is a real photo taken from the International Space Station. Your job is "
 "to figure out where on Earth it was taken — and we will guide you through it "
@@ -797,11 +823,11 @@ msgstr ""
 "Ваша задача — выяснить, где на Земле она была сделана, и мы проведём вас "
 "через все шаги."
 
-#: frontend/templates/gettask.html:576
+#: frontend/templates/gettask.html:583
 msgid "Find the area on the map"
 msgstr "Найдите область на карте"
 
-#: frontend/templates/gettask.html:577
+#: frontend/templates/gettask.html:584
 msgid ""
 "Pan and zoom this map to the region you think the photo shows. The crew "
 "metadata gives you a hint about where to look."
@@ -809,11 +835,11 @@ msgstr ""
 "Перемещайте и масштабируйте эту карту до региона, который, по вашему мнению, "
 "изображён на фото. Метаданные экипажа подскажут, где искать."
 
-#: frontend/templates/gettask.html:578
+#: frontend/templates/gettask.html:585
 msgid "Explore the photo"
 msgstr "Изучите фото"
 
-#: frontend/templates/gettask.html:579
+#: frontend/templates/gettask.html:586
 msgid ""
 "Drag with the left mouse button to pan, use the wheel to zoom in and out, "
 "and hold the right mouse button to rotate. Take your time exploring the "
@@ -823,11 +849,11 @@ msgstr ""
 "масштабирования и удерживайте правую кнопку для вращения. Не торопитесь, "
 "изучайте изображение."
 
-#: frontend/templates/gettask.html:580
+#: frontend/templates/gettask.html:587
 msgid "Adjust brightness and filters"
 msgstr "Настройте яркость и фильтры"
 
-#: frontend/templates/gettask.html:581
+#: frontend/templates/gettask.html:588
 msgid ""
 "Night photos can be hard to read. Use these sliders to tweak brightness, "
 "contrast, gamma and saturation — perfect for revealing faint coastlines or "
@@ -838,11 +864,11 @@ msgstr ""
 "выявления слабых береговых линий или городских огней. Нажмите «Сбросить», "
 "чтобы начать заново."
 
-#: frontend/templates/gettask.html:582
+#: frontend/templates/gettask.html:589
 msgid "Pick a recognisable point on the photo"
 msgstr "Выберите узнаваемую точку на фото"
 
-#: frontend/templates/gettask.html:583
+#: frontend/templates/gettask.html:590
 msgid ""
 "Click a clearly identifiable feature on the photo — a coastline, a city, an "
 "island."
@@ -850,20 +876,20 @@ msgstr ""
 "Кликните по чётко различимому объекту на фото — береговой линии, городу, "
 "острову."
 
-#: frontend/templates/gettask.html:584
+#: frontend/templates/gettask.html:591
 msgid "Match it on the map"
 msgstr "Сопоставьте на карте"
 
-#: frontend/templates/gettask.html:585
+#: frontend/templates/gettask.html:592
 msgid "Now click the same place on the map. That pair is one control point."
 msgstr ""
 "Теперь кликните по тому же месту на карте. Эта пара — одна контрольная точка."
 
-#: frontend/templates/gettask.html:586
+#: frontend/templates/gettask.html:593
 msgid "Submit and earn points!"
 msgstr "Отправьте и получите очки!"
 
-#: frontend/templates/gettask.html:587
+#: frontend/templates/gettask.html:594
 msgid ""
 "Once you have at least 3 control points hit Submit — but 7 or more is "
 "recommended for better accuracy. Every control point counts towards your "
@@ -873,77 +899,77 @@ msgstr ""
 "рекомендуется 7 или больше для лучшей точности. Каждая контрольная точка "
 "идёт в зачёт рейтинга."
 
-#: frontend/templates/gettask.html:588
+#: frontend/templates/gettask.html:595
 msgid ""
 "Tip: create an account to save your progress and appear on the leaderboard."
 msgstr "Совет: создайте аккаунт, чтобы сохранить прогресс и попасть в рейтинг."
 
-#: frontend/templates/gettask.html:590
+#: frontend/templates/gettask.html:597
 msgid "Prefer to watch a video instead?"
 msgstr "Предпочитаете посмотреть видео?"
 
-#: frontend/templates/gettask.html:591
+#: frontend/templates/gettask.html:598
 msgid "Want a deeper walkthrough? Watch the full video tutorial."
 msgstr ""
 "Хотите более подробное руководство? Посмотрите полное видеоруководство."
 
-#: frontend/templates/gettask.html:592
+#: frontend/templates/gettask.html:599
 msgid "Watch the video tutorial"
 msgstr "Смотреть видеоруководство"
 
-#: frontend/templates/gettask.html:593
+#: frontend/templates/gettask.html:600
 msgid "Next"
 msgstr "Далее"
 
-#: frontend/templates/gettask.html:594
+#: frontend/templates/gettask.html:601
 msgid "Back"
 msgstr "Назад"
 
-#: frontend/templates/gettask.html:595
+#: frontend/templates/gettask.html:602
 msgid "Got it!"
 msgstr "Понятно!"
 
-#: frontend/templates/index.html:720
+#: frontend/templates/index.html:738
 #, python-format
 msgid "Welcome back, <span class=\"accent\">%(name)s</span>."
 msgstr "С возвращением, <span class=\"accent\">%(name)s</span>."
 
-#: frontend/templates/index.html:722
+#: frontend/templates/index.html:740
 msgid "Help us locate the night from <span class=\"accent\">orbit</span>."
 msgstr "Помогите нам локализовать ночь с <span class=\"accent\">орбиты</span>."
 
-#: frontend/templates/index.html:726
+#: frontend/templates/index.html:744
 msgid "Help map Earth's lights from space and combat light pollution"
 msgstr ""
 "Помогите картировать огни Земли из космоса и бороться со световым "
 "загрязнением"
 
-#: frontend/templates/index.html:731
-#| msgid "Join challenge"
-msgid "Join a challenge"
-msgstr "Присоединиться к испытанию"
-
-#: frontend/templates/index.html:734
-msgid "Contribute now"
-msgstr "Начать вносить вклад"
-
-#: frontend/templates/index.html:739
+#: frontend/templates/index.html:753
 msgid "Watch how it works"
 msgstr "Посмотрите, как это работает"
 
-#: frontend/templates/index.html:745 frontend/templates/ranking.html:61
-msgid "Control points placed"
-msgstr "Контрольные точки"
+#: frontend/templates/index.html:759
+#, python-format
+msgid ""
+"%(n)s challenge is open — join it and your work counts for a shared goal."
+msgid_plural ""
+"%(n)s challenges are open — join one and your work counts for a shared goal."
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
 
-#: frontend/templates/index.html:753
-msgid "Photos located"
-msgstr "Локализованные фото"
+#: frontend/templates/index.html:761
+msgid ""
+"No challenge is open right now: every photo you locate goes to the general "
+"queue."
+msgstr ""
 
-#: frontend/templates/index.html:767
+#: frontend/templates/index.html:775
 msgid "Our Mission"
 msgstr "Наша миссия"
 
-#: frontend/templates/index.html:769
+#: frontend/templates/index.html:777
 msgid ""
 "This application is designed to help georeference images taken by astronauts "
 "aboard the International Space Station (ISS). The goal is to create a global "
@@ -961,111 +987,94 @@ msgstr ""
 "мониторинга светового загрязнения и изучения его влияния на экосистемы и "
 "здоровье человека."
 
-#: frontend/templates/index.html:782
+#: frontend/templates/index.html:790
 msgid "Georeference Images"
 msgstr "Геопривязка снимков"
 
-#: frontend/templates/index.html:783
+#: frontend/templates/index.html:791
 msgid "Help align ISS night images with precise geographic coordinates"
 msgstr ""
 "Помогите привязать ночные снимки МКС к точным географическим координатам"
 
-#: frontend/templates/index.html:791
+#: frontend/templates/index.html:799
 msgid "Map Light Pollution"
 msgstr "Картирование светового загрязнения"
 
-#: frontend/templates/index.html:792
+#: frontend/templates/index.html:800
 msgid "Contribute to a global database of nighttime light patterns"
 msgstr "Пополняйте глобальную базу данных ночных световых паттернов"
 
-#: frontend/templates/index.html:800
+#: frontend/templates/index.html:808
 msgid "Support Research"
 msgstr "Поддержать науку"
 
-#: frontend/templates/index.html:801
+#: frontend/templates/index.html:809
 msgid "Enable scientific studies on light pollution's environmental impact"
 msgstr ""
 "Содействуйте научным исследованиям о влиянии светового загрязнения на "
 "окружающую среду"
 
-#: frontend/templates/index.html:811
-msgid "Join a challenge and help the community reach a shared goal."
-msgstr "Присоединяйтесь к challenge и помогите сообществу достичь общей цели."
+#: frontend/templates/index.html:818
+msgid ""
+"A challenge is a shared goal with a deadline: a region or a set of photos "
+"the community locates together. Join one and your contributions count for it."
+msgstr ""
 
-#: frontend/templates/index.html:817
+#: frontend/templates/index.html:825
+msgid "No challenge is open right now."
+msgstr ""
+
+#: frontend/templates/index.html:826
+msgid ""
+"You can still participate: every photo you locate goes to the general queue. "
+"New challenges are announced here and in the newsletter."
+msgstr ""
+
+#: frontend/templates/index.html:834
 msgid "Active"
 msgstr "Активно"
 
-#: frontend/templates/index.html:824
+#: frontend/templates/index.html:841
 msgid "Upcoming"
 msgstr "Скоро"
 
-#: frontend/templates/index.html:838
-msgid "Finished"
-msgstr "Завершено"
+#: frontend/templates/index.html:855
+msgid "Recently finished"
+msgstr ""
 
-#: frontend/templates/index.html:850
-msgid "Available Batches"
-msgstr "Доступные пакеты"
-
-#: frontend/templates/index.html:851
-msgid "Select a specific batch of images to work with"
-msgstr "Выберите конкретный пакет изображений для работы"
-
-#: frontend/templates/index.html:871
-msgid "Completion"
-msgstr "Завершено"
-
-#: frontend/templates/index.html:884
+#: frontend/templates/index.html:865
 msgid "Project Statistics"
 msgstr "Статистика проекта"
 
-#: frontend/templates/index.html:885
+#: frontend/templates/index.html:866
 msgid "Global impact of our community's contributions"
 msgstr "Глобальный вклад нашего сообщества"
 
-#: frontend/templates/index.html:893
-msgid "Control Points placed"
+#: frontend/templates/index.html:872 frontend/templates/ranking.html:61
+msgid "Control points placed"
 msgstr "Контрольные точки"
 
-#: frontend/templates/index.html:900 frontend/templates/ranking.html:62
+#: frontend/templates/index.html:876
+msgid "Photos located"
+msgstr "Локализованные фото"
+
+#: frontend/templates/index.html:884 frontend/templates/ranking.html:62
 #: user_profile/templates/user.html:776
 msgid "Tasks completed"
 msgstr "Завершено"
 
-#: frontend/templates/index.html:910 frontend/templates/ranking.html:134
-msgid "Users"
-msgstr "Пользователь"
+#: frontend/templates/index.html:889
+msgid "Photos located per week, last 12 weeks"
+msgstr ""
 
-#: frontend/templates/index.html:914
-msgid "Images"
-msgstr "Изображения:"
+#: frontend/templates/index.html:890 user_profile/templates/user.html:1037
+msgid "See the ranking"
+msgstr ""
 
-#: frontend/templates/index.html:918
-msgid "Georeferenced"
-msgstr "Привязано"
-
-#: frontend/templates/index.html:922
-msgid "Total Tasks"
-msgstr "Всего задач"
-
-#: frontend/templates/index.html:926 georeferencing/models.py:140
-#: georeferencing/models.py:483
-msgid "Completed"
-msgstr "Завершено"
-
-#: frontend/templates/index.html:930
-msgid "Avg / user"
-msgstr "Среднее / польз."
-
-#: frontend/templates/index.html:934 user_profile/templates/user.html:786
-#: user_profile/templates/user.html:838
-msgid "Time invested"
-msgstr "Затраченное время"
-
-#: frontend/templates/index.html:979
-msgid "Our Social Media"
-msgstr "Наши социальные сети"
+#: frontend/templates/index.html:892
+#| msgid "Photos located"
+msgid "Photos located per week"
+msgstr "Локализованные фото"
 
 #: frontend/templates/legal/_legal_base.html:75
 #: templates/account/logout.html:210
@@ -1746,17 +1755,11 @@ msgstr "Общий рейтинг"
 msgid "People"
 msgstr ""
 
-#: frontend/templates/ranking.html:76 user_profile/templates/user.html:1038
-msgid "Teams"
-msgstr ""
-
 #: frontend/templates/ranking.html:77 user_profile/templates/user.html:1039
-#| msgid "Country"
 msgid "Countries"
 msgstr "Страна"
 
 #: frontend/templates/ranking.html:80
-#| msgid "time"
 msgid "All time"
 msgstr "время"
 
@@ -1781,12 +1784,10 @@ msgid "Your position"
 msgstr "Ваше место по времени"
 
 #: frontend/templates/ranking.html:131
-#| msgid "Country"
 msgid "Your country"
 msgstr "Страна"
 
 #: frontend/templates/ranking.html:131
-#| msgid "Your area"
 msgid "Your team"
 msgstr "Ваш район"
 
@@ -1808,6 +1809,10 @@ msgstr "Страна"
 msgid "Team"
 msgstr ""
 
+#: frontend/templates/ranking.html:134
+msgid "Users"
+msgstr "Пользователь"
+
 #: frontend/templates/ranking.html:135 teams/templates/team_detail.html:75
 #: teams/templates/team_detail.html:119
 msgid "Members"
@@ -1824,7 +1829,6 @@ msgid "Time"
 msgstr "Время"
 
 #: frontend/templates/ranking.html:136
-#| msgid "Avg / user"
 msgid "CP / user"
 msgstr "Среднее / польз."
 
@@ -1838,7 +1842,6 @@ msgid "You are #{r} of {n} by {m}"
 msgstr ""
 
 #: frontend/templates/ranking.html:137
-#| msgid "Your %% Contribution in Time"
 msgid "You have no contributions in this period yet."
 msgstr "Ваш %% вклад по времени"
 
@@ -1847,7 +1850,6 @@ msgid "Pick your country in your profile and your tasks will count for it."
 msgstr ""
 
 #: frontend/templates/ranking.html:138
-#| msgid "You are not signed in."
 msgid "You are not in a team yet."
 msgstr "Вы не вошли в систему."
 
@@ -1929,12 +1931,10 @@ msgid "Platinum"
 msgstr ""
 
 #: georeferencing/diplomas.py:46
-#| msgid "Participants"
 msgid "Participant"
 msgstr "Участники"
 
 #: georeferencing/diplomas.py:47 user_profile/templates/diploma_general.html:56
-#| msgid "Contribute"
 msgid "Contributor"
 msgstr "Внести вклад"
 
@@ -1982,6 +1982,10 @@ msgstr "Не начато"
 msgid "Processing"
 msgstr "Обработка"
 
+#: georeferencing/models.py:140 georeferencing/models.py:483
+msgid "Completed"
+msgstr "Завершено"
+
 #: georeferencing/models.py:141
 msgid "Failed"
 msgstr "Ошибка"
@@ -2027,7 +2031,6 @@ msgid "No coordinates (not in frames or nadir)"
 msgstr ""
 
 #: georeferencing/models.py:513
-#| msgid "Downloaded"
 msgid "Download failed"
 msgstr "Загружено"
 
@@ -2048,7 +2051,6 @@ msgid "Campaign"
 msgstr ""
 
 #: georeferencing/models.py:541
-#| msgid "Subscribed to newsletter"
 msgid "Email / newsletter"
 msgstr "Подписан на рассылку"
 
@@ -2057,7 +2059,6 @@ msgid "Press / media"
 msgstr ""
 
 #: georeferencing/models.py:543
-#| msgid "Social Media"
 msgid "Social media"
 msgstr "Социальные сети"
 
@@ -2066,7 +2067,6 @@ msgid "Deploy / release"
 msgstr ""
 
 #: georeferencing/models.py:546
-#| msgid "Batches"
 msgid "Batch loaded"
 msgstr "Пакеты"
 
@@ -2075,12 +2075,10 @@ msgid "Other"
 msgstr ""
 
 #: teams/models.py:23
-#| msgid "Name:"
 msgid "Name"
 msgstr "Название:"
 
 #: teams/models.py:25
-#| msgid "Duration"
 msgid "Description"
 msgstr "Срок"
 
@@ -2122,7 +2120,6 @@ msgid "Leave team"
 msgstr ""
 
 #: teams/templates/team_detail.html:95
-#| msgid "in this batch."
 msgid "Join this team"
 msgstr "в этом батче."
 
@@ -2136,7 +2133,6 @@ msgid "Invite code"
 msgstr ""
 
 #: teams/templates/team_detail.html:112
-#| msgid "Log in to join"
 msgid "Sign in to join"
 msgstr "Войдите, чтобы присоединиться"
 
@@ -2145,12 +2141,10 @@ msgid "Team owner"
 msgstr ""
 
 #: teams/templates/team_detail.html:148
-#| msgid "No users yet"
 msgid "No members yet"
 msgstr "Пока нет пользователей"
 
 #: teams/templates/team_detail.html:156
-#| msgid "Go to your profile"
 msgid "Back to my profile"
 msgstr "Перейти в профиль"
 
@@ -2476,7 +2470,6 @@ msgstr ""
 #: user_profile/templates/diploma_base.html:225
 #: user_profile/templates/diploma_challenge.html:99
 #: user_profile/templates/diploma_general.html:80
-#| msgid "Failed"
 msgid "Filed"
 msgstr "Ошибка"
 
@@ -2501,7 +2494,6 @@ msgid "Provisional — challenge in progress"
 msgstr ""
 
 #: user_profile/templates/diploma_challenge.html:15
-#| msgid "Challenge"
 msgid "Challenge Diploma"
 msgstr "Испытание"
 
@@ -2518,7 +2510,6 @@ msgid ""
 msgstr ""
 
 #: user_profile/templates/diploma_challenge.html:42
-#| msgid "control points"
 msgid "Your control points"
 msgstr "контрольные точки"
 
@@ -2534,7 +2525,6 @@ msgid "top %(percentile)s%%"
 msgstr ""
 
 #: user_profile/templates/diploma_challenge.html:51
-#| msgid "Funding"
 msgid "Standing"
 msgstr "Финансирование"
 
@@ -2559,7 +2549,6 @@ msgid "Tier"
 msgstr ""
 
 #: user_profile/templates/diploma_general.html:9
-#| msgid "Start contributing"
 msgid "Certificate of Contribution"
 msgstr "Начать вносить вклад"
 
@@ -2585,7 +2574,6 @@ msgstr ""
 
 #: user_profile/templates/diploma_general.html:63
 #: user_profile/templates/user.html:902
-#| msgid "Start contributing"
 msgid "Overall contribution"
 msgstr "Начать вносить вклад"
 
@@ -2658,16 +2646,12 @@ msgid "Diploma not found"
 msgstr ""
 
 #: user_profile/templates/diploma_verify.html:93
-#| msgid ""
-#| "Information about the cookies and similar technologies used by Lost at "
-#| "Night."
 msgid ""
 "This verification code does not match any diploma issued by Lost at Night."
 msgstr ""
 "Информация о cookies и аналогичных технологиях, используемых Lost at Night."
 
 #: user_profile/templates/diploma_verify.html:94
-#| msgid "Lost at Night"
 msgid "Back to Lost at Night"
 msgstr "Lost at Night"
 
@@ -2755,6 +2739,10 @@ msgstr "За всё время"
 msgid "Total placed"
 msgstr "Всего изображений"
 
+#: user_profile/templates/user.html:786 user_profile/templates/user.html:838
+msgid "Time invested"
+msgstr "Затраченное время"
+
 #: user_profile/templates/user.html:791
 msgid "Current streak"
 msgstr ""
@@ -2815,7 +2803,6 @@ msgid "Your badges & diplomas"
 msgstr ""
 
 #: user_profile/templates/user.html:898 user_profile/templates/user.html:911
-#| msgid "Review"
 msgid "Preview"
 msgstr "Просмотр"
 
@@ -2877,7 +2864,6 @@ msgid ""
 msgstr ""
 
 #: user_profile/templates/user.html:1008
-#| msgid "Create an account"
 msgid "Create a team"
 msgstr "Создать аккаунт"
 
@@ -2886,22 +2872,16 @@ msgid "Start your own and compete together in the team ranking."
 msgstr ""
 
 #: user_profile/templates/user.html:1013
-#| msgid "name"
 msgid "Team name"
 msgstr "имя"
 
 #: user_profile/templates/user.html:1014
-#| msgid "Create account"
 msgid "Create"
 msgstr "Создать аккаунт"
 
 #: user_profile/templates/user.html:1031
 #, python-format
 msgid "You are #%(rank)s of %(total)s by control points."
-msgstr ""
-
-#: user_profile/templates/user.html:1037
-msgid "See the ranking"
 msgstr ""
 
 #: user_profile/templates/user.html:1073
@@ -2992,6 +2972,73 @@ msgid ""
 "You haven't taken part in this challenge, so there's no diploma to download "
 "for it. Here are the badges you've earned so far."
 msgstr ""
+
+#~ msgid "Batches"
+#~ msgstr "Пакеты"
+
+#~ msgid "Challenge filter active"
+#~ msgstr "Фильтр challenge активен"
+
+#~ msgid "No tasks match the constraints of your active challenge"
+#~ msgstr "Нет заданий, удовлетворяющих условиям вашего активного challenge"
+
+#~ msgid "No tasks match the constraints of your active challenges"
+#~ msgstr "Нет заданий, удовлетворяющих условиям ваших активных challenges"
+
+#~ msgid "in this batch."
+#~ msgstr "в этом батче."
+
+#~ msgid ""
+#~ "You can leave the challenge from its page if you want different tasks."
+#~ msgstr ""
+#~ "Если хотите другие задания — можно выйти из challenge на его странице."
+
+#~ msgid "Pick another batch"
+#~ msgstr "Выбрать другой батч"
+
+#~ msgid "Go to batches"
+#~ msgstr "К пакетам"
+
+#~| msgid "Join challenge"
+#~ msgid "Join a challenge"
+#~ msgstr "Присоединиться к испытанию"
+
+#~ msgid "Contribute now"
+#~ msgstr "Начать вносить вклад"
+
+#~ msgid "Join a challenge and help the community reach a shared goal."
+#~ msgstr ""
+#~ "Присоединяйтесь к challenge и помогите сообществу достичь общей цели."
+
+#~ msgid "Finished"
+#~ msgstr "Завершено"
+
+#~ msgid "Available Batches"
+#~ msgstr "Доступные пакеты"
+
+#~ msgid "Select a specific batch of images to work with"
+#~ msgstr "Выберите конкретный пакет изображений для работы"
+
+#~ msgid "Completion"
+#~ msgstr "Завершено"
+
+#~ msgid "Control Points placed"
+#~ msgstr "Контрольные точки"
+
+#~ msgid "Images"
+#~ msgstr "Изображения:"
+
+#~ msgid "Georeferenced"
+#~ msgstr "Привязано"
+
+#~ msgid "Total Tasks"
+#~ msgstr "Всего задач"
+
+#~ msgid "Avg / user"
+#~ msgstr "Среднее / польз."
+
+#~ msgid "Our Social Media"
+#~ msgstr "Наши социальные сети"
 
 #~ msgid "Statistics"
 #~ msgstr "Статистика"

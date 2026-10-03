@@ -650,7 +650,10 @@
             font-size: 17px; line-height: 1.55;
             color: var(--ink-2); max-width: 540px; margin: 0 0 32px;
         }
-        .ds-hero__ctas { display: flex; gap: 12px; margin-bottom: 56px; flex-wrap: wrap; }
+        .ds-hero__ctas { display: flex; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
+        .ds-hero__hint { display: flex; align-items: center; gap: 8px; color: var(--ink-2); font-size: 14px; margin: 0 0 40px; }
+        .ds-hero__hint a { color: var(--ink-1); text-decoration: underline dotted; }
+        .ds-hero__hint .ds-icon { color: var(--accent); flex: 0 0 auto; }
 
         .ds-kpi-row { display: grid; grid-template-columns: repeat(3, max-content); gap: 48px; }
         .ds-kpi { line-height: 1.1; }
@@ -699,6 +702,21 @@
             .ds-kpi-row { gap: 28px; grid-template-columns: repeat(3, 1fr); }
             .ds-earth { max-width: 320px; }
         }
+    
+        .ds-empty { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 16px 18px; margin: 0 0 18px;
+                    border: 1px dashed var(--line); border-radius: 12px; background: var(--bg-1); color: var(--ink-1); }
+        .ds-empty .ds-icon { color: var(--accent); width: 22px; height: 22px; flex: 0 0 auto; }
+        .ds-empty > div { flex: 1 1 320px; display: flex; flex-direction: column; gap: 2px; }
+        .ds-empty strong { color: var(--ink-0); }
+        .ds-empty span { color: var(--ink-2); font-size: 14px; }
+        .stats-mini-grid--4 { grid-template-columns: repeat(4, 1fr); }
+        @media (max-width: 900px) { .stats-mini-grid--4 { grid-template-columns: repeat(2, 1fr); } }
+        .stats-week { margin-top: 18px; padding: 16px 18px; border: 1px solid var(--line-soft); border-radius: 12px; background: var(--bg-1); }
+        .stats-week__head { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; color: var(--ink-2); font-size: 13px; margin-bottom: 12px; }
+        .stats-week__bars { display: grid; grid-template-columns: repeat(12, 1fr); gap: 6px; align-items: end; height: 120px; }
+        .stats-week__col { display: flex; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%; gap: 4px; }
+        .stats-week__bar { width: 100%; min-height: 2px; background: var(--accent); border-radius: 4px 4px 0 0; opacity: .85; }
+        .stats-week__n { font-size: 10px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
     </style>
 </head>
 <body>
@@ -726,12 +744,8 @@
                         {% trans "Help map Earth's lights from space and combat light pollution" %}
                     </p>
                     <div class="ds-hero__ctas">
-                        <a href="/#challenges-section" class="ds-btn ds-btn--primary ds-btn--lg">
-                            <svg class="ds-icon"><use href="#ds-icon-trophy"/></svg>
-                            {% trans "Join a challenge" %}
-                        </a>
-                        <a href="/gettask" class="ds-btn ds-btn--ghost ds-btn--lg">
-                            {% trans "Contribute now" %}
+                        <a href="/gettask" class="ds-btn ds-btn--primary ds-btn--lg">
+                            {% trans "Participate" %}
                             <svg class="ds-icon"><use href="#ds-icon-chevron-right"/></svg>
                         </a>
                         <a href="https://youtu.be/kY5j1wxKZYc" target="_blank" rel="noopener" class="ds-btn ds-btn--ghost ds-btn--lg">
@@ -739,20 +753,14 @@
                             {% trans "Watch how it works" %}
                         </a>
                     </div>
-                    <div class="ds-kpi-row">
-                        <div class="ds-kpi">
-                            <div class="ds-kpi__value">{{ total_control_points|default:'—' }}</div>
-                            <div class="ds-kpi__label">{% trans "Control points placed" %}</div>
-                        </div>
-                        <div class="ds-kpi">
-                            <div class="ds-kpi__value">{{ total_users|default:'—' }}</div>
-                            <div class="ds-kpi__label">{% trans "Participants" %}</div>
-                        </div>
-                        <div class="ds-kpi">
-                            <div class="ds-kpi__value">{{ images_with_georeference|default:'—' }}</div>
-                            <div class="ds-kpi__label">{% trans "Photos located" %}</div>
-                        </div>
-                    </div>
+                    <p class="ds-hero__hint">
+                        <svg class="ds-icon"><use href="#ds-icon-trophy"/></svg>
+                        {% if open_challenges %}
+                            <a href="#challenges-section">{% blocktrans count n=open_challenges %}{{ n }} challenge is open — join it and your work counts for a shared goal.{% plural %}{{ n }} challenges are open — join one and your work counts for a shared goal.{% endblocktrans %}</a>
+                        {% else %}
+                            {% trans "No challenge is open right now: every photo you locate goes to the general queue." %}
+                        {% endif %}
+                    </p>
                 </div>
                 <div class="ds-earth"><div class="ds-earth__lights"></div></div>
             </div>
@@ -804,13 +812,22 @@
                 </div>
                 
                 <!-- Challenges Section -->
-                {% if visible_challenges %}
                 <div id="challenges-section" class="row batch-section ds-challenges-block">
                     <div class="col-12 text-center mb-4">
                         <h2 class="section-title"><i class="fa-solid fa-trophy section-title-icon"></i>{% trans "Challenges" %}</h2>
-                        <p class="text-center mb-4">{% trans "Join a challenge and help the community reach a shared goal." %}</p>
+                        <p class="text-center mb-4">{% trans "A challenge is a shared goal with a deadline: a region or a set of photos the community locates together. Join one and your contributions count for it." %}</p>
                     </div>
                     <div class="col-12">
+                        {% if not open_challenges %}
+                        <div class="ds-empty">
+                            <svg class="ds-icon"><use href="#ds-icon-target"/></svg>
+                            <div>
+                                <strong>{% trans "No challenge is open right now." %}</strong>
+                                <span>{% trans "You can still participate: every photo you locate goes to the general queue. New challenges are announced here and in the newsletter." %}</span>
+                            </div>
+                            <a href="/gettask" class="ds-btn ds-btn--primary ds-btn--md">{% trans "Participate" %}</a>
+                        </div>
+                        {% endif %}
                         <section class="ds-section">
                             <div class="ds-section-heading active">
                                 <svg class="ds-icon"><use href="#ds-icon-play"/></svg>
@@ -835,201 +852,55 @@
                         <section class="ds-section">
                             <div class="ds-section-heading finished">
                                 <svg class="ds-icon"><use href="#ds-icon-check"/></svg>
-                                <span class="ds-section-heading__label">{% trans "Finished" %}</span>
+                                <span class="ds-section-heading__label">{% trans "Recently finished" %}</span>
                             </div>
                             {% for ch in visible_challenges %}{% if ch.status == 'finished' %}{% include '_challenge_card.html' %}{% endif %}{% endfor %}
                         </section>
                     </div>
                 </div>
-                {% endif %}
 
-                <!-- Batch Section - Con ID para navegación -->
-                {% if batchs %}
-                <div id="batch-section" class="row batch-section">
-                    <div class="col-12 text-center mb-4">
-                        <h2 class="section-title"><i class="fa-solid fa-layer-group section-title-icon"></i>{% trans "Available Batches" %}</h2>
-                        <p class="text-center mb-5">{% trans "Select a specific batch of images to work with" %}</p>
-                    </div>
-
-                    {% for batch in batchs %}
-                    <div class="col-md-3 col-sm-6 mb-4">
-                        <div class="card batch-card" onClick="window.location.href='/gettask/{{ batch.id }}'">
-                            <div class="position-relative">
-                                <img src="{{ batch.get_example_image }}" class="card-img-top" alt="{{ batch.name }}">
-                                <div class="card-img-overlay d-flex align-items-center justify-content-center">
-                                    <div class="text-center text-participate"><i class="fa-solid fa-play"></i>{% trans "Participate" %}</div>
-                                </div>
-                            </div>
-                            <div class="card-footer">
-                                <div class="batch-info">
-                                    <div class="batch-name" title="{{ batch.name }}">{{ batch.name }}</div>
-                                    <div class="batch-meta">
-                                        <span><i class="fa-solid fa-image"></i>{{ batch.get_number_images }}</span>
-                                        <span><i class="fa-solid fa-list-check"></i>{{ batch.get_number_geoattempts }}</span>
-                                    </div>
-                                </div>
-                                <div class="progress-circle" style="background: conic-gradient(#e9f990 {{ batch.get_percentage_done|unlocalize }}%, rgba(255,255,255,0.12) 0);" title="{% trans 'Completion' %}">
-                                    <span class="progress-text">{{ batch.get_percentage_done }}%</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-                {% endif %}
-
-                <!-- Project Statistics Section -->
+                <!-- Project Statistics Section (the only place numbers live on the homepage) -->
                 <div id="statistics-section" class="row batch-section">
                     <div class="col-12 text-center mb-4">
                         <h2 class="section-title"><i class="fa-solid fa-chart-line section-title-icon"></i>{% trans "Project Statistics" %}</h2>
-                        <p class="text-center mb-5">{% trans "Global impact of our community's contributions" %}</p>
+                        <p class="text-center mb-4">{% trans "Global impact of our community's contributions" %}</p>
                     </div>
-
                     <div class="col-12">
-                        <!-- Hero metric: Control Points + completion ring -->
-                        <div class="stats-hero">
-                            <div class="hero-stat">
-                                <div class="v">{{ total_control_points }}</div>
-                                <div class="l"><i class="fa-solid fa-map-pin me-1"></i>{% trans "Control Points placed" %}</div>
-                            </div>
-                            <div class="hero-side">
-                                <div class="completion-circle">
-                                    <div class="completion-ring" style="background: conic-gradient(#e9f990 {{ completion_pct|unlocalize }}%, rgba(255,255,255,0.12) 0);">
-                                        <span class="completion-pct">{{ completion_pct }}%</span>
-                                    </div>
-                                    <div class="completion-label">{% trans "Tasks completed" %}</div>
-                                    <div style="font-size:12px; color:rgba(255,255,255,0.65);">{{ completed_tasks }} / {{ total_tasks }}</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Compact mini-grid for the rest -->
-                        <div class="stats-mini-grid">
+                        <div class="stats-mini-grid stats-mini-grid--4">
                             <div class="stat-mini">
-                                <div class="ico"><i class="fa-solid fa-users"></i></div>
-                                <div><div class="v">{{ total_users }}</div><div class="l">{% trans "Users" %}</div></div>
-                            </div>
-                            <div class="stat-mini">
-                                <div class="ico"><i class="fa-solid fa-images"></i></div>
-                                <div><div class="v">{{ total_images }}</div><div class="l">{% trans "Images" %}</div></div>
+                                <div class="ico"><i class="fa-solid fa-map-pin"></i></div>
+                                <div><div class="v">{{ total_control_points }}</div><div class="l">{% trans "Control points placed" %}</div></div>
                             </div>
                             <div class="stat-mini">
                                 <div class="ico"><i class="fa-solid fa-map-location-dot"></i></div>
-                                <div><div class="v">{{ images_with_georeference }}</div><div class="l">{% trans "Georeferenced" %}</div></div>
+                                <div><div class="v">{{ images_with_georeference }}</div><div class="l">{% trans "Photos located" %}</div></div>
                             </div>
                             <div class="stat-mini">
-                                <div class="ico"><i class="fa-solid fa-list-check"></i></div>
-                                <div><div class="v">{{ total_tasks }}</div><div class="l">{% trans "Total Tasks" %}</div></div>
+                                <div class="ico"><i class="fa-solid fa-users"></i></div>
+                                <div><div class="v">{{ total_users }}</div><div class="l">{% trans "Participants" %}</div></div>
                             </div>
                             <div class="stat-mini">
                                 <div class="ico"><i class="fa-solid fa-circle-check"></i></div>
-                                <div><div class="v">{{ completed_tasks }}</div><div class="l">{% trans "Completed" %}</div></div>
+                                <div><div class="v">{{ completion_pct }}%</div><div class="l">{% trans "Tasks completed" %} · {{ completed_tasks }} / {{ total_tasks }}</div></div>
                             </div>
-                            <div class="stat-mini">
-                                <div class="ico"><i class="fa-solid fa-user-clock"></i></div>
-                                <div><div class="v">{{ avg_tasks_per_user }}</div><div class="l">{% trans "Avg / user" %}</div></div>
+                        </div>
+                        <div class="stats-week">
+                            <div class="stats-week__head">
+                                <span>{% trans "Photos located per week, last 12 weeks" %}</span>
+                                <a href="{% url 'ranking' %}" class="ds-btn ds-btn--ghost ds-btn--sm">{% trans "See the ranking" %} <svg class="ds-icon"><use href="#ds-icon-chevron-right"/></svg></a>
                             </div>
-                            <div class="stat-mini">
-                                <div class="ico"><i class="fa-regular fa-clock"></i></div>
-                                <div><div class="v">{{ total_time_formatted }}</div><div class="l">{% trans "Time invested" %}</div></div>
-                            </div>
-                            <div class="stat-mini">
-                                <div class="ico"><i class="fa-solid fa-trophy"></i></div>
-                                <div><div class="v">{{ visible_challenges|length }}</div><div class="l">{% trans "Challenges" %}</div></div>
+                            <div class="stats-week__bars" role="img" aria-label="{% trans 'Photos located per week' %}">
+                                {% for w in weekly %}
+                                <div class="stats-week__col" title="{{ w.week }}: {{ w.n }}">
+                                    <div class="stats-week__bar" style="height: {% widthratio w.n weekly_max 100 %}%"></div>
+                                    <div class="stats-week__n">{{ w.n }}</div>
+                                </div>
+                                {% endfor %}
                             </div>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Contact Section - Integrado desde la página de contacto -->
-                <div id="contact-section" class="row contact-section">
-                    <div class="col-12 text-center mb-4">
-                        <h2 class="section-title"><i class="fa-solid fa-envelope section-title-icon"></i>{% trans "Contact Us" %}</h2>
-                        <p class="text-center mb-5">{% trans "Have questions about Lost at Night? We'd love to hear from you!" %}</p>
-                    </div>
-                    
-                    <div class="row justify-content-center">
-                        <div class="col-md-6">
-                            <div class="contact-card">
-                                <form action="#" method="post" class="contact-form">
-                                    {% csrf_token %}
-                                    <div class="mb-3">
-                                        <label for="name" class="form-label">{% trans "Your Name" %}</label>
-                                        <input type="text" class="form-control" id="name" name="name" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="email" class="form-label">{% trans "Email Address" %}</label>
-                                        <input type="email" class="form-control" id="email" name="email" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="subject" class="form-label">{% trans "Subject" %}</label>
-                                        <input type="text" class="form-control" id="subject" name="subject" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="message" class="form-label">{% trans "Message" %}</label>
-                                        <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">{% trans "Send Message" %}</button>
-                                </form>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-4 mt-4 mt-md-0">
-                            <div class="contact-info">
-                                <h4><i class="fas fa-users me-2"></i>{% trans "Our Social Media" %}</h4>
-                                
-                                <!-- Social Media Links in Two Columns -->
-                                <div class="row">
-                                    <!-- Cities at Night column -->
-                                    <div class="col-md-12 mb-3">
-                                        <h6 class="mb-2">Cities at Night</h6>
-                                        <div class="d-flex social-links mb-3">
-                                            <!-- Twitter -->
-                                            <a href="https://twitter.com/cities4tnight" target="_blank" class="me-3">
-                                                <i class="fa-brands fa-x-twitter fa-2x"></i>
-                                            </a>
-                                            <!-- Youtube -->
-                                            <a href="https://www.youtube.com/watch?v=CrxuuCsPzU4" target="_blank" class="me-3">
-                                                <i class="fab fa-youtube fa-2x"></i>
-                                            </a>
-                                            <!-- Newsletter -->
-                                            <a href="https://citiesatnight.us19.list-manage.com/subscribe?u=777a5063c074ee154eaaf851e&id=036e3689d9" target="_blank" class="me-3">
-                                                <i class="fa-solid fa-envelope fa-2x"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Plan-B project column -->
-                                    <div class="col-md-12 mb-3">
-                                        <h6 class="mb-2">Plan-B project</h6>
-                                        <div class="d-flex social-links mb-3">
-                                            <!-- Twitter -->
-                                            <a href="https://twitter.com/Planb_team" target="_blank" class="me-3">
-                                                <i class="fa-brands fa-x-twitter fa-2x"></i>
-                                            </a>
-                                            <!-- Wordpress -->
-                                            <a href="https://plan-b-project.eu" target="_blank" class="me-3">
-                                                <i class="fa-brands fa-wordpress-simple fa-2x"></i>
-                                            </a>
-                                            <!-- Linkedin -->
-                                            <a href="https://www.linkedin.com/company/plan-b-project-eu/" target="_blank" class="me-3">
-                                                <i class="fa-brands fa-linkedin fa-2x"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <!-- Development credit -->
-                                <div class="text-center text-md-start mt-4">
-                                    <a href="https://github.com/Ibercivis/gdalface" target="_blank" class="text-white text-decoration-none">
-                                        {% blocktrans %}Developed by <b>Ibercivis</b>{% endblocktrans %}
-                                        <i class="fa-brands fa-github fa-lg ms-2"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
             </div>
         </section>
         

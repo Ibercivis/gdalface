@@ -253,33 +253,30 @@ fila del usuario.
 
 ---
 
-## Fase 3 — Portada y flujo de participación ⏳
+## Fase 3 — Portada y flujo de participación 🔧
 
 ### 3.1 Portada (`frontend/templates/index.html`, `frontend/views.index`)
-- ⏳ Hero con una sola acción principal: **Participa** → `/gettask`. Secundaria:
-  "Ver cómo funciona" (vídeo).
-- ⏳ Sección de retos como única capa de elección. Si no hay retos abiertos,
-  mostrar un bloque explicativo, no ocultar la sección (hoy el hero enlaza a un
-  ancla que no se renderiza).
-- ⏳ Eliminar la sección "Available Batches" y los enlaces "Batches" de barra y
-  pie. Los batches se gestionan desde admin y se exponen, si hace falta, como
-  retos permanentes.
-- ⏳ Una sola sección de estadísticas, según 2.5.1 (hoy hay KPIs en el hero y
-  otra sección con los mismos números bajo etiquetas distintas).
-- ⏳ Quitar el formulario de contacto de la portada (envía a `/`, que responde
-  405) y enlazar `/contact` desde el pie.
+- ✅ Hero con una sola acción principal: **Participa** → `/gettask`. Secundaria:
+  "Ver cómo funciona" (vídeo). Debajo, una línea que dice cuántos retos hay
+  abiertos o que todo va a la cola general.
+- ✅ Sección de retos siempre visible, con explicación de qué es un reto y un
+  bloque vacío cuando no hay ninguno abierto.
+- ✅ Sección "Available Batches" y enlaces "Batches" eliminados de portada,
+  barra y pie. `/gettask/<batch>` sigue funcionando para enlaces antiguos.
+- ✅ Una sola sección de estadísticas: 4 números, gráfica de fotos localizadas
+  por semana (12 semanas) y enlace a `/ranking/`. El hero ya no lleva KPIs.
+- ✅ Formulario de contacto fuera de la portada; el pie enlaza `/contact`.
 
 ### 3.2 Pantalla de trabajo (`gettask.html`, `main.js`, `challenge_banner.js`)
-- ⏳ Arreglar el enlace "Join one" → `/challenges/` (404). Apuntar a
-  `/#challenges-section` o crear la página de listado.
-- ⏳ Mensajes de error 409/404 sin la palabra "batch". Si el reto no tiene
-  tareas, ofrecer "Seguir sin reto" (hoy el comentario del código promete un
-  bypass que no existe).
+- ✅ "Join one" apunta a `/#challenges-section`.
+- ✅ Mensajes 409/404 sin la palabra "batch": "Tu reto no tiene tareas
+  pendientes" con Ver reto / Ver retos / Inicio. El bypass "seguir sin reto"
+  sigue siendo salir del reto desde su página.
 - ⏳ Mostrar el contexto de trabajo en la barra: reto activo o "Cola general".
 - ⏳ `MyChallengeView` debe comprobar estado del reto: una inscripción a un reto
   finalizado o futuro no debe pintarse como activa.
-- ⏳ Cadenas en inglés fijo en `challenge_banner.js`, `result_overlay.js`,
-  `challenge_card.js`: pasar por i18n.
+- ⚠️ Cadenas fijas: `challenge_banner.js` (promo) pasa por `LAN_I18N`.
+  Pendientes `result_overlay.js` y `challenge_card.js`.
 
 ### 3.3 Retos
 - ⏳ No permitir unirse a retos futuros o pausados, o permitirlo pero sin botón
@@ -289,12 +286,14 @@ fila del usuario.
 - ⏳ `participants_count` y `total_cp` en tarjetas: decidir si incluyen a quien
   se fue y etiquetarlo.
 - ⏳ Decidir el reto permanente por defecto ("Cola general") y crearlo.
+  **Pendiente de decisión**: nombre, objetivos y texto. Propuesta: no crearlo
+  como reto; "Participa" ya sirve la cola general y la portada lo dice.
 
 ### 3.4 Navegación
-- ⏳ Barra: Inicio · Retos · Equipos · Participa · Ranking · (Control, staff).
-  "Ranking" → `/ranking/` (2.5.2), no a un ancla de portada.
-- ⏳ Menú móvil (hoy `.ds-nav` desaparece a ≤768 px sin alternativa).
-- ⏳ Pie coherente con la barra.
+- ✅ Barra: Inicio · Retos · Equipos · Ranking · Participa · (Control, staff).
+  "Equipos" → `/ranking/teams/` hasta que exista el listado de equipos.
+- ✅ Menú móvil: botón hamburguesa que despliega la navegación bajo la barra.
+- ✅ Pie coherente con la barra.
 - ⏳ Manual: eliminar referencias a botones que no existen ("Get a task in this
   batch", salir del reto desde la tarjeta) y añadir sección de equipos.
 
