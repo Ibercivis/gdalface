@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 import os
+import sys
 from pathlib import Path
 from decouple import config
 from django.utils.translation import gettext_lazy as _
@@ -309,6 +310,12 @@ CACHES = {
         'KEY_PREFIX': 'lostatnight',
     }
 }
+# Under the test runner never touch the shared Redis: tests would cache totals
+# computed on the empty test DB (poisoning production for CACHE_TTL) and
+# cache.clear() would FLUSHDB the database rq-scheduler lives in.
+if len(sys.argv) > 1 and sys.argv[1] == 'test':
+    CACHES = {'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+                          'LOCATION': 'lostatnight-tests'}}
 
 # ── Contact form anti-spam ────────────────────────────────────────────
 # Cloudflare Turnstile (https://dash.cloudflare.com → Turnstile). Optional:
