@@ -40,7 +40,32 @@ def select(o):
             blon=Case(When(center_lon__isnull=False, then=F('center_lon')), When(ml_lon__isnull=False, then=F('ml_lon')), default=F('nadir_lon'), output_field=FloatField()),
         ).filter(blat__gte=s, blat__lte=n)
         qs = qs.filter(blon__gte=w, blon__lte=e) if w <= e else qs.filter(models_Q(blon__gte=w) | models_Q(blon__lte=e))
+    if o.get('min_mission'):
+        qs = qs.filter(mission__gte=o['min_mission'])
     rows = list(qs.order_by('mission', 'frame'))
+    if o.get('dedup_seconds'):
+        # Bursts / time-lapses: consecutive frames of a mission taken less than N
+        # seconds apart form a sequence; keep the middle frame of each sequence.
+        import math
+        gap = o['dedup_seconds']; kept = []; seq = []
+        overlap = o.get('overlap', 0.5)
+        def km(a, b):
+            la1, lo1, la2, lo2 = a.best_lat, a.best_lon, b.best_lat, b.best_lon
+            return 1e9 if None in (la1, lo1, la2, lo2) else math.hypot(la2 - la1, (lo2 - lo1) * math.cos(math.radians(la1))) * 111
+        def flush():
+            # inside a burst keep one frame every half footprint (36 mm / focal × 420 km)
+            last = None
+            for p in seq:
+                step = max(5.0, overlap * 36.0 / p.focal * 420.0) if (overlap and p.focal) else 50.0
+                if last is None or km(last, p) >= step:
+                    kept.append(p); last = p
+        for p in rows:
+            if seq and p.mission == seq[-1].mission and p.taken and seq[-1].taken \
+                    and abs((p.taken - seq[-1].taken).total_seconds()) <= gap and p.focal == seq[-1].focal:
+                seq.append(p)
+            else:
+                flush(); seq = [p]
+        flush(); rows = kept
     if o.get('dedup'):
         cell = o['dedup']; seen = {}
         for p in rows:
@@ -48,6 +73,9 @@ def select(o):
             key = (p.mission, round(lat / cell), round(lon / cell))
             seen.setdefault(key, p)
         rows = list(seen.values())
+    if o.get('sample') == 'random':
+        import random
+        random.Random(o.get('seed', 42)).shuffle(rows)
     if o.get('limit'):
         rows = rows[:o['limit']]
     return rows
@@ -69,6 +97,11 @@ class Command(BaseCommand):
         p.add_argument('--tiers', nargs='*', choices=['A', 'B', 'C', 'D'])
         p.add_argument('--bbox', nargs=4, type=float, metavar=('S', 'N', 'W', 'E'))
         p.add_argument('--dedup', type=float, default=None, help='keep one photo per mission per cell of this many degrees')
+        p.add_argument('--dedup-seconds', type=float, default=None, help='collapse bursts: consecutive frames closer than N seconds form a sequence')
+        p.add_argument('--overlap', type=float, default=0.5, help='inside a sequence keep one frame per this fraction of the footprint')
+        p.add_argument('--min-mission', default=None, help='e.g. ISS030 to skip the early film-era missions')
+        p.add_argument('--sample', choices=['random'], default=None, help='random order before --limit (stratifies the pick)')
+        p.add_argument('--seed', type=int, default=42)
         p.add_argument('--limit', type=int, default=None)
         p.add_argument('--replicas', type=int, default=5)
         p.add_argument('--download-workers', type=int, default=8)

@@ -336,17 +336,36 @@ CONTACT_MAX_URLS = 3
 # (``frontend``: contact-form spam drops, ``georeferencing``…) need an explicit
 # handler or INFO lines vanish. stderr is captured by supervisord into
 # /var/log/lostatnight-gunicorn.err.log.
+# Unhandled errors: full traceback to the gunicorn error log AND an e-mail to
+# ADMINS (Django's mail_admins handler, through the SES backend). Users see
+# templates/500.html.
+ADMINS = [(name.strip(), addr.strip()) for name, _, addr in
+          (a.partition(':') for a in config('ADMINS', default='Francisco:frasanz@ibercivis.es').split(',')) if addr.strip()]
+SERVER_EMAIL = config('SERVER_EMAIL', default=DEFAULT_FROM_EMAIL or 'noreply@lostatnight.org')
+EMAIL_SUBJECT_PREFIX = '[Lost at Night] '
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
         'std': {'format': '%(asctime)s %(levelname)s %(name)s: %(message)s'},
     },
+    'filters': {
+        'require_debug_false': {'()': 'django.utils.log.RequireDebugFalse'},
+    },
     'handlers': {
         'console': {'class': 'logging.StreamHandler', 'formatter': 'std'},
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler',
+            'include_html': True,
+        },
     },
     'loggers': {
         'frontend': {'handlers': ['console'], 'level': 'INFO', 'propagate': False},
+        'django.request': {'handlers': ['console', 'mail_admins'], 'level': 'ERROR', 'propagate': False},
+        'django.security': {'handlers': ['console', 'mail_admins'], 'level': 'ERROR', 'propagate': False},
     },
 }
 

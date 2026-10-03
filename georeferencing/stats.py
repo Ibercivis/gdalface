@@ -338,6 +338,53 @@ def _teams(now, start):
     }
 
 
+def _batch_health(now):
+    """Per batch: are the loaded photos being worked, skipped or ignored, by tier."""
+    import math
+    import statistics
+    from .models import Batch, GeoAttempt, Image, NasaPhoto
+    tier_of = dict(NasaPhoto.objects.filter(image__isnull=False).values_list('image_id', 'tier'))
+    centre = {p.image_id: (p.center_lat, p.center_lon) for p in NasaPhoto.objects.filter(image__isnull=False, center_lat__isnull=False).only('image_id', 'center_lat', 'center_lon')}
+    out = []
+    for b in Batch.objects.order_by('-createdDateTime'):
+        imgs = list(Image.objects.filter(batch=b).values_list('id', 'replicas'))
+        ids = [i for i, _ in imgs]
+        if not ids:
+            continue
+        agg = {r['image_id']: r for r in GeoAttempt.objects.filter(image_id__in=ids).values('image_id').annotate(
+            done=Count('id', filter=Q(status='DONE')), pend=Count('id', filter=Q(status='PENDING')), skips=Sum('skipped'))}
+        done = sum(a['done'] for a in agg.values()); skips = sum(a['skips'] or 0 for a in agg.values())
+        untouched = sum(1 for i in ids if agg.get(i, {'done': 0, 'skips': 0})['done'] == 0 and not (agg.get(i, {}).get('skips') or 0))
+        tiers = {}
+        for i in ids:
+            t = tier_of.get(i, '?') or '-'
+            tiers[t] = tiers.get(t, 0) + 1
+        secs = [(g.finishedDateTime - g.assignedDateTime).total_seconds() for g in GeoAttempt.objects.filter(
+            image_id__in=ids, status='DONE', assignedDateTime__isnull=False, finishedDateTime__isnull=False).only('assignedDateTime', 'finishedDateTime')
+            if 0 < (g.finishedDateTime - g.assignedDateTime).total_seconds() < 7200]
+        # accuracy on tier-A photos: distance between the community centroid and NASA's centre
+        errs = []
+        for g in GeoAttempt.objects.filter(image_id__in=[i for i in ids if i in centre], status='DONE').only('image_id', 'controlPoints'):
+            pts = [(float(p['lat']), float(p['lon'])) for p in (g.controlPoints or []) if isinstance(p, dict) and 'lat' in p and 'lon' in p]
+            if not pts:
+                continue
+            la = sum(p[0] for p in pts) / len(pts); lo = sum(p[1] for p in pts) / len(pts)
+            cla, clo = centre[g.image_id]
+            errs.append(math.hypot(cla - la, (clo - lo) * math.cos(math.radians(la))) * 111)
+        out.append({
+            'id': b.id, 'name': b.name, 'created': b.createdDateTime.date().isoformat(),
+            'images': len(ids), 'parked': sum(1 for _, r in imgs if r == 0),
+            'pending': sum(a['pend'] for a in agg.values()), 'done': done,
+            'done_7d': GeoAttempt.objects.filter(image_id__in=ids, status='DONE', finishedDateTime__gte=now - timedelta(days=7)).count(),
+            'skips_per_done': round(skips / done, 2) if done else None, 'skips': skips,
+            'untouched_pct': round(100 * untouched / len(ids), 1),
+            'median_seconds': round(statistics.median(secs)) if secs else None,
+            'tiers': tiers,
+            'accuracy_n': len(errs), 'accuracy_median_km': round(statistics.median(errs), 1) if errs else None,
+        })
+    return out
+
+
 def _catalog():
     from .models import NasaPhoto
     if not NasaPhoto.objects.exists():
@@ -378,6 +425,7 @@ def build_staff_stats(days=60):
         "onboarding": _onboarding(),
         "teams": _teams(now, start),
         "catalog": _catalog(),
+        "batch_health": _batch_health(now),
         "events": _events(start),
     }
 

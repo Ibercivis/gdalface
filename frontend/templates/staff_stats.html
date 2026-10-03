@@ -243,6 +243,29 @@
 <p style="color:var(--ink-2)">No teams yet. <a href="/teams/">Teams page</a>.</p>
 {% endif %}
 
+{# ── Batch health ───────────────────────────────────────────────── #}
+<h2>Batch health <small>is each loaded set being worked, skipped or ignored · tier mix from the catalogue · accuracy = community centroid vs NASA centre on tier-A photos</small></h2>
+<div class="st-chart" style="padding:0;overflow:auto">
+<table style="margin:0">
+    <thead><tr><th>Batch</th><th>Created</th><th class="num">Images</th><th class="num">Parked</th><th>Tiers</th><th class="num">Pending</th><th class="num">Done</th><th class="num">Done 7d</th><th class="num">Skips / done</th><th class="num">Untouched</th><th class="num">Median min</th><th class="num">Accuracy (km, n)</th></tr></thead>
+    <tbody>
+    {% for b in d.batch_health %}
+    <tr>
+        <td><a href="/admin/georeferencing/batch/{{ b.id }}/change/">{{ b.name }}</a></td><td>{{ b.created }}</td>
+        <td class="num">{{ b.images }}</td><td class="num">{{ b.parked }}</td>
+        <td style="font-size:12px;color:var(--ink-2)">{% for t, n in b.tiers.items %}{{ t }}:{{ n }} {% endfor %}</td>
+        <td class="num">{{ b.pending }}</td><td class="num">{{ b.done }}</td><td class="num">{{ b.done_7d }}</td>
+        <td class="num {% if b.skips_per_done and b.skips_per_done > 2 %}bad{% endif %}">{{ b.skips_per_done|default_if_none:"–" }}</td>
+        <td class="num">{{ b.untouched_pct }}%</td>
+        <td class="num">{% if b.median_seconds %}{% widthratio b.median_seconds 60 1 %}{% else %}–{% endif %}</td>
+        <td class="num">{% if b.accuracy_median_km != None %}{{ b.accuracy_median_km }} ({{ b.accuracy_n }}){% else %}–{% endif %}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+<p class="st-note">Reading guide: skips/done above 2 means people give up on the set; untouched is the share of photos nobody has opened; accuracy only exists for photos NASA has catalogued (tier A) and is the median distance between where the community put the photo and NASA's centre.</p>
+
 {# ── NASA catalogue ─────────────────────────────────────────────── #}
 {% if d.catalog %}
 <h2>NASA catalogue <small>{{ d.catalog.missions }} missions · what NASA has, what is usable at night, what we loaded and located</small></h2>
