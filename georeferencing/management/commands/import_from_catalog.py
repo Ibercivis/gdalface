@@ -135,7 +135,9 @@ class Command(BaseCommand):
                 batch=batch, replicas=o['replicas'], status='PENDING', cameraTilt=None))
             if img.status == 'DOWNLOADED_GENERATED' and GeoAttempt.objects.filter(image=img).exists():
                 return p.nasa_id, True
-            if not (_dl(large, 'original') or _dl(large.replace('large', 'small'), 'small')):
+            ok_large = _dl(large, 'original')
+            ok_small = _dl(large.replace('large', 'small'), 'small')   # both, not short-circuited
+            if not (ok_large or ok_small):
                 img.status = 'FAILED_DOWNLOADED'; img.save(update_fields=['status']); return p.nasa_id, False
             GeoAttempt.objects.filter(image=img, status='PENDING').delete()
             for _ in range(o['replicas']):
