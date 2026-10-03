@@ -22,6 +22,7 @@ urlpatterns = [
     # Staff-only control panel
     path('stats/', views.staff_stats, name='staff_stats'),
     path('stats/export.csv', views.staff_stats_csv, name='staff_stats_csv'),
+    path('stats/series.json', views.staff_stats_series, name='staff_stats_series'),
     # Legal / GDPR pages
     path('privacy/', views.privacy_policy, name='privacy_policy'),
     path('terms/', views.terms_of_use, name='terms_of_use'),

@@ -62,9 +62,15 @@ def update_assigned(*args, **kwargs):
         # Log error silently without interrupting the queue
         return None
     # Safety net for the daily cron (seen not firing on 2026-10-02/03): if the
-    # public snapshot is older than a day, regenerate it from here.
+    # public snapshot is older than a day, regenerate it from here; likewise
+    # record today's state metrics if the midnight job did not.
     try:
         refresh_snapshot_if_stale()
+    except Exception:
+        pass
+    try:
+        from .timeseries import record_daily_metrics_if_missing
+        record_daily_metrics_if_missing()
     except Exception:
         pass
 
@@ -472,6 +478,12 @@ def _finalize_if_last(batch_id, idx, total, images_created):
 
 @job('lost_scheduler')
 def write_stats_snapshot():
-    """Daily: refresh the public project-stats snapshot (/.well-known/stats.json)."""
+    """Daily: record the state metrics for the staff charts and refresh the
+    public project-stats snapshot (/.well-known/stats.json)."""
     from .stats import write_snapshot
+    from .timeseries import record_daily_metrics
+    try:
+        record_daily_metrics()
+    except Exception:
+        pass
     return write_snapshot()

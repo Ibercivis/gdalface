@@ -563,3 +563,24 @@ class StatsEvent(models.Model):
 
     def __str__(self):
         return f'{self.happened_at:%Y-%m-%d} · {self.get_kind_display()} · {self.title}'
+
+
+class DailyMetric(models.Model):
+    """
+    One value per (day, key). Written once a day by the scheduler for metrics
+    that are *states* with no history in the database (pending tasks, team
+    count, newsletter subscribers…). Event-like metrics (contributions,
+    sign-ups) are not stored here: they are recomputed from their own
+    timestamps, so corrections to the data correct the charts too.
+    """
+    date = models.DateField(db_index=True)
+    key = models.CharField(max_length=40)
+    value = models.BigIntegerField(default=0)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=['date', 'key'], name='unique_daily_metric')]
+        indexes = [models.Index(fields=['key', 'date'])]
+        ordering = ['date']
+
+    def __str__(self):
+        return f'{self.date} {self.key}={self.value}'

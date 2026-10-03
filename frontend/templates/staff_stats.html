@@ -19,7 +19,11 @@
     .st-tile.warn { border-color: var(--warn); }
     .st-tile.bad  { border-color: var(--danger); }
     .st-chart { background: var(--bg-1); border: 1px solid var(--line-soft); border-radius: 10px; padding: 14px; margin: 0 0 18px; }
-    .st-chart canvas { width: 100% !important; height: 260px !important; }
+    .st-chart canvas { width: 100% !important; height: 240px !important; }
+    .st-charts { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
+    .st-charts .st-chart { margin: 0; }
+    @media (max-width: 900px) { .st-charts { grid-template-columns: 1fr; } }
+    .st-tile .s.up { color: oklch(0.85 0.16 150); } .st-tile .s.down { color: var(--danger); }
     .legal-wrap h2 { margin-top: 36px; display: flex; align-items: baseline; gap: 10px; }
     .legal-wrap h2 small { font-size: 12px; font-weight: 400; color: var(--ink-2); }
     .legal-wrap table td.num, .legal-wrap table th.num { text-align: right; font-variant-numeric: tabular-nums; }
@@ -56,46 +60,42 @@
     <div>
         <h1>Control panel</h1>
         <div class="legal-meta" style="margin:0;padding:0;border:0">
-            Staff only · {{ d.start }} → {{ d.end }} · generated {{ d.generated_at|slice:":16" }} UTC · cached 5 min
+            Staff only · {{ d.start }} → {{ d.end }} · generated {{ d.generated_at|slice:":16" }} UTC · cached 5 min · charts bucketed by <span id="st-bucket">…</span>
         </div>
     </div>
     <div class="st-tools">
-        {% for n in day_options %}
-        <a class="ds-pill {% if n == days %}ds-pill--accent{% else %}ds-pill--ghost{% endif %}" href="?days={{ n }}">{{ n }}d</a>
+        {% for key, label in range_options %}
+        <a class="ds-pill {% if key == range %}ds-pill--accent{% else %}ds-pill--ghost{% endif %}" href="?range={{ key }}">{{ label }}</a>
         {% endfor %}
-        <a class="ds-pill ds-pill--neutral" href="?days={{ days }}&refresh=1" title="Recompute now">↻ refresh</a>
-        <a class="ds-pill ds-pill--neutral" href="{% url 'staff_stats_csv' %}?days={{ days }}">⬇ CSV</a>
+        <a class="ds-pill ds-pill--neutral" href="?range={{ range }}&refresh=1" title="Recompute now">↻ refresh</a>
+        <a class="ds-pill ds-pill--neutral" href="{% url 'staff_stats_csv' %}?range={{ range }}">⬇ CSV</a>
         <a class="ds-pill ds-pill--neutral" href="/admin/">admin</a>
     </div>
 </div>
 
 {% if messages %}{% for m in messages %}<div class="st-msg">{{ m }}</div>{% endfor %}{% endif %}
 
-{# ── People ──────────────────────────────────────────────────────── #}
-<h2>People <small>active = at least one contribution in the window</small></h2>
-<div class="st-grid">
-    <div class="st-tile"><div class="k">Active 7d</div><div class="v">{{ d.people.active_7 }}</div></div>
-    <div class="st-tile"><div class="k">Active 30d</div><div class="v">{{ d.people.active_30 }}</div></div>
-    <div class="st-tile"><div class="k">Sign-ups 7d</div><div class="v">{{ d.people.signups_7 }}</div><div class="s">{{ d.people.signups_30 }} in 30d</div></div>
-    <div class="st-tile"><div class="k">Registered</div><div class="v">{{ d.people.total }}</div><div class="s">{{ d.people.verified }} verified email</div></div>
-    <div class="st-tile"><div class="k">Ever contributed</div><div class="v">{{ d.people.contributors_ever }}</div><div class="s">{{ d.people.contributors_pct }}% of registered</div></div>
-    <div class="st-tile"><div class="k">Newsletter</div><div class="v">{{ d.people.newsletter }}</div></div>
-    <div class="st-tile {% if d.people.cheating_flagged %}warn{% endif %}"><div class="k">Cheating flags</div><div class="v">{{ d.people.cheating_flagged }}</div></div>
+{# ── Evolution ───────────────────────────────────────────────────── #}
+<h2>Evolution <small>range: <b id="st-range-label">{{ range }}</b> · dashed vertical lines are the events logged below · hover for details</small></h2>
+<div class="st-grid" id="st-range-tiles">
+    <div class="st-tile"><div class="k">Contributions</div><div class="v" data-total="contributions">…</div><div class="s" data-delta="contributions"></div></div>
+    <div class="st-tile"><div class="k">Sign-ups</div><div class="v" data-total="signups">…</div><div class="s" data-delta="signups"></div></div>
+    <div class="st-tile"><div class="k">Active 7d</div><div class="v">{{ d.people.active_7 }}</div><div class="s">now · 30d: {{ d.people.active_30 }}</div></div>
+    <div class="st-tile"><div class="k">Challenge joins</div><div class="v" data-total="challenge_joins">…</div><div class="s" data-delta="challenge_joins"></div></div>
+    <div class="st-tile"><div class="k">Team joins</div><div class="v" data-total="team_joins">…</div><div class="s" data-delta="team_joins"></div></div>
+    <div class="st-tile"><div class="k">Registered</div><div class="v">{{ d.people.total }}</div><div class="s">{{ d.people.verified }} verified · {{ d.people.contributors_ever }} ever contributed ({{ d.people.contributors_pct }}%)</div></div>
+    <div class="st-tile"><div class="k">All-time contributions</div><div class="v">{{ d.contributions.total }}</div><div class="s">{{ d.contributions.anonymous_total }} anonymous · {{ d.contributions.control_points_total }} CP</div></div>
+    <div class="st-tile"><div class="k">Avg time / task</div><div class="v">{% if d.contributions.avg_seconds_per_task %}{% widthratio d.contributions.avg_seconds_per_task 60 1 %} min{% else %}–{% endif %}</div><div class="s">{{ d.contributions.skipped_total }} skips all time{% if d.people.cheating_flagged %} · {{ d.people.cheating_flagged }} cheating flags{% endif %}</div></div>
 </div>
-
-{# ── Contributions ───────────────────────────────────────────────── #}
-<h2>Contributions <small>GeoAttempts marked DONE, by finish date (UTC)</small></h2>
-<div class="st-grid">
-    <div class="st-tile"><div class="k">Last 7d</div><div class="v">{{ d.contributions.last_7 }}</div><div class="s">{{ d.contributions.avg_per_day_7 }} / day</div></div>
-    <div class="st-tile"><div class="k">Last 30d</div><div class="v">{{ d.contributions.last_30 }}</div></div>
-    <div class="st-tile"><div class="k">All time</div><div class="v">{{ d.contributions.total }}</div><div class="s">{{ d.contributions.anonymous_total }} anonymous</div></div>
-    <div class="st-tile"><div class="k">Control points</div><div class="v">{{ d.contributions.control_points_total }}</div></div>
-    <div class="st-tile"><div class="k">Avg time / task</div><div class="v">{% if d.contributions.avg_seconds_per_task %}{% widthratio d.contributions.avg_seconds_per_task 60 1 %} min{% else %}–{% endif %}</div></div>
-    <div class="st-tile"><div class="k">Skips (all time)</div><div class="v">{{ d.contributions.skipped_total }}</div></div>
+<div class="st-charts">
+    <div class="st-chart"><canvas id="ch-contrib"></canvas></div>
+    <div class="st-chart"><canvas id="ch-signups"></canvas></div>
+    <div class="st-chart"><canvas id="ch-active"></canvas></div>
+    <div class="st-chart"><canvas id="ch-queue"></canvas></div>
+    <div class="st-chart"><canvas id="ch-people"></canvas></div>
+    <div class="st-chart"><canvas id="ch-community"></canvas></div>
 </div>
-<div class="st-chart"><canvas id="chart-contrib"></canvas></div>
-<div class="st-chart"><canvas id="chart-signups"></canvas></div>
-<p class="st-note">Dashed vertical lines are the events logged below. Hover a line for the title.</p>
+<p class="st-note">State lines (pending tasks, registered, teams…) come from a daily snapshot that started on 2026-10-03; earlier values are reconstructed where possible and missing otherwise. Event bars (contributions, sign-ups, joins) are recomputed from the database and always reflect corrections.</p>
 
 {# ── Events ──────────────────────────────────────────────────────── #}
 <h2>Events <small>campaigns, mailings, releases… anything that might move the curves</small></h2>
@@ -159,7 +159,7 @@
         <div class="st-tile"><div class="k">Diplomas</div><div class="v">{{ c.diplomas }}</div></div>
     </div>
     <div class="st-two">
-        <div><canvas id="chart-ch-{{ c.id }}"></canvas></div>
+        <div><canvas id="chart-ch-{{ c.id }}"></canvas>{{ c.series|json_script:c.series_dom_id }}</div>
         <table style="margin:0">
             <thead><tr><th>#</th><th>User</th><th class="num">CP</th></tr></thead>
             <tbody>
@@ -234,65 +234,83 @@
     <div class="st-tile"><div class="k">Diploma downloads</div><div class="v">{{ d.onboarding.diploma_downloads }}</div><div class="s">{{ d.onboarding.diploma_previews }} previews</div></div>
 </div>
 
-{{ data_json|json_script:"stats-data" }}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/3.0.1/chartjs-plugin-annotation.min.js"></script>
 <script>
 (function () {
-    const D = JSON.parse(document.getElementById('stats-data').textContent);
-    const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
-    const ink2 = css('--ink-2') || '#aaa', line = css('--line-soft') || 'rgba(255,255,255,.15)';
-    const accent = css('--accent') || '#e6f066', warn = css('--warn') || '#f0b35a', info = 'oklch(0.75 0.13 230)';
-    Chart.defaults.color = ink2;
-    Chart.defaults.font.family = css('--font-ui') || 'system-ui';
-    Chart.defaults.font.size = 11;
+    var RANGE = '{{ range }}';
+    var css = function (v) { return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); };
+    var ink2 = css('--ink-2') || '#aaa', line = css('--line-soft') || 'rgba(255,255,255,.15)';
+    var accent = css('--accent') || '#e6f066', warn = css('--warn') || '#f0b35a', danger = css('--danger') || '#e06060';
+    var info = 'oklch(0.75 0.13 230)', good = 'oklch(0.8 0.15 150)', violet = 'oklch(0.75 0.14 300)';
+    Chart.defaults.color = ink2; Chart.defaults.font.family = css('--font-ui') || 'system-ui'; Chart.defaults.font.size = 11;
 
-    // Event markers (annotation plugin). Events on the same day stack labels.
-    const annotations = {};
-    (D.events || []).forEach((e, i) => {
-        annotations['ev' + i] = {
-            type: 'line', xMin: e.date, xMax: e.date, borderColor: warn, borderWidth: 1, borderDash: [4, 4],
-            label: { display: true, content: e.title, position: 'start', rotation: -90,
-                     backgroundColor: 'rgba(0,0,0,.55)', color: warn, font: { size: 10 }, padding: 3 },
-            enter({ element }) { element.label.options.display = true; },
-        };
-    });
-
-    const base = (yTitle) => ({
-        responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
-        plugins: { legend: { display: true, labels: { boxWidth: 10 } }, annotation: { annotations },
-                   tooltip: { callbacks: { footer(items) {
-                        const d = items[0]?.label; const ev = (D.events || []).filter(e => e.date === d);
-                        return ev.length ? ev.map(e => '● ' + e.kind_label + ': ' + e.title).join('\n') : '';
-                   } } } },
-        scales: { x: { grid: { color: line }, ticks: { maxTicksLimit: 12, callback(v) { return this.getLabelForValue(v).slice(5); } } },
-                  y: { beginAtZero: true, grid: { color: line }, ticks: { precision: 0 }, title: { display: !!yTitle, text: yTitle } } },
-    });
-    const labels = D.contributions.series.map(r => r.date);
-    const vals = (s) => s.map(r => r.n);
-
-    new Chart(document.getElementById('chart-contrib'), {
-        type: 'bar',
-        data: { labels, datasets: [
-            { label: 'Registered', data: vals(D.contributions.series_registered), backgroundColor: accent, stack: 's' },
-            { label: 'Anonymous', data: vals(D.contributions.series_anonymous), backgroundColor: info, stack: 's' },
-        ] },
-        options: base('contributions / day'),
-    });
-    new Chart(document.getElementById('chart-signups'), {
-        type: 'bar',
-        data: { labels, datasets: [{ label: 'Sign-ups', data: vals(D.people.signups_series), backgroundColor: info }] },
-        options: base('sign-ups / day'),
-    });
-    (D.challenges.open || []).forEach(c => {
-        const el = document.getElementById('chart-ch-' + c.id);
-        if (!el || !c.series.length) { if (el) el.parentNode.innerHTML = '<p style="color:var(--ink-2);font-size:13px">No contributions in this window.</p>'; return; }
-        new Chart(el, {
-            type: 'bar',
-            data: { labels: c.series.map(r => r.date), datasets: [{ label: 'Tasks done by participants', data: vals(c.series), backgroundColor: accent }] },
-            options: base(''),
+    var fmt = function (n) { return (n == null ? '–' : Number(n).toLocaleString()); };
+    var bucketLabel = function (iso, bucket) {
+        if (bucket === 'month') return iso.slice(0, 7);
+        if (bucket === 'week') return 'w/c ' + iso.slice(5);
+        return iso.slice(5);
+    };
+    function snap(S, isoDate) { var idx = -1; for (var i = 0; i < S.labels.length; i++) if (S.labels[i] <= isoDate) idx = i; return S.labels[idx < 0 ? 0 : idx]; }
+    function annotations(S) {
+        var a = {};
+        S.markers.forEach(function (e, i) {
+            a['ev' + i] = { type: 'line', xMin: snap(S, e.date), xMax: snap(S, e.date), borderColor: warn, borderWidth: 1, borderDash: [4, 4],
+                label: { display: false, content: e.kind_label + ': ' + e.title, position: 'start', rotation: -90, backgroundColor: 'rgba(0,0,0,.6)', color: warn, font: { size: 10 }, padding: 3 },
+                enter: function (ctx) { ctx.element.label.options.display = true; ctx.chart.draw(); },
+                leave: function (ctx) { ctx.element.label.options.display = false; ctx.chart.draw(); } };
         });
+        return a;
+    }
+    function opts(S, title, extraScales) {
+        var o = { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+            plugins: { legend: { labels: { boxWidth: 10 } },
+                       title: { display: true, text: title, align: 'start', color: css('--ink-0') || '#fff', font: { size: 13, weight: '600' } },
+                       annotation: { annotations: annotations(S) },
+                       tooltip: { callbacks: { footer: function (items) {
+                            var x = items[0] && items[0].label;
+                            var ev = S.markers.filter(function (e) { return snap(S, e.date) === x; });
+                            return ev.length ? ev.map(function (e) { return '● ' + e.kind_label + ': ' + e.title; }).join('\n') : ''; } } } },
+            scales: { x: { grid: { color: line }, ticks: { maxTicksLimit: 12, callback: function (v) { return bucketLabel(this.getLabelForValue(v), S.bucket); } } },
+                      y: { beginAtZero: true, grid: { color: line }, ticks: { precision: 0 } } } };
+        if (extraScales) Object.assign(o.scales, extraScales);
+        return o;
+    }
+    var right = { y2: { position: 'right', beginAtZero: false, grid: { display: false }, ticks: { precision: 0 } } };
+    var charts = [];
+    function draw(S) {
+        document.getElementById('st-bucket').textContent = S.bucket;
+        document.getElementById('st-range-label').textContent = S.start + ' → ' + S.end;
+        Object.keys(S.totals).forEach(function (k) {
+            var t = document.querySelector('[data-total="' + k + '"]'), d = document.querySelector('[data-delta="' + k + '"]');
+            if (t) t.textContent = fmt(S.totals[k]);
+            if (d) { var p = S.prev_totals[k] || 0, c = S.totals[k] || 0, diff = c - p;
+                d.textContent = (diff >= 0 ? '+' : '') + fmt(diff) + ' vs previous ' + RANGE + ' (' + fmt(p) + ')';
+                d.className = 's ' + (diff > 0 ? 'up' : diff < 0 ? 'down' : ''); }
+        });
+        var L = S.labels, E = S.events, T = S.states;
+        charts.forEach(function (c) { c.destroy(); }); charts = [];
+        var ln = function (label, data, color, dashed, axis) { return { type: 'line', label: label, data: data, borderColor: color, backgroundColor: color, borderWidth: 2, pointRadius: L.length > 60 ? 0 : 2, tension: .25, spanGaps: true, borderDash: dashed ? [5, 4] : [], yAxisID: axis || 'y' }; };
+        var br = function (label, data, color, stack) { return { type: 'bar', label: label, data: data, backgroundColor: color, stack: stack }; };
+        var mk = function (id, datasets, title, extra) { charts.push(new Chart(document.getElementById(id), { data: { labels: L, datasets: datasets }, options: opts(S, title, extra) })); };
+        mk('ch-contrib', [br('Registered', E.contributions_registered, accent, 's'), br('Anonymous', E.contributions_anonymous, info, 's'), ln('Total done (cumulative)', T.tasks_done, good, false, 'y2')], 'Contributions per ' + S.bucket, right);
+        mk('ch-signups', [br('Sign-ups', E.signups, info), ln('Registered (cumulative)', T.users_total, good, false, 'y2')], 'Sign-ups per ' + S.bucket, right);
+        mk('ch-active', [br('Active in ' + S.bucket, E.active_users, accent), ln('Active 7d (rolling)', T.active_7, info), ln('Active 30d (rolling)', T.active_30, good)], 'Active contributors');
+        mk('ch-queue', [ln('Pending tasks', T.tasks_pending, warn), ln('Assigned', T.tasks_assigned, danger, true), ln('Images loaded', T.images_total, violet, true, 'y2')], 'Work queue', right);
+        mk('ch-people', [ln('Verified e-mail', T.users_verified, good), ln('Newsletter', T.newsletter, info), ln('Registered', T.users_total, violet, true)], 'Accounts');
+        mk('ch-community', [br('Challenge joins', E.challenge_joins, accent, 'j'), br('Team joins', E.team_joins, info, 'j'), ln('In a challenge', T.challenge_participants, good), ln('In a team', T.team_members, violet), ln('Open challenges', T.challenges_open, warn, true)], 'Challenges & teams');
+    }
+    // Per-challenge daily bars (data inlined next to each canvas).
+    document.querySelectorAll('canvas[id^="chart-ch-"]').forEach(function (el) {
+        var node = document.getElementById('series-' + el.id.replace('chart-', ''));
+        var rows = node ? JSON.parse(node.textContent) : [];
+        if (!rows.length) { el.parentNode.innerHTML = '<p style="color:var(--ink-2);font-size:13px">No contributions in this window.</p>'; return; }
+        new Chart(el, { type: 'bar', data: { labels: rows.map(function (r) { return r.date; }), datasets: [{ label: 'Tasks done by participants', data: rows.map(function (r) { return r.n; }), backgroundColor: accent }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { color: line }, ticks: { maxTicksLimit: 10, callback: function (v) { return this.getLabelForValue(v).slice(5); } } }, y: { beginAtZero: true, grid: { color: line }, ticks: { precision: 0 } } } } });
     });
+    fetch('{% url "staff_stats_series" %}?range=' + RANGE + '{% if "refresh" in request.GET %}&refresh=1{% endif %}', { credentials: 'same-origin' })
+        .then(function (r) { return r.json(); }).then(draw)
+        .catch(function (e) { document.getElementById('st-bucket').textContent = 'error loading series'; console.error(e); });
 })();
 </script>
 {% endblock %}

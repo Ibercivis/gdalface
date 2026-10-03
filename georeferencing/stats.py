@@ -251,6 +251,7 @@ def _challenge_detail(ch, now, today, start):
         "tasks_done": done_total, "tasks_done_7": done_7,
         "cached_task_count": ch.cached_task_count,
         "series": _series(series),
+        "series_dom_id": f"series-ch-{ch.id}",
         "top": [{"username": p.user.username, "cp": p.cached_cp_count,
                  "active": p.left_at is None} for p in parts[:10]],
         "diplomas": ch.diploma_downloads.filter(inline=False).count(),

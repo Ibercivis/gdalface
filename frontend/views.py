@@ -486,23 +486,39 @@ def staff_stats(request):
                 created_by=request.user,
             )
             messages.success(request, 'Event added.')
-        cache.delete_many([f'{STAFF_STATS_CACHE_KEY}:{d}' for d in (30, 60, 90, 180, 365)])
-        return redirect(request.path + (f'?days={request.GET["days"]}' if 'days' in request.GET else ''))
+        cache.delete_many([f'{STAFF_STATS_CACHE_KEY}:{d}' for d in (7, 30, 365, 1460)])
+        return redirect(request.path + (f'?range={request.GET["range"]}' if 'range' in request.GET else ''))
 
-    try:
-        days = int(request.GET.get('days', 60))
-    except ValueError:
-        days = 60
-    days = days if days in (30, 60, 90, 180, 365) else 60
+    from georeferencing.timeseries import RANGES, DEFAULT_RANGE
+    rng = request.GET.get('range', DEFAULT_RANGE)
+    if rng not in RANGES:
+        rng = DEFAULT_RANGE
+    days = RANGES[rng]['days']
     data = cached_staff_stats(days, refresh='refresh' in request.GET)
     return render(request, 'staff_stats.html', {
         'd': data,
-        'data_json': json.dumps(data),
+        'range': rng,
+        'range_options': [(k, v['label']) for k, v in RANGES.items()],
         'days': days,
-        'day_options': (30, 60, 90, 180, 365),
         'kind_choices': StatsEvent.KIND_CHOICES,
         'today': timezone.now().date().isoformat(),
     })
+
+
+@_staff_only
+def staff_stats_series(request):
+    """JSON time series for the control panel charts: ?range=7d|30d|1y|4y."""
+    from django.http import JsonResponse
+    from georeferencing.timeseries import RANGES, DEFAULT_RANGE, series
+    rng = request.GET.get('range', DEFAULT_RANGE)
+    if rng not in RANGES:
+        rng = DEFAULT_RANGE
+    key = f'staff_series:v1:{rng}'
+    data = None if 'refresh' in request.GET else cache.get(key)
+    if data is None:
+        data = series(rng)
+        cache.set(key, data, 300)
+    return JsonResponse(data)
 
 
 @_staff_only
@@ -511,11 +527,9 @@ def staff_stats_csv(request):
     import csv
     from django.http import HttpResponse
     from georeferencing.stats import cached_staff_stats
-    try:
-        days = int(request.GET.get('days', 60))
-    except ValueError:
-        days = 60
-    d = cached_staff_stats(days if days in (30, 60, 90, 180, 365) else 60)
+    from georeferencing.timeseries import RANGES, DEFAULT_RANGE
+    rng = request.GET.get('range', DEFAULT_RANGE)
+    d = cached_staff_stats(RANGES.get(rng, RANGES[DEFAULT_RANGE])['days'])
     resp = HttpResponse(content_type='text/csv; charset=utf-8')
     resp['Content-Disposition'] = f'attachment; filename="lostatnight-daily-{d["start"]}-{d["end"]}.csv"'
     w = csv.writer(resp)

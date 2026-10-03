@@ -355,13 +355,30 @@ evento en `/stats/`.
 
 ---
 
-## Fase 5 — Panel de control (segunda pasada) ⏳
+## Fase 5 — Panel de control (segunda pasada) 🔧
 
+- ✅ Evolución en vez de datos estáticos. Selector de rango 7 d / 30 d / 1 año /
+  4 años con agrupado automático (día / día / semana / mes). Seis gráficas:
+  contribuciones (registradas vs anónimas + acumulado), altas (+ acumulado),
+  activos (por periodo y rodantes 7/30 d), cola de trabajo (pendientes,
+  asignadas, imágenes), cuentas (verificadas, newsletter, registradas) y
+  comunidad (altas en retos y equipos, inscritos, equipos). Eventos como
+  marcas verticales en todas. Tarjetas con el total del rango y la variación
+  respecto al rango anterior.
+- ✅ Decisión RRD: no. Dos tipos de métrica. Las de **hecho** (contribuciones,
+  altas, actividad, altas en retos/equipos) se recalculan desde sus fechas en
+  SQL, así las correcciones de datos corrigen las gráficas. Las de **estado**
+  (pendientes, equipos, newsletter…) se fotografían una vez al día en
+  `DailyMetric` (`georeferencing/timeseries.py`), escritas por el job de
+  medianoche con red de seguridad horaria. Relleno retroactivo desde 2024-10
+  de lo reconstruible (hechas y pendientes acumuladas, registrados, imágenes,
+  activos 7/30, inscritos en retos y equipos): 5808 filas.
+- ✅ Endpoint `/stats/series.json?range=` (staff) cacheado 5 min.
 - ⏳ Retención por cohortes semanales: altas → primera contribución → activos a
   4 semanas.
-- ⏳ Eventos automáticos: crear reto, cargar batch, enviar newsletter.
+- ⏳ Eventos automáticos: crear reto (hecho vía `clone_challenge`), cargar
+  batch, enviar newsletter.
 - ⏳ Bloque de equipos en el panel cuando haya datos (hoy 0 equipos).
-- ⏳ Ejecutar `reconcile_counters --dry-run` desde el panel y mostrar la deriva.
 
 ---
 

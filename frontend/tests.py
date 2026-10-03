@@ -197,10 +197,11 @@ class StaffStatsTests(TestCase):
         self.client.force_login(self.plain)
         self.assertEqual(self.client.get(reverse('staff_stats')).status_code, 302)
         self.assertEqual(self.client.get(reverse('staff_stats_csv')).status_code, 302)
+        self.assertEqual(self.client.get(reverse('staff_stats_series')).status_code, 302)
 
     def test_staff_sees_dashboard_with_open_challenge(self):
         self.client.force_login(self.staff)
-        r = self.client.get(reverse('staff_stats'), {'days': 30})
+        r = self.client.get(reverse('staff_stats'), {'range': '30d'})
         self.assertEqual(r.status_code, 200)
         d = r.context['d']
         self.assertEqual(d['people']['active_7'], 1)
@@ -238,7 +239,7 @@ class StaffStatsTests(TestCase):
 
     def test_csv_export(self):
         self.client.force_login(self.staff)
-        r = self.client.get(reverse('staff_stats_csv'), {'days': 30})
+        r = self.client.get(reverse('staff_stats_csv'), {'range': '30d'})
         self.assertEqual(r.status_code, 200)
         self.assertEqual(r['Content-Type'], 'text/csv; charset=utf-8')
         lines = r.content.decode().strip().splitlines()
