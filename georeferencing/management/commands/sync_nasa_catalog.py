@@ -49,8 +49,15 @@ def _dt(pdate, ptime):
         return None
 
 
-def tier_for(center_lat, ml_lat, nadir_lat, focal, tilt):
+MAX_CENTRE_NADIR_KM = 2500  # the horizon from the ISS is ~2300 km: beyond that the record is wrong
+
+
+def tier_for(center_lat, ml_lat, nadir_lat, focal, tilt, center_lon=None, nadir_lon=None):
     if center_lat is not None:
+        if None not in (nadir_lat, nadir_lon, center_lon):
+            import math
+            if math.hypot(center_lat - nadir_lat, (center_lon - nadir_lon) * math.cos(math.radians(nadir_lat))) * 111 > MAX_CENTRE_NADIR_KM:
+                return 'X'  # inconsistent catalogue record (mostly unverified PUBLIC INPUTS)
         return 'A'
     if ml_lat is not None:
         return 'B'
@@ -99,7 +106,7 @@ def build_rows(mission, cache_dir):
             tilt=str(tilt)[:4], features=str((frm or {}).get('frames.feat') or '')[:200],
             cloud_pct=_i(frm and frm.get('frames.cldp')), region=str((frm or {}).get('frames.geon') or '')[:120],
             sun_elev_nasa=_f(frm and frm.get('frames.elev')), sun_elev=sun,
-            night=(sun is not None and sun <= NIGHT_ELEV), tier=tier_for(center_lat, ml_lat, nadir_lat, focal, tilt),
+            night=(sun is not None and sun <= NIGHT_ELEV), tier=tier_for(center_lat, ml_lat, nadir_lat, focal, tilt, center_lon, nadir_lon),
         )
 
 

@@ -598,7 +598,7 @@ class NasaPhoto(models.Model):
     D nadir only with a wide lens or oblique, '' no coordinates at all.
     """
     TIERS = (('A', 'Catalogued centre'), ('B', 'ML centre'), ('C', 'Nadir, long lens'),
-             ('D', 'Nadir, wide/oblique'), ('', 'No coordinates'))
+             ('D', 'Nadir, wide/oblique'), ('X', 'Inconsistent catalogue record'), ('', 'No coordinates'))
 
     mission = models.CharField(max_length=10, db_index=True)
     roll = models.CharField(max_length=2, default='E')
