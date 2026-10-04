@@ -8,9 +8,9 @@
 
     var DEFAULT_T = {
         contributions: 'contributions', contribution: 'contribution', points: 'control points',
-        taken: 'Taken', nasa: 'Original at NASA', pending: 'Still needs more eyes', mine: 'You located this one',
-        lights: 'Night lights (VIIRS)', black_marble: 'NASA Black Marble', photos: 'Located photos', mine_photos: 'My photos',
-        empty: 'Nothing located here yet.'
+        taken: 'Taken', nasa: 'Original at NASA', pending: 'Still needs more eyes', mine: 'You georeferenced this one',
+        lights: 'Night lights (VIIRS)', black_marble: 'NASA Black Marble', photos: 'Georeferenced photos', mine_photos: 'My photos',
+        empty: 'Nothing georeferenced here yet.'
     };
 
     function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }

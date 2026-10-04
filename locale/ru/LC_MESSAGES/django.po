@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-03 13:46+0000\n"
+"POT-Creation-Date: 2026-10-04 10:26+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,9 +15,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
-"(n%100>=11 && n%100<=14)? 2 : 3);\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
 
 #: frontend/templates/_challenge_card.html:22
 #: frontend/templates/_challenge_card.html:75
@@ -83,11 +81,11 @@ msgstr "Настройки cookies"
 msgid ""
 "We use strictly-necessary cookies to keep the site working. With your "
 "consent we may also store functional preferences (language, banner state) "
-"and, in the future, anonymous analytics. Read the <a href=\"/cookies/"
-"\">cookies policy</a>."
+"and, in the future, anonymous analytics. Read the <a "
+"href=\"/cookies/\">cookies policy</a>."
 msgstr ""
-"Мы используем строго необходимые cookies для работы сайта. С вашего согласия "
-"можем хранить функциональные настройки (язык, состояние баннера), а в "
+"Мы используем строго необходимые cookies для работы сайта. С вашего согласия"
+" можем хранить функциональные настройки (язык, состояние баннера), а в "
 "будущем — анонимную аналитику. Читайте <a href=\"/cookies/\">политику "
 "использования cookies</a>."
 
@@ -147,8 +145,8 @@ msgstr "О проекте"
 
 #: frontend/templates/_footer.html:171
 msgid ""
-"This application is designed to help georeference images taken by astronauts "
-"aboard the International Space Station (ISS)."
+"This application is designed to help georeference images taken by astronauts"
+" aboard the International Space Station (ISS)."
 msgstr ""
 "Это приложение разработано для помощи в геопривязке снимков, сделанных "
 "астронавтами на борту Международной космической станции (МКС)."
@@ -164,8 +162,8 @@ msgid ""
 "CL6-2023-BIODIV-01."
 msgstr ""
 "Финансируется Европейским союзом в рамках программы «Горизонт Европа», "
-"соглашение о гранте № 101135308 (PLAN-B). Исследования и инновации | HORIZON-"
-"CL6-2023-BIODIV-01."
+"соглашение о гранте № 101135308 (PLAN-B). Исследования и инновации | "
+"HORIZON-CL6-2023-BIODIV-01."
 
 #: frontend/templates/_footer.html:183
 msgid "Quick Links"
@@ -269,8 +267,8 @@ msgid "Still needs more eyes"
 msgstr ""
 
 #: frontend/templates/_located_map_assets.html:35
-msgid "You located this one"
-msgstr ""
+msgid "You georeferenced this one"
+msgstr "Вы геопривязали это фото"
 
 #: frontend/templates/_located_map_assets.html:35
 msgid "Night lights (VIIRS)"
@@ -281,19 +279,19 @@ msgid "NASA Black Marble"
 msgstr ""
 
 #: frontend/templates/_located_map_assets.html:35
-msgid "Located photos"
-msgstr ""
+msgid "Georeferenced photos"
+msgstr "Геопривязанные фото"
 
 #: frontend/templates/_located_map_assets.html:35
 msgid "My photos"
 msgstr ""
 
 #: frontend/templates/_located_map_assets.html:36
-msgid "Nothing located here yet."
-msgstr "Локализованные фото"
+msgid "Nothing georeferenced here yet."
+msgstr "Здесь пока ничего не геопривязано."
 
 #: frontend/templates/_topbar.html:219 frontend/templates/_topbar.html:284
-#: frontend/templates/gettask.html:244 georeferencing/models.py:544
+#: frontend/templates/gettask.html:244 georeferencing/models.py:550
 #: user_profile/templates/diploma_challenge.html:88
 #: user_profile/templates/diploma_challenge.html:91
 #: user_profile/templates/user.html:941
@@ -345,8 +343,8 @@ msgstr "Регион задан"
 #: frontend/templates/_topbar.html:231
 #, python-brace-format
 msgid ""
-"You are enrolled in “{current}”. Joining “{name}” leaves it (your points are "
-"kept). Continue?"
+"You are enrolled in “{current}”. Joining “{name}” leaves it (your points are"
+" kept). Continue?"
 msgstr ""
 
 #: frontend/templates/_topbar.html:232
@@ -470,7 +468,8 @@ msgstr "Это испытание завершено."
 
 #: frontend/templates/challenge_detail.html:506
 msgid "Re-joining preserves your previous CPs."
-msgstr "При повторном присоединении ваши прежние контрольные точки сохранятся."
+msgstr ""
+"При повторном присоединении ваши прежние контрольные точки сохранятся."
 
 #: frontend/templates/challenge_detail.html:509
 msgid "Join challenge"
@@ -511,8 +510,8 @@ msgid "Gold reached!"
 msgstr "Золото достигнуто!"
 
 #: frontend/templates/challenge_detail.html:584
-msgid "Photos located in this challenge"
-msgstr "Вы вышли из challenge"
+msgid "Photos georeferenced in this challenge"
+msgstr "Фото, геопривязанные в этом челлендже"
 
 #: frontend/templates/challenge_detail.html:602
 msgid "Your performance"
@@ -678,7 +677,8 @@ msgstr "Сначала добавьте контрольную точку на �
 
 #: frontend/templates/gettask.html:51
 msgid "Please add a point in the map (related to the last control point)."
-msgstr "Добавьте точку на карте (соответствующую последней контрольной точке)."
+msgstr ""
+"Добавьте точку на карте (соответствующую последней контрольной точке)."
 
 #: frontend/templates/gettask.html:52
 msgid "Error"
@@ -706,8 +706,8 @@ msgstr "Здесь больше нет заданий"
 
 #: frontend/templates/gettask.html:59
 msgid ""
-"Every available photo has been located enough times, or there are no pending "
-"tasks at the moment. Thank you for contributing!"
+"Every available photo has been georeferenced enough times, or there are no "
+"pending tasks at the moment. Thank you for contributing!"
 msgstr ""
 "Все изображения этого батча уже геореференсированы нужное число раз, либо в "
 "данный момент нет заданий. Спасибо за участие!Все изображения этого батча "
@@ -728,9 +728,11 @@ msgstr ""
 
 #: frontend/templates/gettask.html:63
 msgid ""
-"Leave the challenge from its page to keep locating photos from the general "
-"queue."
+"Leave the challenge from its page to keep georeferencing photos from the "
+"general queue."
 msgstr ""
+"Выйдите из челленджа на его странице, чтобы продолжить геопривязку фото из "
+"общей очереди."
 
 #: frontend/templates/gettask.html:69
 msgid "An active challenge is waiting for you"
@@ -759,7 +761,6 @@ msgid "General queue"
 msgstr "Общее"
 
 #: frontend/templates/gettask.html:77
-#| msgid "Explore the photo"
 msgid "Skip this photo"
 msgstr "Изучите фото"
 
@@ -767,21 +768,19 @@ msgstr "Изучите фото"
 msgid "Tell us why, it helps us pick better photos."
 msgstr ""
 
-#: frontend/templates/gettask.html:79 georeferencing/models.py:663
-#| msgid "Lost at Night"
+#: frontend/templates/gettask.html:79 georeferencing/models.py:669
 msgid "Not a night photo"
 msgstr "Lost at Night"
 
-#: frontend/templates/gettask.html:80 georeferencing/models.py:664
+#: frontend/templates/gettask.html:80 georeferencing/models.py:670
 msgid "No city lights visible"
 msgstr ""
 
-#: frontend/templates/gettask.html:81 georeferencing/models.py:665
-#| msgid "Photos located"
+#: frontend/templates/gettask.html:81 georeferencing/models.py:671
 msgid "Too hard to locate"
-msgstr "Локализованные фото"
+msgstr "Слишком сложно определить место"
 
-#: frontend/templates/gettask.html:82 georeferencing/models.py:666
+#: frontend/templates/gettask.html:82 georeferencing/models.py:672
 msgid "Problem with the image"
 msgstr ""
 
@@ -897,8 +896,8 @@ msgstr "Часы"
 #: frontend/templates/gettask.html:456
 #, python-format
 msgid ""
-"You're participating anonymously — <a href=\"%(url)s\">create an account</a> "
-"to save your progress and appear on the leaderboard."
+"You're participating anonymously — <a href=\"%(url)s\">create an account</a>"
+" to save your progress and appear on the leaderboard."
 msgstr ""
 "Вы участвуете анонимно — <a href=\"%(url)s\">создайте аккаунт</a>, чтобы "
 "сохранить прогресс и попасть в рейтинг."
@@ -908,8 +907,8 @@ msgid "Dismiss"
 msgstr "Закрыть"
 
 #: frontend/templates/gettask.html:463
-msgid "Start locating"
-msgstr "Начать локализацию"
+msgid "Start georeferencing"
+msgstr "Начать геопривязку"
 
 #: frontend/templates/gettask.html:476
 msgid "Georeferencing!"
@@ -965,9 +964,9 @@ msgstr "Добро пожаловать в Lost At Night!"
 
 #: frontend/templates/gettask.html:593
 msgid ""
-"This is a real photo taken from the International Space Station. Your job is "
-"to figure out where on Earth it was taken — and we will guide you through it "
-"step by step."
+"This is a real photo taken from the International Space Station. Your job is"
+" to figure out where on Earth it was taken — and we will guide you through "
+"it step by step."
 msgstr ""
 "Это настоящая фотография, сделанная с Международной космической станции. "
 "Ваша задача — выяснить, где на Земле она была сделана, и мы проведём вас "
@@ -982,8 +981,8 @@ msgid ""
 "Pan and zoom this map to the region you think the photo shows. The crew "
 "metadata gives you a hint about where to look."
 msgstr ""
-"Перемещайте и масштабируйте эту карту до региона, который, по вашему мнению, "
-"изображён на фото. Метаданные экипажа подскажут, где искать."
+"Перемещайте и масштабируйте эту карту до региона, который, по вашему мнению,"
+" изображён на фото. Метаданные экипажа подскажут, где искать."
 
 #: frontend/templates/gettask.html:596
 msgid "Explore the photo"
@@ -1033,7 +1032,8 @@ msgstr "Сопоставьте на карте"
 #: frontend/templates/gettask.html:603
 msgid "Now click the same place on the map. That pair is one control point."
 msgstr ""
-"Теперь кликните по тому же месту на карте. Эта пара — одна контрольная точка."
+"Теперь кликните по тому же месту на карте. Эта пара — одна контрольная "
+"точка."
 
 #: frontend/templates/gettask.html:604
 msgid "Submit and earn points!"
@@ -1052,7 +1052,8 @@ msgstr ""
 #: frontend/templates/gettask.html:606
 msgid ""
 "Tip: create an account to save your progress and appear on the leaderboard."
-msgstr "Совет: создайте аккаунт, чтобы сохранить прогресс и попасть в рейтинг."
+msgstr ""
+"Совет: создайте аккаунт, чтобы сохранить прогресс и попасть в рейтинг."
 
 #: frontend/templates/gettask.html:608
 msgid "Prefer to watch a video instead?"
@@ -1111,9 +1112,11 @@ msgstr[3] ""
 
 #: frontend/templates/index.html:762
 msgid ""
-"No challenge is open right now: every photo you locate goes to the general "
-"queue."
+"No challenge is open right now: every photo you georeference goes to the "
+"general queue."
 msgstr ""
+"Сейчас нет открытых челленджей: каждое геопривязанное вами фото идёт в общую"
+" очередь."
 
 #: frontend/templates/index.html:776
 msgid "Our Mission"
@@ -1121,12 +1124,12 @@ msgstr "Наша миссия"
 
 #: frontend/templates/index.html:778
 msgid ""
-"This application is designed to help georeference images taken by astronauts "
-"aboard the International Space Station (ISS). The goal is to create a global "
-"map of Earth's lights at night to measure and track light pollution. By "
-"accurately aligning images with geographical coordinates, the app "
-"contributes to valuable environmental data collection, which can be used for "
-"scientific research, monitoring light pollution, and understanding its "
+"This application is designed to help georeference images taken by astronauts"
+" aboard the International Space Station (ISS). The goal is to create a "
+"global map of Earth's lights at night to measure and track light pollution. "
+"By accurately aligning images with geographical coordinates, the app "
+"contributes to valuable environmental data collection, which can be used for"
+" scientific research, monitoring light pollution, and understanding its "
 "impact on ecosystems and human health."
 msgstr ""
 "Это приложение разработано для помощи в геопривязке снимков, сделанных "
@@ -1167,7 +1170,8 @@ msgstr ""
 #: frontend/templates/index.html:819
 msgid ""
 "A challenge is a shared goal with a deadline: a region or a set of photos "
-"the community locates together. Join one and your contributions count for it."
+"the community locates together. Join one and your contributions count for "
+"it."
 msgstr ""
 
 #: frontend/templates/index.html:826
@@ -1176,9 +1180,11 @@ msgstr ""
 
 #: frontend/templates/index.html:827
 msgid ""
-"You can still participate: every photo you locate goes to the general queue. "
-"New challenges are announced here and in the newsletter."
+"You can still participate: every photo you georeference goes to the general "
+"queue. New challenges are announced here and in the newsletter."
 msgstr ""
+"Вы всё равно можете участвовать: каждое геопривязанное вами фото идёт в "
+"общую очередь. О новых челленджах сообщается здесь и в рассылке."
 
 #: frontend/templates/index.html:835
 msgid "Active"
@@ -1198,9 +1204,11 @@ msgstr ""
 
 #: frontend/templates/index.html:867
 msgid ""
-"Every point is a night photo from the International Space Station located by "
-"the community. Click one to see it."
+"Every point is a night photo from the International Space Station "
+"georeferenced by the community. Click one to see it."
 msgstr ""
+"Каждая точка — ночное фото с Международной космической станции, "
+"геопривязанное сообществом. Нажмите на точку, чтобы увидеть его."
 
 #: frontend/templates/index.html:877
 msgid "Project Statistics"
@@ -1215,8 +1223,8 @@ msgid "Control points placed"
 msgstr "Контрольные точки"
 
 #: frontend/templates/index.html:888
-msgid "Photos located"
-msgstr "Локализованные фото"
+msgid "Photos georeferenced"
+msgstr "Геопривязанные фото"
 
 #: frontend/templates/index.html:896 frontend/templates/ranking.html:62
 #: user_profile/templates/user.html:776
@@ -1224,16 +1232,16 @@ msgid "Tasks completed"
 msgstr "Завершено"
 
 #: frontend/templates/index.html:901
-msgid "Photos located per week, last 12 weeks"
-msgstr ""
+msgid "Photos georeferenced per week, last 12 weeks"
+msgstr "Геопривязанные фото по неделям, последние 12 недель"
 
 #: frontend/templates/index.html:902 user_profile/templates/user.html:1039
 msgid "See the ranking"
 msgstr ""
 
 #: frontend/templates/index.html:904
-msgid "Photos located per week"
-msgstr "Локализованные фото"
+msgid "Photos georeferenced per week"
+msgstr "Геопривязанные фото по неделям"
 
 #: frontend/templates/legal/_legal_base.html:81
 #: templates/account/logout.html:210
@@ -1248,7 +1256,8 @@ msgstr "Политика использования cookies"
 
 #: frontend/templates/legal/cookies.html:8
 msgid ""
-"Information about the cookies and similar technologies used by Lost at Night."
+"Information about the cookies and similar technologies used by Lost at "
+"Night."
 msgstr ""
 "Информация о cookies и аналогичных технологиях, используемых Lost at Night."
 
@@ -1258,13 +1267,13 @@ msgstr "Что такое cookie?"
 
 #: frontend/templates/legal/cookies.html:11
 msgid ""
-"A cookie is a small text file stored by your browser. We use cookies to keep "
-"your session active, remember your preferences, and — only if you opt in — "
+"A cookie is a small text file stored by your browser. We use cookies to keep"
+" your session active, remember your preferences, and — only if you opt in — "
 "to measure aggregate usage of the site."
 msgstr ""
 "Cookie — это небольшой текстовый файл, сохраняемый браузером. Мы используем "
-"cookies, чтобы поддерживать сессию, запоминать настройки и — только с вашего "
-"согласия — оценивать агрегированное использование сайта."
+"cookies, чтобы поддерживать сессию, запоминать настройки и — только с вашего"
+" согласия — оценивать агрегированное использование сайта."
 
 #: frontend/templates/legal/cookies.html:13
 msgid "Categories"
@@ -1348,8 +1357,8 @@ msgid ""
 "provider and its purpose will appear here and require your explicit opt-in "
 "via the cookie banner."
 msgstr ""
-"Сейчас отключены. Если позднее добавим агрегированную аналитику, поставщик и "
-"цель появятся здесь и потребуют явного согласия через баннер."
+"Сейчас отключены. Если позднее добавим агрегированную аналитику, поставщик и"
+" цель появятся здесь и потребуют явного согласия через баннер."
 
 #: frontend/templates/legal/cookies.html:32
 msgid "Managing your preferences"
@@ -1370,9 +1379,9 @@ msgstr "Сторонние сервисы"
 
 #: frontend/templates/legal/cookies.html:36
 msgid ""
-"When you load a task page, your browser fetches map tiles from OpenStreetMap "
-"and reverse-geocodes coordinates via Nominatim. Those providers may receive "
-"your IP address. Lost at Night has no commercial relationship with them; "
+"When you load a task page, your browser fetches map tiles from OpenStreetMap"
+" and reverse-geocodes coordinates via Nominatim. Those providers may receive"
+" your IP address. Lost at Night has no commercial relationship with them; "
 "refer to their respective policies for details."
 msgstr ""
 "При загрузке страницы задания браузер получает фрагменты карт от "
@@ -1436,11 +1445,11 @@ msgid ""
 "Europe Programme, Grant Agreement No. 101135308 (PLAN-B). Research and "
 "Innovation Action | HORIZON-CL6-2023-BIODIV-01."
 msgstr ""
-"Проект получает финансирование Европейского союза в рамках программы Horizon "
-"Europe, грантовое соглашение № 101135308 (PLAN-B). Research and Innovation "
+"Проект получает финансирование Европейского союза в рамках программы Horizon"
+" Europe, грантовое соглашение № 101135308 (PLAN-B). Research and Innovation "
 "Action | HORIZON-CL6-2023-BIODIV-01.Финансируется Европейским союзом в "
-"рамках программы «Горизонт Европа», соглашение о гранте № 101135308 (PLAN-"
-"B). Исследования и инновации | HORIZON-CL6-2023-BIODIV-01."
+"рамках программы «Горизонт Европа», соглашение о гранте № 101135308 "
+"(PLAN-B). Исследования и инновации | HORIZON-CL6-2023-BIODIV-01."
 
 #: frontend/templates/legal/legal.html:24
 msgid "Source code"
@@ -1462,9 +1471,9 @@ msgstr "Права на изображения"
 
 #: frontend/templates/legal/legal.html:28
 msgid ""
-"Astronaut photography of Earth used on this platform is provided by NASA and "
-"is in the public domain (Astronaut Photography of Earth Database — eol.jsc."
-"nasa.gov)."
+"Astronaut photography of Earth used on this platform is provided by NASA and"
+" is in the public domain (Astronaut Photography of Earth Database — "
+"eol.jsc.nasa.gov)."
 msgstr ""
 "Фотографии Земли, сделанные астронавтами и используемые на этой платформе, "
 "предоставлены NASA и находятся в общественном достоянии (Astronaut "
@@ -1511,12 +1520,12 @@ msgstr "1. О нас"
 #: frontend/templates/legal/privacy.html:14
 msgid ""
 "<strong>Data controller:</strong> Fundación Ibercivis (NIF G-99409492), C/ "
-"Mariano Esquillor s/n, 50018 Zaragoza, Spain. Contact: <a href=\"mailto:"
-"ethics@ibercivis.es\">ethics@ibercivis.es</a>."
+"Mariano Esquillor s/n, 50018 Zaragoza, Spain. Contact: <a "
+"href=\"mailto:ethics@ibercivis.es\">ethics@ibercivis.es</a>."
 msgstr ""
 "<strong>Оператор данных:</strong> Fundación Ibercivis (NIF G-99409492), C/ "
-"Mariano Esquillor s/n, 50018 Сарагоса, Испания. Контакт: <a href=\"mailto:"
-"ethics@ibercivis.es\">ethics@ibercivis.es</a>."
+"Mariano Esquillor s/n, 50018 Сарагоса, Испания. Контакт: <a "
+"href=\"mailto:ethics@ibercivis.es\">ethics@ibercivis.es</a>."
 
 #: frontend/templates/legal/privacy.html:16
 msgid "2. What data we process"
@@ -1535,8 +1544,8 @@ msgid ""
 "Activity data: control points contributed, time spent, batches and "
 "challenges joined."
 msgstr ""
-"Данные активности: контрольные точки, затраченное время, пакеты и челленджи, "
-"в которых вы участвовали."
+"Данные активности: контрольные точки, затраченное время, пакеты и челленджи,"
+" в которых вы участвовали."
 
 #: frontend/templates/legal/privacy.html:21
 msgid ""
@@ -1743,8 +1752,8 @@ msgid ""
 "Lost at Night is open to volunteers aged 14 and over. If you are under 14, "
 "please ask a parent or guardian to register on your behalf."
 msgstr ""
-"Lost at Night открыт для волонтёров от 14 лет. Если вам меньше 14, попросите "
-"родителя или опекуна зарегистрироваться от вашего имени."
+"Lost at Night открыт для волонтёров от 14 лет. Если вам меньше 14, попросите"
+" родителя или опекуна зарегистрироваться от вашего имени."
 
 #: frontend/templates/legal/privacy.html:73
 msgid "10. Updates to this policy"
@@ -1752,8 +1761,8 @@ msgstr "10. Изменения в политике"
 
 #: frontend/templates/legal/privacy.html:74
 msgid ""
-"When we make substantive changes we will update the version number above and "
-"ask you to re-confirm your consent."
+"When we make substantive changes we will update the version number above and"
+" ask you to re-confirm your consent."
 msgstr ""
 "При существенных изменениях мы обновим номер версии и попросим повторно "
 "подтвердить согласие."
@@ -1790,8 +1799,8 @@ msgstr "2. Природа сервиса"
 msgid ""
 "Lost at Night is a non-profit research platform. Volunteers help locate and "
 "georeference astronaut photographs of Earth taken at night, in order to "
-"study artificial light pollution. The service is provided free of charge, on "
-"a best-effort basis, with no service-level guarantees."
+"study artificial light pollution. The service is provided free of charge, on"
+" a best-effort basis, with no service-level guarantees."
 msgstr ""
 "Lost at Night — некоммерческая исследовательская платформа. Волонтёры "
 "помогают находить и привязывать к местности ночные фотографии Земли, "
@@ -1805,8 +1814,8 @@ msgstr "3. Ваши вклады"
 #: frontend/templates/legal/terms.html:17
 msgid ""
 "When you submit control points, georeference an image, or otherwise "
-"contribute, you grant us a perpetual, worldwide, royalty-free, non-exclusive "
-"licence to use those contributions for scientific research, education, and "
+"contribute, you grant us a perpetual, worldwide, royalty-free, non-exclusive"
+" licence to use those contributions for scientific research, education, and "
 "dissemination purposes. Your contributions remain attributable to your "
 "username unless you have disabled public visibility."
 msgstr ""
@@ -1827,7 +1836,8 @@ msgstr "Не отправляйте заведомо неверные геопр
 #: frontend/templates/legal/terms.html:22
 msgid "Do not impersonate other users or scrape personal data."
 msgstr ""
-"Не выдавайте себя за других пользователей и не собирайте персональные данные."
+"Не выдавайте себя за других пользователей и не собирайте персональные "
+"данные."
 
 #: frontend/templates/legal/terms.html:23
 msgid "Do not abuse the API beyond reasonable limits."
@@ -1849,7 +1859,8 @@ msgstr "5. Интеллектуальная собственность"
 msgid ""
 "ISS imagery is provided by NASA and is in the public domain. The Lost at "
 "Night software is open source (GPLv3). Aggregated and derived datasets "
-"produced by the project may be released under open licences such as CC BY-SA."
+"produced by the project may be released under open licences such as CC BY-"
+"SA."
 msgstr ""
 "Снимки МКС предоставлены NASA и находятся в общественном достоянии. ПО Lost "
 "at Night — open source (GPLv3). Агрегированные и производные наборы данных "
@@ -1892,8 +1903,8 @@ msgid ""
 "courts of Zaragoza, Spain, without prejudice to mandatory consumer "
 "protection laws."
 msgstr ""
-"Эти условия регулируются испанским правом. Споры передаются в суды Сарагосы, "
-"Испания, без ущерба для обязательных норм защиты прав потребителей."
+"Эти условия регулируются испанским правом. Споры передаются в суды Сарагосы,"
+" Испания, без ущерба для обязательных норм защиты прав потребителей."
 
 #: frontend/templates/ranking.html:58
 msgid ""
@@ -2085,7 +2096,8 @@ msgstr ""
 msgid "Participant"
 msgstr "Участники"
 
-#: georeferencing/diplomas.py:47 user_profile/templates/diploma_general.html:56
+#: georeferencing/diplomas.py:47
+#: user_profile/templates/diploma_general.html:56
 msgid "Contributor"
 msgstr "Внести вклад"
 
@@ -2117,115 +2129,115 @@ msgstr "Ошибка загрузки"
 msgid "Downloaded & Generated"
 msgstr "Загружено и создано"
 
-#: georeferencing/models.py:133 teams/templates/team_list.html:51
+#: georeferencing/models.py:139 teams/templates/team_list.html:51
 msgid "Search"
 msgstr "Поиск"
 
-#: georeferencing/models.py:134
+#: georeferencing/models.py:140
 msgid "List"
 msgstr "Список"
 
-#: georeferencing/models.py:138
+#: georeferencing/models.py:144
 msgid "Not Started"
 msgstr "Не начато"
 
-#: georeferencing/models.py:139
+#: georeferencing/models.py:145
 msgid "Processing"
 msgstr "Обработка"
 
-#: georeferencing/models.py:140 georeferencing/models.py:483
+#: georeferencing/models.py:146 georeferencing/models.py:489
 msgid "Completed"
 msgstr "Завершено"
 
-#: georeferencing/models.py:141
+#: georeferencing/models.py:147
 msgid "Failed"
 msgstr "Ошибка"
 
-#: georeferencing/models.py:153
+#: georeferencing/models.py:159
 msgid "Focal length <="
 msgstr "Фокусное расстояние <="
 
-#: georeferencing/models.py:154
+#: georeferencing/models.py:160
 msgid "Focal length >="
 msgstr "Фокусное расстояние >="
 
-#: georeferencing/models.py:155
+#: georeferencing/models.py:161
 msgid "Original images"
 msgstr "Оригинальные снимки"
 
-#: georeferencing/models.py:166
+#: georeferencing/models.py:172
 msgid "Processing Status"
 msgstr "Статус обработки"
 
-#: georeferencing/models.py:219
+#: georeferencing/models.py:225
 msgid "Leave empty for a general challenge applicable to any batch."
 msgstr ""
 
-#: georeferencing/models.py:481
+#: georeferencing/models.py:487
 msgid "Started"
 msgstr "Начато"
 
-#: georeferencing/models.py:482
+#: georeferencing/models.py:488
 msgid "Step"
 msgstr ""
 
-#: georeferencing/models.py:484
+#: georeferencing/models.py:490
 msgid "Dismissed"
 msgstr ""
 
-#: georeferencing/models.py:511
+#: georeferencing/models.py:517
 msgid "No image file found (not in images table)"
 msgstr ""
 
-#: georeferencing/models.py:512
+#: georeferencing/models.py:518
 msgid "No coordinates (not in frames or nadir)"
 msgstr ""
 
-#: georeferencing/models.py:513
+#: georeferencing/models.py:519
 msgid "Download failed"
 msgstr "Загружено"
 
-#: georeferencing/models.py:514
+#: georeferencing/models.py:520
 msgid "NASA API error"
 msgstr ""
 
-#: georeferencing/models.py:515
+#: georeferencing/models.py:521
 msgid "Could not parse mission/roll/frame"
 msgstr ""
 
-#: georeferencing/models.py:516
+#: georeferencing/models.py:522
 msgid "Unexpected error"
 msgstr ""
 
-#: georeferencing/models.py:540
+#: georeferencing/models.py:546
 msgid "Campaign"
 msgstr ""
 
-#: georeferencing/models.py:541
+#: georeferencing/models.py:547
 msgid "Email / newsletter"
 msgstr "Подписан на рассылку"
 
-#: georeferencing/models.py:542
+#: georeferencing/models.py:548
 msgid "Press / media"
 msgstr ""
 
-#: georeferencing/models.py:543
+#: georeferencing/models.py:549
 msgid "Social media"
 msgstr "Социальные сети"
 
-#: georeferencing/models.py:545
+#: georeferencing/models.py:551
 msgid "Deploy / release"
 msgstr ""
 
-#: georeferencing/models.py:546
+#: georeferencing/models.py:552
 msgid "Batch loaded"
 msgstr "Пакеты"
 
-#: georeferencing/models.py:547
+#: georeferencing/models.py:553
 msgid "Other"
 msgstr ""
 
-#: georeferencing/models.py:667
+#: georeferencing/models.py:673
 msgid "No reason given"
 msgstr ""
 
@@ -2362,8 +2374,8 @@ msgstr "Пока нет пользователей"
 
 #: teams/templates/team_detail.html:85
 msgid ""
-"“For the team” counts only what each member did while in the team. Points of "
-"members who left stay in the team total."
+"“For the team” counts only what each member did while in the team. Points of"
+" members who left stay in the team total."
 msgstr ""
 
 #: teams/templates/team_detail.html:89
@@ -2438,8 +2450,10 @@ msgstr ""
 #: teams/templates/team_list.html:7
 msgid ""
 "Classrooms, clubs, offices, groups of friends: join a team and the photos "
-"you locate count for it too. One team at a time."
+"you georeference count for it too. One team at a time."
 msgstr ""
+"Классы, клубы, офисы, компании друзей: вступите в команду, и геопривязанные "
+"вами фото будут засчитаны и ей. Только одна команда за раз."
 
 #: teams/templates/team_list.html:17 user_profile/templates/user.html:985
 msgid "You own this team."
@@ -2540,7 +2554,8 @@ msgstr ""
 
 #: teams/views.py:233
 #, python-format
-msgid "You have left %(team)s. The points you earned there stay with the team."
+msgid ""
+"You have left %(team)s. The points you earned there stay with the team."
 msgstr ""
 
 #: teams/views.py:255
@@ -2628,7 +2643,8 @@ msgstr "Уже уходите?"
 
 #: templates/account/logout.html:179
 #, python-format
-msgid "You’re signed in as <b>%(u)s</b>. Sign out and we’ll see you next time."
+msgid ""
+"You’re signed in as <b>%(u)s</b>. Sign out and we’ll see you next time."
 msgstr "Вы вошли как <b>%(u)s</b>. Выйдите — увидимся в следующий раз."
 
 #: templates/account/logout.html:181
@@ -2702,7 +2718,8 @@ msgstr ""
 
 #: templates/account/signup.html:438 user_profile/forms.py:54
 msgid ""
-"Send me updates about Lost at Night and citizen-science campaigns (optional)."
+"Send me updates about Lost at Night and citizen-science campaigns "
+"(optional)."
 msgstr ""
 "Присылайте мне новости о Lost at Night и кампаниях гражданской науки "
 "(необязательно)."
@@ -2770,12 +2787,14 @@ msgstr ""
 #: user_profile/forms.py:47
 msgid "I have read and accept the privacy policy and terms of use."
 msgstr ""
-"Я прочитал(а) и принимаю политику конфиденциальности и условия использования."
-"Я прочитал(а) и принимаю политику конфиденциальности и условия использования."
+"Я прочитал(а) и принимаю политику конфиденциальности и условия "
+"использования.Я прочитал(а) и принимаю политику конфиденциальности и условия"
+" использования."
 
 #: user_profile/forms.py:49
 msgid "You must accept the privacy policy to create an account."
-msgstr "Чтобы создать аккаунт, необходимо принять политику конфиденциальности."
+msgstr ""
+"Чтобы создать аккаунт, необходимо принять политику конфиденциальности."
 
 #: user_profile/models.py:50
 msgid "Privacy policy accepted at"
@@ -2918,8 +2937,7 @@ msgstr ""
 
 #: user_profile/templates/diploma_challenge.html:78
 #, python-format
-msgid ""
-"Reached <b style=\"color: %(collective_meta.color)s;\">%(tier)s</b> tier"
+msgid "Reached <b style=\"color: %(collective_meta.color)s;\">%(tier)s</b> tier"
 msgstr ""
 
 #: user_profile/templates/diploma_challenge.html:87
@@ -3084,8 +3102,8 @@ msgid ""
 "You won't receive newsletters from Lost at Night anymore. You can re-"
 "subscribe at any time from your profile page."
 msgstr ""
-"Вы больше не будете получать рассылки Lost at Night. Подписаться снова можно "
-"в любой момент на странице профиля."
+"Вы больше не будете получать рассылки Lost at Night. Подписаться снова можно"
+" в любой момент на странице профиля."
 
 #: user_profile/templates/user.html:607 user_profile/templates/user.html:1066
 msgid "Edit profile"
@@ -3243,8 +3261,8 @@ msgstr ""
 
 #: user_profile/templates/user.html:999
 msgid ""
-"Got an invite code from a classroom, club or group of friends? Enter it here "
-"— or pick an open team from the Teams ranking."
+"Got an invite code from a classroom, club or group of friends? Enter it here"
+" — or pick an open team from the Teams ranking."
 msgstr ""
 
 #: user_profile/templates/user.html:1009
@@ -3349,7 +3367,12 @@ msgid ""
 "for it. Here are the badges you've earned so far."
 msgstr ""
 
-#~| msgid "Contributor"
+#~ msgid "Start locating"
+#~ msgstr "Начать локализацию"
+
+#~ msgid "Photos located"
+#~ msgstr "Локализованные фото"
+
 #~ msgid "Contributions"
 #~ msgstr "Внести вклад"
 
@@ -3380,8 +3403,7 @@ msgstr ""
 #~ msgid "in this batch."
 #~ msgstr "в этом батче."
 
-#~ msgid ""
-#~ "You can leave the challenge from its page if you want different tasks."
+#~ msgid "You can leave the challenge from its page if you want different tasks."
 #~ msgstr ""
 #~ "Если хотите другие задания — можно выйти из challenge на его странице."
 
@@ -3391,7 +3413,6 @@ msgstr ""
 #~ msgid "Go to batches"
 #~ msgstr "К пакетам"
 
-#~| msgid "Join challenge"
 #~ msgid "Join a challenge"
 #~ msgstr "Присоединиться к испытанию"
 
@@ -3399,8 +3420,7 @@ msgstr ""
 #~ msgstr "Начать вносить вклад"
 
 #~ msgid "Join a challenge and help the community reach a shared goal."
-#~ msgstr ""
-#~ "Присоединяйтесь к challenge и помогите сообществу достичь общей цели."
+#~ msgstr "Присоединяйтесь к challenge и помогите сообществу достичь общей цели."
 
 #~ msgid "Finished"
 #~ msgstr "Завершено"
@@ -3419,9 +3439,6 @@ msgstr ""
 
 #~ msgid "Images"
 #~ msgstr "Изображения:"
-
-#~ msgid "Georeferenced"
-#~ msgstr "Привязано"
 
 #~ msgid "Total Tasks"
 #~ msgstr "Всего задач"
@@ -3526,8 +3543,8 @@ msgstr ""
 #~ "You can continue contributing — but the tasks you do here won’t count for "
 #~ "the challenge."
 #~ msgstr ""
-#~ "Вы можете продолжать вносить вклад, но выполненные здесь задания не "
-#~ "пойдут в зачёт challenge."
+#~ "Вы можете продолжать вносить вклад, но выполненные здесь задания не пойдут в"
+#~ " зачёт challenge."
 
 #~ msgid "Continue without counting"
 #~ msgstr "Продолжить без зачёта"
@@ -3551,20 +3568,19 @@ msgstr ""
 #~ msgstr "Доступные пакеты"
 
 #~ msgid ""
-#~ "This project has received funding from the European Space Agency (ESA) "
-#~ "and other public research bodies. Funding details are listed on the home "
-#~ "page."
+#~ "This project has received funding from the European Space Agency (ESA) and "
+#~ "other public research bodies. Funding details are listed on the home page."
 #~ msgstr ""
-#~ "Проект получает финансирование от Европейского космического агентства "
-#~ "(ESA) и других государственных научных организаций. Подробности — на "
-#~ "главной странице."
+#~ "Проект получает финансирование от Европейского космического агентства (ESA) "
+#~ "и других государственных научных организаций. Подробности — на главной "
+#~ "странице."
 
 #~ msgid ""
-#~ "Lost at Night is a citizen-science project operated by Ibercivis "
-#~ "Foundation in collaboration with IAA-CSIC."
+#~ "Lost at Night is a citizen-science project operated by Ibercivis Foundation "
+#~ "in collaboration with IAA-CSIC."
 #~ msgstr ""
-#~ "Lost at Night — гражданский научный проект, реализуемый Fundación "
-#~ "Ibercivis в сотрудничестве с IAA-CSIC."
+#~ "Lost at Night — гражданский научный проект, реализуемый Fundación Ibercivis "
+#~ "в сотрудничестве с IAA-CSIC."
 
 #~ msgid "Toggle navigation"
 #~ msgstr "Переключить навигацию"

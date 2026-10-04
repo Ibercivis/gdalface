@@ -759,7 +759,7 @@
                         {% if open_challenges %}
                             <a href="#challenges-section">{% blocktrans count n=open_challenges %}{{ n }} challenge is open — join it and your work counts for a shared goal.{% plural %}{{ n }} challenges are open — join one and your work counts for a shared goal.{% endblocktrans %}</a>
                         {% else %}
-                            {% trans "No challenge is open right now: every photo you locate goes to the general queue." %}
+                            {% trans "No challenge is open right now: every photo you georeference goes to the general queue." %}
                         {% endif %}
                     </p>
                 </div>
@@ -824,7 +824,7 @@
                             <svg class="ds-icon"><use href="#ds-icon-target"/></svg>
                             <div>
                                 <strong>{% trans "No challenge is open right now." %}</strong>
-                                <span>{% trans "You can still participate: every photo you locate goes to the general queue. New challenges are announced here and in the newsletter." %}</span>
+                                <span>{% trans "You can still participate: every photo you georeference goes to the general queue. New challenges are announced here and in the newsletter." %}</span>
                             </div>
                             <a href="/gettask" class="ds-btn ds-btn--primary ds-btn--md">{% trans "Participate" %}</a>
                         </div>
@@ -864,7 +864,7 @@
                 <div id="map-section" class="row batch-section">
                     <div class="col-12 text-center mb-4">
                         <h2 class="section-title"><i class="fa-solid fa-earth-europe section-title-icon"></i>{% trans "What we have lit up so far" %}</h2>
-                        <p class="text-center mb-4">{% trans "Every point is a night photo from the International Space Station located by the community. Click one to see it." %}</p>
+                        <p class="text-center mb-4">{% trans "Every point is a night photo from the International Space Station georeferenced by the community. Click one to see it." %}</p>
                     </div>
                     <div class="col-12">
                         <div id="home-map" class="lan-map" style="height:560px"></div>
@@ -885,7 +885,7 @@
                             </div>
                             <div class="stat-mini">
                                 <div class="ico"><i class="fa-solid fa-map-location-dot"></i></div>
-                                <div><div class="v">{{ images_with_georeference }}</div><div class="l">{% trans "Photos located" %}</div></div>
+                                <div><div class="v">{{ images_with_georeference }}</div><div class="l">{% trans "Photos georeferenced" %}</div></div>
                             </div>
                             <div class="stat-mini">
                                 <div class="ico"><i class="fa-solid fa-users"></i></div>
@@ -898,10 +898,10 @@
                         </div>
                         <div class="stats-week">
                             <div class="stats-week__head">
-                                <span>{% trans "Photos located per week, last 12 weeks" %}</span>
+                                <span>{% trans "Photos georeferenced per week, last 12 weeks" %}</span>
                                 <a href="{% url 'ranking' %}" class="ds-btn ds-btn--ghost ds-btn--sm">{% trans "See the ranking" %} <svg class="ds-icon"><use href="#ds-icon-chevron-right"/></svg></a>
                             </div>
-                            <div class="stats-week__bars" role="img" aria-label="{% trans 'Photos located per week' %}">
+                            <div class="stats-week__bars" role="img" aria-label="{% trans 'Photos georeferenced per week' %}">
                                 {% for w in weekly %}
                                 <div class="stats-week__col" title="{{ w.week }}: {{ w.n }}">
                                     <div class="stats-week__bar" style="height: {% widthratio w.n weekly_max 100 %}%"></div>

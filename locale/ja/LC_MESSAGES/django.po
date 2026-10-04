@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-03 13:46+0000\n"
+"POT-Creation-Date: 2026-10-04 10:26+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -81,12 +81,11 @@ msgstr "クッキーの設定"
 msgid ""
 "We use strictly-necessary cookies to keep the site working. With your "
 "consent we may also store functional preferences (language, banner state) "
-"and, in the future, anonymous analytics. Read the <a href=\"/cookies/"
-"\">cookies policy</a>."
+"and, in the future, anonymous analytics. Read the <a "
+"href=\"/cookies/\">cookies policy</a>."
 msgstr ""
-"サイトの動作維持に必要なクッキーを使用しています。同意いただければ、機能設定"
-"（言語・バナー状態）や将来的には匿名統計も保存します。<a href=\"/cookies/\">"
-"クッキーポリシー</a>をお読みください。"
+"サイトの動作維持に必要なクッキーを使用しています。同意いただければ、機能設定（言語・バナー状態）や将来的には匿名統計も保存します。<a "
+"href=\"/cookies/\">クッキーポリシー</a>をお読みください。"
 
 #: frontend/templates/_cookie_banner.html:213
 msgid "Essentials only"
@@ -144,11 +143,9 @@ msgstr "概要"
 
 #: frontend/templates/_footer.html:171
 msgid ""
-"This application is designed to help georeference images taken by astronauts "
-"aboard the International Space Station (ISS)."
-msgstr ""
-"このアプリケーションは、国際宇宙ステーション（ISS）の宇宙飛行士が撮影した画像"
-"のジオリファレンスを支援するために設計されています。"
+"This application is designed to help georeference images taken by astronauts"
+" aboard the International Space Station (ISS)."
+msgstr "このアプリケーションは、国際宇宙ステーション（ISS）の宇宙飛行士が撮影した画像のジオリファレンスを支援するために設計されています。"
 
 #: frontend/templates/_footer.html:175
 msgid "Flag of the European Union"
@@ -160,9 +157,8 @@ msgid ""
 "Agreement No. 101135308 (PLAN-B). Research and Innovation Action | HORIZON-"
 "CL6-2023-BIODIV-01."
 msgstr ""
-"ホライゾン・ヨーロッパ・プログラムの下、欧州連合により資金提供。補助金契約番"
-"号101135308（PLAN-B）。研究・イノベーション活動 | HORIZON-CL6-2023-"
-"BIODIV-01。"
+"ホライゾン・ヨーロッパ・プログラムの下、欧州連合により資金提供。補助金契約番号101135308（PLAN-B）。研究・イノベーション活動 | "
+"HORIZON-CL6-2023-BIODIV-01。"
 
 #: frontend/templates/_footer.html:183
 msgid "Quick Links"
@@ -266,8 +262,8 @@ msgid "Still needs more eyes"
 msgstr ""
 
 #: frontend/templates/_located_map_assets.html:35
-msgid "You located this one"
-msgstr ""
+msgid "You georeferenced this one"
+msgstr "あなたがジオリファレンスした写真"
 
 #: frontend/templates/_located_map_assets.html:35
 msgid "Night lights (VIIRS)"
@@ -278,19 +274,19 @@ msgid "NASA Black Marble"
 msgstr ""
 
 #: frontend/templates/_located_map_assets.html:35
-msgid "Located photos"
-msgstr ""
+msgid "Georeferenced photos"
+msgstr "ジオリファレンス済みの写真"
 
 #: frontend/templates/_located_map_assets.html:35
 msgid "My photos"
 msgstr ""
 
 #: frontend/templates/_located_map_assets.html:36
-msgid "Nothing located here yet."
-msgstr "位置確認済みの写真"
+msgid "Nothing georeferenced here yet."
+msgstr "ここにはまだジオリファレンスされた写真がありません。"
 
 #: frontend/templates/_topbar.html:219 frontend/templates/_topbar.html:284
-#: frontend/templates/gettask.html:244 georeferencing/models.py:544
+#: frontend/templates/gettask.html:244 georeferencing/models.py:550
 #: user_profile/templates/diploma_challenge.html:88
 #: user_profile/templates/diploma_challenge.html:91
 #: user_profile/templates/user.html:941
@@ -342,8 +338,8 @@ msgstr "地域が指定されています"
 #: frontend/templates/_topbar.html:231
 #, python-brace-format
 msgid ""
-"You are enrolled in “{current}”. Joining “{name}” leaves it (your points are "
-"kept). Continue?"
+"You are enrolled in “{current}”. Joining “{name}” leaves it (your points are"
+" kept). Continue?"
 msgstr ""
 
 #: frontend/templates/_topbar.html:232
@@ -508,8 +504,8 @@ msgid "Gold reached!"
 msgstr "ゴールド達成！"
 
 #: frontend/templates/challenge_detail.html:584
-msgid "Photos located in this challenge"
-msgstr "チャレンジを退出しました"
+msgid "Photos georeferenced in this challenge"
+msgstr "このチャレンジでジオリファレンスされた写真"
 
 #: frontend/templates/challenge_detail.html:602
 msgid "Your performance"
@@ -703,13 +699,10 @@ msgstr "ここにはもうタスクがありません"
 
 #: frontend/templates/gettask.html:59
 msgid ""
-"Every available photo has been located enough times, or there are no pending "
-"tasks at the moment. Thank you for contributing!"
+"Every available photo has been georeferenced enough times, or there are no "
+"pending tasks at the moment. Thank you for contributing!"
 msgstr ""
-"このバッチの各画像はすでに必要な回数だけジオリファレンスされたか、現在保留中"
-"のタスクはありません。ご協力ありがとうございます！このバッチの各画像はすでに"
-"必要な回数だけジオリファレンスされたか、現在保留中のタスクはありません。ご協"
-"力ありがとうございます！"
+"このバッチの各画像はすでに必要な回数だけジオリファレンスされたか、現在保留中のタスクはありません。ご協力ありがとうございます！このバッチの各画像はすでに必要な回数だけジオリファレンスされたか、現在保留中のタスクはありません。ご協力ありがとうございます！"
 
 #: frontend/templates/gettask.html:60
 msgid "Your challenge has no tasks left"
@@ -725,9 +718,9 @@ msgstr ""
 
 #: frontend/templates/gettask.html:63
 msgid ""
-"Leave the challenge from its page to keep locating photos from the general "
-"queue."
-msgstr ""
+"Leave the challenge from its page to keep georeferencing photos from the "
+"general queue."
+msgstr "一般キューの写真のジオリファレンスを続けるには、チャレンジのページから退出してください。"
 
 #: frontend/templates/gettask.html:69
 msgid "An active challenge is waiting for you"
@@ -756,7 +749,6 @@ msgid "General queue"
 msgstr "全般"
 
 #: frontend/templates/gettask.html:77
-#| msgid "Explore the photo"
 msgid "Skip this photo"
 msgstr "写真を探検"
 
@@ -764,21 +756,19 @@ msgstr "写真を探検"
 msgid "Tell us why, it helps us pick better photos."
 msgstr ""
 
-#: frontend/templates/gettask.html:79 georeferencing/models.py:663
-#| msgid "Lost at Night"
+#: frontend/templates/gettask.html:79 georeferencing/models.py:669
 msgid "Not a night photo"
 msgstr "Lost at Night"
 
-#: frontend/templates/gettask.html:80 georeferencing/models.py:664
+#: frontend/templates/gettask.html:80 georeferencing/models.py:670
 msgid "No city lights visible"
 msgstr ""
 
-#: frontend/templates/gettask.html:81 georeferencing/models.py:665
-#| msgid "Photos located"
+#: frontend/templates/gettask.html:81 georeferencing/models.py:671
 msgid "Too hard to locate"
-msgstr "位置確認済みの写真"
+msgstr "場所の特定が難しすぎる"
 
-#: frontend/templates/gettask.html:82 georeferencing/models.py:666
+#: frontend/templates/gettask.html:82 georeferencing/models.py:672
 msgid "Problem with the image"
 msgstr ""
 
@@ -894,19 +884,17 @@ msgstr "時間"
 #: frontend/templates/gettask.html:456
 #, python-format
 msgid ""
-"You're participating anonymously — <a href=\"%(url)s\">create an account</a> "
-"to save your progress and appear on the leaderboard."
-msgstr ""
-"匿名で参加しています — 進捗を保存してリーダーボードに表示するには<a "
-"href=\"%(url)s\">アカウントを作成</a>してください。"
+"You're participating anonymously — <a href=\"%(url)s\">create an account</a>"
+" to save your progress and appear on the leaderboard."
+msgstr "匿名で参加しています — 進捗を保存してリーダーボードに表示するには<a href=\"%(url)s\">アカウントを作成</a>してください。"
 
 #: frontend/templates/gettask.html:461
 msgid "Dismiss"
 msgstr "閉じる"
 
 #: frontend/templates/gettask.html:463
-msgid "Start locating"
-msgstr "位置確認を始める"
+msgid "Start georeferencing"
+msgstr "ジオリファレンスを始める"
 
 #: frontend/templates/gettask.html:476
 msgid "Georeferencing!"
@@ -962,12 +950,11 @@ msgstr "Lost At Nightへようこそ！"
 
 #: frontend/templates/gettask.html:593
 msgid ""
-"This is a real photo taken from the International Space Station. Your job is "
-"to figure out where on Earth it was taken — and we will guide you through it "
-"step by step."
+"This is a real photo taken from the International Space Station. Your job is"
+" to figure out where on Earth it was taken — and we will guide you through "
+"it step by step."
 msgstr ""
-"これは国際宇宙ステーションから撮影された実際の写真です。地球上のどこで撮影さ"
-"れたかを突き止めるのがあなたの仕事です — 手順ごとにご案内します。"
+"これは国際宇宙ステーションから撮影された実際の写真です。地球上のどこで撮影されたかを突き止めるのがあなたの仕事です — 手順ごとにご案内します。"
 
 #: frontend/templates/gettask.html:594
 msgid "Find the area on the map"
@@ -977,9 +964,7 @@ msgstr "地図で地域を探す"
 msgid ""
 "Pan and zoom this map to the region you think the photo shows. The crew "
 "metadata gives you a hint about where to look."
-msgstr ""
-"写真に写っていると思う地域までこの地図をパン・ズームしてください。クルーのメ"
-"タデータが場所のヒントになります。"
+msgstr "写真に写っていると思う地域までこの地図をパン・ズームしてください。クルーのメタデータが場所のヒントになります。"
 
 #: frontend/templates/gettask.html:596
 msgid "Explore the photo"
@@ -991,8 +976,7 @@ msgid ""
 "and hold the right mouse button to rotate. Take your time exploring the "
 "image."
 msgstr ""
-"左マウスボタンでドラッグして移動、ホイールでズームイン/ズームアウト、右マウス"
-"ボタンを押しながら回転できます。じっくり画像を探検してください。"
+"左マウスボタンでドラッグして移動、ホイールでズームイン/ズームアウト、右マウスボタンを押しながら回転できます。じっくり画像を探検してください。"
 
 #: frontend/templates/gettask.html:598
 msgid "Adjust brightness and filters"
@@ -1004,9 +988,8 @@ msgid ""
 "contrast, gamma and saturation — perfect for revealing faint coastlines or "
 "city lights. Hit Reset to start over."
 msgstr ""
-"夜の写真は読み取りにくいことがあります。これらのスライダーで明るさ、コントラ"
-"スト、ガンマ、彩度を調整できます — かすかな海岸線や都市の光を浮かび上がらせる"
-"のに最適です。リセットを押すとやり直せます。"
+"夜の写真は読み取りにくいことがあります。これらのスライダーで明るさ、コントラスト、ガンマ、彩度を調整できます — "
+"かすかな海岸線や都市の光を浮かび上がらせるのに最適です。リセットを押すとやり直せます。"
 
 #: frontend/templates/gettask.html:600
 msgid "Pick a recognisable point on the photo"
@@ -1016,9 +999,7 @@ msgstr "写真上でわかりやすい地点を選択"
 msgid ""
 "Click a clearly identifiable feature on the photo — a coastline, a city, an "
 "island."
-msgstr ""
-"写真上ではっきりと識別できる地物（海岸線、都市、島など）をクリックしてくださ"
-"い。"
+msgstr "写真上ではっきりと識別できる地物（海岸線、都市、島など）をクリックしてください。"
 
 #: frontend/templates/gettask.html:602
 msgid "Match it on the map"
@@ -1026,9 +1007,7 @@ msgstr "地図上で対応付け"
 
 #: frontend/templates/gettask.html:603
 msgid "Now click the same place on the map. That pair is one control point."
-msgstr ""
-"次に、地図上の同じ場所をクリックしてください。このペアが1つのコントロールポイ"
-"ントです。"
+msgstr "次に、地図上の同じ場所をクリックしてください。このペアが1つのコントロールポイントです。"
 
 #: frontend/templates/gettask.html:604
 msgid "Submit and earn points!"
@@ -1040,15 +1019,13 @@ msgid ""
 "recommended for better accuracy. Every control point counts towards your "
 "ranking."
 msgstr ""
-"コントロールポイントが3つ以上揃ったら送信を押してください — ただし精度向上の"
-"ため7つ以上が推奨されます。すべてのコントロールポイントがランキングに反映され"
-"ます。"
+"コントロールポイントが3つ以上揃ったら送信を押してください — "
+"ただし精度向上のため7つ以上が推奨されます。すべてのコントロールポイントがランキングに反映されます。"
 
 #: frontend/templates/gettask.html:606
 msgid ""
 "Tip: create an account to save your progress and appear on the leaderboard."
-msgstr ""
-"ヒント：アカウントを作成して進捗を保存し、リーダーボードに表示されましょう。"
+msgstr "ヒント：アカウントを作成して進捗を保存し、リーダーボードに表示されましょう。"
 
 #: frontend/templates/gettask.html:608
 msgid "Prefer to watch a video instead?"
@@ -1081,8 +1058,7 @@ msgstr "おかえりなさい、<span class=\"accent\">%(name)s</span>。"
 
 #: frontend/templates/index.html:741
 msgid "Help us locate the night from <span class=\"accent\">orbit</span>."
-msgstr ""
-"<span class=\"accent\">軌道</span>から夜を見つけるのを手伝ってください。"
+msgstr "<span class=\"accent\">軌道</span>から夜を見つけるのを手伝ってください。"
 
 #: frontend/templates/index.html:745
 msgid "Help map Earth's lights from space and combat light pollution"
@@ -1102,9 +1078,9 @@ msgstr[0] ""
 
 #: frontend/templates/index.html:762
 msgid ""
-"No challenge is open right now: every photo you locate goes to the general "
-"queue."
-msgstr ""
+"No challenge is open right now: every photo you georeference goes to the "
+"general queue."
+msgstr "現在開催中のチャレンジはありません。ジオリファレンスした写真はすべて一般キューに入ります。"
 
 #: frontend/templates/index.html:776
 msgid "Our Mission"
@@ -1112,19 +1088,15 @@ msgstr "私たちのミッション"
 
 #: frontend/templates/index.html:778
 msgid ""
-"This application is designed to help georeference images taken by astronauts "
-"aboard the International Space Station (ISS). The goal is to create a global "
-"map of Earth's lights at night to measure and track light pollution. By "
-"accurately aligning images with geographical coordinates, the app "
-"contributes to valuable environmental data collection, which can be used for "
-"scientific research, monitoring light pollution, and understanding its "
+"This application is designed to help georeference images taken by astronauts"
+" aboard the International Space Station (ISS). The goal is to create a "
+"global map of Earth's lights at night to measure and track light pollution. "
+"By accurately aligning images with geographical coordinates, the app "
+"contributes to valuable environmental data collection, which can be used for"
+" scientific research, monitoring light pollution, and understanding its "
 "impact on ecosystems and human health."
 msgstr ""
-"このアプリケーションは、国際宇宙ステーション（ISS）の宇宙飛行士が撮影した画像"
-"のジオリファレンスを支援するために設計されています。目標は、光害を測定・追跡"
-"するための地球の夜の光のグローバルマップを作成することです。画像を地理座標と"
-"正確に一致させることで、科学研究、光害の監視、そして生態系や人間の健康への影"
-"響理解に活用できる貴重な環境データ収集に貢献します。"
+"このアプリケーションは、国際宇宙ステーション（ISS）の宇宙飛行士が撮影した画像のジオリファレンスを支援するために設計されています。目標は、光害を測定・追跡するための地球の夜の光のグローバルマップを作成することです。画像を地理座標と正確に一致させることで、科学研究、光害の監視、そして生態系や人間の健康への影響理解に活用できる貴重な環境データ収集に貢献します。"
 
 #: frontend/templates/index.html:791
 msgid "Georeference Images"
@@ -1153,7 +1125,8 @@ msgstr "光害の環境影響に関する科学的研究を可能にする"
 #: frontend/templates/index.html:819
 msgid ""
 "A challenge is a shared goal with a deadline: a region or a set of photos "
-"the community locates together. Join one and your contributions count for it."
+"the community locates together. Join one and your contributions count for "
+"it."
 msgstr ""
 
 #: frontend/templates/index.html:826
@@ -1162,9 +1135,9 @@ msgstr ""
 
 #: frontend/templates/index.html:827
 msgid ""
-"You can still participate: every photo you locate goes to the general queue. "
-"New challenges are announced here and in the newsletter."
-msgstr ""
+"You can still participate: every photo you georeference goes to the general "
+"queue. New challenges are announced here and in the newsletter."
+msgstr "それでも参加できます。ジオリファレンスした写真はすべて一般キューに入ります。新しいチャレンジはこことニュースレターでお知らせします。"
 
 #: frontend/templates/index.html:835
 msgid "Active"
@@ -1184,9 +1157,9 @@ msgstr ""
 
 #: frontend/templates/index.html:867
 msgid ""
-"Every point is a night photo from the International Space Station located by "
-"the community. Click one to see it."
-msgstr ""
+"Every point is a night photo from the International Space Station "
+"georeferenced by the community. Click one to see it."
+msgstr "各ポイントは、コミュニティがジオリファレンスした国際宇宙ステーションからの夜間写真です。クリックすると表示されます。"
 
 #: frontend/templates/index.html:877
 msgid "Project Statistics"
@@ -1201,8 +1174,8 @@ msgid "Control points placed"
 msgstr "制御点"
 
 #: frontend/templates/index.html:888
-msgid "Photos located"
-msgstr "位置確認済みの写真"
+msgid "Photos georeferenced"
+msgstr "ジオリファレンス済みの写真"
 
 #: frontend/templates/index.html:896 frontend/templates/ranking.html:62
 #: user_profile/templates/user.html:776
@@ -1210,16 +1183,16 @@ msgid "Tasks completed"
 msgstr "完了"
 
 #: frontend/templates/index.html:901
-msgid "Photos located per week, last 12 weeks"
-msgstr ""
+msgid "Photos georeferenced per week, last 12 weeks"
+msgstr "週ごとのジオリファレンス済み写真（過去12週間）"
 
 #: frontend/templates/index.html:902 user_profile/templates/user.html:1039
 msgid "See the ranking"
 msgstr ""
 
 #: frontend/templates/index.html:904
-msgid "Photos located per week"
-msgstr "位置確認済みの写真"
+msgid "Photos georeferenced per week"
+msgstr "週ごとのジオリファレンス済み写真"
 
 #: frontend/templates/legal/_legal_base.html:81
 #: templates/account/logout.html:210
@@ -1234,7 +1207,8 @@ msgstr "クッキーポリシー"
 
 #: frontend/templates/legal/cookies.html:8
 msgid ""
-"Information about the cookies and similar technologies used by Lost at Night."
+"Information about the cookies and similar technologies used by Lost at "
+"Night."
 msgstr "Lost at Nightで使用するクッキーおよび類似技術に関する情報。"
 
 #: frontend/templates/legal/cookies.html:10
@@ -1243,13 +1217,11 @@ msgstr "クッキーとは？"
 
 #: frontend/templates/legal/cookies.html:11
 msgid ""
-"A cookie is a small text file stored by your browser. We use cookies to keep "
-"your session active, remember your preferences, and — only if you opt in — "
+"A cookie is a small text file stored by your browser. We use cookies to keep"
+" your session active, remember your preferences, and — only if you opt in — "
 "to measure aggregate usage of the site."
 msgstr ""
-"クッキーはブラウザに保存される小さなテキストファイルです。セッションの維持、"
-"設定の記憶、そして同意いただいた場合に限り集計利用状況の計測のために使用しま"
-"す。"
+"クッキーはブラウザに保存される小さなテキストファイルです。セッションの維持、設定の記憶、そして同意いただいた場合に限り集計利用状況の計測のために使用します。"
 
 #: frontend/templates/legal/cookies.html:13
 msgid "Categories"
@@ -1332,9 +1304,7 @@ msgid ""
 "Currently disabled. If we add aggregated analytics in the future, the "
 "provider and its purpose will appear here and require your explicit opt-in "
 "via the cookie banner."
-msgstr ""
-"現在は無効です。将来集計分析を追加する場合は、提供事業者と目的をここに表示"
-"し、クッキーバナーで明示的な同意を求めます。"
+msgstr "現在は無効です。将来集計分析を追加する場合は、提供事業者と目的をここに表示し、クッキーバナーで明示的な同意を求めます。"
 
 #: frontend/templates/legal/cookies.html:32
 msgid "Managing your preferences"
@@ -1345,9 +1315,7 @@ msgid ""
 "You can change your cookie preferences at any time by clicking the cookie "
 "button at the bottom-right of any page, or by clearing the cookies for this "
 "site in your browser settings."
-msgstr ""
-"ページ右下のクッキーボタンをクリックするか、ブラウザの設定で本サイトのクッ"
-"キーを削除すれば、いつでも設定を変更できます。"
+msgstr "ページ右下のクッキーボタンをクリックするか、ブラウザの設定で本サイトのクッキーを削除すれば、いつでも設定を変更できます。"
 
 #: frontend/templates/legal/cookies.html:35
 msgid "Third-party services"
@@ -1355,15 +1323,13 @@ msgstr "第三者サービス"
 
 #: frontend/templates/legal/cookies.html:36
 msgid ""
-"When you load a task page, your browser fetches map tiles from OpenStreetMap "
-"and reverse-geocodes coordinates via Nominatim. Those providers may receive "
-"your IP address. Lost at Night has no commercial relationship with them; "
+"When you load a task page, your browser fetches map tiles from OpenStreetMap"
+" and reverse-geocodes coordinates via Nominatim. Those providers may receive"
+" your IP address. Lost at Night has no commercial relationship with them; "
 "refer to their respective policies for details."
 msgstr ""
-"タスクページを読み込むとき、ブラウザはOpenStreetMapから地図タイルを取得し、"
-"Nominatimで逆ジオコーディングを行います。これらの提供者があなたのIPアドレスを"
-"受け取る場合があります。Lost at Nightはこれらと商業的関係はありません。詳細は"
-"各ポリシーをご確認ください。"
+"タスクページを読み込むとき、ブラウザはOpenStreetMapから地図タイルを取得し、Nominatimで逆ジオコーディングを行います。これらの提供者があなたのIPアドレスを受け取る場合があります。Lost"
+" at Nightはこれらと商業的関係はありません。詳細は各ポリシーをご確認ください。"
 
 #: frontend/templates/legal/legal.html:8
 msgid ""
@@ -1406,8 +1372,8 @@ msgid ""
 "the Plan-B project. The principal investigator is Alejandro Sánchez de "
 "Miguel (CSIC)."
 msgstr ""
-"Lost at NightはPlan-Bプロジェクトの枠組みの中でFundación Ibercivisが開発して"
-"います。主任研究者はAlejandro Sánchez de Miguel氏（CSIC）です。"
+"Lost at NightはPlan-Bプロジェクトの枠組みの中でFundación Ibercivisが開発しています。主任研究者はAlejandro"
+" Sánchez de Miguel氏（CSIC）です。"
 
 #: frontend/templates/legal/legal.html:21
 msgid "Funding"
@@ -1419,11 +1385,11 @@ msgid ""
 "Europe Programme, Grant Agreement No. 101135308 (PLAN-B). Research and "
 "Innovation Action | HORIZON-CL6-2023-BIODIV-01."
 msgstr ""
-"本プロジェクトは欧州連合のHorizon Europeプログラム（助成契約番号101135308、"
-"PLAN-B）から資金提供を受けています。Research and Innovation Action | HORIZON-"
-"CL6-2023-BIODIV-01。ホライゾン・ヨーロッパ・プログラムの下、欧州連合により資"
-"金提供。補助金契約番号101135308（PLAN-B）。研究・イノベーション活動 | "
-"HORIZON-CL6-2023-BIODIV-01。"
+"本プロジェクトは欧州連合のHorizon "
+"Europeプログラム（助成契約番号101135308、PLAN-B）から資金提供を受けています。Research and Innovation "
+"Action | HORIZON-"
+"CL6-2023-BIODIV-01。ホライゾン・ヨーロッパ・プログラムの下、欧州連合により資金提供。補助金契約番号101135308（PLAN-B）。研究・イノベーション活動"
+" | HORIZON-CL6-2023-BIODIV-01。"
 
 #: frontend/templates/legal/legal.html:24
 msgid "Source code"
@@ -1445,13 +1411,12 @@ msgstr "画像の権利"
 
 #: frontend/templates/legal/legal.html:28
 msgid ""
-"Astronaut photography of Earth used on this platform is provided by NASA and "
-"is in the public domain (Astronaut Photography of Earth Database — eol.jsc."
-"nasa.gov)."
+"Astronaut photography of Earth used on this platform is provided by NASA and"
+" is in the public domain (Astronaut Photography of Earth Database — "
+"eol.jsc.nasa.gov)."
 msgstr ""
-"本プラットフォームで使用される宇宙飛行士による地球の写真はNASAから提供され、"
-"パブリックドメインです（Astronaut Photography of Earth Database — eol.jsc."
-"nasa.gov）。"
+"本プラットフォームで使用される宇宙飛行士による地球の写真はNASAから提供され、パブリックドメインです（Astronaut Photography of"
+" Earth Database — eol.jsc.nasa.gov）。"
 
 #: frontend/templates/legal/legal.html:30
 msgid "Applicable law and jurisdiction"
@@ -1463,9 +1428,7 @@ msgid ""
 "amicably resolved shall be submitted to the courts of Zaragoza, Spain, "
 "without prejudice to mandatory consumer protection rules."
 msgstr ""
-"本サイトの利用にはスペイン法が適用されます。友好的に解決できない紛争は、消費"
-"者保護に関する強行規定を妨げない範囲で、スペイン・サラゴサの裁判所に付託され"
-"ます。"
+"本サイトの利用にはスペイン法が適用されます。友好的に解決できない紛争は、消費者保護に関する強行規定を妨げない範囲で、スペイン・サラゴサの裁判所に付託されます。"
 
 #: frontend/templates/legal/privacy.html:4
 #: frontend/templates/legal/privacy.html:7
@@ -1483,9 +1446,8 @@ msgid ""
 "within the framework of the Plan-B project. The principal investigator is "
 "Alejandro Sánchez de Miguel (CSIC)."
 msgstr ""
-"Lost at NightはPlan-Bプロジェクトの枠組みの中でFundación Ibercivisが開発する"
-"市民科学プロジェクトです。主任研究者はAlejandro Sánchez de Miguel氏（CSIC）で"
-"す。"
+"Lost at NightはPlan-Bプロジェクトの枠組みの中でFundación "
+"Ibercivisが開発する市民科学プロジェクトです。主任研究者はAlejandro Sánchez de Miguel氏（CSIC）です。"
 
 #: frontend/templates/legal/privacy.html:13
 msgid "1. Who we are"
@@ -1494,12 +1456,12 @@ msgstr "1. 私たちについて"
 #: frontend/templates/legal/privacy.html:14
 msgid ""
 "<strong>Data controller:</strong> Fundación Ibercivis (NIF G-99409492), C/ "
-"Mariano Esquillor s/n, 50018 Zaragoza, Spain. Contact: <a href=\"mailto:"
-"ethics@ibercivis.es\">ethics@ibercivis.es</a>."
+"Mariano Esquillor s/n, 50018 Zaragoza, Spain. Contact: <a "
+"href=\"mailto:ethics@ibercivis.es\">ethics@ibercivis.es</a>."
 msgstr ""
-"<strong>データ管理者：</strong> Fundación Ibercivis (NIF G-99409492), C/ "
-"Mariano Esquillor s/n, 50018 サラゴサ, スペイン。連絡先：<a href=\"mailto:"
-"ethics@ibercivis.es\">ethics@ibercivis.es</a>"
+"<strong>データ管理者：</strong> Fundación Ibercivis (NIF G-99409492), C/ Mariano "
+"Esquillor s/n, 50018 サラゴサ, スペイン。連絡先：<a "
+"href=\"mailto:ethics@ibercivis.es\">ethics@ibercivis.es</a>"
 
 #: frontend/templates/legal/privacy.html:16
 msgid "2. What data we process"
@@ -1517,25 +1479,19 @@ msgstr "プロフィールデータ（任意）：国、都市、自己紹介、
 msgid ""
 "Activity data: control points contributed, time spent, batches and "
 "challenges joined."
-msgstr ""
-"アクティビティデータ：投稿した制御点、利用時間、参加したバッチおよびチャレン"
-"ジ。"
+msgstr "アクティビティデータ：投稿した制御点、利用時間、参加したバッチおよびチャレンジ。"
 
 #: frontend/templates/legal/privacy.html:21
 msgid ""
 "Consent records: timestamps for privacy policy acceptance, newsletter "
 "subscription, and cookie preferences."
-msgstr ""
-"同意記録：プライバシーポリシー承諾、ニュースレター購読、クッキー設定のタイム"
-"スタンプ。"
+msgstr "同意記録：プライバシーポリシー承諾、ニュースレター購読、クッキー設定のタイムスタンプ。"
 
 #: frontend/templates/legal/privacy.html:22
 msgid ""
 "Technical logs: IP address (truncated), browser metadata, retained for at "
 "most 30 days."
-msgstr ""
-"技術ログ：IPアドレス（切り詰め）、ブラウザのメタデータ。最長30日間保持しま"
-"す。"
+msgstr "技術ログ：IPアドレス（切り詰め）、ブラウザのメタデータ。最長30日間保持します。"
 
 #: frontend/templates/legal/privacy.html:25
 msgid "3. Purpose and legal basis"
@@ -1596,8 +1552,7 @@ msgid ""
 "indefinitely after account deletion, since they cannot be reasonably "
 "attributed to you once disassociated."
 msgstr ""
-"科学的貢献（制御点）：仮名化され、アカウント削除後も無期限に保持されます。関"
-"連付けが解除された後はあなたに合理的に帰属させることができないためです。"
+"科学的貢献（制御点）：仮名化され、アカウント削除後も無期限に保持されます。関連付けが解除された後はあなたに合理的に帰属させることができないためです。"
 
 #: frontend/templates/legal/privacy.html:39
 msgid "Server logs: 30 days maximum."
@@ -1607,9 +1562,7 @@ msgstr "サーバーログ：最大30日。"
 msgid ""
 "Consent records: kept while your account is active and for 3 additional "
 "years for accountability (GDPR Art. 5.2)."
-msgstr ""
-"同意記録：アカウントが有効な期間に加え、説明責任のためさらに3年間保持します"
-"（GDPR第5条第2項）。"
+msgstr "同意記録：アカウントが有効な期間に加え、説明責任のためさらに3年間保持します（GDPR第5条第2項）。"
 
 #: frontend/templates/legal/privacy.html:43
 msgid "5. Recipients and processors"
@@ -1619,9 +1572,7 @@ msgstr "5. 受領者・処理者"
 msgid ""
 "We share your personal data only with the following service providers, all "
 "of which act as data processors under written agreements:"
-msgstr ""
-"私たちは、書面による契約の下でデータ処理者として行動する、以下のサービス提供"
-"者とのみあなたの個人データを共有します："
+msgstr "私たちは、書面による契約の下でデータ処理者として行動する、以下のサービス提供者とのみあなたの個人データを共有します："
 
 #: frontend/templates/legal/privacy.html:46
 msgid "Hosting provider (server infrastructure, EU)."
@@ -1631,17 +1582,15 @@ msgstr "ホスティングプロバイダー（サーバーインフラ、EU）�
 msgid ""
 "Email delivery service for transactional emails (verification, password "
 "reset) and the optional newsletter."
-msgstr ""
-"取引メール（認証、パスワードリセット）および任意のニュースレターのメール配信"
-"サービス。"
+msgstr "取引メール（認証、パスワードリセット）および任意のニュースレターのメール配信サービス。"
 
 #: frontend/templates/legal/privacy.html:48
 msgid ""
 "OpenStreetMap Nominatim (reverse geocoding of ISS image coordinates) — your "
 "IP address is shared only when the map widget is loaded."
 msgstr ""
-"OpenStreetMap Nominatim（ISS画像座標の逆ジオコーディング） — 地図ウィジェット"
-"が読み込まれたときのみ、あなたのIPアドレスが共有されます。"
+"OpenStreetMap Nominatim（ISS画像座標の逆ジオコーディング） — "
+"地図ウィジェットが読み込まれたときのみ、あなたのIPアドレスが共有されます。"
 
 #: frontend/templates/legal/privacy.html:51
 msgid "6. International transfers"
@@ -1653,8 +1602,7 @@ msgid ""
 "transfer outside the EEA becomes necessary, we will rely on Standard "
 "Contractual Clauses or other safeguards under GDPR Art. 46."
 msgstr ""
-"すべての処理者は欧州経済領域（EEA）内に所在します。EEA外への移転が必要となる"
-"場合は、GDPR第46条に基づく標準契約条項などの保護措置に依拠します。"
+"すべての処理者は欧州経済領域（EEA）内に所在します。EEA外への移転が必要となる場合は、GDPR第46条に基づく標準契約条項などの保護措置に依拠します。"
 
 #: frontend/templates/legal/privacy.html:54
 msgid "7. Your rights"
@@ -1688,9 +1636,7 @@ msgstr "機械可読形式でのデータの受領（ポータビリティ）。
 msgid ""
 "Withdraw consent at any time (effective from withdrawal, without affecting "
 "prior processing)."
-msgstr ""
-"いつでも同意を撤回できます（撤回時から効力を生じ、以前の処理には影響しませ"
-"ん）。"
+msgstr "いつでも同意を撤回できます（撤回時から効力を生じ、以前の処理には影響しません）。"
 
 #: frontend/templates/legal/privacy.html:63
 msgid "Lodge a complaint with the Spanish Data Protection Agency (AEPD)."
@@ -1701,8 +1647,8 @@ msgid ""
 "You can exercise most rights directly from your profile page or by writing "
 "to <a href=\"mailto:ethics@ibercivis.es\">ethics@ibercivis.es</a>."
 msgstr ""
-"ほとんどの権利はプロフィールページから直接行使するか、<a href=\"mailto:"
-"ethics@ibercivis.es\">ethics@ibercivis.es</a>へご連絡ください。"
+"ほとんどの権利はプロフィールページから直接行使するか、<a "
+"href=\"mailto:ethics@ibercivis.es\">ethics@ibercivis.es</a>へご連絡ください。"
 
 #: frontend/templates/legal/privacy.html:67
 msgid "8. Automated decisions"
@@ -1711,9 +1657,7 @@ msgstr "8. 自動化された意思決定"
 #: frontend/templates/legal/privacy.html:68
 msgid ""
 "We do not take any decisions about you based solely on automated processing."
-msgstr ""
-"完全に自動化された処理のみに基づいてあなたに関する決定を行うことはありませ"
-"ん。"
+msgstr "完全に自動化された処理のみに基づいてあなたに関する決定を行うことはありません。"
 
 #: frontend/templates/legal/privacy.html:70
 msgid "9. Minors"
@@ -1723,9 +1667,7 @@ msgstr "9. 未成年者"
 msgid ""
 "Lost at Night is open to volunteers aged 14 and over. If you are under 14, "
 "please ask a parent or guardian to register on your behalf."
-msgstr ""
-"Lost at Nightは14歳以上のボランティアが対象です。14歳未満の場合は、保護者の方"
-"が代理で登録してください。"
+msgstr "Lost at Nightは14歳以上のボランティアが対象です。14歳未満の場合は、保護者の方が代理で登録してください。"
 
 #: frontend/templates/legal/privacy.html:73
 msgid "10. Updates to this policy"
@@ -1733,11 +1675,9 @@ msgstr "10. 本ポリシーの更新"
 
 #: frontend/templates/legal/privacy.html:74
 msgid ""
-"When we make substantive changes we will update the version number above and "
-"ask you to re-confirm your consent."
-msgstr ""
-"重要な変更があった場合は上記のバージョン番号を更新し、改めて同意のご確認をお"
-"願いします。"
+"When we make substantive changes we will update the version number above and"
+" ask you to re-confirm your consent."
+msgstr "重要な変更があった場合は上記のバージョン番号を更新し、改めて同意のご確認をお願いします。"
 
 #: frontend/templates/legal/terms.html:4 frontend/templates/legal/terms.html:7
 msgid "Terms of use"
@@ -1747,9 +1687,7 @@ msgstr "利用規約"
 msgid ""
 "Lost at Night — citizen-science platform for measuring light pollution from "
 "the International Space Station."
-msgstr ""
-"Lost at Night — 国際宇宙ステーションから光害を測定する市民科学プラットフォー"
-"ム。"
+msgstr "Lost at Night — 国際宇宙ステーションから光害を測定する市民科学プラットフォーム。"
 
 #: frontend/templates/legal/terms.html:10
 msgid "1. Acceptance"
@@ -1760,8 +1698,7 @@ msgid ""
 "By creating an account or contributing to Lost at Night you accept these "
 "terms. If you do not agree, please do not use the service."
 msgstr ""
-"アカウントの作成またはLost at Nightへの貢献により本規約に同意したものとみなさ"
-"れます。同意されない場合はご利用をお控えください。"
+"アカウントの作成またはLost at Nightへの貢献により本規約に同意したものとみなされます。同意されない場合はご利用をお控えください。"
 
 #: frontend/templates/legal/terms.html:13
 msgid "2. Nature of the service"
@@ -1771,12 +1708,11 @@ msgstr "2. サービスの性質"
 msgid ""
 "Lost at Night is a non-profit research platform. Volunteers help locate and "
 "georeference astronaut photographs of Earth taken at night, in order to "
-"study artificial light pollution. The service is provided free of charge, on "
-"a best-effort basis, with no service-level guarantees."
+"study artificial light pollution. The service is provided free of charge, on"
+" a best-effort basis, with no service-level guarantees."
 msgstr ""
-"Lost at Nightは非営利の研究プラットフォームです。ボランティアが、宇宙飛行士に"
-"よる夜間の地球写真の位置特定とジオリファレンスを行い、人工光害の研究に役立て"
-"ます。サービスは無償で、ベストエフォートにより提供され、SLAはありません。"
+"Lost at "
+"Nightは非営利の研究プラットフォームです。ボランティアが、宇宙飛行士による夜間の地球写真の位置特定とジオリファレンスを行い、人工光害の研究に役立てます。サービスは無償で、ベストエフォートにより提供され、SLAはありません。"
 
 #: frontend/templates/legal/terms.html:16
 msgid "3. Your contributions"
@@ -1785,15 +1721,12 @@ msgstr "3. あなたの貢献"
 #: frontend/templates/legal/terms.html:17
 msgid ""
 "When you submit control points, georeference an image, or otherwise "
-"contribute, you grant us a perpetual, worldwide, royalty-free, non-exclusive "
-"licence to use those contributions for scientific research, education, and "
+"contribute, you grant us a perpetual, worldwide, royalty-free, non-exclusive"
+" licence to use those contributions for scientific research, education, and "
 "dissemination purposes. Your contributions remain attributable to your "
 "username unless you have disabled public visibility."
 msgstr ""
-"制御点の送信、画像のジオリファレンス、その他の貢献を行った場合、あなたはそれ"
-"らを科学研究・教育・普及目的で使用する永続的・世界的・無償・非独占的なライセ"
-"ンスを当方に付与します。公開表示を無効にしていない限り、貢献はあなたのユー"
-"ザー名に紐づきます。"
+"制御点の送信、画像のジオリファレンス、その他の貢献を行った場合、あなたはそれらを科学研究・教育・普及目的で使用する永続的・世界的・無償・非独占的なライセンスを当方に付与します。公開表示を無効にしていない限り、貢献はあなたのユーザー名に紐づきます。"
 
 #: frontend/templates/legal/terms.html:19
 msgid "4. Acceptable use"
@@ -1805,8 +1738,7 @@ msgstr "故意に誤ったジオリファレンスを送信しないでくださ
 
 #: frontend/templates/legal/terms.html:22
 msgid "Do not impersonate other users or scrape personal data."
-msgstr ""
-"他のユーザーになりすましたり、個人データをスクレイピングしないでください。"
+msgstr "他のユーザーになりすましたり、個人データをスクレイピングしないでください。"
 
 #: frontend/templates/legal/terms.html:23
 msgid "Do not abuse the API beyond reasonable limits."
@@ -1814,8 +1746,7 @@ msgstr "合理的な範囲を超えてAPIを濫用しないでください。"
 
 #: frontend/templates/legal/terms.html:24
 msgid "Do not upload illegal content as your profile picture or biography."
-msgstr ""
-"プロフィール画像や自己紹介に違法なコンテンツをアップロードしないでください。"
+msgstr "プロフィール画像や自己紹介に違法なコンテンツをアップロードしないでください。"
 
 #: frontend/templates/legal/terms.html:26
 msgid "We may suspend or delete accounts that breach these rules."
@@ -1829,11 +1760,11 @@ msgstr "5. 知的財産"
 msgid ""
 "ISS imagery is provided by NASA and is in the public domain. The Lost at "
 "Night software is open source (GPLv3). Aggregated and derived datasets "
-"produced by the project may be released under open licences such as CC BY-SA."
+"produced by the project may be released under open licences such as CC BY-"
+"SA."
 msgstr ""
-"ISS画像はNASAから提供されパブリックドメインです。Lost at Nightのソフトウェア"
-"はオープンソース（GPLv3）。集計・派生データセットはCC BY-SAなどのオープンライ"
-"センスで公開する場合があります。"
+"ISS画像はNASAから提供されパブリックドメインです。Lost at "
+"Nightのソフトウェアはオープンソース（GPLv3）。集計・派生データセットはCC BY-SAなどのオープンライセンスで公開する場合があります。"
 
 #: frontend/templates/legal/terms.html:31
 msgid "6. Liability"
@@ -1845,9 +1776,7 @@ msgid ""
 "maximum extent permitted by law, the operator is not liable for incidental "
 "or consequential damages arising from use of the platform."
 msgstr ""
-"本サービスは「現状のまま」提供され、いかなる保証もありません。法律で認められ"
-"る最大限の範囲において、運営者はプラットフォームの利用により生じる付随的また"
-"は結果的損害について責任を負いません。"
+"本サービスは「現状のまま」提供され、いかなる保証もありません。法律で認められる最大限の範囲において、運営者はプラットフォームの利用により生じる付随的または結果的損害について責任を負いません。"
 
 #: frontend/templates/legal/terms.html:34
 msgid "7. Termination"
@@ -1858,9 +1787,7 @@ msgid ""
 "You may delete your account at any time from the user profile page. "
 "Pseudonymised scientific contributions will be retained for research "
 "purposes."
-msgstr ""
-"プロフィールページからいつでもアカウントを削除できます。仮名化された科学的貢"
-"献は研究目的で保持されます。"
+msgstr "プロフィールページからいつでもアカウントを削除できます。仮名化された科学的貢献は研究目的で保持されます。"
 
 #: frontend/templates/legal/terms.html:37
 msgid "8. Governing law"
@@ -1871,9 +1798,7 @@ msgid ""
 "These terms are governed by Spanish law. Disputes shall be submitted to the "
 "courts of Zaragoza, Spain, without prejudice to mandatory consumer "
 "protection laws."
-msgstr ""
-"本規約はスペイン法に準拠します。紛争は、消費者保護法令の強行規定を妨げない範"
-"囲で、スペイン・サラゴサの裁判所に付託されます。"
+msgstr "本規約はスペイン法に準拠します。紛争は、消費者保護法令の強行規定を妨げない範囲で、スペイン・サラゴサの裁判所に付託されます。"
 
 #: frontend/templates/ranking.html:58
 msgid ""
@@ -2065,7 +1990,8 @@ msgstr ""
 msgid "Participant"
 msgstr "参加者"
 
-#: georeferencing/diplomas.py:47 user_profile/templates/diploma_general.html:56
+#: georeferencing/diplomas.py:47
+#: user_profile/templates/diploma_general.html:56
 msgid "Contributor"
 msgstr "貢献する"
 
@@ -2097,115 +2023,115 @@ msgstr "ダウンロード失敗"
 msgid "Downloaded & Generated"
 msgstr "ダウンロード・生成済み"
 
-#: georeferencing/models.py:133 teams/templates/team_list.html:51
+#: georeferencing/models.py:139 teams/templates/team_list.html:51
 msgid "Search"
 msgstr "検索"
 
-#: georeferencing/models.py:134
+#: georeferencing/models.py:140
 msgid "List"
 msgstr "リスト"
 
-#: georeferencing/models.py:138
+#: georeferencing/models.py:144
 msgid "Not Started"
 msgstr "未開始"
 
-#: georeferencing/models.py:139
+#: georeferencing/models.py:145
 msgid "Processing"
 msgstr "処理中"
 
-#: georeferencing/models.py:140 georeferencing/models.py:483
+#: georeferencing/models.py:146 georeferencing/models.py:489
 msgid "Completed"
 msgstr "完了"
 
-#: georeferencing/models.py:141
+#: georeferencing/models.py:147
 msgid "Failed"
 msgstr "失敗"
 
-#: georeferencing/models.py:153
+#: georeferencing/models.py:159
 msgid "Focal length <="
 msgstr "焦点距離 <="
 
-#: georeferencing/models.py:154
+#: georeferencing/models.py:160
 msgid "Focal length >="
 msgstr "焦点距離 >="
 
-#: georeferencing/models.py:155
+#: georeferencing/models.py:161
 msgid "Original images"
 msgstr "元画像"
 
-#: georeferencing/models.py:166
+#: georeferencing/models.py:172
 msgid "Processing Status"
 msgstr "処理状態"
 
-#: georeferencing/models.py:219
+#: georeferencing/models.py:225
 msgid "Leave empty for a general challenge applicable to any batch."
 msgstr ""
 
-#: georeferencing/models.py:481
+#: georeferencing/models.py:487
 msgid "Started"
 msgstr "開始済み"
 
-#: georeferencing/models.py:482
+#: georeferencing/models.py:488
 msgid "Step"
 msgstr ""
 
-#: georeferencing/models.py:484
+#: georeferencing/models.py:490
 msgid "Dismissed"
 msgstr ""
 
-#: georeferencing/models.py:511
+#: georeferencing/models.py:517
 msgid "No image file found (not in images table)"
 msgstr ""
 
-#: georeferencing/models.py:512
+#: georeferencing/models.py:518
 msgid "No coordinates (not in frames or nadir)"
 msgstr ""
 
-#: georeferencing/models.py:513
+#: georeferencing/models.py:519
 msgid "Download failed"
 msgstr "ダウンロード済み"
 
-#: georeferencing/models.py:514
+#: georeferencing/models.py:520
 msgid "NASA API error"
 msgstr ""
 
-#: georeferencing/models.py:515
+#: georeferencing/models.py:521
 msgid "Could not parse mission/roll/frame"
 msgstr ""
 
-#: georeferencing/models.py:516
+#: georeferencing/models.py:522
 msgid "Unexpected error"
 msgstr ""
 
-#: georeferencing/models.py:540
+#: georeferencing/models.py:546
 msgid "Campaign"
 msgstr ""
 
-#: georeferencing/models.py:541
+#: georeferencing/models.py:547
 msgid "Email / newsletter"
 msgstr "ニュースレター購読中"
 
-#: georeferencing/models.py:542
+#: georeferencing/models.py:548
 msgid "Press / media"
 msgstr ""
 
-#: georeferencing/models.py:543
+#: georeferencing/models.py:549
 msgid "Social media"
 msgstr "ソーシャルメディア"
 
-#: georeferencing/models.py:545
+#: georeferencing/models.py:551
 msgid "Deploy / release"
 msgstr ""
 
-#: georeferencing/models.py:546
+#: georeferencing/models.py:552
 msgid "Batch loaded"
 msgstr "バッチ"
 
-#: georeferencing/models.py:547
+#: georeferencing/models.py:553
 msgid "Other"
 msgstr ""
 
-#: georeferencing/models.py:667
+#: georeferencing/models.py:673
 msgid "No reason given"
 msgstr ""
 
@@ -2342,8 +2268,8 @@ msgstr "まだユーザーがいません"
 
 #: teams/templates/team_detail.html:85
 msgid ""
-"“For the team” counts only what each member did while in the team. Points of "
-"members who left stay in the team total."
+"“For the team” counts only what each member did while in the team. Points of"
+" members who left stay in the team total."
 msgstr ""
 
 #: teams/templates/team_detail.html:89
@@ -2418,8 +2344,9 @@ msgstr ""
 #: teams/templates/team_list.html:7
 msgid ""
 "Classrooms, clubs, offices, groups of friends: join a team and the photos "
-"you locate count for it too. One team at a time."
+"you georeference count for it too. One team at a time."
 msgstr ""
+"クラス、クラブ、職場、友人グループ：チームに参加すると、ジオリファレンスした写真はチームの成果にもなります。参加できるチームは一度に1つです。"
 
 #: teams/templates/team_list.html:17 user_profile/templates/user.html:985
 msgid "You own this team."
@@ -2520,7 +2447,8 @@ msgstr ""
 
 #: teams/views.py:233
 #, python-format
-msgid "You have left %(team)s. The points you earned there stay with the team."
+msgid ""
+"You have left %(team)s. The points you earned there stay with the team."
 msgstr ""
 
 #: teams/views.py:255
@@ -2555,9 +2483,7 @@ msgstr ""
 msgid ""
 "“Every match you submit helps measure light pollution where satellites "
 "cannot reach.”"
-msgstr ""
-"「あなたが送信する一つひとつのマッチが、衛星では届かない場所の光害を測定する"
-"のに役立ちます。」"
+msgstr "「あなたが送信する一つひとつのマッチが、衛星では届かない場所の光害を測定するのに役立ちます。」"
 
 #: templates/account/login.html:287
 msgid "Welcome back"
@@ -2608,9 +2534,9 @@ msgstr "退出しますか？"
 
 #: templates/account/logout.html:179
 #, python-format
-msgid "You’re signed in as <b>%(u)s</b>. Sign out and we’ll see you next time."
-msgstr ""
-"<b>%(u)s</b> としてサインイン中です。サインアウトしてまたお会いしましょう。"
+msgid ""
+"You’re signed in as <b>%(u)s</b>. Sign out and we’ll see you next time."
+msgstr "<b>%(u)s</b> としてサインイン中です。サインアウトしてまたお会いしましょう。"
 
 #: templates/account/logout.html:181
 msgid "You are not signed in."
@@ -2639,9 +2565,7 @@ msgstr "パスワードをリセット"
 msgid ""
 "Enter the email address you signed up with and we'll send you a link to "
 "choose a new password."
-msgstr ""
-"登録したメールアドレスを入力してください。新しいパスワードを設定するためのリ"
-"ンクをお送りします。"
+msgstr "登録したメールアドレスを入力してください。新しいパスワードを設定するためのリンクをお送りします。"
 
 #: templates/account/password_reset.html:249
 msgid "Trouble resetting your password?"
@@ -2677,23 +2601,20 @@ msgid ""
 "rel=\"noopener\">privacy policy</a> and the <a href=\"/terms/\" "
 "target=\"_blank\" rel=\"noopener\">terms of use</a>."
 msgstr ""
-"<a href=\"/privacy/\" target=\"_blank\" rel=\"noopener\">プライバシーポリシー"
-"</a>および<a href=\"/terms/\" target=\"_blank\" rel=\"noopener\">利用規約</a>"
-"を読み、同意します。"
+"<a href=\"/privacy/\" target=\"_blank\" rel=\"noopener\">プライバシーポリシー</a>および<a"
+" href=\"/terms/\" target=\"_blank\" rel=\"noopener\">利用規約</a>を読み、同意します。"
 
 #: templates/account/signup.html:438 user_profile/forms.py:54
 msgid ""
-"Send me updates about Lost at Night and citizen-science campaigns (optional)."
-msgstr ""
-"Lost at Nightや市民科学キャンペーンの最新情報を送ってください（任意）。"
+"Send me updates about Lost at Night and citizen-science campaigns "
+"(optional)."
+msgstr "Lost at Nightや市民科学キャンペーンの最新情報を送ってください（任意）。"
 
 #: templates/account/signup.html:444
 msgid ""
 "By creating an account, you agree to our use of your contributions for "
 "scientific research on light pollution."
-msgstr ""
-"アカウントを作成すると、光害の科学研究のためにあなたの貢献を使用することに同"
-"意したことになります。"
+msgstr "アカウントを作成すると、光害の科学研究のためにあなたの貢献を使用することに同意したことになります。"
 
 #: templates/account/signup.html:450
 msgid "Create account"
@@ -2742,9 +2663,7 @@ msgstr "無効にすると、プロフィールは公開ランキングに表示
 msgid ""
 "Occasional emails about new campaigns, features and citizen-science news. "
 "You can opt out at any time."
-msgstr ""
-"新しいキャンペーン、機能、市民科学のニュースに関するメールを時々お送りしま"
-"す。いつでも配信停止できます。"
+msgstr "新しいキャンペーン、機能、市民科学のニュースに関するメールを時々お送りします。いつでも配信停止できます。"
 
 #: user_profile/forms.py:47
 msgid "I have read and accept the privacy policy and terms of use."
@@ -2807,9 +2726,7 @@ msgstr "本当にアカウントを削除しますか？"
 msgid ""
 "This action will permanently delete your account and all associated data. "
 "You will not be able to recover this information."
-msgstr ""
-"この操作により、アカウントと関連するすべてのデータが完全に削除されます。この"
-"情報を復元することはできません。"
+msgstr "この操作により、アカウントと関連するすべてのデータが完全に削除されます。この情報を復元することはできません。"
 
 #: user_profile/templates/delete_account.html:118
 msgid "Delete permanently"
@@ -2895,8 +2812,7 @@ msgstr ""
 
 #: user_profile/templates/diploma_challenge.html:78
 #, python-format
-msgid ""
-"Reached <b style=\"color: %(collective_meta.color)s;\">%(tier)s</b> tier"
+msgid "Reached <b style=\"color: %(collective_meta.color)s;\">%(tier)s</b> tier"
 msgstr ""
 
 #: user_profile/templates/diploma_challenge.html:87
@@ -3047,9 +2963,7 @@ msgstr "リンクが認識されません"
 msgid ""
 "This unsubscribe link is no longer valid. You may already be unsubscribed, "
 "or the link expired after use."
-msgstr ""
-"この配信停止リンクは無効です。すでに配信停止されているか、リンクが使用後に期"
-"限切れになった可能性があります。"
+msgstr "この配信停止リンクは無効です。すでに配信停止されているか、リンクが使用後に期限切れになった可能性があります。"
 
 #: user_profile/templates/newsletter_unsubscribe.html:65
 msgid "You've been unsubscribed"
@@ -3059,9 +2973,7 @@ msgstr "配信停止しました"
 msgid ""
 "You won't receive newsletters from Lost at Night anymore. You can re-"
 "subscribe at any time from your profile page."
-msgstr ""
-"Lost at Nightのニュースレターは届かなくなります。プロフィールページからいつで"
-"も再登録できます。"
+msgstr "Lost at Nightのニュースレターは届かなくなります。プロフィールページからいつでも再登録できます。"
 
 #: user_profile/templates/user.html:607 user_profile/templates/user.html:1066
 msgid "Edit profile"
@@ -3216,8 +3128,8 @@ msgstr ""
 
 #: user_profile/templates/user.html:999
 msgid ""
-"Got an invite code from a classroom, club or group of friends? Enter it here "
-"— or pick an open team from the Teams ranking."
+"Got an invite code from a classroom, club or group of friends? Enter it here"
+" — or pick an open team from the Teams ranking."
 msgstr ""
 
 #: user_profile/templates/user.html:1009
@@ -3322,7 +3234,12 @@ msgid ""
 "for it. Here are the badges you've earned so far."
 msgstr ""
 
-#~| msgid "Contributor"
+#~ msgid "Start locating"
+#~ msgstr "位置確認を始める"
+
+#~ msgid "Photos located"
+#~ msgstr "位置確認済みの写真"
+
 #~ msgid "Contributions"
 #~ msgstr "貢献する"
 
@@ -3353,8 +3270,7 @@ msgstr ""
 #~ msgid "in this batch."
 #~ msgstr "このバッチで。"
 
-#~ msgid ""
-#~ "You can leave the challenge from its page if you want different tasks."
+#~ msgid "You can leave the challenge from its page if you want different tasks."
 #~ msgstr "別のタスクが欲しい場合は、チャレンジのページから退出できます。"
 
 #~ msgid "Pick another batch"
@@ -3363,7 +3279,6 @@ msgstr ""
 #~ msgid "Go to batches"
 #~ msgstr "バッチへ"
 
-#~| msgid "Join challenge"
 #~ msgid "Join a challenge"
 #~ msgstr "チャレンジに参加"
 
@@ -3390,9 +3305,6 @@ msgstr ""
 
 #~ msgid "Images"
 #~ msgstr "画像："
-
-#~ msgid "Georeferenced"
-#~ msgstr "ジオリファレンス済み"
 
 #~ msgid "Total Tasks"
 #~ msgstr "総タスク数"
@@ -3493,9 +3405,7 @@ msgstr ""
 #~ msgid ""
 #~ "You can continue contributing — but the tasks you do here won’t count for "
 #~ "the challenge."
-#~ msgstr ""
-#~ "コントリビューションは続けられますが、ここで完了したタスクはチャレンジには"
-#~ "カウントされません。"
+#~ msgstr "コントリビューションは続けられますが、ここで完了したタスクはチャレンジにはカウントされません。"
 
 #~ msgid "Continue without counting"
 #~ msgstr "カウントせずに続ける"
@@ -3507,9 +3417,7 @@ msgstr ""
 #~ msgstr "すべて表示"
 
 #~ msgid "Challenge filter bypassed for this session — your tasks won’t count."
-#~ msgstr ""
-#~ "このセッションではチャレンジフィルターを無効にしています — タスクはカウン"
-#~ "トされません。"
+#~ msgstr "このセッションではチャレンジフィルターを無効にしています — タスクはカウントされません。"
 
 #~ msgid "Re-enable"
 #~ msgstr "再度有効にする"
@@ -3521,19 +3429,14 @@ msgstr ""
 #~ msgstr "利用可能なバッチ"
 
 #~ msgid ""
-#~ "This project has received funding from the European Space Agency (ESA) "
-#~ "and other public research bodies. Funding details are listed on the home "
-#~ "page."
-#~ msgstr ""
-#~ "本プロジェクトは欧州宇宙機関（ESA）およびその他の公的研究機関から資金提供"
-#~ "を受けています。詳細はトップページに記載されています。"
+#~ "This project has received funding from the European Space Agency (ESA) and "
+#~ "other public research bodies. Funding details are listed on the home page."
+#~ msgstr "本プロジェクトは欧州宇宙機関（ESA）およびその他の公的研究機関から資金提供を受けています。詳細はトップページに記載されています。"
 
 #~ msgid ""
-#~ "Lost at Night is a citizen-science project operated by Ibercivis "
-#~ "Foundation in collaboration with IAA-CSIC."
-#~ msgstr ""
-#~ "Lost at NightはFundación IbercivisがIAA-CSICと協力して運営する市民科学プロ"
-#~ "ジェクトです。"
+#~ "Lost at Night is a citizen-science project operated by Ibercivis Foundation "
+#~ "in collaboration with IAA-CSIC."
+#~ msgstr "Lost at NightはFundación IbercivisがIAA-CSICと協力して運営する市民科学プロジェクトです。"
 
 #~ msgid "Toggle navigation"
 #~ msgstr "ナビゲーション切り替え"
@@ -3605,8 +3508,7 @@ msgstr ""
 #~ msgid ""
 #~ "If you have not created an account yet, then please %(link)ssign "
 #~ "up%(end_link)s first."
-#~ msgstr ""
-#~ "アカウントをお持ちでない場合は、まず%(link)s登録%(end_link)sしてください。"
+#~ msgstr "アカウントをお持ちでない場合は、まず%(link)s登録%(end_link)sしてください。"
 
 #~ msgid "Sign in with a passkey"
 #~ msgstr "パスキーでサインイン"
