@@ -1,0 +1,14 @@
+{% comment %}
+Local development stand-in. Renders nothing.
+
+frontend/templates/batchs.html and frontend/templates/contact.html both
+include a template named _google_analytics.html, but that template is not in
+the repository: it exists only on the production host, untracked. A fresh
+clone therefore returns 500 on /batchs and /contact.
+
+This no-op copy is reachable only through gdalface.settings_local, so the
+repository's own behaviour is unchanged and the missing template stays visible
+as something for the application to fix properly.
+
+No analytics are loaded locally, which is the behaviour we want anyway.
+{% endcomment %}
