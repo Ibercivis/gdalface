@@ -331,54 +331,7 @@
             letter-spacing: 0.5px;
         }
 
-        /* LEADERBOARD */
-        .leaderboard-card {
-            background-color: rgba(59, 48, 84, 0.9);
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            border-radius: 18px;
-            overflow: hidden;
-        }
-        .leaderboard-header {
-            padding: 18px 24px;
-            background-color: rgba(43, 36, 61, 0.8);
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            font-size: 18px;
-            font-weight: 700;
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .leaderboard-header i { color: #e9f990; }
-        .leaderboard-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .leaderboard-table th,
-        .leaderboard-table td {
-            padding: 12px 24px;
-            text-align: left;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-            color: rgba(255,255,255,0.9);
-            font-size: 14px;
-        }
-        .leaderboard-table th {
-            background-color: rgba(31, 26, 44, 0.6);
-            color: rgba(233,249,144,0.9);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-size: 12px;
-        }
-        .leaderboard-table td.num,
-        .leaderboard-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
-        .leaderboard-table tr.you-row {
-            background: rgba(233,249,144,0.08);
-        }
-        .leaderboard-table tr.you-row td:first-child {
-            border-left: 3px solid #e9f990;
-        }
+        /* LEADERBOARD — table look is the shared .ranking-table (design-system.css) */
         .lb-user {
             display: inline-flex;
             align-items: center;
@@ -404,15 +357,6 @@
             display: block;
         }
         .lb-avatar i { font-size: 13px; }
-        .leaderboard-table tr.you-row .lb-avatar {
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-        .rank-cell { font-weight: 700; color: rgba(255,255,255,0.9); width: 70px; }
-        .rank-cell .rank-medal { font-size: 18px; margin-right: 4px; }
-        .rank-cell.gold   { color: #ffd700; }
-        .rank-cell.silver { color: #c0c0c0; }
-        .rank-cell.bronze { color: #cd7f32; }
         .badge-pill {
             display: inline-block;
             padding: 2px 10px;
@@ -438,7 +382,7 @@
             .stat-strip { grid-template-columns: repeat(2, 1fr); }
             .triple-bar { height: 28px; }
             .triple-bar .marker::after { font-size: 10px; }
-            .leaderboard-table th, .leaderboard-table td { padding: 10px 14px; }
+            .ranking-table th, .ranking-table td { padding: 8px 10px; }
         }
     </style>
     {% include '_located_map_assets.html' %}
@@ -641,9 +585,9 @@
         {% endif %}
 
         <!-- LEADERBOARD -->
-        <div class="leaderboard-card" id="lb-card">
-            <div class="leaderboard-header lb-header-row">
-                <span><i class="fa-solid fa-ranking-star"></i> {% trans "Leaderboard" %}</span>
+        <div class="rk-card" id="lb-card">
+            <div class="rk-header-row">
+                <span class="rk-title"><i class="fa-solid fa-ranking-star"></i> {% trans "Leaderboard" %}</span>
                 {% if user.is_authenticated %}
                 <button type="button" class="rk-jump-btn" id="lb-jump-me" hidden>
                     {% trans "Jump to me" %}
@@ -651,17 +595,18 @@
                 {% endif %}
             </div>
             <div class="lb-table-wrap">
-                <table class="leaderboard-table">
+                <table class="ranking-table">
                     <thead>
                         <tr>
                             <th>#</th>
+                            <th class="rk-trend"></th>
                             <th>{% trans "User" %}</th>
-                            <th class="num">{% trans "Control points" %}</th>
-                            <th class="num" style="width:120px;">{% trans "Status" %}</th>
+                            <th>{% trans "Control points" %}</th>
+                            <th>{% trans "Status" %}</th>
                         </tr>
                     </thead>
                     <tbody id="lb-tbody">
-                        <tr><td colspan="4" class="empty-state" style="padding:24px;text-align:center;color:var(--ink-2);">
+                        <tr><td colspan="5" class="empty-state" style="padding:24px;text-align:center;color:var(--ink-2);">
                             {% trans "Loading…" %}
                         </td></tr>
                     </tbody>
@@ -676,14 +621,7 @@
             </div>
         </div>
 
-        <style>
-            .lb-header-row {
-                display: flex; align-items: center; justify-content: space-between;
-                gap: 12px; flex-wrap: wrap;
-            }
-            /* No right-padding on the wrapper — the card has no internal padding
-               and the rows should extend to its edges (matching the header). */
-        </style>
+        <p class="rk-note" id="lb-trend-note" hidden>{% trans "Arrows and green figures show the change over a rolling 7-day window (today and the six days before), not the calendar week." %}</p>
 
         <script>
         (function () {
@@ -703,7 +641,9 @@
                 you:           '{% trans "you" %}',
                 anon:          '{% trans "Invisible user" %}',
                 active:        '{% trans "active" %}',
-                left:          '{% trans "left" %}'
+                left:          '{% trans "left" %}',
+                t_new:         '{% trans "new" %}',
+                t_tip:         '{% trans "Places gained or lost in the last 7 days" %}'
             };
 
             function escapeHtml(s) {
@@ -713,16 +653,22 @@
             }
             function fmtInt(n) { return (n || 0).toLocaleString(); }
 
-            function rankCell(rank) {
-                var cls = 'rank-cell';
-                if (rank === 1) cls += ' gold';
-                else if (rank === 2) cls += ' silver';
-                else if (rank === 3) cls += ' bronze';
-                return '<td class="' + cls + '">' + rank + '</td>';
+            var hasTrend = false;
+            var trendNote = document.getElementById('lb-trend-note');
+            // Places gained/lost and "+N" over the last 7 rolling days (running challenges only).
+            function trendCell(row) {
+                if (!hasTrend || row.rank_change == null) return '<td class="rk-trend"></td>';
+                var h;
+                if (row.is_new) h = '<span class="rk-new">' + T.t_new + '</span>';
+                else if (row.rank_change > 0) h = '<span class="rk-up">▲' + row.rank_change + '</span>';
+                else if (row.rank_change < 0) h = '<span class="rk-down">▼' + (-row.rank_change) + '</span>';
+                else h = '<span class="rk-same">–</span>';
+                return '<td class="rk-trend" title="' + escapeHtml(T.t_tip) + '">' + h + '</td>';
             }
+            function delta(n) { return hasTrend ? '<span class="rk-delta">' + (n ? '+' + fmtInt(n) : '') + '</span>' : ''; }
 
             function rowHtml(row) {
-                var trClass = row.is_you ? ' class="you-row"' : '';
+                var trClass = row.is_you ? ' class="highlight-row"' : '';
                 var avatar;
                 if (row.visible) {
                     avatar = row.profile_pic_url
@@ -735,16 +681,16 @@
                     ? escapeHtml(row.username)
                     : '<span style="color:var(--ink-2);">' + T.anon + '</span>';
                 var youTag = row.is_you
-                    ? ' <small style="color:rgba(233,249,144,0.85);margin-left:4px;">(' + T.you + ')</small>'
+                    ? ' <small style="color:var(--accent);margin-left:4px;">(' + T.you + ')</small>'
                     : '';
                 var statusBadge = row.is_active
                     ? '<span class="badge-pill active">' + T.active + '</span>'
                     : '<span class="badge-pill left">' + T.left + '</span>';
                 return '<tr' + trClass + '>'
-                    + rankCell(row.rank)
-                    + '<td><span class="lb-user">' + avatar + '<span>' + name + '</span>' + youTag + '</span></td>'
-                    + '<td class="num">' + fmtInt(row.cp_count) + '</td>'
-                    + '<td class="num">' + statusBadge + '</td>'
+                    + '<td>' + row.rank + '</td>' + trendCell(row)
+                    + '<td><div style="display:flex;align-items:center;">' + avatar + '<span>' + name + '</span>' + youTag + '</div></td>'
+                    + '<td>' + fmtInt(row.cp_count) + delta(row.new_cp) + '</td>'
+                    + '<td>' + statusBadge + '</td>'
                     + '</tr>';
             }
 
@@ -763,23 +709,24 @@
                 opts = opts || {};
                 var qs = '?page=' + (opts.page || state.page) + '&page_size=' + PAGE_SIZE;
                 if (opts.jumpToMe) qs += '&jump_to_me=1';
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--ink-2);">…</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--ink-2);">…</td></tr>';
                 fetch(ENDPOINT + qs, { credentials: 'same-origin' })
                     .then(function (r) { return r.ok ? r.json() : Promise.reject(r); })
                     .then(function (data) {
                         state.page = data.page;
                         state.total_pages = data.total_pages;
                         state.my_rank = data.my_rank;
+                        hasTrend = !!data.has_trend; trendNote.hidden = !hasTrend;
                         if (state.my_rank && jumpBtn) jumpBtn.hidden = false;
                         if (!data.rows.length) {
-                            tbody.innerHTML = '<tr><td colspan="4" class="empty-state" style="padding:24px;text-align:center;">' + T.empty + '</td></tr>';
+                            tbody.innerHTML = '<tr><td colspan="5" class="empty-state" style="padding:24px;text-align:center;">' + T.empty + '</td></tr>';
                         } else {
                             tbody.innerHTML = data.rows.map(rowHtml).join('');
                         }
                         renderPager();
                     })
                     .catch(function () {
-                        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:24px;color:oklch(0.78 0.16 25);">' + T.error + '</td></tr>';
+                        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:24px;color:oklch(0.78 0.16 25);">' + T.error + '</td></tr>';
                     });
             }
 

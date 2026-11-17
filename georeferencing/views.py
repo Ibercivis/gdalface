@@ -221,9 +221,10 @@ class GeoAttemptIndividualView(APIView):
     parser_classes = (JSONParser,)
 
     def get_permissions(self):
-        # PATCH must work for anonymous users (gettask flow), but DELETE
-        # is destructive and must be restricted to staff.
-        if self.request.method == 'DELETE':
+        # PATCH must work for anonymous users (gettask flow). DELETE is
+        # destructive and GET exposes the user and control points (the app never
+        # reads it; staff use the token export API), so both are staff only.
+        if self.request.method in ('DELETE', 'GET'):
             return [IsAdminUser()]
         return [AllowAny()]
     # TODO: Remove print statements
@@ -984,6 +985,16 @@ class ChallengeLeaderboardView(APIView):
         offset = (page - 1) * page_size
         qs = base.order_by('-cached_cp_count', 'joined_at')[offset:offset + page_size]
 
+        # Places gained/lost and new CP over the last 7 rolling days; only
+        # while the challenge is running (empty otherwise). Cached 5 min.
+        from django.core.cache import cache
+        from .reconcile import challenge_week_trend
+        trend_key = f'challenge_trend:v1:{ch.pk}'
+        trend = cache.get(trend_key)
+        if trend is None:
+            trend = challenge_week_trend(ch)
+            cache.set(trend_key, trend, 300)
+
         rows = []
         for i, p in enumerate(qs):
             rank = offset + i + 1
@@ -991,7 +1002,16 @@ class ChallengeLeaderboardView(APIView):
             is_you = (request.user.is_authenticated and p.user_id == request.user.id)
             visible = bool(up.visible) if up is not None else True
             visible = visible or is_you
+            t = trend.get(p.pk)
+            extra = {}
+            if t:
+                extra = {
+                    'new_cp': min(t['new_cp'], p.cached_cp_count),
+                    'is_new': t['is_new'],
+                    'rank_change': (t['prev_rank'] - rank) if t['prev_rank'] else 0,
+                }
             rows.append({
+                **extra,
                 'rank': rank,
                 'username': p.user.username if visible else None,
                 'profile_pic_url': up.profile_pic.url if (visible and up and up.profile_pic) else None,
@@ -1011,6 +1031,7 @@ class ChallengeLeaderboardView(APIView):
             'page': page,
             'page_size': page_size,
             'total_pages': total_pages,
+            'has_trend': bool(trend),
             'total_users': total_users,
             'my_rank': my_rank,
             'my_cp': my_cp,

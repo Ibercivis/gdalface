@@ -35,6 +35,10 @@ Fall back to the live methods only when not annotated (e.g. challenge_detail).
                 <span class="ds-text-2" title="{% trans 'Only photos inside a geographic region count' %}"><i class="fa-solid fa-draw-polygon" style="font-size:11px;margin-right:3px;"></i>{% trans "Region" %}</span>
                 <span class="ds-text-3">·</span>
             {% endif %}
+            {% if ch.cached_image_count %}
+                <span class="ds-text-2">{{ ch.cached_image_count }} {% trans "photos" %}</span>
+                <span class="ds-text-3">·</span>
+            {% endif %}
             <span class="mono ds-text-2">{{ total }}/{{ gold }} CP</span>
             <span class="ds-text-3">·</span>
             <span class="ds-text-2">{{ ch.participants_count|default:ch.participants.count }} {% trans "participants" %}</span>

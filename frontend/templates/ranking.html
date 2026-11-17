@@ -6,15 +6,11 @@
 
 {% block legal_content %}
 <style>
-    .legal-wrap { max-width: 1080px; }
+    .legal-wrap { max-width: 1000px; }
     .rk-totals { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 6px 0 22px; }
     .rk-total { background: var(--bg-1); border: 1px solid var(--line-soft); border-radius: 10px; padding: 12px 14px; }
     .rk-total .v { font-size: 24px; font-weight: 700; color: var(--ink-0); font-variant-numeric: tabular-nums; line-height: 1.2; }
     .rk-total .k { font-size: 11px; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-2); margin-top: 2px; }
-    .rk-card { background: var(--bg-1); border: 1px solid var(--line-soft); border-radius: 12px; overflow: hidden; }
-    .rk-header-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
-                     padding: 14px 18px; border-bottom: 1px solid var(--line-soft); background: var(--bg-2); }
-    #rk-header { font-weight: 600; font-size: 14px; color: var(--ink-0); }
     .rk-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
     .rk-seg { display: inline-flex; border: 1px solid var(--line-soft); border-radius: 999px; overflow: hidden; background: var(--bg-1); }
     .rk-seg a, .rk-seg button {
@@ -26,15 +22,6 @@
     .rk-jump-btn { background: transparent !important; border: 1px solid var(--line-soft) !important; color: var(--ink-1) !important;
                    border-radius: 999px !important; padding: 5px 12px !important; font-size: 0.78rem !important; cursor: pointer; }
     .rk-jump-btn:hover { color: var(--accent) !important; border-color: var(--accent) !important; }
-    .legal-wrap table.ranking-table { margin: 0; border-collapse: collapse; width: 100%; font-size: 14px; }
-    .ranking-table th, .ranking-table td { padding: 10px 16px; text-align: left; border: 0; border-bottom: 1px solid var(--line-soft); color: var(--ink-1); white-space: nowrap; }
-    .ranking-table th { background: var(--bg-2); color: var(--accent); font-weight: 600; font-size: 12px; letter-spacing: .02em; }
-    .ranking-table tr:last-child td { border-bottom: none; }
-    .ranking-table tr.highlight-row td { background: oklch(0.95 0.13 113 / 0.10); }
-    .ranking-table tbody tr:hover td { background: oklch(1 0 0 / 0.04); }
-    .ranking-table th.rk-sortable { cursor: pointer; user-select: none; }
-    .ranking-table th.rk-sortable.is-sort::after { content: ' ▾'; }
-    .ranking-table th.rk-sortable:not(.is-sort) { color: var(--ink-2); }
     .rk-row-avatar { display: inline-flex; width: 26px; height: 26px; border-radius: 50%; overflow: hidden; align-items: center; justify-content: center;
                      background: var(--bg-3); margin-right: 8px; color: var(--ink-2); flex: 0 0 26px; }
     .rk-row-avatar img { width: 100%; height: 100%; object-fit: cover; }
@@ -49,7 +36,7 @@
     .rk-note { font-size: 12px; color: var(--ink-2); margin: 12px 0 0; }
     .rk-note a { color: var(--accent); }
     @media (max-width: 640px) {
-        .ranking-table th:nth-child(6), .ranking-table td:nth-child(6) { display: none; }  /* time column */
+        .ranking-table th:nth-child(7), .ranking-table td:nth-child(7) { display: none; }  /* time / CP-per-user column */
         .ranking-table th, .ranking-table td { padding: 8px 10px; }
     }
 </style>
@@ -69,7 +56,7 @@
      data-focus-me="{% if focus_me %}1{% else %}0{% endif %}"
      data-authenticated="{% if user.is_authenticated %}1{% else %}0{% endif %}">
     <div class="rk-header-row">
-        <span id="rk-header">{% trans "Global ranking" %}</span>
+        <span id="rk-header" class="rk-title">{% trans "Global ranking" %}</span>
         <div class="rk-controls">
             <div class="rk-seg" id="rk-scope" role="tablist">
                 <a class="{% if scope == 'users' %}is-on{% endif %}" data-scope="users" href="{% url 'ranking' %}?period={{ period }}">{% trans "People" %}</a>
@@ -89,7 +76,7 @@
         <table class="ranking-table" id="rk-table">
             <thead id="rk-thead"></thead>
             <tbody id="rk-tbody">
-                <tr><td colspan="6" style="text-align:center;padding:24px;color:var(--ink-2);">{% trans "Loading…" %}</td></tr>
+                <tr><td colspan="7" style="text-align:center;padding:24px;color:var(--ink-2);">{% trans "Loading…" %}</td></tr>
             </tbody>
         </table>
     </div>
@@ -105,6 +92,7 @@
     </div>
 </div>
 
+<p class="rk-note" id="rk-trend-note" hidden>{% trans "Arrows and green figures show the change over a rolling 7-day window (today and the six days before), not the calendar week." %}</p>
 {% if not user.is_authenticated %}
 <p class="rk-note">{% trans "Sign in to see your own position." %} <a href="/accounts/login?next={{ request.path|urlencode }}">{% trans "Sign in" %}</a></p>
 {% elif scope == 'teams' %}
@@ -136,17 +124,31 @@
         col_cp_user: '{% trans "CP / user" %}', open_team: '{% trans "open" %}',
         me_of: '{% trans "You are #{r} of {n} by {m}" %}', not_ranked: '{% trans "You have no contributions in this period yet." %}',
         no_country: '{% trans "Pick your country in your profile and your tasks will count for it." %}', no_team: '{% trans "You are not in a team yet." %}',
-        m_cp: '{% trans "control points" %}', m_tasks: '{% trans "tasks" %}', m_time: '{% trans "time" %}', m_cp_per_user: '{% trans "CP per user" %}'
+        m_cp: '{% trans "control points" %}', m_tasks: '{% trans "tasks" %}', m_time: '{% trans "time" %}', m_cp_per_user: '{% trans "CP per user" %}',
+        t_new: '{% trans "new" %}', t_tip: '{% trans "Places gained or lost in the last 7 days" %}'
     };
     var COLS = {
-        users: [{key:null,label:'#'},{key:null,label:T.col_user},{key:null,label:T.col_country},{key:'tasks',label:T.col_tasks},{key:'cp',label:T.col_cp},{key:'time',label:T.col_time}],
-        countries: [{key:null,label:'#'},{key:null,label:T.col_country},{key:null,label:T.col_users},{key:'tasks',label:T.col_tasks},{key:'cp',label:T.col_cp},{key:'cp_per_user',label:T.col_cp_user}],
-        teams: [{key:null,label:'#'},{key:null,label:T.col_team},{key:null,label:T.col_members},{key:'tasks',label:T.col_tasks},{key:'cp',label:T.col_cp}]
+        users: [{key:null,label:'#'},{key:null,label:'',cls:'rk-trend'},{key:null,label:T.col_user},{key:null,label:T.col_country},{key:'tasks',label:T.col_tasks},{key:'cp',label:T.col_cp},{key:'time',label:T.col_time}],
+        countries: [{key:null,label:'#'},{key:null,label:'',cls:'rk-trend'},{key:null,label:T.col_country},{key:null,label:T.col_users},{key:'tasks',label:T.col_tasks},{key:'cp',label:T.col_cp},{key:'cp_per_user',label:T.col_cp_user}],
+        teams: [{key:null,label:'#'},{key:null,label:'',cls:'rk-trend'},{key:null,label:T.col_team},{key:null,label:T.col_members},{key:'tasks',label:T.col_tasks},{key:'cp',label:T.col_cp}]
     };
     function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
     function fmt(n) { return (n || 0).toLocaleString(); }
     function dash() { return '<span style="color:var(--ink-3);">—</span>'; }
     function flag(code, name) { return '<img src="https://flagcdn.com/32x24/' + esc(code) + '.png" alt="' + esc(name) + '" style="width:24px;height:18px;margin-right:6px;vertical-align:-3px;">'; }
+    var trendNote = document.getElementById('rk-trend-note');
+    function hasTrend() { return state.period === 'all'; }
+    // Places gained/lost and "+N" over the last 7 rolling days (all-time boards only).
+    function trend(r) {
+        if (!hasTrend() || r.rank_change == null) return '<td class="rk-trend"></td>';
+        var h;
+        if (r.is_new) h = '<span class="rk-new">' + T.t_new + '</span>';
+        else if (r.rank_change > 0) h = '<span class="rk-up">▲' + r.rank_change + '</span>';
+        else if (r.rank_change < 0) h = '<span class="rk-down">▼' + (-r.rank_change) + '</span>';
+        else h = '<span class="rk-same">–</span>';
+        return '<td class="rk-trend" title="' + esc(T.t_tip) + '">' + h + '</td>';
+    }
+    function delta(n) { return hasTrend() ? '<span class="rk-delta">' + (n ? '+' + fmt(n) : '') + '</span>' : ''; }
     function metricLabel() { return T['m_' + state.ordering] || state.ordering; }
 
     function userRow(r) {
@@ -155,26 +157,27 @@
             : '<span class="rk-row-avatar"><i class="fa-solid fa-eye-slash" style="font-size:12px;"></i></span>';
         var name = r.visible ? esc(r.username) : '<span style="color:var(--ink-2);">' + T.anon + '</span>';
         var country = (r.visible && r.country) ? flag(r.country_code, r.country) + esc(r.country) : '<span style="color:var(--ink-3);">-</span>';
-        return '<tr' + (r.is_you ? ' class="highlight-row" id="rk-row-me"' : '') + '><td>' + r.rank + '</td>'
+        return '<tr' + (r.is_you ? ' class="highlight-row" id="rk-row-me"' : '') + '><td>' + r.rank + '</td>' + trend(r)
             + '<td><div style="display:flex;align-items:center;">' + avatar + name + '</div></td><td>' + country + '</td>'
-            + '<td>' + fmt(r.tasks) + '</td><td>' + (r.control_points == null ? dash() : fmt(r.control_points)) + '</td>'
+            + '<td>' + fmt(r.tasks) + delta(r.new_tasks) + '</td><td>' + (r.control_points == null ? dash() : fmt(r.control_points) + delta(r.new_cp)) + '</td>'
             + '<td>' + (r.time_pretty ? esc(r.time_pretty) : dash()) + '</td></tr>';
     }
     function countryRow(r, mine) {
-        return '<tr' + (mine && r.country_code === mine ? ' class="highlight-row" id="rk-row-me"' : '') + '><td>' + r.rank + '</td>'
-            + '<td>' + flag(r.country_code, r.country) + esc(r.country) + '</td><td>' + fmt(r.users) + '</td><td>' + fmt(r.tasks) + '</td>'
-            + '<td>' + (r.control_points == null ? dash() : fmt(r.control_points)) + '</td>'
+        return '<tr' + (mine && r.country_code === mine ? ' class="highlight-row" id="rk-row-me"' : '') + '><td>' + r.rank + '</td>' + trend(r)
+            + '<td>' + flag(r.country_code, r.country) + esc(r.country) + '</td><td>' + fmt(r.users) + delta(r.new_users) + '</td><td>' + fmt(r.tasks) + delta(r.new_tasks) + '</td>'
+            + '<td>' + (r.control_points == null ? dash() : fmt(r.control_points) + delta(r.new_cp)) + '</td>'
             + '<td>' + (r.cp_per_user == null ? dash() : r.cp_per_user.toLocaleString()) + '</td></tr>';
     }
     function teamRow(r, mine) {
         var name = '<a href="/teams/' + encodeURIComponent(r.slug) + '/" style="color:inherit;text-decoration:underline;">' + esc(r.name) + '</a>'
             + (r.is_open ? ' <span style="color:var(--ink-3);font-size:.75em;">(' + T.open_team + ')</span>' : '');
-        return '<tr' + (mine && r.slug === mine ? ' class="highlight-row" id="rk-row-me"' : '') + '><td>' + r.rank + '</td><td>' + name + '</td>'
-            + '<td>' + fmt(r.members) + '</td><td>' + fmt(r.tasks) + '</td><td>' + (r.control_points == null ? dash() : fmt(r.control_points)) + '</td></tr>';
+        return '<tr' + (mine && r.slug === mine ? ' class="highlight-row" id="rk-row-me"' : '') + '><td>' + r.rank + '</td>' + trend(r) + '<td>' + name + '</td>'
+            + '<td>' + fmt(r.members) + delta(r.new_members) + '</td><td>' + fmt(r.tasks) + delta(r.new_tasks) + '</td><td>' + (r.control_points == null ? dash() : fmt(r.control_points) + delta(r.new_cp)) + '</td></tr>';
     }
     function renderHead() {
+        trendNote.hidden = !hasTrend();
         thead.innerHTML = '<tr>' + COLS[state.scope].map(function (c) {
-            if (!c.key) return '<th>' + c.label + '</th>';
+            if (!c.key) return '<th' + (c.cls ? ' class="' + c.cls + '"' : '') + '>' + c.label + '</th>';
             return '<th class="rk-sortable' + (c.key === state.ordering ? ' is-sort' : '') + '" data-key="' + c.key + '">' + c.label + '</th>';
         }).join('') + '</tr>';
     }

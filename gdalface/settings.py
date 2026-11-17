@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'gdalface',
     'georeferencing',
     'frontend',
+    'review',
     'drf_yasg',
     'bootstrap5',
     'fontawesomefree',
@@ -266,7 +267,6 @@ ACCOUNT_AUTHENTICATION_METHOD = 'email'  # 'username' or 'username_email'
 
 # Allow signup via social accounts
 SOCIALACCOUNT_QUERY_EMAIL = True
-
 # Skip allauth's intermediate "Continue" page: the login buttons are plain links (GET)
 SOCIALACCOUNT_LOGIN_ON_GET = True
 # Google already verifies the address; don't send our own confirmation email on social signup
@@ -274,6 +274,7 @@ SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'
 # If Google returns a verified email that matches an existing account, log into it and link the Google identity
 SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
 SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
+
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'SCOPE': ['profile', 'email'],

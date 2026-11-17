@@ -1,0 +1,151 @@
+{% load static %}
+{% load bootstrap5 %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lost At Night | {% trans "Review georeferencing" %}</title>
+    <link rel="icon" href="{% static 'img/logo-lost.png' %}" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    {% bootstrap_css %}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'css/design-system.css' %}" rel="stylesheet" type="text/css">
+    <!-- Same stylesheet as the work area (gettask), so the header, rail and map panel match it. -->
+    <link href="{% static 'css/styles.css' %}?v=4.1" rel="stylesheet" type="text/css">
+    <style>
+        /* Header: same bar as the work area */
+        .ds-task-bar { position: fixed; top: 0; left: 0; right: 0; z-index: 1040; height: 52px; display: flex; align-items: center; gap: 16px; padding: 0 16px;
+            background: oklch(0.18 0.05 290 / 0.92); backdrop-filter: blur(14px) saturate(140%); border-bottom: 1px solid var(--line); color: var(--ink-1);
+            font-family: var(--font-ui); font-size: 13px; }
+        body { padding-top: 52px; overflow: hidden; }
+        .ds-task-bar__brand-pill { display: inline-flex; align-items: center; gap: 8px; padding: 4px 10px; height: 30px; background: var(--bg-2);
+            border: 1px solid var(--line); border-radius: 999px; color: var(--ink-1); text-decoration: none; }
+        .ds-task-bar__brand-pill:hover { color: var(--ink-0); }
+        .rv-title { font-weight: 600; color: var(--ink-0); }
+        .rv-bar-right { margin-left: auto; display: inline-flex; gap: 10px; align-items: center; }
+        .rv-bar-right a { color: var(--ink-1); text-decoration: none; }
+        .rv-bar-right a:hover { color: var(--ink-0); }
+
+        /* Layout: map | rail (same proportions as the work area's rail) */
+        #rvLayout { display: grid; grid-template-columns: 1fr 300px; position: fixed; top: 52px; left: 0; right: 0; bottom: 0; overflow: hidden; }
+        #rvMap { height: 100%; min-width: 0; background: var(--bg-0); }
+        #rvMap.leaflet-container { font-family: var(--font-ui); }
+        /* VIIRS / SDGSAT tiles are opaque black where there is no light: on the dark base, 'screen' keeps only the lights
+           so the roads underneath stay visible. On OSM / Satellite they behave as in the work area. */
+        #rvMap.rv-dark .viirs-tiles, #rvMap.rv-dark .sdgsat-tiles { mix-blend-mode: screen; }
+        #rvRail { height: 100%; min-width: 0; display: flex; flex-direction: column; background: var(--bg-1); color: var(--ink-1);
+            border-left: 1px solid var(--line); font-family: var(--font-ui); font-size: 13px; }
+        @media (max-width: 800px) {
+            #rvLayout { grid-template-columns: 1fr; grid-template-rows: 1fr 46%; }
+            #rvRail { border-left: 0; border-top: 1px solid var(--line); }
+        }
+
+        /* Rail */
+        .rv-rail-head { padding: 12px 14px 10px; border-bottom: 1px solid var(--line-soft); }
+        .rv-rail-head h1 { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); margin: 0 0 4px; }
+        .rv-rail-head .rv-count { color: var(--ink-0); font-size: 14px; font-weight: 600; }
+        .rv-rail-head .rv-hint { color: var(--ink-2); font-size: 12px; margin-top: 2px; }
+        #rvBody { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 8px 10px; }
+        .rv-foot { border-top: 1px solid var(--line-soft); padding: 8px 14px; color: var(--ink-2); font-size: 11px; }
+        .rv-foot span { display: inline-flex; align-items: center; gap: 6px; margin-right: 12px; }
+        .rv-sw { display: inline-block; width: 16px; height: 0; border-top: 2px solid; }
+        .rv-sw--base { border-color: #5f6fff; } .rv-sw--mine { border-color: #5f6fff; border-top-style: dashed; }
+        .rv-sw--sel { border-color: #ff6a3d; border-top-width: 3px; } .rv-sw--off { border-color: #8a8a99; opacity: .5; }
+
+        .rv-empty { color: var(--ink-2); font-size: 12px; line-height: 1.5; padding: 4px 4px; }
+        .rv-link { background: none; border: 0; padding: 0; color: var(--ink-1); font-size: 12px; text-decoration: underline; cursor: pointer; }
+        .rv-link:hover { color: var(--ink-0); }
+
+        /* Tree */
+        .rv-img, .rv-att { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; cursor: pointer; font-family: inherit; color: var(--ink-1);
+            border: 1px solid var(--line-soft); background: var(--bg-2); border-radius: 8px; padding: 8px 10px; margin: 0 0 4px; font-size: 12px; line-height: 1.3; }
+        .rv-img:hover, .rv-att:hover { background: var(--bg-3); color: var(--ink-0); }
+        .rv-img .rv-caret { width: 10px; color: var(--ink-3); flex: none; }
+        .rv-img .rv-name { font-family: var(--font-mono); color: var(--ink-0); font-size: 12px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+        .rv-img .rv-meta { color: var(--ink-2); font-size: 11px; white-space: nowrap; }
+        .rv-kids { margin: 0 0 8px 10px; padding-left: 8px; border-left: 1px solid var(--line); }
+        .rv-att { position: relative; padding-left: 12px; }
+        .rv-att .rv-id { font-family: var(--font-mono); color: var(--ink-0); }
+        .rv-att .rv-sub { color: var(--ink-2); font-size: 11px; flex: 1; min-width: 0; }
+        .rv-att.is-sel { background: var(--bg-3); border-color: var(--line); color: var(--ink-0); }
+        .rv-att.is-sel::before { content: ''; position: absolute; left: 0; top: 6px; bottom: 6px; width: 3px; border-radius: 2px; background: #ff6a3d; }
+        .rv-vb { flex: none; display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 20px; padding: 0 5px;
+            border-radius: 5px; font-size: 11px; font-weight: 600; border: 1px solid var(--line); color: var(--ink-3); }
+        .rv-vb.is-voted { color: var(--ink-0); border-color: var(--ink-1); background: var(--bg-4); }
+        .rv-open { margin: -2px 0 8px; padding: 10px 12px; border: 1px solid var(--line); border-top: 0; border-radius: 0 0 8px 8px; background: var(--bg-2); }
+        .rv-info { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 0 0 10px; font-size: 12px; }
+        .rv-info dt { color: var(--ink-2); font-weight: 400; } .rv-info dd { margin: 0; color: var(--ink-0); font-family: var(--font-mono); }
+        .rv-yours { font-size: 12px; color: var(--ink-1); margin: 0 0 6px; } .rv-yours b { color: var(--ink-0); }
+        .rv-vote { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .rv-note { font-size: 12px; color: var(--ink-2); font-style: italic; margin: 0 0 8px; }
+        .rv-msg { margin-top: 6px; min-height: 1.1em; font-size: 11px; color: var(--ink-2); }
+
+        /* Map-side panel (same classes as the work area; always open) */
+        .ds-map-adjust { width: 280px; box-sizing: border-box; }
+        .rv-row { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; }
+        .rv-row .rv-lbl { flex: 0 0 88px; white-space: nowrap; }
+        .rv-row input[type=range] { min-width: 0; }
+        .ds-baselayer-btn { padding: 0 6px; }
+        .rv-row label { margin: 0; cursor: pointer; }
+        .rv-row input[type=range] { flex: 1; }
+        .rv-row .val { flex: 0 0 32px; text-align: right; }
+        .rv-row.is-off { opacity: .45; }
+    </style>
+</head>
+<body>
+    <header class="ds-task-bar">
+        <a class="ds-task-bar__brand-pill" href="/" title="Home">
+            <img src="{% static 'img/logo-lost.png' %}" alt="" style="width:18px;height:18px;display:block;">
+            <span style="font-weight:600;">Lost at Night</span>
+        </a>
+        <span class="rv-title">{% trans "Review georeferencing" %}{% if team %} · {{ team.name }}{% endif %}</span>
+        <div class="rv-bar-right"><a href="{% url 'user' %}"><i class="fa-solid fa-user-astronaut"></i> {% trans "Your area" %}</a></div>
+    </header>
+
+    <div id="rvLayout">
+        <div id="rvMap"></div>
+        <aside id="rvRail">
+            <div class="rv-rail-head">
+                <h1>{% trans "Attempts" %}</h1>
+                <div class="rv-count" id="rvCount">{% trans "Loading…" %}</div>
+                <div class="rv-hint" id="rvHint"></div>
+            </div>
+            <div id="rvBody"></div>
+            <div class="rv-foot">
+                <span><i class="rv-sw rv-sw--base"></i>{% trans "Attempt" %}</span>
+                <span><i class="rv-sw rv-sw--mine"></i>{% trans "Reviewed by you" %}</span>
+                <span><i class="rv-sw rv-sw--sel"></i>{% trans "Selected" %}</span>
+                <span><i class="rv-sw rv-sw--off"></i>{% trans "Not at this point" %}</span>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        window.REVIEW = {
+            footprintsUrl: "{% url 'review-footprints' %}{% if team %}?team={{ team.pk }}{% endif %}",
+            voteUrl: "{% url 'review-vote' %}",
+            t: {
+                loading: "{% trans 'Loading…' %}", none: "{% trans 'Nothing georeferenced and reviewable yet.' %}",
+                hint: "{% trans 'Click on the map to see the attempts at that point' %}", total: "{% trans 'attempts on the map' %}",
+                attempts: "{% trans 'Attempts' %}", attempt: "{% trans 'Attempt' %}", points: "{% trans 'points' %}",
+                here: "{% trans 'attempts at this point' %}", images: "{% trans 'different images' %}", clear: "{% trans 'Clear selection' %}",
+                nothingHere: "{% trans 'No attempt covers this point.' %}",
+                own: "{% trans 'yours' %}", own_note: "{% trans 'You georeferenced this one: you cannot review it.' %}",
+                taken: "{% trans 'Taken' %}", area: "{% trans 'Area' %}", by: "{% trans 'By user' %}", votes: "{% trans 'Votes' %}",
+                yourVote: "{% trans 'Your vote' %}", notVoted: "{% trans 'not reviewed yet' %}", saved: "{% trans 'Saved' %}",
+                ok: "{% trans 'OK' %}", notOk: "{% trans 'Not OK' %}",
+                error: "{% trans 'Could not save the vote' %}", loadError: "{% trans 'Could not load the attempts.' %}",
+                imgError: "{% trans 'The photo overlay could not be loaded.' %}", unknown: "{% trans 'unknown date' %}",
+                mapAdjust: "{% trans 'Map adjustments' %}", satellite: "{% trans 'Satellite' %}", dark: "{% trans 'Dark' %}", photo: "{% trans 'Photo' %}",
+                lightsOnly: "{% trans 'Photo: only the lights' %}", outlines: "{% trans 'Outlines' %}", keys: "{% trans 'Esc: back' %}"
+            }
+        };
+    </script>
+    <script src="{% static 'review/review_map.js' %}?v=9"></script>
+</body>
+</html>

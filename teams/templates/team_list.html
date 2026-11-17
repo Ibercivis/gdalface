@@ -53,16 +53,20 @@
 
 <div class="tm-card" style="padding:0;overflow:hidden">
 <table class="tm-table">
-    <thead><tr><th>#</th><th>{% trans "Team" %}</th><th class="num">{% trans "Members" %}</th><th class="num">{% trans "Tasks" %}</th><th class="num">{% trans "Control Points" %}</th><th></th></tr></thead>
+    <thead><tr><th>#</th><th></th><th>{% trans "Team" %}</th><th class="num">{% trans "Members" %}<span class="tm-delta"></span></th><th class="num">{% trans "Tasks" %}<span class="tm-delta"></span></th><th class="num">{% trans "Control Points" %}<span class="tm-delta"></span></th><th></th></tr></thead>
     <tbody>
     {% for r in rows %}
     <tr {% if my_membership and my_membership.team_id == r.team.id %}class="me"{% endif %}>
-        <td>{{ forloop.counter }}</td>
+        <td>{{ r.rank }}</td>
+        <td class="tm-trend">{% if r.is_new %}<span class="tm-new">{% trans "new" %}</span>{% elif r.rank_change > 0 %}<span class="tm-up" title="{% blocktrans count n=r.rank_change_abs %}Up {{ n }} place in the last 7 days{% plural %}Up {{ n }} places in the last 7 days{% endblocktrans %}">▲{{ r.rank_change_abs }}</span>{% elif r.rank_change < 0 %}<span class="tm-down" title="{% blocktrans count n=r.rank_change_abs %}Down {{ n }} place in the last 7 days{% plural %}Down {{ n }} places in the last 7 days{% endblocktrans %}">▼{{ r.rank_change_abs }}</span>{% else %}<span class="tm-same">–</span>{% endif %}</td>
         <td><a href="{% url 'team_detail' r.team.slug %}"><strong>{{ r.team.name }}</strong></a>
             {% if not r.team.is_open %}<span class="ds-pill ds-pill--ghost" style="margin-left:6px">{% trans "invite-only" %}</span>{% endif %}
             {% if r.team.description %}<div style="color:var(--ink-2);font-size:12px">{{ r.team.description|truncatechars:90 }}</div>{% endif %}</td>
-        <td class="num">{{ r.members }}</td><td class="num">{{ r.tasks }}</td><td class="num">{{ r.cp }}</td>
+        <td class="num">{{ r.members }}<span class="tm-delta">{% if r.new_members %}+{{ r.new_members }}{% endif %}</span></td>
+        <td class="num">{{ r.tasks }}<span class="tm-delta">{% if r.new_tasks %}+{{ r.new_tasks }}{% endif %}</span></td>
+        <td class="num">{{ r.cp }}<span class="tm-delta">{% if r.new_cp %}+{{ r.new_cp }}{% endif %}</span></td>
         <td style="text-align:right">
+            {% if user.is_staff %}<a class="ds-btn ds-btn--secondary ds-btn--sm" href="{% url 'review_team' r.team.id %}">{% trans "Review" %}</a>{% endif %}
             {% if user.is_authenticated and r.team.is_open and not my_membership %}
             <form method="post" action="{% url 'team_join' %}" style="margin:0">{% csrf_token %}<input type="hidden" name="slug" value="{{ r.team.slug }}"><input type="hidden" name="next" value="{% url 'team_list' %}">
                 <button type="submit" class="ds-btn ds-btn--secondary ds-btn--sm">{% trans "Join" %}</button></form>
@@ -70,10 +74,10 @@
         </td>
     </tr>
     {% empty %}
-    <tr><td colspan="6" style="text-align:center;color:var(--ink-2);padding:24px">{% if q %}{% trans "No team matches your search." %}{% else %}{% trans "No teams yet. Be the first to create one!" %}{% endif %}</td></tr>
+    <tr><td colspan="7" style="text-align:center;color:var(--ink-2);padding:24px">{% if q %}{% trans "No team matches your search." %}{% else %}{% trans "No teams yet. Be the first to create one!" %}{% endif %}</td></tr>
     {% endfor %}
     </tbody>
 </table>
 </div>
-<p style="color:var(--ink-2);font-size:13px">{% trans "Teams are ranked by the control points their members placed while in the team." %} <a href="{% url 'ranking_scope' 'teams' %}">{% trans "See the team ranking by period" %}</a></p>
+<p style="color:var(--ink-2);font-size:13px">{% trans "Teams are ranked by the control points their members placed while in the team." %} {% trans "Arrows and green figures show the change over a rolling 7-day window (today and the six days before), not the calendar week." %} <a href="{% url 'ranking_scope' 'teams' %}">{% trans "See the team ranking by period" %}</a></p>
 {% endblock %}

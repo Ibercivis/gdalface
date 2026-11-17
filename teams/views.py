@@ -25,7 +25,7 @@ from user_profile.models import UserProfile
 
 from .models import Team, TeamMembership
 
-RANKING_CACHE_KEYS = [f'teams_ranking:v2:{p}' for p in ('all', 'week', 'month')]
+RANKING_CACHE_KEYS = [f'teams_ranking:v3:{p}' for p in ('all', 'week', 'month')]
 
 
 def _invalidate_rankings():
@@ -92,21 +92,97 @@ def _require_owner(request, team):
     return mine
 
 
+def _can_edit(user, team):
+    """Name / description / open-or-closed: the current owner or the team's creator
+    (so a creator who left, or whose team is empty, can still fix it)."""
+    if not user.is_authenticated:
+        return False
+    if team.creator_id == user.pk:
+        return True
+    mine = _active_membership(user)
+    return bool(mine and mine.team_id == team.pk and mine.role == TeamMembership.ROLE_OWNER)
+
+
+def _rows_with_weekly_trend():
+    """All teams (unsorted, see _rank_with_trend), each with what changed in the last 7 days
+    (same rolling window as the weekly ranking): new members, new tasks, new
+    CP and places gained/lost versus the table as it stood a week ago.
+
+    Nothing is snapshotted: the week's tasks/CP come from the per-day rows of
+    each member, counted from the later of window start / join date (and up to
+    the day they left), capped at what the membership actually contributed.
+    Last week's table is today's totals minus those deltas."""
+    start = _period_start('week')
+    verified = set(verified_user_ids())
+    teams = list(Team.objects.prefetch_related('memberships'))
+    daily = {}
+    user_ids = {m.user_id for t in teams for m in t.memberships.all()}
+    for uid, d, n, c in (GeoAttemptsByUserByDay.objects
+                         .filter(user_id__in=user_ids, date__gte=start)
+                         .values_list('user_id', 'date', 'numberGeoAttempts', 'controlPoints')):
+        daily.setdefault(uid, []).append((d, n or 0, c or 0))
+
+    rows = []
+    for t in teams:
+        members = new_members = tasks = cp = w_tasks = w_cp = 0
+        for m in t.memberships.all():
+            joined = timezone.localtime(m.joined_at).date()
+            left = timezone.localtime(m.left_at).date() if m.left_at else None
+            if left is None:
+                members += 1
+                if joined >= start:
+                    new_members += 1
+            if m.user_id not in verified:
+                continue
+            c = m.contribution()
+            tasks += c['tasks']; cp += c['cp']
+            if left is not None and left < start:
+                continue
+            since = max(start, joined)
+            mt = mc = 0
+            for d, n, k in daily.get(m.user_id, ()):
+                if d >= since and (left is None or d <= left):
+                    mt += n; mc += k
+            w_tasks += min(mt, c['tasks']); w_cp += min(mc, c['cp'])
+        rows.append({
+            'team': t, 'members': members, 'tasks': tasks, 'cp': cp,
+            'new_members': new_members, 'new_tasks': w_tasks, 'new_cp': w_cp,
+            'is_new': timezone.localtime(t.created_at).date() >= start,
+        })
+
+    return rows
+
+
+def _rank_with_trend(rows, key='cp'):
+    """Sort team rows by `key` ('cp' | 'tasks') and stamp rank + places
+    gained/lost versus the same ordering a week ago (teams created this week
+    are 'new' and have no previous place)."""
+    new_key = 'new_' + key
+    name = lambda r: r['team'].name.lower()
+    rows = sorted(rows, key=lambda r: (-r[key], -r['members'], name(r)))
+    before = sorted(
+        (r for r in rows if not r['is_new']),
+        key=lambda r: (-(r[key] - r[new_key]), -(r['members'] - r['new_members']), name(r)),
+    )
+    prev_rank = {r['team'].pk: i + 1 for i, r in enumerate(before)}
+    for i, r in enumerate(rows):
+        r['rank'] = i + 1
+        prev = prev_rank.get(r['team'].pk)
+        r['rank_change'] = (prev - r['rank']) if prev else 0
+        r['rank_change_abs'] = abs(r['rank_change'])
+    return rows
+
+
 # ── Pages ────────────────────────────────────────────────────────────────
 def team_list(request):
     """Public directory: open teams first, searchable; create/join forms for
     logged-in users without a team."""
     q = (request.GET.get('q') or '').strip()
-    teams = Team.objects.annotate(
-        members=Count('memberships', filter=Q(memberships__left_at__isnull=True)),
-    )
+    rows = _rank_with_trend(_rows_with_weekly_trend())
     if q:
-        teams = teams.filter(Q(name__icontains=q) | Q(description__icontains=q))
-    rows = []
-    for t in teams:
-        st = t.stats()
-        rows.append({'team': t, 'members': st['members'], 'cp': st['control_points'], 'tasks': st['tasks']})
-    rows.sort(key=lambda r: (-r['cp'], -r['members'], r['team'].name.lower()))
+        ql = q.lower()
+        rows = [r for r in rows
+                if ql in r['team'].name.lower() or ql in (r['team'].description or '').lower()]
     mine = _active_membership(request.user)
     return render(request, 'team_list.html', {
         'rows': rows, 'q': q, 'my_membership': mine,
@@ -147,7 +223,7 @@ def team_detail(request, slug):
     invite_url = request.build_absolute_uri(f'/teams/join/?code={team.invite_code}')
     return render(request, 'team_detail.html', {
         'team': team, 'stats': stats, 'rank': rank, 'members': members,
-        'is_member': is_member, 'is_owner': is_owner, 'my_membership': mine,
+        'is_member': is_member, 'is_owner': is_owner, 'can_edit': _can_edit(request.user, team), 'my_membership': mine,
         'owner': team.owner(), 'invite_url': invite_url if is_member else None,
     })
 
@@ -239,7 +315,8 @@ def leave_team(request):
 @require_POST
 def team_edit(request, slug):
     team = get_object_or_404(Team, slug=slug)
-    _require_owner(request, team)
+    if not _can_edit(request.user, team):
+        raise Http404
     name = (request.POST.get('name') or team.name).strip()
     if not 3 <= len(name) <= 60:
         messages.error(request, _('Team names must be between 3 and 60 characters.'))
@@ -331,18 +408,22 @@ def teams_ranking_api(request):
     if ordering not in ('cp', 'tasks'):
         ordering = 'cp'
 
-    cache_key = f'teams_ranking:v2:{period}'
+    cache_key = f'teams_ranking:v3:{period}'
     raw = cache.get(cache_key)
     if raw is None:
-        verified = set(verified_user_ids())
         raw = []
-        start = _period_start(period)
-        for team in Team.objects.prefetch_related('memberships'):
-            active = [m for m in team.memberships.all() if m.left_at is None]
-            if period == 'all':
-                st = team.stats()
-                tasks, cp = st['tasks'], st['control_points']
-            else:
+        if period == 'all':
+            for r in _rows_with_weekly_trend():
+                t = r['team']
+                raw.append({'name': t.name, 'slug': t.slug, 'is_open': t.is_open,
+                            'members': r['members'], 'tasks': r['tasks'], 'control_points': r['cp'],
+                            'new_members': r['new_members'], 'new_tasks': r['new_tasks'],
+                            'new_cp': r['new_cp'], 'is_new': r['is_new']})
+        else:
+            verified = set(verified_user_ids())
+            start = _period_start(period)
+            for team in Team.objects.prefetch_related('memberships'):
+                active = [m for m in team.memberships.all() if m.left_at is None]
                 tasks = cp = 0
                 for m in active:
                     if m.user_id not in verified:
@@ -353,8 +434,8 @@ def teams_ranking_api(request):
                            .aggregate(t=Sum('numberGeoAttempts'), c=Sum('controlPoints')))
                     tasks += agg['t'] or 0
                     cp += agg['c'] or 0
-            raw.append({'name': team.name, 'slug': team.slug, 'is_open': team.is_open,
-                        'members': len(active), 'tasks': tasks, 'control_points': cp})
+                raw.append({'name': team.name, 'slug': team.slug, 'is_open': team.is_open,
+                            'members': len(active), 'tasks': tasks, 'control_points': cp})
         cache.set(cache_key, raw, 300)
 
     key = 'control_points' if ordering == 'cp' else 'tasks'
@@ -367,6 +448,16 @@ def teams_ranking_api(request):
         my_rank = next((i + 1 for i, r in enumerate(rows) if r['slug'] == my_slug), None)
     for i, r in enumerate(rows):
         r['rank'] = i + 1
+    if period == 'all':
+        # Places gained/lost vs the same ordering a week ago (rolling 7 days).
+        new_key = 'new_cp' if ordering == 'cp' else 'new_tasks'
+        before = sorted(
+            (r for r in rows if not r['is_new']),
+            key=lambda r: (-(r[key] - r[new_key]), -(r['members'] - r['new_members']), r['name'].lower()))
+        prev_rank = {r['slug']: i + 1 for i, r in enumerate(before)}
+        for r in rows:
+            prev = prev_rank.get(r['slug'])
+            r['rank_change'] = (prev - r['rank']) if prev else 0
     return JsonResponse({
         'ordering': ordering, 'period': period, 'total_teams': len(rows),
         'my_team_slug': my_slug, 'my_team_rank': my_rank, 'rows': rows,

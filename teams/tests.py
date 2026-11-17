@@ -272,3 +272,62 @@ class TeamPagesAndOwnerToolsTests(TestCase):
         r = self.client.get(f'/teams/{self.team.slug}/')
         self.assertEqual(r.status_code, 200)
         self.assertNotContains(r, '>bob<'); self.assertContains(r, 'Invisible user')
+
+
+@override_settings(CACHES=LOCMEM_CACHE)
+class TeamListWeeklyTrendTests(TestCase):
+    """/teams/ shows places gained/lost and new members/tasks/CP over 7 days."""
+
+    def _team(self, name, owner, created_days_ago, cp_before, cp_week):
+        from datetime import date, timedelta
+        from django.utils import timezone
+        from georeferencing.models import GeoAttemptsByUserByDay
+        self.client.force_login(owner)
+        self.client.post(reverse('team_create'), {'name': name, 'is_open': '1'})
+        team = Team.objects.get(name=name)
+        when = timezone.now() - timedelta(days=created_days_ago)
+        Team.objects.filter(pk=team.pk).update(created_at=when)
+        TeamMembership.objects.filter(team=team).update(joined_at=when)
+        p = UserProfile.objects.get(user=owner)
+        p.controlPointsDone += cp_before + cp_week
+        p.geoattempts_done += 2 if cp_week else 0
+        p.save()
+        if cp_week:
+            GeoAttemptsByUserByDay.objects.create(
+                user=owner, date=date.today(), numberGeoAttempts=2, controlPoints=cp_week)
+        return team
+
+    def test_rank_change_and_weekly_deltas(self):
+        from datetime import timedelta
+        from django.core.cache import cache
+        from django.utils import timezone
+        cache.clear()
+        alice, bob, eve = make_user('alice'), make_user('bob'), make_user('eve')
+        User.objects.filter(pk__in=[alice.pk, bob.pk]).update(date_joined=timezone.now() - timedelta(days=40))
+        self._team('Owls', alice, 30, cp_before=100, cp_week=0)     # was 1st
+        self._team('Bats', bob, 30, cp_before=50, cp_week=80)       # was 2nd, now 1st
+        self._team('Moths', eve, 2, cp_before=0, cp_week=10)        # created this week
+        from .views import _rank_with_trend, _rows_with_weekly_trend
+        rows = {r['team'].name: r for r in _rank_with_trend(_rows_with_weekly_trend())}
+        self.assertEqual([rows[n]['rank'] for n in ('Bats', 'Owls', 'Moths')], [1, 2, 3])
+        self.assertEqual(rows['Bats']['rank_change'], 1)
+        self.assertEqual(rows['Owls']['rank_change'], -1)
+        self.assertTrue(rows['Moths']['is_new'])
+        self.assertEqual((rows['Bats']['new_cp'], rows['Bats']['new_tasks'], rows['Bats']['new_members']), (80, 2, 0))
+        self.assertEqual((rows['Owls']['new_cp'], rows['Owls']['new_members']), (0, 0))
+        self.assertEqual((rows['Moths']['new_cp'], rows['Moths']['new_members']), (10, 1))
+        html = self.client.get('/teams/').content.decode()
+        self.assertIn('▲1', html)
+        self.assertIn('▼1', html)
+        self.assertIn('+80', html)
+        api = {r['name']: r for r in self.client.get('/api/v1/ranking/teams/?period=all&ordering=cp').json()['rows']}
+        self.assertEqual((api['Bats']['rank_change'], api['Owls']['rank_change'], api['Bats']['new_cp']), (1, -1, 80))
+        self.assertTrue(api['Moths']['is_new'])
+        # People ranking, same ordering: bob (130) overtook alice (100) this week.
+        people = {r['username']: r for r in self.client.get('/api/v1/ranking/?period=all&ordering=cp').json()['rows']}
+        self.assertEqual((people['bob']['rank'], people['bob']['rank_change'], people['bob']['new_cp']), (1, 1, 80))
+        self.assertEqual((people['alice']['rank'], people['alice']['rank_change'], people['alice']['new_cp']), (2, -1, 0))
+        self.assertTrue(people['eve']['is_new'])
+        # Ordered by tasks nobody had any before, so the order a week ago was the tie-break one.
+        people = {r['username']: r for r in self.client.get('/api/v1/ranking/?period=all&ordering=tasks').json()['rows']}
+        self.assertEqual((people['bob']['rank_change'], people['bob']['new_tasks']), (1, 2))

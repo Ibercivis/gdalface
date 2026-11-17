@@ -24,7 +24,8 @@ def schedule_tasks(sender, **kwargs):
     # First, clear existing copies of the jobs we (re)schedule below.
     managed = {'georeferencing.tasks.update_assigned',
                'georeferencing.tasks.write_stats_snapshot',
-               'georeferencing.tasks.reconcile_counters_job'}
+               'georeferencing.tasks.reconcile_counters_job',
+               'review.tasks.build_overlays_job'}
     for job in scheduler.get_jobs():
         if job.func_name in managed:
             scheduler.cancel(job)  # removes the zset entry too (job.delete() left dangling ids)
@@ -49,6 +50,14 @@ def schedule_tasks(sender, **kwargs):
     scheduler.cron(
         '0 3 * * 1',
         func='georeferencing.tasks.reconcile_counters_job',
+        queue_name='lost_scheduler',
+        repeat=None
+    )
+
+    # Review overlays: warp new / edited DONE attempts every 15 minutes (bounded per run).
+    scheduler.cron(
+        '*/15 * * * *',
+        func='review.tasks.build_overlays_job',
         queue_name='lost_scheduler',
         repeat=None
     )

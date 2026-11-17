@@ -14,6 +14,8 @@ from .views import (
     ChallengeLeaderboardView,
     MyChallengeView,
 )
+from .export import ExportImageView, ExportImageListView
+
 urlpatterns = [
     # Define your app's URL patterns here
     path('geoattempt/', GeoAttemptView.as_view(), name='geoattempt'),
@@ -24,6 +26,8 @@ urlpatterns = [
     path('image-individual/<int:pk>/', ImageIndividualView.as_view(), name='images-individual'),
     path('geoattempts-calendar/', GeoAttemptsCalendarView.as_view(), name='calendar-geoattempt'),
     path('tutorial-event/', TutorialEventView.as_view(), name='tutorial-event'),
+    path('export/images/', ExportImageListView.as_view(), name='export-images'),
+    path('export/images/<int:pk>/', ExportImageView.as_view(), name='export-image'),
     path('challenges/', ChallengeListView.as_view(), name='challenges'),
     path('challenges/mine/', MyChallengeView.as_view(), name='challenge-mine'),
     path('challenges/<int:pk>/', ChallengeDetailView.as_view(), name='challenge-detail'),

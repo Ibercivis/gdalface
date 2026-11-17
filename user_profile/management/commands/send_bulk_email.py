@@ -25,6 +25,13 @@ Examples
     # 3. Real bulk send:
     python manage.py send_bulk_email emails/file.html \\
         --subject "Workshop invite"
+
+    # 4. Only the active members of one team:
+    python manage.py send_bulk_email emails/file.html \\
+        --subject "Thanks" --team colegio-salesiano-nuestra-senora-del-pilar-de-zaragoza
+
+People who unsubscribed (newsletter_unsubscribed_at set and not re-subscribed) are
+always skipped. Every message carries List-Unsubscribe / List-Unsubscribe-Post headers.
 """
 
 import time
@@ -78,6 +85,8 @@ class Command(BaseCommand):
                             help="Only addresses ending with this (e.g. .es). Combined with --country as OR.")
         parser.add_argument("--exclude-email-domain", default=None,
                             help="Skip addresses ending with this. Combined with --exclude-country as OR.")
+        parser.add_argument("--team", default=None,
+                            help="Only active members of the team with this slug (e.g. colegio-salesiano-...).")
         parser.add_argument("--first-name-fallback", default=FIRST_NAME_FALLBACK,
                             help='Text for [first name] when the user has none (default "there"; e.g. "de nuevo").')
         parser.add_argument("--limit", type=int, default=None,
@@ -128,6 +137,24 @@ class Command(BaseCommand):
                 raise CommandError(
                     f"--test-email {test_email} is not a verified address."
                 )
+
+        if opts.get("team"):
+            from teams.models import Team
+            team = Team.objects.filter(slug=opts["team"]).first()
+            if not team:
+                raise CommandError(f"--team: no team with slug {opts['team']!r}.")
+            qs = qs.filter(user_id__in=team.active_memberships().values_list("user_id", flat=True))
+
+        # Never mail people who unsubscribed. "Never opted in" is also
+        # newsletter_subscribed=False, so the opt-out is the timestamp; someone who
+        # re-subscribed later has newsletter_subscribed=True again and is kept.
+        opted_out = UserProfile.objects.filter(
+            newsletter_unsubscribed_at__isnull=False, newsletter_subscribed=False,
+        ).values_list("user_id", flat=True)
+        n_opted_out = qs.filter(user_id__in=opted_out).count()
+        qs = qs.exclude(user_id__in=opted_out)
+        if n_opted_out:
+            self.stdout.write(self.style.WARNING(f"Skipping {n_opted_out} address(es) that unsubscribed."))
 
         # Audience filters: include = country OR e-mail domain; exclude likewise.
         inc_country = (opts.get("country") or "").upper() or None
@@ -204,6 +231,10 @@ class Command(BaseCommand):
                     from_email=from_email,
                     to=[ea.email],
                     connection=connection,
+                    headers={
+                        "List-Unsubscribe": f"<{unsubscribe_url}>",
+                        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+                    },
                 )
                 msg.attach_alternative(html_body, "text/html")
 

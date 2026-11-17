@@ -120,3 +120,77 @@ class PeriodRankingApiTests(TestCase):
         data = self.client.get('/api/v1/ranking/').json()
         self.assertEqual(data['period'], 'all')
         self.assertEqual(data['rows'][0]['username'], 'a')
+
+
+class NewsletterUnsubscribeTests(TestCase):
+    """Per-recipient unsubscribe link and the bulk sender honouring it."""
+
+    def _profile(self, username, **fields):
+        user = make_user(username)
+        p = UserProfile.objects.get(user=user)
+        p.ensure_newsletter_token()
+        for k, v in fields.items():
+            setattr(p, k, v)
+        p.save()
+        return p
+
+    def test_get_only_confirms(self):
+        p = self._profile('a', newsletter_subscribed=True)
+        r = self.client.get(f'/newsletter/unsubscribe/{p.newsletter_token}/')
+        self.assertEqual(r.status_code, 200)
+        self.assertTrue(r.context['confirm'])
+        p.refresh_from_db()
+        self.assertTrue(p.newsletter_subscribed)
+        self.assertIsNone(p.newsletter_unsubscribed_at)
+
+    def test_post_unsubscribes_even_if_never_subscribed(self):
+        p = self._profile('b')  # newsletter_subscribed defaults to False
+        old = p.newsletter_token
+        r = self.client.post(f'/newsletter/unsubscribe/{old}/')
+        self.assertEqual(r.status_code, 200)
+        p.refresh_from_db()
+        self.assertIsNotNone(p.newsletter_unsubscribed_at)
+        self.assertNotEqual(p.newsletter_token, old)
+
+    def test_one_click_post_without_csrf(self):
+        from django.test import Client
+        p = self._profile('c', newsletter_subscribed=True)
+        r = Client(enforce_csrf_checks=True).post(
+            f'/newsletter/unsubscribe/{p.newsletter_token}/',
+            data='List-Unsubscribe=One-Click', content_type='application/x-www-form-urlencoded')
+        self.assertEqual(r.status_code, 200)
+        p.refresh_from_db()
+        self.assertFalse(p.newsletter_subscribed)
+
+    def test_unknown_token(self):
+        r = self.client.post('/newsletter/unsubscribe/nope/')
+        self.assertTrue(r.context['unknown'])
+
+    @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
+    def test_bulk_skips_unsubscribed_filters_team_and_sets_headers(self):
+        import tempfile, os
+        from django.core import mail
+        from django.core.management import call_command
+        from django.utils import timezone
+        from teams.models import Team, TeamMembership
+
+        keep = self._profile('keep')
+        gone = self._profile('gone', newsletter_unsubscribed_at=timezone.now())
+        back = self._profile('back', newsletter_unsubscribed_at=timezone.now(), newsletter_subscribed=True)
+        outsider = self._profile('outsider')
+        team = Team.objects.create(name='T', creator=keep.user)
+        for p in (keep, gone, back):
+            TeamMembership.objects.create(team=team, user=p.user)
+
+        with tempfile.NamedTemporaryFile('w', suffix='.html', delete=False) as f:
+            f.write('<html><body><a href="[unsubscribe_url]">x</a></body></html>')
+        try:
+            call_command('send_bulk_email', f.name, '--subject', 's', '--team', team.slug, '--sleep', '0')
+        finally:
+            os.unlink(f.name)
+
+        self.assertEqual(sorted(m.to[0] for m in mail.outbox), ['back@example.com', 'keep@example.com'])
+        m = next(m for m in mail.outbox if m.to[0] == 'keep@example.com')
+        self.assertIn(f'/newsletter/unsubscribe/{keep.newsletter_token}/', m.alternatives[0][0])
+        self.assertIn(keep.newsletter_token, m.extra_headers['List-Unsubscribe'])
+        self.assertEqual(m.extra_headers['List-Unsubscribe-Post'], 'List-Unsubscribe=One-Click')

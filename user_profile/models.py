@@ -83,3 +83,35 @@ class UserProfile(models.Model):
             import secrets
             self.newsletter_token = secrets.token_urlsafe(32)
         return self.newsletter_token
+
+
+class ApiToken(models.Model):
+    """
+    Personal API token for staff, used as `Authorization: Bearer <token>` on the
+    read-only export API. Only the SHA-256 of the token is stored: the plaintext
+    is shown once, when it is generated. One active token per user; generating a
+    new one revokes the previous.
+    """
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='api_tokens')
+    token_hash = models.CharField(max_length=64, unique=True)
+    prefix = models.CharField(max_length=8)
+    created = models.DateTimeField(auto_now_add=True)
+    last_used = models.DateTimeField(null=True, blank=True)
+    revoked = models.BooleanField(default=False)
+
+    @staticmethod
+    def hash_token(raw):
+        import hashlib
+        return hashlib.sha256(raw.encode()).hexdigest()
+
+    @classmethod
+    def issue(cls, user):
+        """Revoke the user's active tokens and return (token_row, plaintext)."""
+        import secrets
+        cls.objects.filter(user=user, revoked=False).update(revoked=True)
+        raw = secrets.token_urlsafe(32)
+        row = cls.objects.create(user=user, token_hash=cls.hash_token(raw), prefix=raw[:8])
+        return row, raw
+
+    def __str__(self):
+        return f'{self.user_id}:{self.prefix}…'

@@ -41,6 +41,10 @@ msgstr "Región"
 msgid "participants"
 msgstr "participantes"
 
+#: frontend/templates/_challenge_card.html
+msgid "photos"
+msgstr "fotos"
+
 #: frontend/templates/_challenge_card.html:57
 #: frontend/templates/gettask.html:239 frontend/templates/index.html:849
 msgid "Paused"
@@ -3400,6 +3404,260 @@ msgid ""
 "for it. Here are the badges you've earned so far."
 msgstr ""
 
+#: user_profile/templates/api_access.html
+msgid "API access"
+msgstr "Acceso API"
+
+#: user_profile/templates/api_access.html
+msgid "Read-only export of control points, one JSON per image. Staff only."
+msgstr "Exportación de solo lectura de los puntos de control, un JSON por imagen. Solo para staff."
+
+#: user_profile/templates/api_access.html
+msgid "Copy this now: the token is shown only once and cannot be recovered. If you lose it, generate a new one."
+msgstr "Cópialo ahora: el token se muestra una sola vez y no se puede recuperar. Si lo pierdes, genera uno nuevo."
+
+#: user_profile/templates/api_access.html
+msgid "Copy"
+msgstr "Copiar"
+
+#: user_profile/templates/api_access.html
+#, python-format
+msgid "Active token: %(prefix)s… (created %(created)s)"
+msgstr "Token activo: %(prefix)s… (creado el %(created)s)"
+
+#: user_profile/templates/api_access.html
+#, python-format
+msgid "Last used: %(used)s"
+msgstr "Último uso: %(used)s"
+
+#: user_profile/templates/api_access.html
+msgid "Never used."
+msgstr "Nunca usado."
+
+#: user_profile/templates/api_access.html
+msgid "The full token is not stored. Generating a new one revokes this one."
+msgstr "El token completo no se guarda. Generar uno nuevo revoca este."
+
+#: user_profile/templates/api_access.html
+msgid "You have no active token."
+msgstr "No tienes ningún token activo."
+
+#: user_profile/templates/api_access.html
+msgid "Regenerate token"
+msgstr "Regenerar token"
+
+#: user_profile/templates/api_access.html
+msgid "Regenerate the token? The current one will stop working immediately."
+msgstr "¿Regenerar el token? El actual dejará de funcionar inmediatamente."
+
+#: user_profile/templates/api_access.html
+msgid "Generate token"
+msgstr "Generar token"
+
+#: user_profile/templates/api_access.html
+msgid "Usage"
+msgstr "Uso"
+
+#: user_profile/templates/api_access.html
+msgid "Pixels (x_px, y_px) are in the original image file, origin at the top-left; it is identical to nasa_image_url."
+msgstr "Los píxeles (x_px, y_px) están en el fichero de imagen original, con origen arriba a la izquierda; es idéntico a nasa_image_url."
+
+#: user_profile/templates/api_access.html
+msgid "Back to profile"
+msgstr "Volver al perfil"
+
+#: user_profile/templates/api_access.html
+msgid "Download everything"
+msgstr "Descargarlo todo"
+
+#: user_profile/templates/api_access.html
+msgid "Results are paginated (100 images per page by default, up to 500 with limit). A single curl only returns the first page: follow the “next” URL until it is null. This script does it and saves each page to page_N.json. Put your token in the TOKEN environment variable so it does not end up in your shell history."
+msgstr "Los resultados están paginados (100 imágenes por página por defecto, hasta 500 con limit). Un solo curl solo devuelve la primera página: hay que seguir la URL «next» hasta que sea null. Este script lo hace y guarda cada página en page_N.json. Pon tu token en la variable de entorno TOKEN para que no quede en el historial de tu shell."
+
+#: user_profile/templates/api_access.html
+msgid "Use updated_since to download only what changed since your last sync."
+msgstr "Usa updated_since para descargar solo lo que ha cambiado desde tu última sincronización."
+
+#: review/templates/review/map.html
+msgid "Review georeferencing"
+msgstr "Revisar georreferenciaciones"
+
+#: review/templates/review/map.html
+msgid "Each outline is one georeferencing attempt. Click the map to see the attempts covering that spot, pick one to overlay the photo, and say whether it matches the map."
+msgstr "Cada contorno es un intento de georreferenciación. Pulsa en el mapa para ver los intentos que cubren ese punto, elige uno para superponer la foto y di si encaja con el mapa."
+
+#: review/templates/review/map.html
+msgid "Attempts"
+msgstr "Intentos"
+
+#: review/templates/review/map.html
+msgid "Opacity"
+msgstr "Opacidad"
+
+#: review/templates/review/map.html
+msgid "Show only the lights (blend)"
+msgstr "Mostrar solo las luces (mezcla)"
+
+#: review/templates/review/map.html
+msgid "Not OK"
+msgstr "No OK"
+
+#: review/templates/review/map.html
+msgid "Not reviewed"
+msgstr "Sin revisar"
+
+#: review/templates/review/map.html
+msgid "More OK"
+msgstr "Más OK"
+
+#: review/templates/review/map.html
+msgid "More Not OK"
+msgstr "Más No OK"
+
+#: review/templates/review/map.html
+msgid "Tied"
+msgstr "Empatados"
+
+#: review/templates/review/map.html
+msgid "Nothing georeferenced and reviewable yet."
+msgstr "Todavía no hay nada georreferenciado y revisable."
+
+#: review/templates/review/map.html
+msgid "Click the map: the attempts covering that spot appear here."
+msgstr "Pulsa en el mapa: aquí aparecen los intentos que cubren ese punto."
+
+#: review/templates/review/map.html
+msgid "No attempt covers this spot."
+msgstr "Ningún intento cubre este punto."
+
+#: review/templates/review/map.html
+msgid "Attempt"
+msgstr "Intento"
+
+#: review/templates/review/map.html
+msgid "points"
+msgstr "puntos"
+
+#: review/templates/review/map.html
+msgid "yours"
+msgstr "tuyo"
+
+#: review/templates/review/map.html
+msgid "You georeferenced this one: you cannot review it."
+msgstr "Este lo georreferenciaste tú: no puedes revisarlo."
+
+#: review/templates/review/map.html
+msgid "Area"
+msgstr "Área"
+
+#: review/templates/review/map.html
+msgid "By user"
+msgstr "Por el usuario"
+
+#: review/templates/review/map.html
+msgid "Votes"
+msgstr "Votos"
+
+#: review/templates/review/map.html
+msgid "Your vote"
+msgstr "Tu voto"
+
+#: review/templates/review/map.html
+msgid "Saved"
+msgstr "Guardado"
+
+#: review/templates/review/map.html
+msgid "Could not save the vote"
+msgstr "No se pudo guardar el voto"
+
+#: review/templates/review/map.html
+msgid "Could not load the attempts."
+msgstr "No se pudieron cargar los intentos."
+
+#: review/templates/review/map.html
+msgid "The photo overlay could not be loaded."
+msgstr "No se pudo cargar la foto sobre el mapa."
+
+#: review/templates/review/map.html
+msgid "unknown date"
+msgstr "fecha desconocida"
+
+#: review/templates/review/map.html
+msgid "Click on the map to see the attempts at that point"
+msgstr "Pulsa en el mapa para ver los intentos en ese punto"
+
+#: review/templates/review/map.html
+msgid "attempts at this point"
+msgstr "intentos en este punto"
+
+#: review/templates/review/map.html
+msgid "Back to the list"
+msgstr "Volver a la lista"
+
+#: review/templates/review/map.html
+msgid "Clear selection"
+msgstr "Borrar selección"
+
+#: review/templates/review/map.html
+msgid "SDGSAT EU/UK"
+msgstr "SDGSAT UE/RU"
+
+#: review/templates/review/map.html
+msgid "Outlines"
+msgstr "Contornos"
+
+#: review/templates/review/map.html
+msgid "different images"
+msgstr "imágenes distintas"
+
+#: review/templates/review/map.html
+msgid "Reviewed by you"
+msgstr "Revisado por ti"
+
+#: review/templates/review/map.html
+msgid "Selected"
+msgstr "Seleccionado"
+
+#: review/templates/review/map.html
+msgid "Not at this point"
+msgstr "No está en este punto"
+
+#: review/templates/review/map.html
+msgid "attempts on the map"
+msgstr "intentos en el mapa"
+
+#: review/templates/review/map.html
+msgid "No attempt covers this point."
+msgstr "Ningún intento cubre este punto."
+
+#: review/templates/review/map.html
+msgid "not reviewed yet"
+msgstr "sin revisar todavía"
+
+#: review/templates/review/map.html
+msgid "Map adjustments"
+msgstr "Ajustes del mapa"
+
+#: review/templates/review/map.html
+msgid "Satellite"
+msgstr "Satélite"
+
+#: review/templates/review/map.html
+msgid "Photo"
+msgstr "Foto"
+
+#: review/templates/review/map.html
+msgid "Photo: only the lights"
+msgstr "Foto: solo las luces"
+
+#: review/templates/review/map.html
+msgid "Esc: back"
+msgstr "Esc: volver"
+
+#: review/templates/review/map.html
+msgid "Dark"
+msgstr "Oscuro"
+
 #~ msgid "Located photos"
 #~ msgstr "Fotos localizadas"
 
@@ -3747,3 +4005,41 @@ msgstr ""
 #, python-format
 #~ msgid "Your %% Contribution in Control Points"
 #~ msgstr "Tu %% contribución en puntos de control"
+
+#: user_profile/templates/newsletter_unsubscribe.html
+msgid "Unsubscribe from Lost at Night emails?"
+msgstr "¿Darte de baja de los correos de Lost at Night?"
+
+#: user_profile/templates/newsletter_unsubscribe.html
+msgid "Press the button to stop receiving emails from Lost at Night. You can re-subscribe at any time from your profile page."
+msgstr "Pulsa el botón para dejar de recibir correos de Lost at Night. Puedes volver a suscribirte cuando quieras desde tu perfil."
+
+#: user_profile/templates/newsletter_unsubscribe.html
+msgid "Yes, unsubscribe me"
+msgstr "Sí, darme de baja"
+
+#: teams/templates/team_list.html
+msgid "new"
+msgstr "nuevo"
+
+#: teams/templates/team_list.html
+#, python-format
+msgid "Up %(n)s place in the last 7 days"
+msgid_plural "Up %(n)s places in the last 7 days"
+msgstr[0] "Sube %(n)s puesto en los últimos 7 días"
+msgstr[1] "Sube %(n)s puestos en los últimos 7 días"
+
+#: teams/templates/team_list.html
+#, python-format
+msgid "Down %(n)s place in the last 7 days"
+msgid_plural "Down %(n)s places in the last 7 days"
+msgstr[0] "Baja %(n)s puesto en los últimos 7 días"
+msgstr[1] "Baja %(n)s puestos en los últimos 7 días"
+
+#: teams/templates/team_list.html
+msgid "Arrows and green figures show the change over a rolling 7-day window (today and the six days before), not the calendar week."
+msgstr "Las flechas y las cifras en verde muestran el cambio en una ventana móvil de 7 días (hoy y los seis días anteriores), no en la semana natural."
+
+#: frontend/templates/ranking.html
+msgid "Places gained or lost in the last 7 days"
+msgstr "Puestos ganados o perdidos en los últimos 7 días"

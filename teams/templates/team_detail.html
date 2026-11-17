@@ -84,9 +84,9 @@
 </div>
 <p style="color:var(--ink-2);font-size:12px;margin-top:-6px">{% trans "“For the team” counts only what each member did while in the team. Points of members who left stay in the team total." %}</p>
 
-{% if is_owner %}
+{% if can_edit %}
 <details class="tm-card tm-owner-tools">
-    <summary><i class="fa-solid fa-gear"></i> {% trans "Team settings (owner)" %}</summary>
+    <summary><i class="fa-solid fa-gear"></i> {% trans "Team settings" %}</summary>
     <form method="post" action="{% url 'team_edit' team.slug %}" class="tm-form" style="margin-top:12px">
         {% csrf_token %}
         <input type="text" name="name" value="{{ team.name }}" maxlength="60" minlength="3" required>
@@ -94,12 +94,14 @@
         <label class="chk"><input type="checkbox" name="is_open" value="1" {% if team.is_open %}checked{% endif %}> {% trans "Open team: anyone can join from the teams page" %}</label>
         <div style="display:flex;gap:8px;flex-wrap:wrap"><button type="submit" class="ds-btn ds-btn--primary ds-btn--md">{% trans "Save" %}</button></div>
     </form>
+    {% if is_owner %}
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
         <form method="post" action="{% url 'team_rotate_code' team.slug %}" onsubmit="return confirm('{% trans "Generate a new invite code? Old links will stop working." %}')">{% csrf_token %}<button type="submit" class="ds-btn ds-btn--secondary ds-btn--sm">{% trans "New invite code" %}</button></form>
         {% if stats.members == 1 %}
         <form method="post" action="{% url 'team_delete' team.slug %}" onsubmit="return confirm('{% trans "Delete this team? This cannot be undone." %}')">{% csrf_token %}<button type="submit" class="ds-btn ds-btn--danger ds-btn--sm">{% trans "Delete team" %}</button></form>
         {% else %}<span style="color:var(--ink-3);font-size:12px;align-self:center">{% trans "To delete the team, remove the other members first." %}</span>{% endif %}
     </div>
+    {% endif %}
 </details>
 {% endif %}
 {% endblock %}

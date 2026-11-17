@@ -10,8 +10,11 @@ from georeferencing.models import GeoAttempt, GeoAttemptsByUserByDay, ChallengeP
 from user_profile.models import UserProfile
 from user_profile.forms import UserProfileForm
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import logout
 from datetime import date
+from django.utils import timezone
 from django.utils.translation import gettext as _, ngettext
 
 
@@ -373,6 +376,37 @@ def _period_ranking(request, period, page_size, ordering='tasks'):
     })
 
 
+WEEK_FIELDS = {'controlPointsDone': 'controlPoints', 'geoattempts_done': 'numberGeoAttempts', 'time_spent': 'seconds'}
+
+
+def _users_previous_ranks(field):
+    """{profile_id: place a week ago} for the all-time people ranking ordered
+    by `field`. Nothing is snapshotted: last week's table is today's counters
+    minus the last 7 rolling days of GeoAttemptsByUserByDay, ordered with the
+    same tie-break as the live ranking. Users who registered inside the window
+    are absent (they are 'new'). Cached 5 min."""
+    from django.core.cache import cache
+    key = f'ranking_prev:v1:{field}'
+    prev = cache.get(key)
+    if prev is None:
+        start = _period_start('week')
+        week = dict(GeoAttemptsByUserByDay.objects
+                    .filter(date__gte=start)
+                    .values_list('user_id')
+                    .annotate(s=Sum(WEEK_FIELDS[field])))
+        table = []
+        for pid, uid, value, joined in (UserProfile.objects
+                                        .filter(user_id__in=_verified_user_ids())
+                                        .values_list('id', 'user_id', field, 'user__date_joined')):
+            if joined and timezone.localtime(joined).date() >= start:
+                continue
+            table.append((-max(0, (value or 0) - (week.get(uid) or 0)), pid))
+        table.sort()
+        prev = {pid: i + 1 for i, (_m, pid) in enumerate(table)}
+        cache.set(key, prev, 300)
+    return prev
+
+
 def ranking_api(request):
     """
     Paginated ranking endpoint.
@@ -393,6 +427,9 @@ def ranking_api(request):
             visible, is_you, tasks, control_points, time_seconds, time_pretty }
         ]
       }
+    All-time rows also carry the last 7 rolling days: rank_change (places
+    gained, negative = lost, in the requested ordering), is_new, new_tasks,
+    new_cp.
     Invisible profiles are still counted but anonymised in the rows.
     """
     try:
@@ -443,11 +480,22 @@ def ranking_api(request):
     page = min(page, total_pages)
 
     offset = (page - 1) * page_size
-    qs = base.order_by(f'-{field}', 'id')[offset:offset + page_size]
+    qs = list(base.order_by(f'-{field}', 'id')[offset:offset + page_size])
+    if field not in WEEK_FIELDS:
+        field = 'controlPointsDone'
+    prev_ranks = _users_previous_ranks(field)
+    week_start = _period_start('week')
+    week = {
+        w['user_id']: w for w in GeoAttemptsByUserByDay.objects
+        .filter(date__gte=week_start, user_id__in=[p.user_id for p in qs])
+        .values('user_id').annotate(t=Sum('numberGeoAttempts'), c=Sum('controlPoints'))
+    }
 
     rows = []
     for i, prof in enumerate(qs):
         rank = offset + i + 1
+        prev_rank = prev_ranks.get(prof.id)
+        w = week.get(prof.user_id) or {}
         is_you = (request.user.is_authenticated and prof.user_id == request.user.id)
         # Always count rank position; hide PII for invisible profiles
         # (unless it's the requesting user looking at themselves).
@@ -465,6 +513,10 @@ def ranking_api(request):
             'control_points': prof.controlPointsDone,
             'time_seconds': prof.time_spent,
             'time_pretty': convert_time_spent(prof.time_spent),
+            'rank_change': (prev_rank - rank) if prev_rank else 0,
+            'is_new': timezone.localtime(prof.user.date_joined).date() >= week_start,
+            'new_tasks': min(w.get('t') or 0, prof.geoattempts_done or 0),
+            'new_cp': min(w.get('c') or 0, prof.controlPointsDone or 0),
         })
 
     return JsonResponse({
@@ -509,7 +561,7 @@ def country_ranking_api(request):
     if ordering not in ('cp', 'tasks', 'cp_per_user'):
         ordering = 'cp'
 
-    cache_key = f'country_ranking:v1:{period}'
+    cache_key = f'country_ranking:v2:{period}'
     raw = cache.get(cache_key)
     if raw is None:
         verified = _verified_user_ids()
@@ -535,17 +587,40 @@ def country_ranking_api(request):
                              tasks=Sum('numberGeoAttempts'),
                              control_points=Sum('controlPoints'))
                    .order_by())
+        week = newcomers = None
+        if period == 'all':
+            # Last 7 rolling days per country, to show what changed this week.
+            week_start = _period_start('week')
+            week = {
+                str(w['country']): w for w in GeoAttemptsByUserByDay.objects
+                .filter(date__gte=week_start, user_id__in=verified)
+                .values(country=F('user__userprofile__country'))
+                .annotate(t=Sum('numberGeoAttempts'), c=Sum('controlPoints'))
+                .order_by()
+            }
+            newcomers = {
+                str(n['country']): n['n'] for n in UserProfile.objects
+                .filter(user_id__in=verified, user__date_joined__date__gte=week_start)
+                .values('country').annotate(n=Count('id')).order_by()
+            }
         raw = []
         for row in agg:
             cp = row.get('control_points') or 0
             users = row['users'] or 0
-            raw.append({
+            entry = {
                 'country_code': str(row['country']).lower(),
                 'users': users,
                 'tasks': row['tasks'] or 0,
                 'control_points': cp,
                 'cp_per_user': round(cp / users, 1) if users else None,
-            })
+            }
+            if week is not None:
+                w = week.get(str(row['country'])) or {}
+                entry['new_users'] = min(newcomers.get(str(row['country'])) or 0, users)
+                entry['new_tasks'] = min(w.get('t') or 0, entry['tasks'])
+                entry['new_cp'] = min(w.get('c') or 0, cp)
+                entry['is_new'] = entry['new_users'] >= users
+            raw.append(entry)
         cache.set(cache_key, raw, 300)
 
     sort_key = {
@@ -564,13 +639,31 @@ def country_ranking_api(request):
         else:
             my_country_missing = True
 
+    prev_rank = {}
+    if period == 'all':
+        # Places gained/lost vs the same ordering a week ago.
+        def before(r):
+            users = r['users'] - r['new_users']
+            cp = r['control_points'] - r['new_cp']
+            if ordering == 'tasks':
+                return r['tasks'] - r['new_tasks']
+            if ordering == 'cp_per_user':
+                return round(cp / users, 1) if users else 0
+            return cp
+        old = sorted((r for r in rows if not r['is_new']), key=before, reverse=True)
+        prev_rank = {r['country_code']: i for i, r in enumerate(old, start=1)}
+
     my_country_rank = None
     out = []
     for i, r in enumerate(rows, start=1):
         name = COUNTRIES.name(r['country_code'].upper())
         if my_country_code and r['country_code'] == my_country_code:
             my_country_rank = i
-        out.append({'rank': i, 'country': str(name) or r['country_code'].upper(), **r})
+        row = {'rank': i, 'country': str(name) or r['country_code'].upper(), **r}
+        if period == 'all':
+            prev = prev_rank.get(r['country_code'])
+            row['rank_change'] = (prev - i) if prev else 0
+        out.append(row)
 
     return JsonResponse({
         'ordering': ordering,
@@ -611,24 +704,34 @@ def cookies_consent_api(request):
     return JsonResponse({'ok': True, 'persisted': True})
 
 
+@csrf_exempt
 def newsletter_unsubscribe(request, token):
     """
-    Public, idempotent unsubscribe link. Looks up the profile by token,
-    flips `newsletter_subscribed` to False, records the timestamp and
-    rotates the token (so the same URL can't be replayed).
+    Public unsubscribe link, one per recipient (token in the e-mail).
+
+    GET only shows a confirmation button: mail scanners (school and company
+    filters) open every link in a message and must not unsubscribe anyone.
+    POST does it, from that button or as an RFC 8058 one-click request from the
+    mail client (List-Unsubscribe-Post), which cannot send a CSRF token, hence
+    csrf_exempt; the secret token is the credential.
+
+    Unsubscribing records the opt-out even for people who never subscribed
+    (newsletter_subscribed was already False): `send_bulk_email` skips anyone
+    with newsletter_unsubscribed_at set. The token is rotated afterwards.
     """
     from django.utils import timezone as _tz
     import secrets
     profile = UserProfile.objects.filter(newsletter_token=token).first()
     if not profile:
         return render(request, 'newsletter_unsubscribe.html', {'unknown': True})
-    if profile.newsletter_subscribed:
-        profile.newsletter_subscribed = False
-        profile.newsletter_unsubscribed_at = _tz.now()
-        profile.newsletter_token = secrets.token_urlsafe(32)
-        profile.save(update_fields=[
-            'newsletter_subscribed', 'newsletter_unsubscribed_at', 'newsletter_token',
-        ])
+    if request.method != 'POST':
+        return render(request, 'newsletter_unsubscribe.html', {'confirm': True, 'profile': profile})
+    profile.newsletter_subscribed = False
+    profile.newsletter_unsubscribed_at = _tz.now()
+    profile.newsletter_token = secrets.token_urlsafe(32)
+    profile.save(update_fields=[
+        'newsletter_subscribed', 'newsletter_unsubscribed_at', 'newsletter_token',
+    ])
     return render(request, 'newsletter_unsubscribe.html', {
         'unknown': False,
         'profile': profile,
@@ -833,3 +936,24 @@ def diploma_verify(request, code):
         ctx['time_pretty'] = convert_time_spent(ctx['time_spent'])
         return render(request, 'diploma_verify.html', {'ok': True, 'ctx': ctx})
     return render(request, 'diploma_verify.html', {'ok': False}, status=404)
+
+
+@never_cache
+@login_required
+def api_access(request):
+    """Staff-only page to generate the export API token. The plaintext token and
+    its curl are rendered once, in the POST response; only the hash is stored."""
+    if not request.user.is_staff:
+        raise Http404
+    from user_profile.models import ApiToken
+    token_plain = None
+    if request.method == 'POST':
+        _row, token_plain = ApiToken.issue(request.user)
+    active = ApiToken.objects.filter(user=request.user, revoked=False).first()
+    base = request.build_absolute_uri('/api/v1/export/images/')
+    return render(request, 'api_access.html', {
+        'active': active,
+        'token_plain': token_plain,
+        'curl': f'curl -H "Authorization: Bearer {token_plain}" {base}' if token_plain else '',
+        'base_url': base,
+    })

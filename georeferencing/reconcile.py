@@ -92,3 +92,43 @@ def recompute_challenge(challenge):
             p.save(update_fields=['cached_cp_count'])
             changed += 1
     return changed
+
+
+def challenge_week_trend(challenge):
+    """{participant_id: {'new_cp', 'is_new', 'prev_rank'}} over the last 7
+    rolling days (same window as the weekly ranking), or {} when the challenge
+    is not running. Nothing is snapshotted: last week's leaderboard is today's
+    cached_cp_count minus the points of DONE tasks finished in the window that
+    count for the enrollment (participant_tasks rule), ordered with the live
+    tie-break. Participants who first joined inside the window are 'new' and
+    have no previous place."""
+    from datetime import date, datetime, time, timezone as dt_timezone
+    from django.utils import timezone
+    now = timezone.now()
+    if challenge.is_paused or not (challenge.start_at <= now < challenge.end_at):
+        return {}
+    since = datetime.combine(date.today() - timedelta(days=6), time.min, tzinfo=dt_timezone.utc)
+    participants = list(challenge.participants.prefetch_related('periods'))
+    lo_all = max(since, challenge.start_at)
+    done = defaultdict(list)
+    for uid, finished, pts in (done_queryset()
+                               .filter(assignedUser_id__in=[p.user_id for p in participants],
+                                       finishedDateTime__gte=lo_all,
+                                       finishedDateTime__lt=challenge.end_at,
+                                       image__in=challenge.matching_images())
+                               .values_list('assignedUser_id', 'finishedDateTime', 'controlPoints')):
+        done[uid].append((finished, len(pts) if isinstance(pts, list) else 0))
+
+    out, table = {}, []
+    for p in participants:
+        periods = [(x.joined_at, x.left_at) for x in p.periods.all()] or [(p.joined_at, p.left_at)]
+        new_cp = sum(cp for finished, cp in done.get(p.user_id, ())
+                     if any(j <= finished and (l is None or finished < l) for j, l in periods))
+        new_cp = min(new_cp, p.cached_cp_count)
+        is_new = min(j for j, _l in periods) >= since
+        out[p.pk] = {'new_cp': new_cp, 'is_new': is_new, 'prev_rank': None}
+        if not is_new:
+            table.append((-(p.cached_cp_count - new_cp), p.joined_at, p.pk))
+    for i, (_cp_before, _joined, pk) in enumerate(sorted(table), start=1):
+        out[pk]['prev_rank'] = i
+    return out

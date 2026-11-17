@@ -55,6 +55,7 @@ urlpatterns = [
     path('api/v1/ranking/teams/',
          __import__('teams.views', fromlist=['teams_ranking_api']).teams_ranking_api,
          name='teams_ranking_api'),
+    path('', include('review.urls')),  # staff-only review of georeferencing attempts
     path('teams/', include('teams.urls')),
     path('newsletter/unsubscribe/<str:token>/',
          __import__('user_profile.views', fromlist=['newsletter_unsubscribe']).newsletter_unsubscribe,

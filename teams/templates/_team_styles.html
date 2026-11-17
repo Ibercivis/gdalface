@@ -28,6 +28,12 @@
     .tm-table th { background: var(--bg-2); color: var(--accent); font-size: 12px; }
     .tm-table td.num, .tm-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
     .tm-table tr.me td { background: oklch(0.95 0.13 113 / 0.10); }
+    .tm-table td.tm-trend, .tm-table th.tm-trend { padding-left: 0; padding-right: 0; font-size: 12px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .tm-up, .tm-delta, .tm-new { color: var(--good); }
+    .tm-down { color: var(--danger); }
+    .tm-same { color: var(--ink-3); }
+    .tm-new { font-size: 10px; text-transform: uppercase; letter-spacing: .04em; }
+    .tm-delta { display: inline-block; min-width: 5ch; margin-left: 6px; text-align: left; font-size: 11px; }
     .tm-table a { text-decoration: none; color: var(--ink-0); }
     .tm-table a:hover { color: var(--accent); }
     .tm-owner-tools summary { cursor: pointer; color: var(--ink-2); font-size: 13px; }

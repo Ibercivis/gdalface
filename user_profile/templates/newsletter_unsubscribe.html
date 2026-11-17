@@ -42,12 +42,13 @@
         }
         .ub-card .ub-icon svg { width: 28px; height: 28px; }
         .ub-card a { color: var(--accent); text-decoration: underline; }
+        .ub-card form { margin: 0 0 20px; }
     </style>
 </head>
 <body>
     <div class="ub-card">
         <div class="ub-icon">
-            {% if unknown %}
+            {% if unknown or confirm %}
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="9"/>
                     <path d="M12 8v4M12 16h.01"/>
@@ -58,7 +59,13 @@
                 </svg>
             {% endif %}
         </div>
-        {% if unknown %}
+        {% if confirm %}
+            <h1>{% trans "Unsubscribe from Lost at Night emails?" %}</h1>
+            <p>{% trans "Press the button to stop receiving emails from Lost at Night. You can re-subscribe at any time from your profile page." %}</p>
+            <form method="post">
+                <button type="submit" class="ds-btn ds-btn--primary ds-btn--md">{% trans "Yes, unsubscribe me" %}</button>
+            </form>
+        {% elif unknown %}
             <h1>{% trans "Link not recognised" %}</h1>
             <p>{% trans "This unsubscribe link is no longer valid. You may already be unsubscribed, or the link expired after use." %}</p>
         {% else %}

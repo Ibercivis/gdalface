@@ -105,8 +105,8 @@ class MiniGeoAttemptSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = GeoAttempt
-        fields = ['id', 'created', 'image', 'status']
-        read_only_fields = ['created']
+        fields = ['id', 'createdDateTime', 'image', 'status']
+        read_only_fields = ['createdDateTime']
 
 class ImageSerializer(serializers.ModelSerializer):
     """

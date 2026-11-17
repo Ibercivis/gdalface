@@ -549,3 +549,29 @@ body.ds-app {
 #georef-slider-row input[type=range]::-moz-range-track {
     background: oklch(0.78 0.13 220 / 0.25);
 }
+
+/* ──────────── RANKING TABLE (shared look) ────────────
+   One table style for /ranking/ (people / teams / countries) and the
+   per-challenge leaderboard, plus the weekly-trend marks: ▲/▼ places
+   gained or lost and green "+N" over the last 7 rolling days. */
+.rk-card { background: var(--bg-1); border: 1px solid var(--line-soft); border-radius: 12px; overflow: hidden; }
+.rk-header-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+                 padding: 14px 18px; border-bottom: 1px solid var(--line-soft); background: var(--bg-2); }
+.rk-title { font-weight: 600; font-size: 14px; color: var(--ink-0); }
+.rk-title i { color: var(--accent); margin-right: 6px; }
+table.ranking-table, .legal-wrap table.ranking-table { margin: 0; border-collapse: collapse; width: 100%; font-size: 14px; }
+.ranking-table th, .ranking-table td { padding: 10px 16px; text-align: left; border: 0; border-bottom: 1px solid var(--line-soft); color: var(--ink-1); white-space: nowrap; }
+.ranking-table th { background: var(--bg-2); color: var(--accent); font-weight: 600; font-size: 12px; letter-spacing: .02em; }
+.ranking-table tr:last-child td { border-bottom: none; }
+.ranking-table tr.highlight-row td { background: oklch(0.95 0.13 113 / 0.10); }
+.ranking-table tbody tr:hover td { background: oklch(1 0 0 / 0.04); }
+.ranking-table th.rk-sortable { cursor: pointer; user-select: none; }
+.ranking-table th.rk-sortable.is-sort::after { content: ' ▾'; }
+.ranking-table th.rk-sortable:not(.is-sort) { color: var(--ink-2); }
+.ranking-table td.rk-trend, .ranking-table th.rk-trend { padding-left: 0; padding-right: 0; font-size: 12px; font-variant-numeric: tabular-nums; }
+.rk-up, .rk-delta, .rk-new { color: var(--good); }
+.rk-down { color: var(--danger); }
+.rk-same { color: var(--ink-3); }
+.rk-new { font-size: 10px; text-transform: uppercase; letter-spacing: .04em; }
+.rk-delta { display: inline-block; min-width: 5ch; margin-left: 6px; font-size: 11px; font-weight: 400; }
+.rk-note { font-size: 12px; color: var(--ink-2); margin: 12px 0 0; }
