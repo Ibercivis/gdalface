@@ -1,0 +1,99 @@
+# Local development stack. Not used in production.
+#
+#   docker compose -f docker-compose.local.yml up -d --build
+#   docker compose -f docker-compose.local.yml exec web python manage.py migrate
+#   docker compose -f docker-compose.local.yml exec web python manage.py seed_local
+#
+# See LOCAL-DEV.md.
+
+name: lostatnight-local
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: gdalface
+      POSTGRES_USER: gdalface
+      POSTGRES_PASSWORD: gdalface
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gdalface -d gdalface"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Catches every mail the application sends and shows it in a web inbox at
+  # http://localhost:8025/ instead of delivering it anywhere. Confirmation and
+  # password-reset links are then one click away rather than buried in a log,
+  # and nothing can reach a real mailbox by accident.
+  mailpit:
+    image: axllent/mailpit:v1.21.8
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: "1"
+      MP_SMTP_AUTH_ALLOW_INSECURE: "1"
+    ports:
+      - "${MAIL_UI_PORT:-8025}:8025"
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    command: python manage.py runserver 0.0.0.0:8000
+    environment:
+      DJANGO_SETTINGS_MODULE: gdalface.settings_local
+      DEBUG: "True"
+      DB_NAME: gdalface
+      DB_USER: gdalface
+      DB_PASSWORD: gdalface
+      DB_HOST: db
+      DB_PORT: "5432"
+      REDIS_HOST: redis
+      WEB_PORT: "${WEB_PORT:-8000}"
+      EMAIL_HOST: mailpit
+      EMAIL_PORT: "1025"
+    volumes:
+      - .:/app
+    # Override with WEB_PORT=8010 if something already holds 8000.
+    ports:
+      - "${WEB_PORT:-8000}:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    command: python manage.py rqworker default
+    environment:
+      DJANGO_SETTINGS_MODULE: gdalface.settings_local
+      DEBUG: "True"
+      DB_NAME: gdalface
+      DB_USER: gdalface
+      DB_PASSWORD: gdalface
+      DB_HOST: db
+      DB_PORT: "5432"
+      REDIS_HOST: redis
+      EMAIL_HOST: mailpit
+      EMAIL_PORT: "1025"
+    volumes:
+      - .:/app
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  pgdata:

@@ -1,0 +1,26 @@
+# Local development image. Not used in production.
+#
+# Python 3.12 matches the virtualenvs on the production host, so a dependency
+# that resolves here resolves there too. gdal-bin provides the gdal_translate
+# and gdalwarp binaries that georeferencing/views.py shells out to.
+FROM python:3.12-slim
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        gdal-bin \
+        libpq5 \
+        curl \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements.txt /app/requirements.txt
+# drf-yasg 1.21.7 imports `pkg_resources`, which pip no longer installs by
+# default on Python 3.12, so setuptools has to be asked for explicitly.
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir "setuptools<81" && \
+    pip install --no-cache-dir -r /app/requirements.txt
+
+EXPOSE 8000
