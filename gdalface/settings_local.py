@@ -32,13 +32,28 @@ TEMPLATES[0]["DIRS"] = [BASE_DIR / "local_dev" / "templates", *TEMPLATES[0]["DIR
 # own key from the environment.
 SECRET_KEY = "local-development-only-not-a-secret"  # nosec
 
-# "testserver" is the host Django's own test client uses.
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0", "web", "testserver"]
+# Both lists come from the environment, defaulting to the values this file
+# always had, so `docker-compose.local.yml` behaves exactly as before.
+#
+# They are configurable because this is not the only compose file that starts
+# the site: another one serves it behind a reverse proxy, at a hostname of its
+# own and with no port published on localhost (LOCAL-DEV.md says where). An
+# address written into this file cannot be the address in both.
+#
+# "testserver" is the host Django's own test client uses, which is why it is in
+# the default: nothing passes ALLOWED_HOSTS when the test suite runs.
 
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:8000",
-    "http://127.0.0.1:8000",
-]
+
+def _list(name, default):
+    """A comma-separated environment value as a list, blanks dropped."""
+    return [item.strip() for item in config(name, default=default).split(",") if item.strip()]
+
+
+ALLOWED_HOSTS = _list("ALLOWED_HOSTS", "localhost,127.0.0.1,0.0.0.0,web,testserver")
+
+CSRF_TRUSTED_ORIGINS = _list(
+    "CSRF_TRUSTED_ORIGINS", "http://localhost:8000,http://127.0.0.1:8000"
+)
 
 # Mail never leaves the machine. ACCOUNT_EMAIL_VERIFICATION stays 'mandatory',
 # as in production, so the sign-up and password-reset flows behave exactly the

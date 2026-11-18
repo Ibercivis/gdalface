@@ -114,13 +114,29 @@ docker compose -f docker-compose.local.yml logs -f web
 
 | Override | Reason |
 |---|---|
-| `DEBUG`, `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS` | Serve on localhost. |
+| `DEBUG`, `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS` | Serve on localhost. The last two default to that and are read from the environment, so another compose file can serve this site at a hostname of its own — see below. |
 | `EMAIL_BACKEND` → SMTP to mailpit, else console | No AWS SES credentials locally, and no message should ever reach a real mailbox. |
 | `STATICFILES_STORAGE` → plain | `ManifestStaticFilesStorage` needs a `collectstatic` manifest. |
 | `STATICFILES_DIRS` → `[]` | `settings.py` lists `BASE_DIR/'static'`, which is not in the repository. |
 | `SECRET_KEY` | A value local to that file. |
 | `RQ_QUEUES[*]['HOST']` | Redis is a container, not `localhost`. |
 | `TEMPLATES[0]['DIRS']` | See the first known issue below. |
+
+## Served at a hostname instead of a port
+
+`ALLOWED_HOSTS` and `CSRF_TRUSTED_ORIGINS` are read from the environment, as comma-separated
+lists, and default to exactly what they were before: `localhost`, `127.0.0.1`, `0.0.0.0`, `web`,
+`testserver`, and `http://localhost:8000`. `docker-compose.local.yml` sets neither, so nothing
+above changes.
+
+They exist because this site is also started by a second compose file, in
+[`Ibercivis/citsci-federation`](https://github.com/Ibercivis/citsci-federation). That one runs this
+application together with the other Ibercivis citizen science applications and a shared sign-in
+service, behind one reverse proxy: every application is reached by a hostname of its own and
+publishes no port on localhost, so that cookies, redirect URIs and CORS behave as they do in
+production rather than only on a laptop. That repository's `docs/adr/0009-the-pilot-is-one-docker-composition.md`
+is where the reasoning lives. Nothing in this repository depends on it, and none of it runs unless
+you start it.
 
 ## Known issues in the application, found while setting this up
 
