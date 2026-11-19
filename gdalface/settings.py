@@ -266,6 +266,19 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False  # If you want to log in with email only
 ACCOUNT_AUTHENTICATION_METHOD = 'email'  # 'username' or 'username_email'
 
+# Rate limiting counts failed sign-ins, password resets and confirmations per
+# client IP address, and `django-allauth` 65.14.2 stopped trusting
+# `X-Forwarded-For` to say what that address is, because anybody can send one.
+# Behind nginx that leaves every visitor sharing the proxy's address and so a
+# single allowance: ten failed sign-ins a minute, for the whole site, is
+# reached by strangers rather than by an attacker.
+#
+# One proxy is trusted, which is the deployment: nginx in front of gunicorn.
+# allauth then reads the address nginx itself saw -- the last entry in the
+# header, which a client cannot write -- and a header sent to a server with no
+# proxy in front is still ignored.
+ALLAUTH_TRUSTED_PROXY_COUNT = config('ALLAUTH_TRUSTED_PROXY_COUNT', default=1, cast=int)
+
 # Sign-up: closed here, open through an Ibercivis account (LOCAL-DEV.md)
 #
 # Two adapters, because allauth asks the same question twice and the answer
