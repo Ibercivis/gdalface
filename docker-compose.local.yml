@@ -83,7 +83,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.local
-    command: python manage.py rqworker default
+    # `lost_scheduler` is the only queue `settings.py` declares, and the one
+    # every `@job` in georeferencing/tasks.py names. `rqworker default` exits 1
+    # with `KeyError: 'default'`.
+    command: python manage.py rqworker lost_scheduler
     environment:
       DJANGO_SETTINGS_MODULE: gdalface.settings_local
       DEBUG: "True"
