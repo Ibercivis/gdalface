@@ -6,15 +6,20 @@
     {% if not SOCIALACCOUNT_ONLY %}
         {% element hr %}
         {% endelement %}
-        {% element h2 %}
-            {% translate "Or use a third-party" %}
-        {% endelement %}
     {% endif %}
-    <a class="btn btn-outline-primary btn-block" type="button" data-toggle="collapse" data-target="/accounts/google/login/?process=login" aria-expanded="false" aria-controls="socialaccount_providers" href="/accounts/google/login/?process=login">
-        {% translate "Sign in with Google" %}
-    </a>
-    <!--
-    {% include "socialaccount/snippets/provider_list.html" with process="login" %}
-    {% include "socialaccount/snippets/login_extra.html" %}
-    -->
+    {% include "socialaccount/snippets/ibercivis.html" %}
+    {% comment %}
+        Google is configured by a `SocialApp` row in the database rather than
+        by settings.py, so its button follows that row existing: a button that
+        cannot work is better not shown at all. That is also why it is matched
+        on `provider.id` while the Ibercivis one is matched on
+        `provider.app.provider_id` — a row carries no provider_id of its own.
+    {% endcomment %}
+    {% for provider in socialaccount_providers %}
+        {% if provider.id == "google" %}
+            <a class="btn btn-outline-primary btn-block" type="button" data-toggle="collapse" data-target="/accounts/google/login/?process=login" aria-expanded="false" aria-controls="socialaccount_providers" href="/accounts/google/login/?process=login">
+                {% translate "Sign in with Google" %}
+            </a>
+        {% endif %}
+    {% endfor %}
 {% endif %}

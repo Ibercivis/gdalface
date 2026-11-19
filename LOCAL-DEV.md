@@ -138,6 +138,59 @@ production rather than only on a laptop. That repository's `docs/adr/0009-the-pi
 is where the reasoning lives. Nothing in this repository depends on it, and none of it runs unless
 you start it.
 
+## Signing in with an Ibercivis account
+
+The site accepts a second way in: an account held by the sign-in service the Ibercivis citizen
+science sites share, reached over OpenID Connect. `django-allauth` ships that provider, so the
+whole hook is configuration in `gdalface/settings.py` — three values read from the environment:
+
+| | |
+|---|---|
+| `IBERCIVIS_ACCOUNT_ISSUER` | the service's address |
+| `IBERCIVIS_ACCOUNT_CLIENT_ID` | the name this site is registered there under |
+| `IBERCIVIS_ACCOUNT_CLIENT_SECRET` | what authenticates this site when it exchanges the code |
+
+**The stack in this file declares none of them, so no button appears here.** That is deliberate:
+this stack starts the site on its own, and there is no sign-in service beside it to reach. The
+composition in [`Ibercivis/citsci-federation`](https://github.com/Ibercivis/citsci-federation)
+starts both, and that is where signing in this way is tried — its README says how.
+
+What it changes in the site:
+
+- **Local sign-up is closed.** `/accounts/signup/` no longer creates an account; it sends a
+  newcomer to the Ibercivis button instead. Two adapters in `gdalface/adapters.py` do it, and both
+  are needed: allauth's social adapter answers "may this person sign up?" by asking the account
+  adapter, so closing the form without the second class would close the Ibercivis door with it.
+- **Nothing about the accounts that already exist.** Email and password still sign in, address
+  confirmation is still mandatory for them, password reset is untouched, and there is no date on
+  which any of it stops working.
+- **An address the service affirms is not confirmed again**, because the site is told it is
+  verified. An address it does not affirm still gets a confirmation mail from here.
+- **The personal area shows the identifier** the Ibercivis account is known by. It is the same
+  string on every Ibercivis site, which is the point of it, and it is the only thing the site
+  stores about the account: nothing says which Google, ORCID or password the person used.
+- An account created this way has **no password on this site** to recover or to lose.
+- **An address already in use here gets no second account.** An address is one account on this
+  site, so somebody who already signs in with a password cannot arrive at the same address from
+  Ibercivis and be handed a second one: nobody is signed in, nothing is created, and allauth
+  writes to the address itself — the only party entitled to know it exists — rather than saying so
+  on screen. The sign-in page says this, and a case pins it.
+- **Nothing anonymous changes.** Measured on 19 November 2026: `/`, `/gettask`, `/batchs`,
+  `/contact` and `GET /api/v1/image/` answer without an account, `/api/v1/geoattempts-calendar/`
+  answers 403 as it always did, and `/user-profile/` still redirects to the sign-in pages.
+- **Nothing outside the web registered an account before this change, and nothing does now.**
+  `api/v1/` is the georeferencing surface only: `georeferencing/urls.py` carries no registration
+  route and no token endpoint, and no `dj-rest-auth` or equivalent is installed. So closing the
+  form closes the only door there was.
+
+The cases are in `gdalface/tests_ibercivis_account.py` and `user_profile/tests.py`:
+
+```bash
+docker compose -f docker-compose.local.yml exec web python manage.py test
+```
+
+They talk to no network and need no sign-in service, so they run in this stack as they stand.
+
 ## Known issues in the application, found while setting this up
 
 These are pre-existing and reproduce on a fresh clone of `main`. None of them is caused by this
@@ -161,7 +214,15 @@ setup, and none is fixed by it — the local environment works around the first 
 4. **`Image.save()` prints `self.focalLength` to stdout** on every save, so seeding prints a column
    of `None`. Harmless, and it is the application's own line, not this tooling's.
 
-5. **`drf-yasg` 1.21.7 imports `pkg_resources`**, which pip no longer installs by default on Python
+5. **Google sign-in is configured in a form this version of allauth does not read.**
+   `settings.py` puts `CLIENT_ID` and `SECRET` under `SOCIALACCOUNT_PROVIDERS['google']`, and
+   `django-allauth` 65 looks for them under an `APP` (or `APPS`) key instead — measured: with no
+   `SocialApp` row in the database, `get_app(request, 'google')` raises `SocialApp.DoesNotExist`
+   and the provider offers nothing. So the Google button works only where a `SocialApp` row exists,
+   which is the admin panel rather than this file. Worth a look on the server; nothing here depends
+   on it either way, and the button is now shown only where a Google app is actually configured.
+
+6. **`drf-yasg` 1.21.7 imports `pkg_resources`**, which pip no longer installs by default on Python
    3.12. `Dockerfile.local` asks for `setuptools<81` explicitly. A production venv created before
    this change still has it, so the matching deployment has not noticed yet.
 

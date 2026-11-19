@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.openid_connect',
 
     # My apps
     'user_profile',
@@ -245,6 +246,14 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False  # If you want to log in with email only
 ACCOUNT_AUTHENTICATION_METHOD = 'email'  # 'username' or 'username_email'
 
+# Sign-up: closed here, open through an Ibercivis account (LOCAL-DEV.md)
+#
+# Two adapters, because allauth asks the same question twice and the answer
+# differs: its social adapter forwards `is_open_for_signup` to the account
+# adapter, so closing the form here would close the Ibercivis door with it.
+ACCOUNT_ADAPTER = 'gdalface.adapters.AccountAdapter'
+SOCIALACCOUNT_ADAPTER = 'gdalface.adapters.SocialAccountAdapter'
+
 # Allow signup via social accounts
 SOCIALACCOUNT_QUERY_EMAIL = True
 
@@ -254,8 +263,50 @@ SOCIALACCOUNT_PROVIDERS = {
         'AUTH_PARAMS': {'access_type': 'online'},
         'CLIENT_ID': config('GOOGLE_CLIENT_ID', default=''),  # Fetch from environment variable
         'SECRET': config('GOOGLE_CLIENT_SECRET', default=''),  # Fetch from environment variable
-    }
+    },
 }
+
+# Sign in with an Ibercivis account: the sign-in service the Ibercivis citizen
+# science sites share, reached over OpenID Connect. allauth ships the provider,
+# so there is no code of ours here. LOCAL-DEV.md says what it changes and where
+# the values come from.
+#
+# Declared only when there is an address to reach, so a deployment without one
+# shows no button rather than a button that cannot work.
+IBERCIVIS_ACCOUNT_ISSUER = config('IBERCIVIS_ACCOUNT_ISSUER', default='')
+
+# The name the provider is registered under here, and so the name in the
+# address the service calls back: /accounts/oidc/ibercivis/login/callback/. The
+# service is registered to accept exactly that, so the two cannot change apart.
+# user_profile reads it from here to find the identifier on a profile page.
+IBERCIVIS_ACCOUNT_PROVIDER = 'ibercivis'
+
+if IBERCIVIS_ACCOUNT_ISSUER:
+    SOCIALACCOUNT_PROVIDERS['openid_connect'] = {
+        # Not allauth's default `openid profile email`: the service allows
+        # this site only the scopes it was registered with, and refuses the
+        # whole request over a scope it did not grant.
+        'SCOPE': ['openid', 'email'],
+        # PKCE, which the service requires: without it the very first redirect
+        # comes back as `Missing parameter: code_challenge_method`.
+        'OAUTH_PKCE_ENABLED': True,
+        'APPS': [
+            {
+                'provider_id': IBERCIVIS_ACCOUNT_PROVIDER,
+                'name': 'Ibercivis',
+                'client_id': config('IBERCIVIS_ACCOUNT_CLIENT_ID', default=''),
+                'secret': config('IBERCIVIS_ACCOUNT_CLIENT_SECRET', default=''),
+                'settings': {
+                    'server_url': IBERCIVIS_ACCOUNT_ISSUER,
+                    # The account's details come from the ID token the
+                    # service signs — allauth checks its issuer, audience and
+                    # expiry — rather than from a second, unsigned request to
+                    # userinfo for the same two values.
+                    'fetch_userinfo': False,
+                },
+            },
+        ],
+    }
 
 SITE_ID = 2
 

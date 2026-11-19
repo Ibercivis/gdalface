@@ -1,0 +1,25 @@
+{% extends "account/base_entrance.html" %}
+{% load i18n %}
+{% load allauth %}
+{% block head_title %}
+    {% trans "Sign up with an Ibercivis account" %}
+{% endblock head_title %}
+{% block content %}
+    {% element h1 %}
+        {% trans "Sign up with an Ibercivis account" %}
+    {% endelement %}
+    {% element p %}
+        {% blocktranslate %}This site no longer creates accounts of its own.{% endblocktranslate %}
+    {% endelement %}
+    {% include "socialaccount/snippets/ibercivis.html" %}
+    {% url 'account_login' as login_url %}
+    {% setvar link %}
+        <a href="{{ login_url }}">
+        {% endsetvar %}
+        {% setvar end_link %}
+        </a>
+    {% endsetvar %}
+    {% element p %}
+        {% blocktranslate %}Already signing in with an email address and a password? That keeps working: {{ link }}sign in{{ end_link }} as you always have.{% endblocktranslate %}
+    {% endelement %}
+{% endblock content %}
