@@ -1,0 +1,21 @@
+{% load i18n %}
+{% load allauth %}
+{% load socialaccount %}
+{% comment %}
+    The way in for somebody who has no account on this site. It renders only
+    when an Ibercivis account is configured — `IBERCIVIS_ACCOUNT_ISSUER` in the
+    environment, which `gdalface/settings.py` reads — so a deployment without
+    it shows no button that cannot work.
+{% endcomment %}
+{% get_providers as socialaccount_providers %}
+{% for provider in socialaccount_providers %}
+    {% if provider.app.provider_id == "ibercivis" %}
+        {% provider_login_url provider process="login" as ibercivis_login_url %}
+        <a class="btn btn-primary btn-block" href="{{ ibercivis_login_url }}">
+            {% blocktranslate with name=provider.name %}Sign in with your {{ name }} account{% endblocktranslate %}
+        </a>
+        {% element p %}
+            {% blocktranslate %}One Ibercivis account signs you in here and at the other Ibercivis citizen science sites, and it is how new accounts are made now. It is a separate account from one you already have here: it starts empty, without the georeferencing you have done. And an Ibercivis account at an address you already sign in with here cannot sign you in — your password is still the way in.{% endblocktranslate %}
+        {% endelement %}
+    {% endif %}
+{% endfor %}
