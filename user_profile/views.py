@@ -1,6 +1,7 @@
 """
 This module contains the views for the user_profile app
 """
+from django.conf import settings
 from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model
 from django.contrib import messages
@@ -24,6 +25,20 @@ def _wants_json(request):
     return 'application/json' in accept or request.headers.get('X-Requested-With') == 'XMLHttpRequest'
 
 User = get_user_model()
+
+
+def ibercivis_account_id(user):
+    """The identifier every Ibercivis site knows this person by, or None.
+
+    None for an account that signs in with its own password, which is most of
+    them: an identifier exists only where an Ibercivis account does.
+    """
+    return (
+        user.socialaccount_set
+        .filter(provider=settings.IBERCIVIS_ACCOUNT_PROVIDER)
+        .values_list('uid', flat=True)
+        .first()
+    )
 
 # Create your views here.
 def user_view(request):
@@ -143,6 +158,7 @@ def user_view(request):
         context = {
             'user': user,
             'profile': profile,
+            'ibercivis_account_id': ibercivis_account_id(user),
             'time': time,
             'geo': geo,
             'cp': cp,

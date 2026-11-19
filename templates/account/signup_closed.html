@@ -1,0 +1,196 @@
+{% load static %}
+{% load i18n %}
+{% load allauth account %}
+{% load socialaccount %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lost At Night | {% trans "Sign up with an Ibercivis account" %}</title>
+    <link rel="icon" href="{% static 'img/logo-lost.png' %}" type="image/png">
+    <link href="{% static 'css/main.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
+    <style>
+        .ds-login {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+        .ds-login__brand {
+            padding: 48px 48px 32px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-right: 1px solid var(--line);
+            position: relative;
+            background: linear-gradient(135deg, oklch(0.16 0.045 290), oklch(0.12 0.04 285));
+        }
+        .ds-login__form-col {
+            padding: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .ds-login__form-inner {
+            width: 100%;
+            max-width: 360px;
+        }
+
+        .ds-brand-mark {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--ink-0);
+        }
+        .ds-brand-mark__bubble {
+            width: 44px; height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .ds-brand-mark__bubble img { display: block; width: 100%; height: 100%; object-fit: contain; }
+        .ds-brand-mark__name {
+            font-size: 14px; font-weight: 700; line-height: 1.1; color: var(--ink-0);
+        }
+
+        .ds-quote {
+            position: relative;
+            padding-left: 16px;
+            border-left: 2px solid var(--accent);
+            font-size: 22px; line-height: 1.45;
+            color: var(--ink-0);
+            font-weight: 500;
+            max-width: 460px;
+            margin: 0;
+        }
+        .ds-quote__cite {
+            display: block;
+            margin-top: 16px;
+            font-size: 13px;
+            color: var(--ink-2);
+            font-weight: 400;
+        }
+
+        .ds-login__legal {
+            display: flex; gap: 16px; font-size: 12px; color: var(--ink-2);
+        }
+        .ds-login__legal a { color: var(--ink-2); text-decoration: none; }
+        .ds-login__legal a:hover { color: var(--ink-0); }
+
+        .ds-login h1 {
+            font-size: 28px; font-weight: 700; color: var(--ink-0);
+            margin: 0 0 6px; letter-spacing: -0.01em;
+        }
+        .ds-login__sub { color: var(--ink-1); margin: 0 0 28px; font-size: 14px; line-height: 1.5; }
+
+        .ds-divider {
+            display: flex; align-items: center; gap: 12px;
+            color: var(--ink-2); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+            margin: 24px 0 18px;
+        }
+        .ds-divider::before,
+        .ds-divider::after {
+            content: ''; flex: 1; border-bottom: 1px solid var(--line-soft);
+        }
+
+        .ds-social-row {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+            margin-bottom: 28px;
+        }
+        .ds-social-row .ds-btn { height: 42px; gap: 8px; font-weight: 500; }
+        .ds-social-row .ds-btn i { font-size: 15px; }
+
+        .ds-create {
+            text-align: center; font-size: 13px; color: var(--ink-1);
+            padding-top: 16px;
+            border-top: 1px solid var(--line-soft);
+        }
+        .ds-create a { color: var(--accent); text-decoration: none; font-weight: 600; }
+        .ds-create a:hover { color: var(--ink-0); }
+
+
+        @media (max-width: 900px) {
+            .ds-login { grid-template-columns: 1fr; }
+            .ds-login__brand {
+                border-right: none;
+                border-bottom: 1px solid var(--line);
+                min-height: auto;
+                padding: 32px 24px;
+            }
+            .ds-quote { font-size: 18px; margin: 24px 0; }
+            .ds-login__form-col { padding: 32px 24px; }
+        }
+
+        .ds-closed__note {
+            font-size: 13px; color: var(--ink-1); line-height: 1.6;
+            margin: 0 0 24px;
+        }
+    </style>
+</head>
+<body>
+    {% include '_ds_icons.html' %}
+
+    <div class="ds-stars" style="z-index:0; opacity:0.5;"></div>
+
+    <div class="ds-login">
+        <div class="ds-login__brand">
+            <a href="/" class="ds-brand-mark">
+                <span class="ds-brand-mark__bubble"><img src="{% static 'img/logo-lost.png' %}" alt=""></span>
+                <span class="ds-brand-mark__name">Lost at<br>Night</span>
+            </a>
+
+            <blockquote class="ds-quote">
+                {% trans "“Every match you submit helps measure light pollution where satellites cannot reach.”" %}
+                <span class="ds-quote__cite">— Dr. Alejandro Sánchez de Miguel · IAA-CSIC</span>
+            </blockquote>
+
+            <div class="ds-login__legal">
+                <a href="/">{% trans "About" %}</a>
+                <a href="/#contact-section">{% trans "Contact" %}</a>
+                <a href="https://github.com/Ibercivis/gdalface" target="_blank" rel="noopener">GitHub</a>
+            </div>
+        </div>
+
+        <div class="ds-login__form-col">
+            <div class="ds-login__form-inner">
+                <h1>{% trans "Sign up with an Ibercivis account" %}</h1>
+                <p class="ds-login__sub">{% trans "This site no longer creates accounts of its own." %}</p>
+
+                {% comment %}
+                    The button renders only where an Ibercivis account is
+                    configured -- `IBERCIVIS_ACCOUNT_ISSUER` in the
+                    environment, which `gdalface/settings.py` reads -- so a
+                    deployment without it shows no button that cannot work.
+                    Matched on `provider.app.provider_id`, which is the name
+                    the provider is declared under; Google is declared in
+                    settings and carries none.
+                {% endcomment %}
+                {% get_providers as socialaccount_providers %}
+                {% for provider in socialaccount_providers %}
+                    {% if provider.app.provider_id == "ibercivis" %}
+                        {% provider_login_url provider process="login" as ibercivis_login_url %}
+                        <a class="ds-btn ds-btn--primary ds-btn--lg" style="width:100%;" href="{{ ibercivis_login_url }}">
+                            {% blocktranslate with name=provider.name %}Sign in with your {{ name }} account{% endblocktranslate %}
+                        </a>
+                        <p class="ds-closed__note">
+                            {% blocktranslate %}One Ibercivis account signs you in here and at the other Ibercivis citizen science sites, and it is how new accounts are made now. It is a separate account from one you already have here: it starts empty, without the georeferencing you have done. And an Ibercivis account at an address you already sign in with here cannot sign you in — your password is still the way in.{% endblocktranslate %}
+                        </p>
+                    {% endif %}
+                {% endfor %}
+
+                {% url 'account_login' as login_url %}
+                <div class="ds-create">
+                    {% trans "Already signing in with an email address and a password?" %}
+                    <a href="{{ login_url }}">{% trans "That keeps working." %}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

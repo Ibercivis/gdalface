@@ -2,9 +2,13 @@
 
 A local instance with a small sample of data, using **no data from production**.
 
-Everything here is additive: `Dockerfile.local`, `docker-compose.local.yml`,
+The environment itself is additive: `Dockerfile.local`, `docker-compose.local.yml`,
 `gdalface/settings_local.py`, `local_dev/` and one management command. No file the production
 deployment reads is changed by any of it.
+
+Signing in with an Ibercivis account, further down, is not additive — it is a change to the site,
+and it touches `gdalface/settings.py`, `requirements.txt`, the sign-in templates and the personal
+area. That section says what it changes.
 
 ## Why there is no production data in here
 
@@ -143,6 +147,76 @@ publishes no port on localhost, so that cookies, redirect URIs and CORS behave a
 production rather than only on a laptop. That repository's `docs/adr/0009-the-pilot-is-one-docker-composition.md`
 is where the reasoning lives. Nothing in this repository depends on it, and none of it runs unless
 you start it.
+
+## Signing in with an Ibercivis account
+
+The site accepts a second way in: an account held by the sign-in service the Ibercivis citizen
+science sites share, reached over OpenID Connect. `django-allauth` ships that provider, so the
+whole hook is configuration in `gdalface/settings.py` — three values read from the environment:
+
+| | |
+|---|---|
+| `IBERCIVIS_ACCOUNT_ISSUER` | the service's address |
+| `IBERCIVIS_ACCOUNT_CLIENT_ID` | the name this site is registered there under |
+| `IBERCIVIS_ACCOUNT_CLIENT_SECRET` | what authenticates this site when it exchanges the code |
+
+**The stack in this file declares none of them, so no button appears here.** That is deliberate:
+this stack starts the site on its own, and there is no sign-in service beside it to reach. The
+composition in [`Ibercivis/citsci-federation`](https://github.com/Ibercivis/citsci-federation)
+starts both, and that is where signing in this way is tried — its README says how.
+
+What it changes in the site:
+
+- **Local sign-up is closed.** `/accounts/signup/` no longer creates an account; it sends a
+  newcomer to the Ibercivis button instead. Two adapters in `gdalface/adapters.py` do it, and both
+  are needed: allauth's social adapter answers "may this person sign up?" by asking the account
+  adapter, so closing the form without the second class would close the Ibercivis door with it.
+- **Nothing about the accounts that already exist.** Email and password still sign in, address
+  confirmation is still mandatory for them, password reset is untouched, and there is no date on
+  which any of it stops working.
+- **No address is confirmed twice, and none is confirmed here.**
+  `SOCIALACCOUNT_EMAIL_VERIFICATION` is `'none'` in `gdalface/settings.py`: the site sends no
+  confirmation of its own for an account arriving from a provider, which is right for Google,
+  because Google has confirmed the address before it says so. The Ibercivis service answers the
+  same question in `email_verified`, and when it answers no, the account is still created and
+  signed in on an address nobody checked. allauth offers no per-provider override of that setting,
+  so holding the Ibercivis door to the stricter rule would take code in
+  `gdalface/adapters.py`; it is not written, and the case in
+  `gdalface/tests_ibercivis_account.py` says plainly what the site does today.
+- **The personal area shows the identifier** the Ibercivis account is known by. It is the same
+  string on every Ibercivis site, which is the point of it, and it is the only thing the site
+  stores about the account: nothing says which Google, ORCID or password the person used.
+- An account created this way has **no password on this site** to recover or to lose.
+- **An address already in use here gets no second account, and no first one either.** An address
+  is one account on this site, so somebody who already signs in with a password cannot arrive at
+  the same address from Ibercivis and be handed a second one: nobody is signed in, nothing is
+  created, and allauth writes to the address itself — the only party entitled to know it exists —
+  rather than saying so on screen. `/accounts/signup/` says this, and a case pins it.
+
+  This is the one place where the Ibercivis provider is configured away from the site's own
+  default. `SOCIALACCOUNT_EMAIL_AUTHENTICATION` is `True` here: an address a provider affirms,
+  already held by an account on this site, signs into that account — and allauth wipes that
+  account's password when it does. That is the decision this site made for Google, which has
+  worked that way for years, and nothing changes it. It is not extended to this provider:
+  `'email_authentication': False` sits in the provider's own `settings` block, which allauth reads
+  before the global one. Linking an account that already exists here to an Ibercivis account is an
+  act for whoever owns both, not something a matching address does by itself.
+- **Nothing anonymous changes.** Measured on 19 November 2026 against `main`'s latest commit:
+  `/`, `/gettask`, `/contact`, `/ranking/`, `GET /api/v1/image/` and `GET /api/v1/geoattempt/`
+  answer without an account, `/api/v1/geoattempts-calendar/` answers 403 as it always did, and
+  `/user-profile/` still answers 302 to the sign-in pages.
+- **Nothing outside the web registered an account before this change, and nothing does now.**
+  `api/v1/` is the georeferencing surface only: `georeferencing/urls.py` carries no registration
+  route and no token endpoint, and no `dj-rest-auth` or equivalent is installed. So closing the
+  form closes the only door there was.
+
+The cases are in `gdalface/tests_ibercivis_account.py` and `user_profile/tests.py`:
+
+```bash
+docker compose -f docker-compose.local.yml exec web python manage.py test
+```
+
+They talk to no network and need no sign-in service, so they run in this stack as they stand.
 
 ## Known issues in the application, found while setting this up
 
