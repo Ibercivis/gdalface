@@ -12,7 +12,7 @@ User = get_user_model()
 def create_user_profile(sender, instance, created, **kwargs):
     """
     Signal to create a UserProfile instance when a new User is created.
-    
+
     Args:
         sender: The model class that sent the signal.
         instance: The actual instance being saved.
@@ -26,7 +26,7 @@ def create_user_profile(sender, instance, created, **kwargs):
 def save_user_profile(sender, instance, **kwargs):
     """
     Signal to save the UserProfile instance when the User is saved.
-    
+
     Args:
         sender: The model class that sent the signal.
         instance: The actual instance being saved.

@@ -17,7 +17,7 @@ from django.utils import timezone
 def index(request):
     """
     Renders the index.html template.
-    
+
     If the request method is POST, it processes the contact form data
     and sends an email to the site administrators.
 
@@ -31,21 +31,21 @@ def index(request):
     user = request.user
     # Get all batches to display them on the homepage
     batchs = Batch.objects.all()
-    
+
     # Calculating project statistics
     # Total users
     total_users = User.objects.count()
-    
+
     # Total tasks and completed tasks
     total_tasks = GeoAttempt.objects.count()
     completed_tasks = GeoAttempt.objects.filter(status='DONE').count()
-    
+
     # Total images and images with completed georeferencing
     total_images = Image.objects.count()
     images_with_georeference = Image.objects.filter(
         id__in=GeoAttempt.objects.filter(status='DONE').values('image')
     ).distinct().count()
-    
+
     # Total control points
     total_control_points = 0
     try:
@@ -54,7 +54,7 @@ def index(request):
             status='DONE',
             controlPoints__isnull=False
         )
-        
+
         # Sumamos la cantidad de puntos de control en cada intento
         for attempt in completed_attempts:
             # controlPoints es un JSONField que puede contener una lista de puntos
@@ -63,7 +63,7 @@ def index(request):
     except Exception as e:
         # Log the error but continue with total_control_points = 0
         print(f"Error calculating total control points: {str(e)}")
-    
+
     # Total minutes spent on tasks
     total_minutes = 0
     try:
@@ -73,33 +73,33 @@ def index(request):
             finishedDateTime__isnull=False,
             assignedDateTime__isnull=False
         )
-        
+
         # Create a duration expression
         duration_expr = ExpressionWrapper(
             F('finishedDateTime') - F('assignedDateTime'),
             output_field=fields.DurationField()
         )
-        
+
         # Calculate total duration in seconds
         result = finished_attempts.annotate(
             duration=duration_expr
         ).aggregate(
             total_seconds=Sum('duration')
         )
-        
+
         if result['total_seconds']:
             # Convert to minutes
             total_minutes = int(result['total_seconds'].total_seconds() / 60)
-        
+
     except Exception as e:
         # Log the error but continue with total_minutes = 0
         print(f"Error calculating total minutes: {str(e)}")
-    
+
     # Average tasks per user
     avg_tasks_per_user = 0
     if total_users > 0:
         avg_tasks_per_user = round(completed_tasks / total_users, 1)
-    
+
     # Check if this is a POST request (contact form submission)
     if request.method == 'POST':
         # Get form data
@@ -107,20 +107,20 @@ def index(request):
         email = request.POST.get('email')
         subject = request.POST.get('subject')
         message = request.POST.get('message')
-        
+
         # Construct email message
         email_subject = f"Formulario de contacto: {subject}"
         email_message = f"""
         Nuevo mensaje del formulario de contacto:
-        
+
         Nombre: {name}
         Email: {email}
         Asunto: {subject}
-        
+
         Mensaje:
         {message}
         """
-        
+
         # Send email
         try:
             send_mail(
@@ -134,7 +134,7 @@ def index(request):
             return redirect('/')  # Redirect to home page after successful submission
         except Exception as e:
             messages.error(request, f"No se pudo enviar el mensaje: {str(e)}")
-    
+
     # Prepare context
     context = {
         'user': user,

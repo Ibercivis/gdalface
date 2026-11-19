@@ -117,14 +117,14 @@ class GeoAttemptIndividualView(APIView):
         print("Input to max_distance:", points)
         if not points or not isinstance(points, (list, tuple)) or len(points) < 2:
             raise ValueError("At least two points are required in a list or tuple")
-    
+
         max_dist = 0
         for i, point1 in enumerate(points):
             for point2 in points[i + 1:]:
                 print(f"Point1: {point1}, Point2: {point2}")
                 if not all(k in point1 for k in ['lat', 'lon']) or not all(k in point2 for k in ['lat', 'lon']):
                     raise ValueError("Each point must have 'lat' and 'lon' keys")
-            
+
                 lat1, lon1 = float(point1['lat']), float(point1['lon'])
                 lat2, lon2 = float(point2['lat']), float(point2['lon'])
                 coord1 = (lat1, lon1)
@@ -135,7 +135,7 @@ class GeoAttemptIndividualView(APIView):
                 if dist > max_dist:
                     max_dist = dist
         return max_dist
-    
+
     # TODO: Review if this is ok or we need to change the zooms
     def get_zooms(self, max_dist):
         if max_dist < 0.5:
@@ -280,7 +280,7 @@ class GeoAttemptIndividualView(APIView):
                     user_profile.controlPointsDone += len(
                         request.data['controlPoints'])
                     user_profile.save()
-                        
+
                     # Now, we can add a geoattempt to today
                     today = timezone.now().date()
                     geoattempts_today, created = GeoAttemptsByUserByDay.objects.get_or_create(
@@ -424,13 +424,13 @@ class ImageIndividualView(APIView):
 
         Args:
             request (Request): The HTTP request object containing the partial
-            data to update the Image instance. pk (int, optional): 
+            data to update the Image instance. pk (int, optional):
             The primary key of the Image instance to update.
 
         Returns:
-            Response: A Response object containing the serialized data of the 
-            updated Image instance if the update is successful. If the update 
-            fails, returns a Response object containing the validation errors 
+            Response: A Response object containing the serialized data of the
+            updated Image instance if the update is successful. If the update
+            fails, returns a Response object containing the validation errors
             with a 400 Bad Request status.
         """
         image = get_object_or_404(Image, pk=pk)
@@ -457,45 +457,45 @@ class ImageIndividualView(APIView):
         image = get_object_or_404(Image, pk=pk)
         image.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
+
 class GeoAttemptsCalendarView(APIView):
     permission_classes = [IsAuthenticated]  # Restrict to logged-in users
 
     def get(self, request):
         # Get the current logged-in user
         user = request.user
-        
+
         # Current date
         current_date = datetime.now()
-        
+
         # Start date: one year back from today
         start_date = datetime(current_date.year - 1, current_date.month, current_date.day)
-        
+
         # End date: end of the current month
         end_date = datetime(current_date.year, current_date.month + 1, 1) - timedelta(days=1)
         if current_date.month == 12:  # Handle December case
             end_date = datetime(current_date.year + 1, 1, 1) - timedelta(days=1)
-            
+
         print(f"Calendar range: {start_date} to {end_date}")
-        
+
         # Generate all days in the range
         all_days = [
             start_date + timedelta(days=i)
             for i in range((end_date - start_date).days + 1)
         ]
-        
+
         # Fetch GeoAttempts data for the user in this date range
         geo_attempts = GeoAttemptsByUserByDay.objects.filter(
             user=user,
             date__gte=start_date,
             date__lte=end_date
         ).values('date', 'numberGeoAttempts')
-        
+
         print(f"Found {len(geo_attempts)} geo attempts in date range")
-        
+
         # Convert to dict for lookup
         attempts_dict = {str(item['date']): item['numberGeoAttempts'] for item in geo_attempts}
-        
+
         # Build calendar data
         calendar_data = [
             {
@@ -504,5 +504,5 @@ class GeoAttemptsCalendarView(APIView):
             }
             for day in all_days
         ]
-        
+
         return Response(calendar_data)

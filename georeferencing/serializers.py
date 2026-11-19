@@ -3,9 +3,9 @@ from .models import GeoAttempt, Image
 
 class GeoAttemptSerializer(serializers.ModelSerializer):
     """
-    GeoAttemptSerializer is a Django REST framework serializer for the GeoAttempt model. 
-    It serializes the following fields: 'id', 'created', 'image', 'image_name', 
-    'photo_center_by_machine_learning', 'status', 'hash', 'skipped', 'controlPoints', 
+    GeoAttemptSerializer is a Django REST framework serializer for the GeoAttempt model.
+    It serializes the following fields: 'id', 'created', 'image', 'image_name',
+    'photo_center_by_machine_learning', 'status', 'hash', 'skipped', 'controlPoints',
     'photo_taken', and 'focal_length'. The 'created' and 'hash' fields are read-only.
     Attributes:
         image_name (str): The name of the image associated with the GeoAttempt.
@@ -29,7 +29,7 @@ class GeoAttemptSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GeoAttempt
-        fields = ['id', 
+        fields = ['id',
                   'assignedUser',
                   'createdDateTime',
                   'assignedDateTime',
@@ -52,24 +52,24 @@ class GeoAttemptSerializer(serializers.ModelSerializer):
 
     def get_image_name(self, obj):
         return obj.image.name
-    
+
     def get_photo_center_point(self, obj):
         return obj.image.photoCenterPoint
-    
+
     def get_photo_center_by_machine_learning(self, obj):
         return obj.image.photoCenterByMachineLearning
-    
+
     def get_photo_taken(self,obj):
         return obj.image.taken
-    
+
     def get_focal_length(self, obj):
         return obj.image.focalLength
-    
+
     def get_spacecraft_nadir_point(self, obj):
         return obj.image.spacecraftNadirPoint
-    
 
-    
+
+
 class MiniGeoAttemptSerializer(serializers.ModelSerializer):
     """
     Serializer for the GeoAttempt model, providing a minimal set of fields.

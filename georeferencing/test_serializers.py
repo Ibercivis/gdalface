@@ -18,8 +18,8 @@ class ImageSerializerTest(APITestCase):
         data = self.serializer.data
         self.assertCountEqual(
             data.keys(),
-            ['id', 'name', 'photoCenterByMachineLearning', 'taken', 'focalLength', 
-            'createdDateTime', 'camera', 'cameraTilt', 'spacecraftNadirPoint', 
+            ['id', 'name', 'photoCenterByMachineLearning', 'taken', 'focalLength',
+            'createdDateTime', 'camera', 'cameraTilt', 'spacecraftNadirPoint',
             'photoCenterPoint', 'spaceCraftAltitude', 'link', 'batch', 'largeImageURL',
             'smallImageURL', 'replicas']
             )

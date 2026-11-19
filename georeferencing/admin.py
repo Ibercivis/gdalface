@@ -28,9 +28,9 @@ class BatchAdminForm(forms.ModelForm):
 
         Attributes:
             - model (Model): Specifies the model associated with the form.
-            - fields (str): Indicates that all fields of the model should be included in the 
+            - fields (str): Indicates that all fields of the model should be included in the
             form.
-            - widgets (dict): Customizes the form field for 'result' using PrettyJSONWidget 
+            - widgets (dict): Customizes the form field for 'result' using PrettyJSONWidget
             with specified attributes.
         """
         model = Batch
@@ -79,7 +79,7 @@ class BatchAdmin(admin.ModelAdmin):
         Args:
             request (HttpRequest): The HTTP request object containing GET parameters.
         Returns:
-            JsonResponse: A JSON response containing the success status and either the 
+            JsonResponse: A JSON response containing the success status and either the
                           fetched data or an error message.
         GET Parameters:
             feat (str): Optional. A feature value to filter the images.
@@ -93,9 +93,9 @@ class BatchAdmin(admin.ModelAdmin):
         mission = request.GET.get('mission', '')
         fcltle = request.GET.get('fcltle', '')
         fcltge = request.GET.get('fcltge', '')
-        original_images = request.GET.get('originalImages', '')  
+        original_images = request.GET.get('originalImages', '')
         url = 'https://eol.jsc.nasa.gov/SearchPhotos/PhotosDatabaseAPI/PhotosDatabaseAPI.pl'
-        
+
         if 0:
             result = '['
             # original images can be a list of images separated by new line
@@ -156,7 +156,7 @@ class BatchAdmin(admin.ModelAdmin):
         if obj.type == 'SEARCH':
             obj.originalImages = ''
             obj.save()
-        
+
 
             # Now, we create the images based on result, for each item in result
             # we create an image and assign it to the batch
@@ -208,7 +208,7 @@ class BatchAdmin(admin.ModelAdmin):
 
 class ImageAdmin(admin.ModelAdmin):
     """
-    ImageAdmin is a Django ModelAdmin class for managing Image model instances 
+    ImageAdmin is a Django ModelAdmin class for managing Image model instances
     in the admin interface.
     """
     list_display = ('name', 'batch', 'createdDateTime', 'geoattempts_count')
@@ -232,7 +232,7 @@ class ImageAdmin(admin.ModelAdmin):
 
 class GeoAttemptAdmin(admin.ModelAdmin):
     """
-    GeoAttemptAdmin is a Django ModelAdmin class for managing GeoAttempt model 
+    GeoAttemptAdmin is a Django ModelAdmin class for managing GeoAttempt model
     instances in the admin interface.
 
     Attributes:
