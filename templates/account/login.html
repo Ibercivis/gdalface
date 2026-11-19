@@ -356,10 +356,12 @@
                 </div>
                 {% endif %}
 
-                <div class="ds-create">
-                    {% trans "New here?" %}
-                    <a href="{{ signup_url }}">{% trans "Create an account" %}</a>
-                </div>
+                {% comment %}
+                    No invitation to create an account here: the form is
+                    closed, and an Ibercivis account is how a newcomer gets
+                    one. The button above is the way in, and
+                    /accounts/signup/ explains it to whoever still goes there.
+                {% endcomment %}
             </div>
         </div>
     </div>

@@ -649,6 +649,13 @@
                         <i class="fas fa-envelope"></i>&nbsp;
                         {{ user.email }}
                     </div>
+                    {% if ibercivis_account_id %}
+                    <div class="meta-item">
+                        <i class="fas fa-id-badge"></i>&nbsp;
+                        Ibercivis account
+                        <span class="ibercivis-account-id">{{ ibercivis_account_id }}</span>
+                    </div>
+                    {% endif %}
                     {% if profile.location %}
                     <div class="meta-item">
                         <i class="fas fa-map-marker-alt"></i>&nbsp;
