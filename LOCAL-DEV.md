@@ -144,9 +144,9 @@ They exist because this site is also started by a second compose file, in
 application together with the other Ibercivis citizen science applications and a shared sign-in
 service, behind one reverse proxy: every application is reached by a hostname of its own and
 publishes no port on localhost, so that cookies, redirect URIs and CORS behave as they do in
-production rather than only on a laptop. That repository's `docs/adr/0009-the-pilot-is-one-docker-composition.md`
-is where the reasoning lives. Nothing in this repository depends on it, and none of it runs unless
-you start it.
+production rather than only on a laptop. The reasoning lives in that repository's
+[`docs/adr/`](https://github.com/Ibercivis/citsci-federation/tree/main/docs/adr). Nothing in this
+repository depends on it, and none of it runs unless you start it.
 
 ## Signing in with an Ibercivis account
 
